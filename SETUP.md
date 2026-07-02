@@ -91,6 +91,29 @@ A partir de acá, **cada `git push` a `main` despliega solo** (si lint y tests p
 - [ ] `apt install fail2ban unattended-upgrades`.
 - [ ] Repasar el checklist de seguridad completo de [DEPLOY.md](DEPLOY.md) §7.
 
+## Problemas comunes
+
+### `P1000: Authentication failed` al correr `prisma migrate` en local
+
+Casi siempre significa que tenés un **PostgreSQL nativo instalado en Windows**
+(servicio `postgresql-x64-*`) escuchando en el puerto 5432, y Prisma se está
+conectando a ese en lugar del contenedor Docker. Para comprobarlo:
+
+```powershell
+netstat -ano | findstr :5432
+Get-Service | Where-Object { $_.Name -like "*postgres*" }
+```
+
+Solución sin tocar el Postgres nativo: mover el contenedor a otro puerto.
+En el `.env` de la raíz poner `POSTGRES_PORT=5433`, cambiar el puerto y las
+credenciales en `DATABASE_URL` (en el `.env` de la raíz **y** en `apps/api/.env`,
+que tiene prioridad — ver [ENV.md](ENV.md)), y recrear el contenedor:
+
+```bash
+npm run db:up
+npm run prisma:migrate
+```
+
 ## Detalles para no sorprenderse
 
 - Todo el pipeline usa la cuenta **`mschuf`** (repo e imágenes `ghcr.io/mschuf/...`):
