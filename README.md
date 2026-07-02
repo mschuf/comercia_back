@@ -20,6 +20,8 @@ npm run prisma:migrate
 npm run dev
 ```
 
+Qué hace cada archivo `.env` (raíz, `apps/api`, `apps/web`, servidor): ver [ENV.md](ENV.md).
+
 Servicios por defecto:
 
 - Web: `http://localhost:3000`
