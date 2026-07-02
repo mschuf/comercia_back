@@ -1,0 +1,36 @@
+{
+  "name": "comercia",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c green,cyan \"npm --prefix apps/api run start:dev\" \"npm --prefix apps/web run dev\"",
+    "dev:api": "npm --prefix apps/api run start:dev",
+    "dev:web": "npm --prefix apps/web run dev",
+    "build": "npm --prefix apps/api run build && npm --prefix apps/web run build",
+    "lint": "npm --prefix apps/api run lint && npm --prefix apps/web run lint",
+    "test": "npm --prefix apps/api run test",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:logs": "docker compose logs -f postgres",
+    "prisma:generate": "npm --prefix apps/api run prisma:generate",
+    "prisma:migrate": "npm --prefix apps/api run prisma:migrate",
+    "prisma:studio": "npm --prefix apps/api run prisma:studio"
+  },
+  "overrides": {
+    "@nestjs/platform-express": {
+      "multer": "2.2.0"
+    },
+    "@prisma/dev": {
+      "@hono/node-server": "2.0.8"
+    },
+    "next": {
+      "postcss": "8.5.16"
+    }
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
+}

@@ -1,0 +1,108 @@
+# Stack de producción de Comercia.
+# En el servidor: /opt/comercia/docker-compose.prod.yml + .env (ver deploy/.env.production.example)
+# Las imágenes se construyen en GitHub Actions y se publican en GHCR.
+
+name: comercia
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?Falta POSTGRES_USER en .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD en .env}
+      POSTGRES_DB: ${POSTGRES_DB:-comercia}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - internal
+    logging: *default-logging
+
+  # Ejecuta las migraciones de Prisma y termina; la API espera a que finalice OK.
+  migrate:
+    image: ghcr.io/mschuf/comercia-api:${API_TAG:-latest}
+    command: ["npm", "run", "prisma:deploy"]
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-comercia}?schema=public
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    networks:
+      - internal
+    logging: *default-logging
+
+  api:
+    image: ghcr.io/mschuf/comercia-api:${API_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-comercia}?schema=public
+      FRONTEND_URL: ${FRONTEND_URL:?Falta FRONTEND_URL en .env (ej. https://tudominio.com)}
+      CORS_ORIGINS: ${CORS_ORIGINS:?Falta CORS_ORIGINS en .env (ej. https://tudominio.com)}
+      COOKIE_SECRET: ${COOKIE_SECRET:?Falta COOKIE_SECRET en .env (64 caracteres aleatorios)}
+      THROTTLE_TTL: ${THROTTLE_TTL:-60000}
+      THROTTLE_LIMIT: ${THROTTLE_LIMIT:-100}
+      SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - internal
+      - proxy
+    logging: *default-logging
+
+  web:
+    image: ghcr.io/mschuf/comercia-web:${WEB_TAG:-latest}
+    restart: unless-stopped
+    networks:
+      - proxy
+    logging: *default-logging
+
+  # Reverse proxy con HTTPS automático (Let's Encrypt).
+  # Enruta /api/* a la API y el resto al frontend: un solo dominio, sin CORS.
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?Falta DOMAIN en .env (ej. tudominio.com, o ":80" si solo hay IP)}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1:2019/config/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - proxy
+    logging: *default-logging
+
+networks:
+  internal:
+  proxy:
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

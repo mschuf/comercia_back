@@ -1,0 +1,159 @@
+# Despliegue continuo: cada push a main corre lint+tests, construye las imágenes
+# que cambiaron, las publica en GHCR y actualiza el servidor por SSH
+# (estilo Vercel, pero en tu VPS). Si lint o tests fallan, NO se despliega nada.
+#
+# Secrets requeridos (Settings → Secrets and variables → Actions → Secrets):
+#   DEPLOY_HOST      IP o dominio del servidor
+#   DEPLOY_USER      usuario SSH (ej. deploy)
+#   DEPLOY_SSH_KEY   clave privada SSH (ed25519) del usuario de deploy
+#   DEPLOY_PORT      (opcional) puerto SSH, por defecto 22
+# Variables requeridas (Settings → Secrets and variables → Actions → Variables):
+#   NEXT_PUBLIC_API_URL   ej. https://tudominio.com/api/v1
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+# Nunca dos deploys a la vez; el segundo espera al primero.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  # Compuerta de calidad: si esto falla, no se construye ni despliega nada.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test
+
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      web: ${{ steps.filter.outputs.web }}
+      infra: ${{ steps.filter.outputs.infra }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            api:
+              - 'apps/api/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.dockerignore'
+            web:
+              - 'apps/web/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.dockerignore'
+            infra:
+              - 'docker-compose.prod.yml'
+              - 'deploy/**'
+              - '.github/workflows/deploy.yml'
+
+  build-api:
+    needs: [changes, test]
+    if: needs.changes.outputs.api == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/mschuf/comercia-api:latest
+            ghcr.io/mschuf/comercia-api:${{ github.sha }}
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+
+  build-web:
+    needs: [changes, test]
+    if: needs.changes.outputs.web == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          push: true
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
+          tags: |
+            ghcr.io/mschuf/comercia-web:latest
+            ghcr.io/mschuf/comercia-web:${{ github.sha }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
+
+  deploy:
+    needs: [changes, test, build-api, build-web]
+    # Corre solo si los tests pasaron, hubo algún cambio relevante y ningún
+    # build falló (pueden estar "skipped" si esa app no cambió).
+    if: |
+      always() &&
+      needs.test.result == 'success' &&
+      needs.build-api.result != 'failure' && needs.build-api.result != 'cancelled' &&
+      needs.build-web.result != 'failure' && needs.build-web.result != 'cancelled' &&
+      (needs.changes.outputs.api == 'true' || needs.changes.outputs.web == 'true' ||
+       needs.changes.outputs.infra == 'true' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copiar archivos de despliegue al servidor
+        # appleboy/scp-action@v0.1.7 fijada por SHA (recibe la clave SSH)
+        uses: appleboy/scp-action@917f8b81dfc1ccd331fef9e2d61bdc6c8be94634
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          source: "docker-compose.prod.yml,deploy/"
+          target: /opt/comercia
+
+      - name: Actualizar stack con Docker Compose
+        # appleboy/ssh-action@v1.0.3 fijada por SHA (recibe la clave SSH)
+        uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script: |
+            set -e
+            cd /opt/comercia
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            docker compose -f docker-compose.prod.yml exec -T caddy caddy reload --config /etc/caddy/Caddyfile
+            docker compose -f docker-compose.prod.yml ps
+            docker image prune -f

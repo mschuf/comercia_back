@@ -1,0 +1,17 @@
+# Reverse proxy de Comercia.
+# DOMAIN viene del .env del servidor:
+#   - "tudominio.com"  -> HTTPS automático con Let's Encrypt
+#   - ":80"            -> HTTP plano (para probar solo con IP, sin dominio)
+{$DOMAIN} {
+	encode zstd gzip
+
+	# La API NestJS ya sirve todo bajo /api (prefijo global + versionado /api/v1)
+	handle /api/* {
+		reverse_proxy api:3001
+	}
+
+	# Todo lo demás va al frontend Next.js
+	handle {
+		reverse_proxy web:3000
+	}
+}
