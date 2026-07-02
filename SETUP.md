@@ -109,9 +109,9 @@ Get-Service | Where-Object { $_.Name -like "*postgres*" }
 ```
 
 Solución sin tocar el Postgres nativo: mover el contenedor a otro puerto.
-En el `.env` de la raíz poner `POSTGRES_PORT=5433`, cambiar el puerto y las
-credenciales en `DATABASE_URL` (en el `.env` de la raíz **y** en `apps/api/.env`,
-que tiene prioridad — ver [ENV.md](ENV.md)), y recrear el contenedor:
+En el `.env` de la raíz poner `POSTGRES_PORT=5433` y cambiar el puerto en
+`DATABASE_URL`, y recrear el contenedor (si creaste un `apps/api/.env`, acordate
+de que pisa al de la raíz — ver [ENV.md](ENV.md)):
 
 ```bash
 npm run db:up

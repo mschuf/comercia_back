@@ -14,10 +14,9 @@ su configuración desde un lugar distinto. Esta es la regla general:
 
 | Archivo | ¿Existe en git? | Quién lo lee | Para qué |
 |---|---|---|---|
-| `.env` (raíz) | No (ignorado) | Docker Compose de desarrollo y la API (como respaldo) | Config "todo en uno" de desarrollo |
+| `.env` (raíz) | No (ignorado) | Docker Compose de desarrollo, la API NestJS y el CLI de Prisma | **El único `.env` local**: backend + base de datos |
 | `.env.example` (raíz) | Sí | Nadie (es plantilla) | Base para crear tu `.env` de la raíz |
-| `apps/api/.env` | No (ignorado) | La API NestJS y el CLI de Prisma | Config específica de la API; **gana** sobre el de la raíz |
-| `apps/api/.env.example` | Sí | Nadie (es plantilla) | Referencia de todas las variables que entiende la API |
+| `apps/api/.env` | No (ignorado) | La API y Prisma, **solo si lo creás** | Override opcional; pisa al de la raíz |
 | `apps/web/.env.development` | **Sí** | Next.js en `next dev` (automático) | Variables públicas del front en desarrollo |
 | `apps/web/.env.production` | **Sí** | Next.js en `next build` (automático) | Variables públicas del front en producción |
 | `deploy/.env.production.example` | Sí | Nadie (es plantilla) | Base para crear el `/opt/comercia/.env` **del servidor** |
@@ -25,36 +24,33 @@ su configuración desde un lugar distinto. Esta es la regla general:
 
 ## Cada archivo en detalle
 
-### 1. `.env` de la raíz — desarrollo, "todo en uno"
+### 1. `.env` de la raíz — EL archivo de desarrollo
 
-Se crea copiando la plantilla (`copy .env.example .env`). Lo leen **dos** cosas:
+Se crea copiando la plantilla (`copy .env.example .env`). Es el **único** `.env`
+local del proyecto y lo leen **tres** cosas:
 
 - **Docker Compose de desarrollo** (`npm run db:up`): interpola `POSTGRES_USER`,
   `POSTGRES_PASSWORD`, `POSTGRES_DB` y `POSTGRES_PORT` para el contenedor de
-  Postgres local. Si el archivo no existe, usa los defaults (`postgres`/`postgres`/`comercia`/`5432`),
-  por eso el proyecto funciona aunque no lo hayas creado.
-- **La API**, como *respaldo*: NestJS carga `['.env', '../../.env']`
-  ([app.module.ts:17](apps/api/src/app.module.ts#L17)) — primero el de `apps/api`,
-  y lo que no encuentre ahí lo busca en el de la raíz.
+  Postgres local. Si el archivo no existe, usa los defaults (`postgres`/`postgres`/`comercia`/`5432`).
+- **La API NestJS**: carga `['.env', '../../.env']`
+  ([app.module.ts:17](apps/api/src/app.module.ts#L17)); como `apps/api/.env` no
+  existe por defecto, este es el que manda.
+- **El CLI de Prisma** (migraciones, studio): [prisma.config.ts](apps/api/prisma.config.ts)
+  también lo carga.
+
+Las variables que falten toman los defaults seguros definidos en
+[env.schema.ts](apps/api/src/config/env.schema.ts) (validados con Zod al arrancar:
+si algo está mal formado, la API no arranca y te dice exactamente qué).
 
 Next.js **no** lee este archivo (solo mira dentro de `apps/web/`).
 
-### 2. `apps/api/.env` — la API y Prisma
+### 2. `apps/api/.env` — override opcional (por defecto no existe)
 
-Es el que manda para todo lo del backend. Lo leen:
-
-- **NestJS** (`ConfigModule`): primero en su lista, así que sus valores **ganan**
-  a los del `.env` de la raíz.
-- **El CLI de Prisma** (migraciones, studio): [prisma.config.ts](apps/api/prisma.config.ts)
-  carga la raíz primero y después este con `override: true` — misma conclusión:
-  **este archivo gana**.
-
-Hoy solo contiene `DATABASE_URL` (la conexión a tu Postgres local). Podés agregarle
-cualquiera de las variables de `apps/api/.env.example` para pisar el valor de la raíz.
-
-Las variables que faltan en ambos archivos toman los defaults seguros definidos en
-[env.schema.ts](apps/api/src/config/env.schema.ts) (validados con Zod al arrancar:
-si algo está mal formado, la API no arranca y te dice exactamente qué).
+Si algún día necesitás pisar una variable **solo para la API** sin tocar el `.env`
+de la raíz, podés crear este archivo: tanto NestJS como el CLI de Prisma lo cargan
+con prioridad sobre el de la raíz. Es un arma de doble filo: si te olvidás de que
+existe, vas a editar la raíz y preguntarte por qué no cambia nada — por eso el
+proyecto ya no lo trae por defecto.
 
 ### 3. `apps/web/.env.development` y `.env.production` — el frontend
 
@@ -118,7 +114,7 @@ imagen del front. Si cambiás el dominio: editás ese archivo, push, y listo.
 Para la API, de mayor a menor prioridad:
 
 1. Variable de entorno real del proceso (lo que inyecta Docker en producción)
-2. `apps/api/.env`
+2. `apps/api/.env` (solo si lo creaste — por defecto no existe)
 3. `.env` de la raíz
 4. Defaults del esquema Zod ([env.schema.ts](apps/api/src/config/env.schema.ts))
 
