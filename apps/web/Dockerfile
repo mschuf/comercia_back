@@ -13,10 +13,9 @@ RUN npm ci --workspace=web --ignore-scripts
 
 # ---------- Build ----------
 FROM base AS build
-# NEXT_PUBLIC_* se hornea en el bundle del cliente en tiempo de build
-ARG NEXT_PUBLIC_API_URL
-ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL \
-    NEXT_TELEMETRY_DISABLED=1
+# Las NEXT_PUBLIC_* salen de apps/web/.env.production (Next lo carga solo
+# porque `next build` corre con NODE_ENV=production) y se hornean en el bundle.
+ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json package-lock.json ./
 COPY apps/web/ apps/web/

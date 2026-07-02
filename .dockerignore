@@ -10,6 +10,9 @@ apps/api/generated
 **/.env
 **/.env.*
 !**/.env.example
+# El build del front necesita estos dos (solo contienen NEXT_PUBLIC_*, públicas)
+!apps/web/.env.development
+!apps/web/.env.production
 .github
 .vscode
 .claude

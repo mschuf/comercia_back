@@ -32,6 +32,9 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# Estos dos solo llevan NEXT_PUBLIC_* (públicas) y se commitean a propósito:
+!.env.development
+!.env.production
 
 # vercel
 .vercel

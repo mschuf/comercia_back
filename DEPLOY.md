@@ -119,14 +119,13 @@ y así podés agregarle protection rules (aprobación manual, solo rama `main`) 
 | `DEPLOY_SSH_KEY` | contenido completo de la clave privada `deploy_key` |
 | `DEPLOY_PORT` | (opcional) puerto SSH si no es 22 |
 
-**Variables**
-
-| Nombre | Valor |
-|--------|-------|
-| `NEXT_PUBLIC_API_URL` | `https://tudominio.com/api/v1` |
+No hace falta configurar variables de Actions: la URL pública de la API que usa el
+front vive commiteada en `apps/web/.env.production` y Next.js la carga sola durante
+el build de la imagen.
 
 > `NEXT_PUBLIC_API_URL` se hornea en el bundle del navegador durante el build del
-> front; si cambia el dominio hay que relanzar el workflow (Actions → Deploy → Run workflow).
+> front; si cambia el dominio, editá `apps/web/.env.production` y hacé push (el
+> pipeline reconstruye la imagen con la URL nueva).
 
 ## 4. Primer despliegue
 

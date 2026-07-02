@@ -4,9 +4,11 @@ Hay varios `.env` porque cada pieza del stack (Docker, NestJS, Next.js, Prisma) 
 su configuración desde un lugar distinto. Esta es la regla general:
 
 > **En desarrollo** la configuración vive en archivos `.env` de tu máquina.
-> **En producción** no viaja ningún archivo `.env` dentro de las imágenes Docker:
-> los contenedores reciben las variables desde `docker-compose.prod.yml`, que a su
-> vez las lee del único `.env` del servidor (`/opt/comercia/.env`).
+> **En producción** ningún archivo `.env` con secretos viaja dentro de las imágenes
+> Docker: los contenedores reciben las variables desde `docker-compose.prod.yml`,
+> que a su vez las lee del único `.env` del servidor (`/opt/comercia/.env`).
+> La única excepción son los `.env` del front (`apps/web/.env.development` y
+> `.env.production`), que solo llevan variables públicas y se commitean a propósito.
 
 ## Mapa rápido
 
@@ -16,8 +18,8 @@ su configuración desde un lugar distinto. Esta es la regla general:
 | `.env.example` (raíz) | Sí | Nadie (es plantilla) | Base para crear tu `.env` de la raíz |
 | `apps/api/.env` | No (ignorado) | La API NestJS y el CLI de Prisma | Config específica de la API; **gana** sobre el de la raíz |
 | `apps/api/.env.example` | Sí | Nadie (es plantilla) | Referencia de todas las variables que entiende la API |
-| `apps/web/.env.local` | No (ignorado) | Next.js (automático) | Variables del frontend en desarrollo |
-| `apps/web/.env.example` | Sí | Nadie (es plantilla) | Referencia de las variables del front |
+| `apps/web/.env.development` | **Sí** | Next.js en `next dev` (automático) | Variables públicas del front en desarrollo |
+| `apps/web/.env.production` | **Sí** | Next.js en `next build` (automático) | Variables públicas del front en producción |
 | `deploy/.env.production.example` | Sí | Nadie (es plantilla) | Base para crear el `/opt/comercia/.env` **del servidor** |
 | `/opt/comercia/.env` (servidor) | No (solo en el VPS) | `docker compose -f docker-compose.prod.yml` | Toda la config de producción |
 
@@ -54,16 +56,23 @@ Las variables que faltan en ambos archivos toman los defaults seguros definidos 
 [env.schema.ts](apps/api/src/config/env.schema.ts) (validados con Zod al arrancar:
 si algo está mal formado, la API no arranca y te dice exactamente qué).
 
-### 3. `apps/web/.env.local` — el frontend
+### 3. `apps/web/.env.development` y `.env.production` — el frontend
 
-Next.js carga automáticamente los `.env*` que están **dentro de `apps/web/`**
-(`.env.local` es la variante "local, no commitear"). Contiene una sola variable:
+Next.js **elige el archivo solo**, según el comando:
 
-- `NEXT_PUBLIC_API_URL`: la URL base de la API que usa el navegador.
+- `next dev` (desarrollo local) → carga `.env.development` (`http://localhost:3001/api/v1`)
+- `next build` (el build de la imagen Docker) → carga `.env.production` (tu dominio real)
+
+Por eso estos dos **sí se commitean**: solo contienen variables `NEXT_PUBLIC_*`,
+que son públicas por definición. Cuando tengas el dominio real, editás
+`.env.production` una vez, hacés push, y el pipeline reconstruye el front con esa URL.
+
+Si algún día necesitás un override personal en tu máquina, podés crear
+`apps/web/.env.local` (ignorado por git): pisa a los otros dos en desarrollo.
 
 ⚠️ Regla de oro: todo lo que empiece con `NEXT_PUBLIC_` **se incrusta en el bundle
-de JavaScript que se envía al navegador**. Cualquiera puede verlo. Acá jamás va un
-secreto, una contraseña ni una URL interna.
+de JavaScript que se envía al navegador**. Cualquiera puede verlo. En estos archivos
+jamás va un secreto, una contraseña ni una URL interna.
 
 ### 4. `/opt/comercia/.env` — el único `.env` de producción (en el servidor)
 
@@ -77,14 +86,15 @@ interpolar `docker-compose.prod.yml`, y de ahí cada contenedor recibe sus varia
 - `caddy` recibe `DOMAIN` (con dominio real emite HTTPS solo)
 - `API_TAG` / `WEB_TAG` eligen qué versión de las imágenes correr (rollback)
 
-Los `.env` del repo **nunca** llegan a producción: el [.dockerignore](.dockerignore)
-los excluye del build de las imágenes y el `.gitignore` los excluye de git.
+Los `.env` con secretos **nunca** llegan a producción: el [.dockerignore](.dockerignore)
+los excluye del build de las imágenes y el `.gitignore` los excluye de git. (Los dos
+`.env` públicos del front son la excepción deliberada: entran al build justamente
+para que Next hornee sus `NEXT_PUBLIC_*` en el bundle.)
 
 **Caso especial**: `NEXT_PUBLIC_API_URL` en producción NO está en el `.env` del
-servidor. Como se incrusta en el bundle durante el *build*, se define como
-**variable de GitHub Actions** y se hornea en la imagen del front cuando se construye
-([deploy.yml](.github/workflows/deploy.yml)). Si cambiás el dominio, hay que
-relanzar el workflow para reconstruir la imagen.
+servidor. Como se incrusta en el bundle durante el *build*, vive commiteada en
+`apps/web/.env.production` y Next la carga sola cuando el pipeline construye la
+imagen del front. Si cambiás el dominio: editás ese archivo, push, y listo.
 
 ## Qué variable hace qué
 
@@ -98,7 +108,7 @@ relanzar el workflow para reconstruir la imagen.
 | `COOKIE_SECRET` | API | Firma de cookies (mín. 32 chars) | valor de ejemplo | **obligatorio**, aleatorio (`openssl rand -hex 32`) |
 | `THROTTLE_TTL` / `THROTTLE_LIMIT` | API | Rate limiting | 100 req/min | igual (ajustable) |
 | `SWAGGER_ENABLED` | API | Docs en `/api/docs` | `true` | `false` |
-| `NEXT_PUBLIC_API_URL` | Front (navegador) | Adónde llama el browser | `http://localhost:3001/api/v1` | `https://tudominio.com/api/v1` (horneada en el build) |
+| `NEXT_PUBLIC_API_URL` | Front (navegador) | Adónde llama el browser | `apps/web/.env.development` | `apps/web/.env.production` (horneada en el build) |
 | `POSTGRES_USER/PASSWORD/DB/PORT` | Contenedor Postgres | Credenciales de la base | `postgres`/`postgres` | **obligatorias**, aleatorias |
 | `DOMAIN` | Caddy | Dominio público + HTTPS | — | `tudominio.com` (o `:80` sin dominio) |
 | `API_TAG` / `WEB_TAG` | Compose prod | Versión de imagen a correr | — | `latest`, o un SHA para rollback |

@@ -7,6 +7,9 @@ coverage/
 .env
 .env.*
 !.env.example
+# Los .env del front solo llevan variables NEXT_PUBLIC_* (públicas) y se commitean
+!apps/web/.env.development
+!apps/web/.env.production
 
 apps/api/generated/prisma/
 apps/api/.env

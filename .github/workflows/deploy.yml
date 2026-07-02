@@ -7,8 +7,8 @@
 #   DEPLOY_USER      usuario SSH (ej. deploy)
 #   DEPLOY_SSH_KEY   clave privada SSH (ed25519) del usuario de deploy
 #   DEPLOY_PORT      (opcional) puerto SSH, por defecto 22
-# Variables requeridas (Settings → Secrets and variables → Actions → Variables):
-#   NEXT_PUBLIC_API_URL   ej. https://tudominio.com/api/v1
+# La URL pública de la API que usa el front sale de apps/web/.env.production
+# (Next la carga sola durante el build de la imagen).
 name: Deploy
 
 on:
@@ -106,8 +106,6 @@ jobs:
           context: .
           file: apps/web/Dockerfile
           push: true
-          build-args: |
-            NEXT_PUBLIC_API_URL=${{ vars.NEXT_PUBLIC_API_URL }}
           tags: |
             ghcr.io/mschuf/comercia-web:latest
             ghcr.io/mschuf/comercia-web:${{ github.sha }}

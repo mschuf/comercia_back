@@ -49,12 +49,16 @@ Recomendado: crearlos dentro del **environment `production`** (el workflow ya ap
 | Secret | `DEPLOY_USER` | `deploy` |
 | Secret | `DEPLOY_SSH_KEY` | contenido completo de la clave privada |
 | Secret | `DEPLOY_PORT` | (opcional) solo si SSH no usa el puerto 22 |
-| Variable | `NEXT_PUBLIC_API_URL` | `https://tudominio.com/api/v1` |
+
+(No hace falta configurar variables: la URL pública de la API que usa el front
+vive commiteada en `apps/web/.env.production` — ver paso 3.)
 
 ### 3. DNS
 
 - [ ] Registro `A` del dominio apuntando a la IP del servidor. Con eso Caddy emite
   y renueva el certificado HTTPS solo.
+- [ ] Poner el dominio real en [apps/web/.env.production](apps/web/.env.production)
+  (`NEXT_PUBLIC_API_URL=https://tudominio.com/api/v1`) y hacer push.
 - [ ] ¿Todavía sin dominio? Usar `DOMAIN=:80` en el `.env` del servidor y entrar
   por `http://IP-del-servidor` (sin HTTPS, solo para probar).
 
@@ -118,8 +122,8 @@ npm run prisma:migrate
 
 - Todo el pipeline usa la cuenta **`mschuf`** (repo e imágenes `ghcr.io/mschuf/...`):
   el PAT del paso 1 debe ser de esa cuenta.
-- Si cambiás el dominio: además de tocar el `.env` del servidor, hay que **relanzar
-  el workflow Deploy** para rehornear `NEXT_PUBLIC_API_URL` en la imagen del front
-  (se incrusta en el build, no se lee en runtime).
+- Si cambiás el dominio: tocar el `.env` del servidor (`DOMAIN`, `FRONTEND_URL`,
+  `CORS_ORIGINS`) **y** `apps/web/.env.production` (+ push, para que el pipeline
+  rehornee la URL en el bundle del front — se incrusta en el build, no se lee en runtime).
 - Rollback a una versión anterior: cambiar `API_TAG`/`WEB_TAG` en el `.env` del
   servidor por el SHA del commit bueno y `docker compose up -d` (DEPLOY.md §6).

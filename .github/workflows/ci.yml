@@ -27,7 +27,6 @@ jobs:
       - name: Tests (API)
         run: npm run test
 
+      # El build del front toma NEXT_PUBLIC_* de apps/web/.env.production
       - name: Build (API + Web)
         run: npm run build
-        env:
-          NEXT_PUBLIC_API_URL: http://localhost:3001/api/v1
