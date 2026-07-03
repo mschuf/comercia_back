@@ -23,6 +23,7 @@ npm run dev
 Qué hace cada archivo `.env` (raíz, `apps/api`, `apps/web`, servidor): ver [ENV.md](ENV.md).
 Checklist de todo lo que hay que configurar en local y producción: ver [SETUP.md](SETUP.md).
 Cómo subir cambios y operar producción en el día a día: ver [FLUJO-DIARIO.md](FLUJO-DIARIO.md).
+Dónde viven los servicios en el servidor y cómo inspeccionarlos: ver [SERVICIOS-SERVIDOR.md](SERVICIOS-SERVIDOR.md).
 
 Servicios por defecto:
 

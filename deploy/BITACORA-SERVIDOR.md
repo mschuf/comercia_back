@@ -94,6 +94,11 @@ desde la máquina de Carlos → TCP OK (ping bloqueado por firewall, esperable).
   Se instaló `xfce4` + `xfce4-terminal` SOLO para el VNC (`~/.vnc/xstartup` →
   `startxfce4`); GNOME sigue siendo el escritorio del monitor físico. El servicio
   quedó con `Restart=always` (un logout dentro del escritorio regenera la sesión).
+- Firefox: el snap no podía abrir el display del VNC ("Authorization required...
+  cannot open display :1" — problema de Xauthority típico de snap+VNC). Se
+  reemplazó por el **Firefox .deb del PPA oficial de Mozilla** (`ppa:mozillateam/ppa`
+  + pin en `/etc/apt/preferences.d/mozilla-firefox` para que apt no reinstale el
+  snap). Verificado corriendo en la sesión VNC.
 - Herramientas agregadas al servidor: **lazydocker** (TUI de Docker en /usr/local/bin),
   **DBeaver CE** (deb oficial, para inspeccionar la base desde el escritorio VNC),
   **Portainer CE** (contenedor `portainer`, solo loopback `127.0.0.1:9443`,
