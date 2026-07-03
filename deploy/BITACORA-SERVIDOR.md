@@ -38,6 +38,29 @@ git push a main
 **09:40 — Verificación de conectividad.** `Test-NetConnection 172.19.0.140 -Port 22`
 desde la máquina de Carlos → TCP OK (ping bloqueado por firewall, esperable).
 
+**~10:00 — Aprovisionamiento del servidor** (como root, vía ssh2 con contraseña):
+- Reconocimiento: Ubuntu 22.04.5, 7 GB RAM, 184 GB libres, puertos 1001/1002 libres,
+  salida a internet OK. Se detectó una instalación de `ubuntu-desktop-minimal` en
+  curso desde otra sesión: se esperó a que liberara el lock de apt (~17 min) y el
+  servidor se reinició al terminar.
+- Instalado: Docker 29.6.1 + Compose v5.3 (get.docker.com), usuario `deploy`
+  (grupo docker), clave pública `comercia_admin` en `deploy` y `root`, UFW activo
+  con 22/1001/1002 (allow ANTES de enable).
+
+**~10:25 — Stack configurado y arrancado**:
+- `/opt/comercia/.env` creado (600, deploy) con `POSTGRES_PASSWORD` y `COOKIE_SECRET`
+  aleatorios de 64 chars generados localmente. No se sobreescribe si ya existe.
+- `docker login ghcr.io` como deploy con PAT `read:packages` de MorteiraGuarani
+  (queda en `/home/deploy/.docker/config.json`; verificado contra la API de GHCR antes).
+- Copiados `docker-compose.prod.yml` y `deploy/` a `/opt/comercia` (con fix de CRLF).
+- Primer `pull` falló con timeout TLS transitorio hacia ghcr.io; el reintento funcionó.
+- `up -d`: migraciones aplicadas (`migrate` → `Exited (0)`), API healthy en
+  `http://172.19.0.140:1001/api/v1/health` (database up), front HTTP 200 en `:1002`.
+
+**~10:35 — Deploy automático activado**:
+- Crontab de `deploy`: auto-deploy cada 3 min + backup diario 03:00.
+- Prueba manual de `auto-deploy.sh`: pull sin cambios → no reinicia nada (correcto).
+
 **09:42 — Cambios en el repo para modo LAN** (este commit):
 - `docker-compose.prod.yml`: API publicada en `${API_PORT:-1001}`, front en
   `${WEB_PORT:-1002}`; Caddy movido al perfil `domain` (no corre sin dominio).
