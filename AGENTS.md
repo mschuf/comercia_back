@@ -1,5 +1,15 @@
 # Comercia Agent Guide
 
+## ⚠️ Git: regla CRÍTICA para agentes IA (Claude, Codex, y cualquier otro)
+
+- **NUNCA hacer `git commit` ni `git push` sin que el usuario lo pida explícitamente
+  en ese momento.** Dejar los cambios en el working tree y avisar que están listos.
+- **Un push a `main` DESPLIEGA AUTOMÁTICAMENTE A PRODUCCIÓN**: el pipeline construye
+  las imágenes y el servidor las instala solo en ~3 minutos. Un push con errores
+  puede tumbar la aplicación en producción.
+- Si el usuario pide "commit", eso NO incluye push (pedirlo aparte).
+- Nunca usar `--force`, ni tocar el historial de `main`.
+
 ## Stack
 
 - Frontend: Next.js App Router in `apps/web`, TypeScript, Tailwind CSS.
