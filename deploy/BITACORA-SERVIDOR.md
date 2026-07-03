@@ -61,6 +61,20 @@ desde la máquina de Carlos → TCP OK (ping bloqueado por firewall, esperable).
 - Crontab de `deploy`: auto-deploy cada 3 min + backup diario 03:00.
 - Prueba manual de `auto-deploy.sh`: pull sin cambios → no reinicia nada (correcto).
 
+**~10:45 — Prueba end-to-end del pipeline completo (v0.1.1)** ✅:
+- `git push` → Actions verde en 8:20 (tests + build de ambas imágenes).
+- 15 segundos después del build, el cron del servidor detectó el digest nuevo y
+  recreó api y web (postgres siguió corriendo sin interrupciones). Log:
+  `[2026-07-03 21:40:50] Deploy OK`. Health y front verificados tras la actualización.
+
+**~10:50 — Seguridad y decisiones finales**:
+- Instalados `fail2ban` (activo, jail sshd) y `unattended-upgrades` (habilitado).
+  Explicación de las tres automatizaciones en [AUTOMATIZACION-SERVIDOR.md](AUTOMATIZACION-SERVIDOR.md).
+- Decisión del usuario: NO rotar la contraseña de root y NO deshabilitar el login
+  por contraseña en SSH (queda clave + contraseña; fail2ban como mitigación).
+- Credenciales eliminadas del workspace local; queda solo la clave
+  `~/.ssh/comercia_admin` (alias `ssh comercia` / `ssh comercia-root`).
+
 **09:42 — Cambios en el repo para modo LAN** (este commit):
 - `docker-compose.prod.yml`: API publicada en `${API_PORT:-1001}`, front en
   `${WEB_PORT:-1002}`; Caddy movido al perfil `domain` (no corre sin dominio).

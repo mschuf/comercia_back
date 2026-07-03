@@ -6,7 +6,9 @@
 > en no-op y el servidor se actualiza solo con [deploy/auto-deploy.sh](deploy/auto-deploy.sh)
 > (cron cada 3 min que hace pull de GHCR). Caddy/HTTPS quedan bajo el perfil
 > `domain` de compose para cuando haya dominio público. La instalación del
-> servidor está documentada paso a paso en [deploy/BITACORA-SERVIDOR.md](deploy/BITACORA-SERVIDOR.md).
+> servidor está documentada paso a paso en [deploy/BITACORA-SERVIDOR.md](deploy/BITACORA-SERVIDOR.md),
+> y las automatizaciones del servidor (cron de deploy, fail2ban, unattended-upgrades)
+> están explicadas en [deploy/AUTOMATIZACION-SERVIDOR.md](deploy/AUTOMATIZACION-SERVIDOR.md).
 > Lo que sigue describe el diseño general (y el flujo por SSH para un VPS público).
 
 Cómo funciona el pipeline completo: cada `git push` a `main` construye lo que cambió,
