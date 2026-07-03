@@ -1,26 +1,85 @@
 @import "tailwindcss";
 
+/* Modo oscuro por CLASE (.dark en <html>): automático según el dispositivo por
+   defecto, con botón manual en el navbar que persiste en localStorage("tema").
+   El script inline de layout.tsx aplica la clase antes del primer pintado. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  --background: #fafafa;
-  --foreground: #18181b;
+  --background: #f6f7f6;
+  --foreground: #16181d;
+}
+
+.dark {
+  --background: #0c0e12;
+  --foreground: #f4f4f5;
+}
+
+/* Tokens de visualización de datos — paleta categórica de 5 tonos validada
+   con el método dataviz (banda de luminosidad, contraste, separación CVD) en
+   claro y oscuro por separado. Los WARN de contraste (aqua/amarillo en claro)
+   tienen su relief: etiquetas de valor directas en cada barra. */
+:root {
+  --viz-serie: #047857; /* serie principal (verde marca) */
+  --viz-c1: #2a78d6; /* azul */
+  --viz-c2: #1baf7a; /* aqua */
+  --viz-c3: #eda100; /* amarillo */
+  --viz-c4: #008300; /* verde */
+  --viz-c5: #4a3aa7; /* violeta */
+  --viz-grid: #e4e4e7;
+  --viz-ink: #71717a; /* ejes y ticks */
+  --viz-etiqueta: #52525b; /* valores sobre las barras */
+}
+
+.dark {
+  --viz-serie: #10b981; /* más brillante para que no se pierda en el fondo */
+  --viz-c1: #3987e5;
+  --viz-c2: #199e70;
+  --viz-c3: #c98500;
+  --viz-c4: #008300;
+  --viz-c5: #9085e9;
+  --viz-grid: #2c2c31;
+  --viz-ink: #a1a1aa; /* tinta clara: legible sobre oscuro */
+  --viz-etiqueta: #d4d4d8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: Arial, Helvetica, sans-serif;
-  --font-mono: "Courier New", Courier, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #09090b;
-    --foreground: #fafafa;
+/* Marca Comercia: verde comercial confiable + neutros fríos */
+@theme {
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
+  --color-brand-950: #022c22;
+}
+
+/* Regla de UX de Comercia: todo lo clickeable muestra la manito
+   (Tailwind v4 dejó los botones con cursor default) */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
 }

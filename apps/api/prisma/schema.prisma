@@ -1,7 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
+// Esquema de datos de Comercia.
+// Cambios de estructura: editar acá y correr `npm run prisma:migrate` (con la
+// DATABASE_URL LOCAL activa); la migración llega a producción sola con el push.
 
 generator client {
   provider     = "prisma-client"
@@ -15,20 +14,69 @@ datasource db {
   provider = "postgresql"
 }
 
-enum UserRole {
-  USER
-  ADMIN
+model Empresa {
+  id        Int       @id @default(autoincrement())
+  nombre    String    @unique
+  dbName    String?   @map("db_name")
+  // Una empresa puede pertenecer a otra (casa matriz → sucursales)
+  empresaId Int?      @map("empresas_id")
+  padre     Empresa?  @relation("EmpresaJerarquia", fields: [empresaId], references: [id])
+  hijas     Empresa[] @relation("EmpresaJerarquia")
+  usuarios  Usuario[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@map("empresas")
 }
 
-model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String?
-  passwordHash String?  @map("password_hash")
-  role         UserRole @default(USER)
-  isActive     Boolean  @default(true) @map("is_active")
+model Conexion {
+  id           Int      @id @default(autoincrement())
+  nombre       String   @unique
+  servernode   String?
+  userDb       String?  @map("user_db")
+  passwordDb   String?  @map("password_db")
+  serviceLayer String?  @map("service_layer")
+  versionTls   String?  @map("version_tls")
   createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
 
-  @@map("users")
+  @@map("conexiones")
+}
+
+model Rol {
+  id          Int       @id @default(autoincrement())
+  descripcion String    @unique
+  // Jerarquía de roles: un rol puede depender de otro (se auto-apunta)
+  rolId       Int?      @map("roles_id")
+  padre       Rol?      @relation("RolJerarquia", fields: [rolId], references: [id])
+  hijos       Rol[]     @relation("RolJerarquia")
+  usuarios    Usuario[]
+
+  @@map("roles")
+}
+
+model Usuario {
+  id           Int       @id @default(autoincrement())
+  empresaId    Int       @map("empresa_id")
+  empresa      Empresa   @relation(fields: [empresaId], references: [id])
+  nombre       String
+  apellido     String
+  // Identificadores de login: cualquiera de los dos + contraseña
+  correo       String    @unique
+  nombreLogin  String    @unique @map("nombre_login")
+  passwordHash String    @map("password_hash")
+  ruc          String    @unique
+  celular      String
+  // Sin rol al registrarse: un superior se lo asigna después
+  rolId        Int?      @map("rol_id")
+  rol          Rol?      @relation(fields: [rolId], references: [id])
+  // Jerarquía: el superior es otro usuario (ej. el jefe)
+  superiorId   Int?      @map("superior_id")
+  superior     Usuario?  @relation("UsuarioJerarquia", fields: [superiorId], references: [id])
+  subordinados Usuario[] @relation("UsuarioJerarquia")
+  isActive     Boolean   @default(true) @map("is_active")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@map("usuarios")
 }
