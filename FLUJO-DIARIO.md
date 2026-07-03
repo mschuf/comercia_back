@@ -55,7 +55,25 @@ docker stats --no-stream                                # CPU/RAM de cada conten
 bash deploy/backup.sh                                   # backup manual de la base
 ```
 
-## Desarrollar en local usando la base de PRODUCCIÓN
+## Trabajar en local con una COPIA de producción (recomendado)
+
+La forma más segura de "ver lo mismo que prod" sin ningún riesgo: doble clic en
+**`Traer-BD-Prod-a-Local.bat`** (Escritorio; el script real vive en
+[scripts/traer-bd-prod-a-local.bat](scripts/traer-bd-prod-a-local.bat)). Trae la
+estructura y los datos actuales de producción a tu base local (solo LEE producción;
+reemplaza la local, pide confirmación). Requiere Docker Desktop corriendo.
+
+Con el `.env` apuntando a la URL LOCAL (`:5433`), todo lo que hagas —código, pruebas,
+`npm run prisma:migrate`, romper datos— ocurre en tu copia. Cuando quieras datos
+frescos, volvés a ejecutar el `.bat`.
+
+**¿El push toca la base de producción?** No: el deploy solo ejecuta
+`prisma migrate deploy`, que aplica únicamente los archivos de migración commiteados
+en `apps/api/prisma/migrations/` que falten — nunca genera SQL nuevo, nunca borra
+datos, nunca resetea. Si tu commit no trae migraciones nuevas, la base ni se entera
+del deploy. Y si las trae, antes de aplicarlas se hace backup automático.
+
+## Desarrollar en local usando la base de PRODUCCIÓN (avanzado)
 
 Para probar cambios locales contra los datos reales: en el `.env` de la raíz hay
 dos `DATABASE_URL` (una LOCAL y una PRODUCCIÓN vía túnel `:15432`) — se activa una
