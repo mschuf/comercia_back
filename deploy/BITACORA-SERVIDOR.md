@@ -88,6 +88,12 @@ desde la máquina de Carlos → TCP OK (ping bloqueado por firewall, esperable).
   el acceso es por **túnel SSH**: `ssh -N -L 5901:localhost:5901 comercia` y
   TightVNC Viewer a `localhost::5901`. Acceso directo `.bat` en el Escritorio.
 - La contraseña VNC (8 chars) la tiene Carlos; se rota con `vncpasswd` como deploy.
+- Post-mortem GNOME→XFCE: GNOME bajo Xvnc falló 3 veces por causas distintas
+  (falta de `dbus-x11`; conflicto de instancia única cuando alguien usa el monitor
+  físico como `deploy`; bug `_userProxy.Display is null` por no ser sesión logind).
+  Se instaló `xfce4` + `xfce4-terminal` SOLO para el VNC (`~/.vnc/xstartup` →
+  `startxfce4`); GNOME sigue siendo el escritorio del monitor físico. El servicio
+  quedó con `Restart=always` (un logout dentro del escritorio regenera la sesión).
 
 **09:42 — Cambios en el repo para modo LAN** (este commit):
 - `docker-compose.prod.yml`: API publicada en `${API_PORT:-1001}`, front en
