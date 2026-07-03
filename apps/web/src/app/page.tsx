@@ -7,7 +7,7 @@ export default function Home() {
             Comercia workspace
           </p>
           <h1 className="max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl">
-            Next.js, NestJS y PostgreSQL listos para desarrollar.
+            Prueba de cambios automaticos
           </h1>
           <p className="max-w-2xl text-base leading-7 text-zinc-600 dark:text-zinc-300">
             El frontend vive en `apps/web`, la API en `apps/api` y la base local
