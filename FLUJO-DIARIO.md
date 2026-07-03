@@ -52,8 +52,9 @@ destructiva, el rollback de código no la revierte — restaurar backup si hace 
 
 ## Escritorio remoto del servidor (VNC)
 
-El servidor corre TigerVNC (sesión **XFCE** del usuario `deploy`, display `:1` —
-GNOME crashea bajo VNC y choca con la sesión del monitor físico; XFCE no).
+El servidor corre TigerVNC (sesión **KDE Plasma** del usuario `deploy`, display `:1` —
+GNOME crashea bajo VNC y choca con la sesión del monitor físico; Plasma no.
+Terminal: Konsole · Archivos: Dolphin).
 El firewall de la red de la empresa bloquea el puerto 5901 entre VLANs, así que
 se entra **por túnel SSH** (que además viaja cifrado):
 

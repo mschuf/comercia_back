@@ -94,6 +94,10 @@ desde la máquina de Carlos → TCP OK (ping bloqueado por firewall, esperable).
   Se instaló `xfce4` + `xfce4-terminal` SOLO para el VNC (`~/.vnc/xstartup` →
   `startxfce4`); GNOME sigue siendo el escritorio del monitor físico. El servicio
   quedó con `Restart=always` (un logout dentro del escritorio regenera la sesión).
+- Actualización posterior: a pedido del usuario, XFCE se reemplazó por **KDE Plasma**
+  (`kde-plasma-desktop` + konsole + dolphin; xstartup → `startplasma-x11`; gdm3 se
+  mantuvo como display manager de la consola física). XFCE desinstalado. Docker y
+  PostgreSQL verificados intactos tras el cambio.
 
 **09:42 — Cambios en el repo para modo LAN** (este commit):
 - `docker-compose.prod.yml`: API publicada en `${API_PORT:-1001}`, front en
