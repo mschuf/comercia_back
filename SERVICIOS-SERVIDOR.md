@@ -25,6 +25,71 @@ Datos de PostgreSQL (FUERA de los contenedores, sobreviven a todo):
 Las imágenes vienen de `ghcr.io/mschuf/comercia-api` y `comercia-web` (las construye
 GitHub Actions en cada push; el servidor las baja solo cada 3 minutos).
 
+## De dónde salen los puertos 1001/1002 (y cómo cambiarlos)
+
+Cada servicio tiene DOS puertos: el **interno** del contenedor (fijo, no se toca)
+y el **externo** del servidor (configurable). El mapeo vive en
+[docker-compose.prod.yml](docker-compose.prod.yml):
+
+```yaml
+api:
+  ports:
+    - "${API_PORT:-1001}:3001"    # externo : interno
+web:
+  ports:
+    - "${WEB_PORT:-1002}:3000"
+```
+
+`${API_PORT:-1001}` significa: "usar la variable `API_PORT` del `.env` del servidor
+(`/opt/comercia/.env`), y si no está, usar 1001". Los internos (3001 API, 3000 web)
+los fijan los Dockerfiles y no hace falta cambiarlos nunca: para mover un servicio
+de puerto solo se cambia el lado externo.
+
+Además del compose, un puerto externo depende de DOS firewalls: el del servidor
+(UFW, lo controlamos nosotros) y el de la red de la empresa (lo controla IT — hoy
+deja pasar 22, 1001 y 1002; un puerto nuevo puede estar bloqueado, como nos pasó
+con el 5901 del VNC).
+
+### Cambiar el puerto del BACK (ej. 1001 → 2001)
+
+```bash
+# 1. En el servidor: editar /opt/comercia/.env y poner API_PORT=2001
+ssh comercia "sed -i 's/^API_PORT=.*/API_PORT=2001/' /opt/comercia/.env"
+
+# 2. Permitir el puerto nuevo en el firewall del servidor (como root)
+ssh comercia-root "ufw allow 2001/tcp && ufw delete allow 1001/tcp"
+
+# 3. Recrear el contenedor con el mapeo nuevo
+ssh comercia "cd /opt/comercia && docker compose -f docker-compose.prod.yml up -d"
+
+# 4. Probar desde tu PC (si esto falla, el firewall de IT bloquea el puerto nuevo)
+curl http://172.19.0.140:2001/api/v1/health
+```
+
+**Y además** (solo si cambia el puerto del back): el front tiene la URL de la API
+**horneada en el build** — editar `apps/web/.env.production` en el repo
+(`NEXT_PUBLIC_API_URL=http://172.19.0.140:2001/api/v1`) y hacer commit + push para
+que el pipeline reconstruya el front con la URL nueva.
+
+### Cambiar el puerto del FRONT (ej. 1002 → 2002)
+
+```bash
+# 1. En el servidor: WEB_PORT nuevo + actualizar las URLs que apuntan al front
+ssh comercia "sed -i -e 's/^WEB_PORT=.*/WEB_PORT=2002/' -e 's|:1002|:2002|g' /opt/comercia/.env"
+
+# 2. Firewall del servidor
+ssh comercia-root "ufw allow 2002/tcp && ufw delete allow 1002/tcp"
+
+# 3. Recrear (el cambio de FRONTEND_URL/CORS_ORIGINS lo toma la API al recrearse)
+ssh comercia "cd /opt/comercia && docker compose -f docker-compose.prod.yml up -d"
+
+# 4. Probar
+curl -I http://172.19.0.140:2002
+```
+
+(Para el front NO hay que reconstruir imágenes: `FRONTEND_URL` y `CORS_ORIGINS`
+son variables de runtime de la API, se leen al arrancar el contenedor.)
+
 ## Cómo entrar al servidor
 
 | Vía | Cómo |
