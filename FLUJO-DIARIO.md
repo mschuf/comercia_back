@@ -31,11 +31,16 @@ ssh comercia "tail -f ~/comercia-autodeploy.log"    # la llegada al servidor
 
 ## Comandos útiles en el servidor (`ssh comercia`)
 
+**Vista visual de Docker**: escribir `lazydocker` en cualquier terminal del servidor —
+paneles interactivos con contenedores, logs en vivo y consumo de CPU/RAM
+(flechas para navegar, `x` muestra el menú de acciones, `q` sale).
+
 ```bash
 cd /opt/comercia
 docker compose -f docker-compose.prod.yml ps            # estado de los servicios
 docker compose -f docker-compose.prod.yml logs -f api   # logs en vivo (api, web, postgres)
 docker compose -f docker-compose.prod.yml restart api   # reiniciar un servicio
+docker stats --no-stream                                # CPU/RAM de cada contenedor
 bash deploy/backup.sh                                   # backup manual de la base
 ```
 
