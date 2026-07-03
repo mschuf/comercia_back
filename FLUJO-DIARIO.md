@@ -45,6 +45,24 @@ bash deploy/backup.sh                                   # backup manual de la ba
 Para volver a lo último: tags en `latest` y repetir. Ojo: si hubo migración de base
 destructiva, el rollback de código no la revierte — restaurar backup si hace falta.
 
+## Escritorio remoto del servidor (VNC)
+
+El servidor corre TigerVNC (sesión GNOME del usuario `deploy`, display `:1`).
+El firewall de la red de la empresa bloquea el puerto 5901 entre VLANs, así que
+se entra **por túnel SSH** (que además viaja cifrado):
+
+1. Doble clic en `VNC-Servidor-Comercia.bat` (está en el Escritorio de la PC de
+   Carlos) — o en una terminal: `ssh -N -L 5901:localhost:5901 comercia`.
+   Dejar esa ventana abierta.
+2. Abrir TightVNC Viewer y conectarse a `localhost::5901`.
+3. La contraseña VNC la tiene Carlos (8 caracteres; se cambia con
+   `ssh comercia vncpasswd`).
+
+El servicio (`vncserver.service`) arranca solo con el servidor y se reinicia si
+se cae. Nota: es un escritorio *virtual* (no el monitor físico del servidor) —
+ideal para administrar. Para conectarse desde otra PC: esa máquina necesita la
+clave SSH o su propia entrada; pedírsela a Carlos.
+
 ## Pendientes (no bloquean nada)
 
 - **Admin del repo**: si el dueño de la cuenta `mschuf` te da rol Admin

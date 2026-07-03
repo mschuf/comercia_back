@@ -75,6 +75,20 @@ desde la máquina de Carlos → TCP OK (ping bloqueado por firewall, esperable).
 - Credenciales eliminadas del workspace local; queda solo la clave
   `~/.ssh/comercia_admin` (alias `ssh comercia` / `ssh comercia-root`).
 
+**~11:30 — Escritorio remoto (VNC)**:
+- Contexto: `ubuntu-desktop-minimal` + `tigervnc-standalone-server` ya estaban
+  instalados (otra sesión). El viewer de TightVNC fallaba porque (a) ningún
+  servidor VNC corría, (b) el firewall no permitía 5901.
+- Se configuró TigerVNC como servicio systemd (`vncserver.service`, Type=simple
+  con `-fg`): sesión GNOME del usuario `deploy` en `:1` (puerto 5901). Hubo que
+  instalar `dbus-x11` (el desktop minimal no trae `dbus-launch`) y usar un
+  `~/.vnc/xstartup` con `dbus-launch gnome-session --session=ubuntu`.
+- UFW permite 5901 solo desde la PC de Carlos (192.168.10.99), pero el firewall
+  de red de la empresa bloquea 5901 entre VLANs (solo pasan 22/1001/1002) →
+  el acceso es por **túnel SSH**: `ssh -N -L 5901:localhost:5901 comercia` y
+  TightVNC Viewer a `localhost::5901`. Acceso directo `.bat` en el Escritorio.
+- La contraseña VNC (8 chars) la tiene Carlos; se rota con `vncpasswd` como deploy.
+
 **09:42 — Cambios en el repo para modo LAN** (este commit):
 - `docker-compose.prod.yml`: API publicada en `${API_PORT:-1001}`, front en
   `${WEB_PORT:-1002}`; Caddy movido al perfil `domain` (no corre sin dominio).
