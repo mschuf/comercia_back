@@ -64,6 +64,48 @@ se cae. Nota: es un escritorio *virtual* (no el monitor físico del servidor) �
 ideal para administrar. Para conectarse desde otra PC: esa máquina necesita la
 clave SSH o su propia entrada; pedírsela a Carlos.
 
+## Ver / administrar la base de datos de producción
+
+PostgreSQL corre en Docker y escucha **solo en el loopback del servidor** (nunca
+expuesto a la red). Se accede por túnel SSH:
+
+**Con DBeaver (gráfico, desde Windows):**
+1. Doble clic en `BD-Servidor-Comercia.bat` (Escritorio) — abre el túnel; dejar abierto.
+2. DBeaver → Nueva conexión → PostgreSQL → host `localhost`, puerto `15432`,
+   base `comercia`. Usuario y contraseña: en `Conexion-BD-Comercia.txt` del
+   Escritorio (guardarla en un gestor y borrar el archivo).
+
+**Con psql (terminal, dentro del servidor — por VNC o `ssh comercia`):**
+
+```bash
+cd /opt/comercia
+docker compose -f docker-compose.prod.yml exec postgres psql -U comercia comercia
+#  \dt         → listar tablas          \d users → estructura de una tabla
+#  SELECT * FROM _prisma_migrations;    → migraciones aplicadas
+#  \q          → salir
+```
+
+## Cambios de estructura (migraciones): cómo funciona el control
+
+**La estructura la controlás vos siempre** — en producción no se inventa nada:
+
+1. Cambiás `apps/api/prisma/schema.prisma` en tu máquina.
+2. `npm run prisma:migrate` → Prisma te genera el SQL en
+   `apps/api/prisma/migrations/...` y lo aplica a tu base LOCAL. **Ahí lo revisás.**
+3. Recién cuando hacés `git push`, ese SQL viaja; el deploy lo aplica en producción
+   (servicio `migrate` = `prisma migrate deploy`, que solo ejecuta migraciones
+   pendientes ya commiteadas — nunca genera SQL nuevo).
+
+**Ejecución manual en producción** (si querés correr una migración vos mismo, por
+ejemplo tras restaurar un backup):
+
+```bash
+cd /opt/comercia
+docker compose -f docker-compose.prod.yml run --rm migrate
+```
+
+Es seguro repetirlo: si no hay migraciones pendientes, no hace nada.
+
 ## Pendientes (no bloquean nada)
 
 - **Admin del repo**: si el dueño de la cuenta `mschuf` te da rol Admin

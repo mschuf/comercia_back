@@ -14,6 +14,10 @@ services:
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
+    # Solo loopback del servidor: para inspeccionar la base vía túnel SSH
+    # (ssh -L 15432:localhost:5432). NO queda expuesto a la red.
+    ports:
+      - "127.0.0.1:5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:?Falta POSTGRES_USER en .env}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Falta POSTGRES_PASSWORD en .env}
