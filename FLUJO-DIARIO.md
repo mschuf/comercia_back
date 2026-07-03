@@ -55,6 +55,26 @@ docker stats --no-stream                                # CPU/RAM de cada conten
 bash deploy/backup.sh                                   # backup manual de la base
 ```
 
+## Persistencia y seguridad de la base de datos
+
+Los datos de PostgreSQL viven en un **volumen de Docker** (`comercia_postgres_data`),
+que es una carpeta en el disco del servidor, FUERA del contenedor: borrar, actualizar
+o recrear contenedores **no toca los datos**. Las capas de protección:
+
+1. **Backup diario** 03:00 en el servidor (`pg_dump` comprimido, 14 días de retención).
+2. **Backup automático antes de cada deploy** que traiga cambios (lo hace `auto-deploy.sh`).
+3. **Copia diaria a la PC de Carlos** (tarea programada de Windows 09:30 →
+   `C:\Users\carlos.morteira\ComerciaBackups`) — protege contra muerte del disco del servidor.
+4. Restauración **verificada** (se probó restaurar un dump real en una base de prueba).
+
+⚠️ **Los únicos comandos que SÍ borran datos** — no ejecutarlos nunca en `/opt/comercia`:
+`docker compose down -v` (la `-v` borra volúmenes) · `docker volume rm comercia_postgres_data`
+· `docker system prune --volumes` con el stack detenido. Un `down` sin `-v`, `restart`,
+`up -d` o actualizar imágenes es siempre seguro.
+
+**Restaurar un backup**: ver la tabla de comandos de la sección anterior (usa
+`--clean`, así que se puede restaurar sobre la base existente).
+
 **Rollback** (volver a una versión anterior): editar `/opt/comercia/.env` y poner
 `API_TAG=<sha-del-commit-bueno>` (y/o `WEB_TAG=`), después
 `docker compose -f docker-compose.prod.yml up -d`. Los SHA están en `git log --oneline`.
