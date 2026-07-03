@@ -55,6 +55,19 @@ docker stats --no-stream                                # CPU/RAM de cada conten
 bash deploy/backup.sh                                   # backup manual de la base
 ```
 
+## Desarrollar en local usando la base de PRODUCCIÓN
+
+Para probar cambios locales contra los datos reales: en el `.env` de la raíz hay
+dos `DATABASE_URL` (una LOCAL y una PRODUCCIÓN vía túnel `:15432`) — se activa una
+comentando la otra. Con la de producción activa:
+
+1. Abrir `BD-Servidor-Comercia.bat` (el túnel) **antes** de `npm run dev`, y dejarlo abierto.
+2. Todo lo que la app escriba, se escribe en los **datos reales** — cuidado.
+3. `npm run prisma:migrate` está **bloqueado por un guardián** en este modo
+   (`apps/api/scripts/guard-migrate.mjs`): `prisma migrate dev` puede resetear la
+   base y nunca debe correr contra producción. Para crear migraciones, volver a la
+   URL LOCAL; las migraciones llegan a producción solas con el deploy.
+
 ## Persistencia y seguridad de la base de datos
 
 Los datos de PostgreSQL viven en un **volumen de Docker** (`comercia_postgres_data`),
