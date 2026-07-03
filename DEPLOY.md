@@ -1,5 +1,14 @@
 # Despliegue de Comercia en un servidor Linux
 
+> **Modo actual: servidor en red local (LAN), sin dominio.** El servidor de
+> producción es `172.19.0.140` (red privada): back en `:1001`, front en `:1002`.
+> Como GitHub Actions no puede hacer SSH a una IP privada, el job `deploy` queda
+> en no-op y el servidor se actualiza solo con [deploy/auto-deploy.sh](deploy/auto-deploy.sh)
+> (cron cada 3 min que hace pull de GHCR). Caddy/HTTPS quedan bajo el perfil
+> `domain` de compose para cuando haya dominio público. La instalación del
+> servidor está documentada paso a paso en [deploy/BITACORA-SERVIDOR.md](deploy/BITACORA-SERVIDOR.md).
+> Lo que sigue describe el diseño general (y el flujo por SSH para un VPS público).
+
 Cómo funciona el pipeline completo: cada `git push` a `main` construye lo que cambió,
 publica las imágenes Docker en GitHub Container Registry (GHCR) y actualiza el servidor
 automáticamente. Es el mismo modelo que Vercel, pero corriendo en tu propio VPS.

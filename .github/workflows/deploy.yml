@@ -126,9 +126,22 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
+      # Modo LAN: si no hay secrets de SSH configurados (servidor en red privada,
+      # inaccesible desde GitHub), este job termina en verde sin hacer nada y el
+      # servidor se actualiza solo vía deploy/auto-deploy.sh (cron + pull de GHCR).
+      - name: Verificar si el deploy por SSH está configurado
+        id: ssh
+        run: |
+          echo "enabled=${{ secrets.DEPLOY_HOST != '' }}" >> "$GITHUB_OUTPUT"
+          if [ "${{ secrets.DEPLOY_HOST != '' }}" != "true" ]; then
+            echo "Deploy por SSH omitido: el servidor hace pull automático desde GHCR (modo LAN)."
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.ssh.outputs.enabled == 'true'
 
       - name: Copiar archivos de despliegue al servidor
+        if: steps.ssh.outputs.enabled == 'true'
         # appleboy/scp-action@v0.1.7 fijada por SHA (recibe la clave SSH)
         uses: appleboy/scp-action@917f8b81dfc1ccd331fef9e2d61bdc6c8be94634
         with:
@@ -140,6 +153,7 @@ jobs:
           target: /opt/comercia
 
       - name: Actualizar stack con Docker Compose
+        if: steps.ssh.outputs.enabled == 'true'
         # appleboy/ssh-action@v1.0.3 fijada por SHA (recibe la clave SSH)
         uses: appleboy/ssh-action@029f5b4aeeeb58fdfe1410a5d17f967dacf36262
         with:

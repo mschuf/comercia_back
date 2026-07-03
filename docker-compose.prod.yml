@@ -47,6 +47,9 @@ services:
   api:
     image: ghcr.io/mschuf/comercia-api:${API_TAG:-latest}
     restart: unless-stopped
+    # Modo LAN (sin dominio): la API se expone directo en este puerto del host
+    ports:
+      - "${API_PORT:-1001}:3001"
     environment:
       NODE_ENV: production
       PORT: "3001"
@@ -70,20 +73,26 @@ services:
   web:
     image: ghcr.io/mschuf/comercia-web:${WEB_TAG:-latest}
     restart: unless-stopped
+    # Modo LAN (sin dominio): el front se expone directo en este puerto del host
+    ports:
+      - "${WEB_PORT:-1002}:3000"
     networks:
       - proxy
     logging: *default-logging
 
   # Reverse proxy con HTTPS automático (Let's Encrypt).
   # Enruta /api/* a la API y el resto al frontend: un solo dominio, sin CORS.
+  # Solo corre con el perfil "domain" (docker compose --profile domain up -d):
+  # en modo LAN sin dominio, api y web se publican directo por puerto.
   caddy:
+    profiles: ["domain"]
     image: caddy:2-alpine
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
     environment:
-      DOMAIN: ${DOMAIN:?Falta DOMAIN en .env (ej. tudominio.com, o ":80" si solo hay IP)}
+      DOMAIN: ${DOMAIN:-:80}
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

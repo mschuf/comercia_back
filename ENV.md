@@ -106,7 +106,8 @@ imagen del front. Si cambiás el dominio: editás ese archivo, push, y listo.
 | `SWAGGER_ENABLED` | API | Docs en `/api/docs` | `true` | `false` |
 | `NEXT_PUBLIC_API_URL` | Front (navegador) | Adónde llama el browser | `apps/web/.env.development` | `apps/web/.env.production` (horneada en el build) |
 | `POSTGRES_USER/PASSWORD/DB/PORT` | Contenedor Postgres | Credenciales de la base | `postgres`/`postgres` | **obligatorias**, aleatorias |
-| `DOMAIN` | Caddy | Dominio público + HTTPS | — | `tudominio.com` (o `:80` sin dominio) |
+| `DOMAIN` | Caddy (solo perfil `domain`) | Dominio público + HTTPS | — | `tudominio.com` (cuando haya dominio) |
+| `API_PORT` / `WEB_PORT` | Compose prod (modo LAN) | Puertos publicados de api y web | — | `1001` / `1002` |
 | `API_TAG` / `WEB_TAG` | Compose prod | Versión de imagen a correr | — | `latest`, o un SHA para rollback |
 
 ## Precedencia (cuando una variable está en dos lados)
