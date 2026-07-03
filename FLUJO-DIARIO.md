@@ -35,6 +35,17 @@ ssh comercia "tail -f ~/comercia-autodeploy.log"    # la llegada al servidor
 paneles interactivos con contenedores, logs en vivo y consumo de CPU/RAM
 (flechas para navegar, `x` muestra el menú de acciones, `q` sale).
 
+**Herramientas gráficas dentro del escritorio VNC del servidor**:
+- **Portainer** (el "Docker Desktop" del servidor): abrir Firefox en el VNC →
+  `https://localhost:9443` (aceptar el aviso del certificado autofirmado; la
+  primera vez pide crear el usuario admin — si dice "timed out", correr
+  `docker restart portainer` y reintentar). Solo accesible desde el servidor.
+- **DBeaver** (base de datos, en el menú de aplicaciones de Plasma): conexión
+  PostgreSQL a `localhost`, puerto `5432` (sin túnel — ya se está en el servidor),
+  base `comercia`, credenciales de `/opt/comercia/.env`.
+- Nota: Docker Desktop NO se instala en servidores (crea un motor Docker aparte
+  dentro de una VM y no vería los contenedores reales) — Portainer es el equivalente.
+
 ```bash
 cd /opt/comercia
 docker compose -f docker-compose.prod.yml ps            # estado de los servicios

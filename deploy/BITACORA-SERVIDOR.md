@@ -94,6 +94,11 @@ desde la máquina de Carlos → TCP OK (ping bloqueado por firewall, esperable).
   Se instaló `xfce4` + `xfce4-terminal` SOLO para el VNC (`~/.vnc/xstartup` →
   `startxfce4`); GNOME sigue siendo el escritorio del monitor físico. El servicio
   quedó con `Restart=always` (un logout dentro del escritorio regenera la sesión).
+- Herramientas agregadas al servidor: **lazydocker** (TUI de Docker en /usr/local/bin),
+  **DBeaver CE** (deb oficial, para inspeccionar la base desde el escritorio VNC),
+  **Portainer CE** (contenedor `portainer`, solo loopback `127.0.0.1:9443`,
+  `--restart=always`, volumen `portainer_data`). Fix de Firefox snap bajo VNC:
+  `XDG_RUNTIME_DIR` exportado en `~/.vnc/xstartup` + `loginctl enable-linger deploy`.
 - Actualización posterior: a pedido del usuario, XFCE se reemplazó por **KDE Plasma**
   (`kde-plasma-desktop` + konsole + dolphin; xstartup → `startplasma-x11`; gdm3 se
   mantuvo como display manager de la consola física). XFCE desinstalado. Docker y
