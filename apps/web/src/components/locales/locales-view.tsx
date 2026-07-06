@@ -6,7 +6,13 @@ import { apiFetch, ApiError } from "@/lib/api";
 import { usePanel } from "@/components/panel/contexto";
 import { Modal } from "@/components/modal";
 import { Paginacion } from "@/components/paginacion";
-import { btnGhost, btnPrimary, errorBox, inputBase, labelBase } from "@/components/ui";
+import {
+  btnGhost,
+  btnPrimary,
+  errorBox,
+  inputBase,
+  labelBase,
+} from "@/components/ui";
 import { formatoCoordenada, formatoFechaHora } from "@/utils/formato";
 import type { RespuestaPaginada } from "@/types/paginacion";
 import {
@@ -45,6 +51,20 @@ const FORM_VACIO: FormLocal = {
 function parseCoordenada(texto: string): number | null {
   const n = Number(texto.trim().replace(",", "."));
   return texto.trim() !== "" && Number.isFinite(n) ? n : null;
+}
+
+function EstadoLocal({ activo }: { activo: boolean }) {
+  return (
+    <span
+      className={`inline-flex shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${
+        activo
+          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+          : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+      }`}
+    >
+      {activo ? "Activo" : "Inactivo"}
+    </span>
+  );
 }
 
 export function LocalesView() {
@@ -266,89 +286,185 @@ export function LocalesView() {
           </p>
         </div>
       ) : (
-        <div className="mt-4 overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                <th className="px-4 py-3 font-medium">Nombre</th>
-                <th className="px-4 py-3 font-medium">Coordenadas</th>
-                <th className="px-4 py-3 font-medium">Asignado a</th>
-                <th className="px-4 py-3 font-medium">Actualizado</th>
-                <th className="px-4 py-3 font-medium">Estado</th>
+        <>
+          <div className="mt-4 grid gap-3 md:hidden">
+            {locales.map((l) => (
+              <article
+                key={l.id}
+                className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="break-words text-base font-semibold leading-snug text-zinc-900 dark:text-zinc-100">
+                      {l.nombre}
+                    </h3>
+                    <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                      Actualizado {formatoFechaHora(l.updatedAt)}
+                    </p>
+                  </div>
+                  <EstadoLocal activo={l.activo} />
+                </div>
+
+                <dl className="mt-4 space-y-2 text-sm">
+                  <div>
+                    <dt className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                      Asignado a
+                    </dt>
+                    <dd className="mt-0.5 text-zinc-700 dark:text-zinc-200">
+                      {l.asignadoA ? (
+                        l.asignadoA.nombre
+                      ) : (
+                        <span className="text-zinc-400 dark:text-zinc-500">
+                          Sin asignar
+                        </span>
+                      )}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                      Coordenadas
+                    </dt>
+                    <dd className="mt-0.5 break-all text-zinc-700 [font-variant-numeric:tabular-nums] dark:text-zinc-200">
+                      {formatoCoordenada(l.latitud)},{" "}
+                      {formatoCoordenada(l.longitud)}
+                    </dd>
+                  </div>
+                </dl>
+
                 {esGestor && (
-                  <th className="px-4 py-3 text-right font-medium">Acciones</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {locales.map((l) => (
-                <tr
-                  key={l.id}
-                  className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60"
-                >
-                  <td className="px-4 py-3 font-medium">{l.nombre}</td>
-                  <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-                    {formatoCoordenada(l.latitud)}, {formatoCoordenada(l.longitud)}
-                  </td>
-                  <td className="px-4 py-3">
-                    {l.asignadoA ? (
-                      l.asignadoA.nombre
-                    ) : (
-                      <span className="text-zinc-400">Sin asignar</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-                    {formatoFechaHora(l.updatedAt)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                        l.activo
-                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                          : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
-                      }`}
+                  <div className="mt-4 grid grid-cols-2 gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+                    <button
+                      type="button"
+                      onClick={() => abrirEdicion(l)}
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-zinc-300 px-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
                     >
-                      {l.activo ? "Activo" : "Inactivo"}
-                    </span>
-                  </td>
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="h-4 w-4"
+                        aria-hidden
+                      >
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setErrorEliminar(null);
+                        setEliminando(l);
+                      }}
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-red-200 px-3 text-sm font-medium text-red-600 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+                    >
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="h-4 w-4"
+                        aria-hidden
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Eliminar
+                    </button>
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-4 hidden overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 md:block">
+            <table className="w-full min-w-[640px] text-left text-sm">
+              <thead>
+                <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                  <th className="px-4 py-3 font-medium">Nombre</th>
+                  <th className="px-4 py-3 font-medium">Coordenadas</th>
+                  <th className="px-4 py-3 font-medium">Asignado a</th>
+                  <th className="px-4 py-3 font-medium">Actualizado</th>
+                  <th className="px-4 py-3 font-medium">Estado</th>
                   {esGestor && (
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => abrirEdicion(l)}
-                          aria-label={`Editar ${l.nombre}`}
-                          className="grid h-9 w-9 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-                        >
-                          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4.5 w-4.5" aria-hidden>
-                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                          </svg>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setErrorEliminar(null);
-                            setEliminando(l);
-                          }}
-                          aria-label={`Eliminar ${l.nombre}`}
-                          className="grid h-9 w-9 place-items-center rounded-lg text-zinc-500 transition hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:text-zinc-400 dark:hover:bg-red-950 dark:hover:text-red-400"
-                        >
-                          <svg viewBox="0 0 20 20" fill="currentColor" className="h-4.5 w-4.5" aria-hidden>
-                            <path
-                              fillRule="evenodd"
-                              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
+                    <th className="px-4 py-3 text-right font-medium">
+                      Acciones
+                    </th>
                   )}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {locales.map((l) => (
+                  <tr
+                    key={l.id}
+                    className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60"
+                  >
+                    <td className="px-4 py-3 font-medium">{l.nombre}</td>
+                    <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                      {formatoCoordenada(l.latitud)},{" "}
+                      {formatoCoordenada(l.longitud)}
+                    </td>
+                    <td className="px-4 py-3">
+                      {l.asignadoA ? (
+                        l.asignadoA.nombre
+                      ) : (
+                        <span className="text-zinc-400">Sin asignar</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                      {formatoFechaHora(l.updatedAt)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <EstadoLocal activo={l.activo} />
+                    </td>
+                    {esGestor && (
+                      <td className="px-4 py-3">
+                        <div className="flex justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => abrirEdicion(l)}
+                            aria-label={`Editar ${l.nombre}`}
+                            className="grid h-9 w-9 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                          >
+                            <svg
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              className="h-4.5 w-4.5"
+                              aria-hidden
+                            >
+                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setErrorEliminar(null);
+                              setEliminando(l);
+                            }}
+                            aria-label={`Eliminar ${l.nombre}`}
+                            className="grid h-9 w-9 place-items-center rounded-lg text-zinc-500 transition hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:text-zinc-400 dark:hover:bg-red-950 dark:hover:text-red-400"
+                          >
+                            <svg
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                              className="h-4.5 w-4.5"
+                              aria-hidden
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {datos && datos.total > 0 && (
@@ -381,7 +497,11 @@ export function LocalesView() {
               </span>
             </p>
             {editando !== null && (
-              <MapaPicker lat={latForm} lng={lngForm} onSeleccion={alClickEnMapa} />
+              <MapaPicker
+                lat={latForm}
+                lng={lngForm}
+                onSeleccion={alClickEnMapa}
+              />
             )}
           </div>
 
@@ -390,7 +510,9 @@ export function LocalesView() {
             <input
               type="text"
               value={form.nombre}
-              onChange={(e) => setForm((f) => ({ ...f, nombre: e.target.value }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, nombre: e.target.value }))
+              }
               placeholder="Ej. Súper San Lorenzo Centro"
               maxLength={120}
               required
@@ -436,7 +558,8 @@ export function LocalesView() {
               onChange={(e) =>
                 setForm((f) => ({
                   ...f,
-                  usuarioId: e.target.value === "" ? "" : Number(e.target.value),
+                  usuarioId:
+                    e.target.value === "" ? "" : Number(e.target.value),
                 }))
               }
               className={inputBase}
