@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   MapContainer,
   Marker,
@@ -17,6 +17,23 @@ import "leaflet/dist/leaflet.css";
 // Asunción como centro por defecto
 const CENTRO_DEFECTO: [number, number] = [-25.2867, -57.6472];
 const ZOOM_DEFECTO = 13;
+const ATRIBUCION_CARTO =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
+
+const CAPAS_MAPA = {
+  claro: {
+    nombre: "voyager",
+    url: "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+    attribution: ATRIBUCION_CARTO,
+    subdomains: "abcd",
+  },
+  oscuro: {
+    nombre: "dark-matter",
+    url: "https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png",
+    attribution: ATRIBUCION_CARTO,
+    subdomains: "abcd",
+  },
+} as const;
 
 // Pin propio con divIcon: evita los PNG rotos del ícono default de Leaflet
 const iconoPin = divIcon({
@@ -50,6 +67,27 @@ function CentrarEn({ lat, lng }: { lat: number | null; lng: number | null }) {
   return null;
 }
 
+function useMapaOscuro() {
+  const [oscuro, setOscuro] = useState(
+    () =>
+      typeof document !== "undefined" &&
+      document.documentElement.classList.contains("dark"),
+  );
+
+  useEffect(() => {
+    const raiz = document.documentElement;
+    const actualizar = () => setOscuro(raiz.classList.contains("dark"));
+    actualizar();
+
+    const observer = new MutationObserver(actualizar);
+    observer.observe(raiz, { attributes: true, attributeFilter: ["class"] });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return oscuro;
+}
+
 export function MapaPicker({
   lat,
   lng,
@@ -61,11 +99,12 @@ export function MapaPicker({
 }) {
   const centro: [number, number] =
     lat !== null && lng !== null ? [lat, lng] : CENTRO_DEFECTO;
+  const capa = useMapaOscuro() ? CAPAS_MAPA.oscuro : CAPAS_MAPA.claro;
 
   return (
     // isolate: los panes de Leaflet usan z-index altos; sin esto se dibujan
     // por encima del contenido del modal
-    <div className="isolate h-56 w-full overflow-hidden rounded-lg border border-zinc-300 dark:border-zinc-700 sm:h-64">
+    <div className="isolate h-[52dvh] min-h-[340px] w-full overflow-hidden rounded-lg border border-zinc-300 bg-zinc-100 shadow-sm dark:border-zinc-700 dark:bg-zinc-950 sm:h-[58dvh] sm:min-h-[430px] lg:h-[560px] lg:min-h-0 [&_.leaflet-control-attribution]:!bg-white/90 [&_.leaflet-control-attribution]:!text-zinc-600 dark:[&_.leaflet-control-attribution]:!bg-zinc-950/85 dark:[&_.leaflet-control-attribution]:!text-zinc-300 dark:[&_.leaflet-control-zoom_a]:!border-zinc-700 dark:[&_.leaflet-control-zoom_a]:!bg-zinc-900 dark:[&_.leaflet-control-zoom_a]:!text-zinc-100">
       <MapContainer
         center={centro}
         zoom={ZOOM_DEFECTO}
@@ -73,8 +112,11 @@ export function MapaPicker({
         className="h-full w-full cursor-crosshair"
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          key={capa.nombre}
+          attribution={capa.attribution}
+          maxZoom={20}
+          subdomains={capa.subdomains}
+          url={capa.url}
         />
         <ClicksEnMapa onSeleccion={onSeleccion} />
         <CentrarEn lat={lat} lng={lng} />

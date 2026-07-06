@@ -21,7 +21,7 @@ const MapaPicker = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-56 w-full animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-800 sm:h-64" />
+      <div className="h-[52dvh] min-h-[340px] w-full animate-pulse rounded-lg bg-zinc-100 dark:bg-zinc-800 sm:h-[58dvh] sm:min-h-[430px] lg:h-[560px] lg:min-h-0" />
     ),
   },
 );
@@ -370,9 +370,21 @@ export function LocalesView() {
         titulo={editando === "nuevo" ? "Nuevo local" : "Editar local"}
         abierto={editando !== null}
         onCerrar={() => setEditando(null)}
-        ancho="lg"
+        ancho="xl"
       >
         <form onSubmit={guardar} className="flex flex-col gap-4">
+          <div>
+            <p className="mb-1.5 text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
+              Ubicación{" "}
+              <span className="font-normal text-zinc-400">
+                — hacé clic en el mapa o cargá las coordenadas a mano
+              </span>
+            </p>
+            {editando !== null && (
+              <MapaPicker lat={latForm} lng={lngForm} onSeleccion={alClickEnMapa} />
+            )}
+          </div>
+
           <label className={labelBase}>
             Nombre del local
             <input
@@ -385,18 +397,6 @@ export function LocalesView() {
               className={inputBase}
             />
           </label>
-
-          <div>
-            <p className="mb-1.5 text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-              Ubicación{" "}
-              <span className="font-normal text-zinc-400">
-                — hacé clic en el mapa o cargá las coordenadas a mano
-              </span>
-            </p>
-            {editando !== null && (
-              <MapaPicker lat={latForm} lng={lngForm} onSeleccion={alClickEnMapa} />
-            )}
-          </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label className={labelBase}>
