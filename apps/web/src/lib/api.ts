@@ -4,18 +4,6 @@
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
 
-export interface UsuarioSesion {
-  id: number;
-  nombre: string;
-  apellido: string;
-  correo: string;
-  nombreLogin: string;
-  ruc: string;
-  celular: string;
-  empresa: { id: number; nombre: string };
-  rol: { id: number; descripcion: string } | null;
-}
-
 export class ApiError extends Error {
   constructor(
     public readonly status: number,

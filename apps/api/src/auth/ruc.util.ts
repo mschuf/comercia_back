@@ -12,9 +12,19 @@ export function calcularDvRucPy(base: string): number {
   return resto > 1 ? 11 - resto : 0;
 }
 
-// Formato aceptado: base de 3 a 8 dígitos, guion, dígito verificador. Ej: 80012345-6
+// Acepta el RUC con o sin guion ("1234567-9" o "12345679"): si vienen solo
+// dígitos, el último es el verificador y se normaliza insertando el guion.
+export function normalizarRucPy(ruc: string): string {
+  const limpio = ruc.trim();
+  if (/^\d{4,9}$/.test(limpio)) {
+    return `${limpio.slice(0, -1)}-${limpio.slice(-1)}`;
+  }
+  return limpio;
+}
+
+// Formato aceptado: base de 3 a 8 dígitos, guion, dígito verificador. Ej: 80012345-0
 export function esRucParaguayoValido(ruc: string): boolean {
-  const match = /^(\d{3,8})-(\d)$/.exec(ruc.trim());
+  const match = /^(\d{3,8})-(\d)$/.exec(normalizarRucPy(ruc));
   if (!match) {
     return false;
   }

@@ -4,47 +4,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import {
-  getCountries,
-  getCountryCallingCode,
   parsePhoneNumberFromString,
   type CountryCode,
 } from "libphonenumber-js";
-import { apiFetch, ApiError, type UsuarioSesion } from "@/lib/api";
-import { esRucParaguayoValido } from "@/lib/ruc";
+import { apiFetch, ApiError } from "@/lib/api";
+import type { UsuarioSesion } from "@/types/usuario";
+import {
+  esRucParaguayoValido,
+  normalizarRucPy,
+  pistaRucPy,
+} from "@/utils/ruc";
+import { listaCompletaDePaises, PAIS_INICIAL } from "@/utils/paises";
+import type { Empresa } from "@/types/empresa";
 import { AuthShell } from "@/components/auth-shell";
-import { SelectorPais, type PaisItem } from "@/components/selector-pais";
+import { SelectorPais } from "@/components/selector-pais";
 import { btnPrimary, errorBox, inputBase, labelBase } from "@/components/ui";
 
-interface Empresa {
-  id: number;
-  nombre: string;
-}
-
-// El servidor renderiza solo Paraguay (determinístico) y el navegador la lista
-// completa: Intl.DisplayNames traduce/ordena distinto en Node y en cada navegador,
-// así que generarla en ambos lados provocaba errores de hidratación.
-const PAIS_INICIAL: PaisItem[] = [
-  { codigo: "PY", nombre: "Paraguay", prefijo: "595" },
-];
-
-let cachePaises: PaisItem[] | null = null;
-function listaCompletaDePaises(): PaisItem[] {
-  if (cachePaises) {
-    return cachePaises;
-  }
-  const nombres = new Intl.DisplayNames(["es"], { type: "region" });
-  const paises = getCountries().map((codigo) => ({
-    codigo,
-    nombre: nombres.of(codigo) ?? codigo,
-    prefijo: getCountryCallingCode(codigo),
-  }));
-  paises.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
-  cachePaises = [
-    ...paises.filter((p) => p.codigo === "PY"),
-    ...paises.filter((p) => p.codigo !== "PY"),
-  ];
-  return cachePaises;
-}
 
 const sinSuscripcion = () => () => {};
 
@@ -87,7 +62,7 @@ export default function RegisterPage() {
       return 'El nombre de usuario debe tener 3 a 30 caracteres (letras, números, ".", "-", "_")';
     }
     if (pais === "PY" && !esRucParaguayoValido(ruc)) {
-      return "El RUC no es válido: revisá el número y su dígito verificador (formato 1234567-0)";
+      return "El RUC no es válido: revisá el número y su dígito verificador (ej: 80012345-0)";
     }
     const tel = parsePhoneNumberFromString(celular, pais);
     if (!tel || !tel.isValid()) {
@@ -117,7 +92,7 @@ export default function RegisterPage() {
           correo: correo.trim().toLowerCase(),
           nombreLogin: nombreLogin.trim().toLowerCase(),
           empresaId,
-          ruc: ruc.trim(),
+          ruc: pais === "PY" ? normalizarRucPy(ruc) : ruc.trim(),
           celularPais: pais,
           celular: celular.trim(),
           password,
@@ -219,12 +194,30 @@ export default function RegisterPage() {
             onChange={(e) => setRuc(e.target.value)}
             placeholder={
               pais === "PY"
-                ? "1234567-0 (con dígito verificador)"
+                ? "80012345-0 (con dígito verificador)"
                 : "Identificador fiscal"
             }
             required
             className={inputBase}
           />
+          {pais === "PY" &&
+            (() => {
+              const pista = pistaRucPy(ruc);
+              if (!pista.mensaje) {
+                return null;
+              }
+              return (
+                <span
+                  className={
+                    pista.estado === "valido"
+                      ? "text-xs font-medium text-[#006300] dark:text-[#0ca30c]"
+                      : "text-xs font-normal text-amber-700 dark:text-amber-400"
+                  }
+                >
+                  {pista.mensaje}
+                </span>
+              );
+            })()}
         </label>
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1.2fr]">

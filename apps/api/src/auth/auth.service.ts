@@ -14,7 +14,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { hashPassword, verifyPassword } from './password.util';
-import { esRucParaguayoValido } from './ruc.util';
+import { esRucParaguayoValido, normalizarRucPy } from './ruc.util';
 
 export interface UsuarioSesion {
   id: number;
@@ -175,13 +175,16 @@ export class AuthService {
   }
 
   private validarRuc(ruc: string, pais: string): string {
-    const normalizado = ruc.trim().toUpperCase();
-    if (pais === 'PY' && !esRucParaguayoValido(normalizado)) {
-      throw new BadRequestException(
-        'El RUC no es válido: revisá el número y su dígito verificador (formato 1234567-0)',
-      );
+    if (pais === 'PY') {
+      const normalizado = normalizarRucPy(ruc.toUpperCase());
+      if (!esRucParaguayoValido(normalizado)) {
+        throw new BadRequestException(
+          'El RUC no es válido: revisá el número y su dígito verificador (ej: 80012345-0)',
+        );
+      }
+      return normalizado; // siempre se guarda con guion: 1234567-9
     }
-    return normalizado;
+    return ruc.trim().toUpperCase();
   }
 
   private firmarToken(usuarioId: number): string {

@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { apiFetch, ApiError, type UsuarioSesion } from "@/lib/api";
+import { apiFetch, ApiError } from "@/lib/api";
+import type { UsuarioSesion } from "@/types/usuario";
 import { AuthShell } from "@/components/auth-shell";
 import { btnPrimary, errorBox, inputBase, labelBase } from "@/components/ui";
 

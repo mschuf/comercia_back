@@ -38,6 +38,42 @@
 - Use DTO-shaped props for client UI and validate all input from params, search params, forms, and actions.
 - Avoid barrel imports and heavy client bundles; import directly and defer expensive client code.
 
+## Reglas de exposición de datos en endpoints (OBLIGATORIAS para todo endpoint nuevo)
+
+- **Nunca devolver entidades de Prisma "enteras"**: cada respuesta usa un DTO
+  explícito con la lista mínima de campos que el front necesita (patrón
+  `aSesion()` de `auth.service.ts`). `passwordHash`, `password_db` de
+  conexiones, tokens y campos internos JAMÁS salen por la API.
+- **Todo endpoint nuevo lleva `JwtAuthGuard`** salvo justificación escrita en un
+  comentario. Los únicos públicos permitidos hoy: `health`, `auth/login`,
+  `auth/register` y `empresas` (lo necesita el formulario de registro, y solo
+  expone id + nombre).
+- **Autenticado ≠ autorizado**: además del guard, verificar DENTRO del handler
+  que el recurso pertenezca al usuario o a su alcance (su empresa, su equipo,
+  sus clientes). Un vendedor no ve los datos de otro vendedor.
+- Al agregar campos a un modelo, **revisar los DTOs**: un campo nuevo NO viaja
+  al front por defecto — se agrega al DTO solo si el front lo necesita.
+- Los mensajes de error no revelan existencia de datos (ej. el login dice
+  "Usuario o contraseña incorrectos", nunca "ese usuario no existe").
+- Swagger solo en desarrollo (`SWAGGER_ENABLED=false` en producción).
+- Nota de realidad: los endpoints y SUS PROPIOS datos siempre serán visibles
+  para el usuario logueado en su navegador (DevTools) — eso es inevitable y
+  correcto. La seguridad es autenticación + autorización + DTO mínimo, nunca
+  esconder URLs.
+
+## Reglas de paginación (OBLIGATORIAS para todo endpoint de listado)
+
+- **Todo endpoint que devuelva una lista se pagina SIEMPRE** usando el helper
+  estándar `apps/api/src/common/paginacion.ts`: el DTO extiende/incluye
+  `PaginacionDto` (`?page=X&limit=Y`), Prisma recibe `skip/take` de
+  `rangoPaginacion()`, y la respuesta se arma con `respuestaPaginada()` →
+  `{ items, total, page, limit, totalPages }`.
+- **Default 7 registros por página, máximo 50** (constantes del helper — no
+  hardcodear otros valores).
+- Prohibido `findMany` sin `take` en endpoints que respondan al front.
+- El front consume esto con el componente `apps/web/src/components/paginacion.tsx`
+  y el tipo `RespuestaPaginada<T>` (regla espejo en `apps/web/AGENTS.md`).
+
 ## Backend Rules
 
 - Keep validation at the edge: DTOs plus global `ValidationPipe`.

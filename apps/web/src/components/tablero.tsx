@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { formatoGuaraniesMillones } from "@/utils/formato";
 import {
   Bar,
   BarChart,
@@ -113,7 +114,6 @@ const CHIPS: Record<
   },
 };
 
-const formatoGs = (v: number) => `₲ ${v} M`;
 
 // Animación de entrada: tarjetas en cascada, sutil
 const aparecer = {
@@ -335,7 +335,7 @@ export function Tablero() {
                     fill: "var(--viz-etiqueta)",
                     fontSize: 11,
                     fontWeight: 600,
-                    formatter: (v: unknown) => formatoGs(v as number),
+                    formatter: (v: unknown) => formatoGuaraniesMillones(v as number),
                   }}
                 >
                   {VENTAS_POR_CATEGORIA.map((c) => (

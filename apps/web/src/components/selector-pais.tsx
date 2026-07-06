@@ -2,13 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CountryCode } from "libphonenumber-js";
+import type { PaisItem } from "@/types/pais";
+import { normalizarBusqueda } from "@/utils/texto";
 import "flag-icons/css/flag-icons.min.css";
-
-export interface PaisItem {
-  codigo: CountryCode;
-  nombre: string;
-  prefijo: string;
-}
 
 // Combobox de país con búsqueda y banderas (los <select> nativos no permiten
 // imágenes en las opciones ni filtrado, por eso es un componente propio).
@@ -31,13 +27,13 @@ export function SelectorPais({
     paises.find((p) => p.codigo === value) ?? paises[0] ?? null;
 
   const filtrados = useMemo(() => {
-    const q = normalizar(busqueda);
+    const q = normalizarBusqueda(busqueda);
     if (!q) {
       return paises;
     }
     return paises.filter(
       (p) =>
-        normalizar(p.nombre).includes(q) ||
+        normalizarBusqueda(p.nombre).includes(q) ||
         p.codigo.toLowerCase().includes(q) ||
         `+${p.prefijo}`.includes(q) ||
         p.prefijo.includes(q),
@@ -189,9 +185,3 @@ export function SelectorPais({
   );
 }
 
-function normalizar(texto: string): string {
-  return texto
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "");
-}

@@ -11,6 +11,32 @@ This version has breaking changes. APIs, conventions, and file structure may dif
 - Keep client components small and avoid passing private server data into them.
 - Put environment variables exposed to the browser behind `NEXT_PUBLIC_` only when they are truly public.
 
+# Organización del código del front (OBLIGATORIA)
+
+- **Tipos e interfaces de dominio** (Usuario, Empresa, Pedido, respuestas de la
+  API...) van en `src/types/` — un archivo por dominio (`types/usuario.ts`,
+  `types/empresa.ts`), NUNCA definidos dentro de un componente o página.
+  Excepción: la interfaz de Props de un componente puede vivir junto a él.
+- **Funciones puras** (formateo, validaciones, normalizaciones — sin React ni
+  fetch) van en `src/utils/` — un archivo por tema (`utils/ruc.ts`,
+  `utils/formato.ts`, `utils/texto.ts`, `utils/paises.ts`).
+- `src/lib/` es para clientes de servicios (ej. `lib/api.ts`); `src/components/`
+  solo componentes visuales.
+- **Imports directos siempre** (`@/types/usuario`, `@/utils/ruc`) — sin archivos
+  barrel (`index.ts` re-exportador).
+
+# Tablas y paginación (OBLIGATORIO en toda tabla/listado)
+
+- **Toda tabla se pagina, siempre** — en el back Y en el front. Nada de traer
+  listas completas.
+- **7 registros por página por defecto**, con selector para ver más (7 / 15 / 30).
+- Front: usar el componente estándar [`src/components/paginacion.tsx`]
+  (mantener `page` y `limit` en el estado de la página; pedir a la API con
+  `?page=X&limit=Y`; tipar la respuesta con `RespuestaPaginada<T>` de
+  `@/types/paginacion`).
+- Back: ver la regla espejo en el AGENTS.md de la raíz (helper
+  `apps/api/src/common/paginacion.ts`).
+
 # Reglas de UI/UX de Comercia (OBLIGATORIAS — aplicarlas en TODO lo que se construya)
 
 ## Elementos clickeables

@@ -3,7 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { apiFetch, type UsuarioSesion } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
+import type { UsuarioSesion } from "@/types/usuario";
 import { BrandMark } from "@/components/auth-shell";
 import { BotonTema } from "@/components/boton-tema";
 import { Modal } from "@/components/modal";

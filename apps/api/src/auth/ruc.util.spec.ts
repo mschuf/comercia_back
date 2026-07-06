@@ -15,11 +15,20 @@ describe('RUC paraguayo', () => {
     expect(esRucParaguayoValido(`${base}-${dvMalo}`)).toBe(false);
   });
 
+  it('acepta el RUC sin guion normalizándolo (el último dígito es el DV)', () => {
+    // el DV de 1234567 es 9 → "12345679" equivale a "1234567-9"
+    expect(esRucParaguayoValido('12345679')).toBe(true);
+    expect(esRucParaguayoValido('1234567-9')).toBe(true);
+    // el ejemplo del placeholder del formulario debe ser válido
+    expect(esRucParaguayoValido('80012345-0')).toBe(true);
+    expect(esRucParaguayoValido('800123450')).toBe(true);
+  });
+
   it('rechaza formatos inválidos', () => {
     expect(esRucParaguayoValido('')).toBe(false);
     expect(esRucParaguayoValido('sin-numeros')).toBe(false);
-    expect(esRucParaguayoValido('12345678')).toBe(false); // sin guion ni DV
-    expect(esRucParaguayoValido('123456789-1')).toBe(false); // base muy larga
+    expect(esRucParaguayoValido('1234567-0')).toBe(false); // DV incorrecto (es 9)
+    expect(esRucParaguayoValido('1234567890')).toBe(false); // base muy larga
     expect(esRucParaguayoValido('12-3')).toBe(false); // base muy corta
   });
 
