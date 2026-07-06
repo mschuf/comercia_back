@@ -93,6 +93,12 @@ export class AdminPlataformaController {
     return this.modulos.eliminarPagina(id);
   }
 
+  // --- Roles (para los selectores de visibilidad del ABM) ---
+  @Get('roles')
+  listarRoles() {
+    return this.modulos.listarRoles();
+  }
+
   // --- Ejecutables ---
   @Get('conexiones')
   listarConexiones() {

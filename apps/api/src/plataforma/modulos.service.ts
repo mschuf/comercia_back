@@ -18,6 +18,14 @@ import type { ModuloDto, PaginaDto } from './interfaces/plataforma.interface';
 export class ModulosService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // Roles para los selectores de visibilidad del ABM (solo id + descripción)
+  async listarRoles(): Promise<{ id: number; descripcion: string }[]> {
+    return this.prisma.rol.findMany({
+      select: { id: true, descripcion: true },
+      orderBy: { descripcion: 'asc' },
+    });
+  }
+
   // Lista completa con páginas y ejecutables anidados: es la vista del ABM del
   // superadmin (pocas decenas de filas, no necesita paginación).
   async listar(): Promise<ModuloDto[]> {

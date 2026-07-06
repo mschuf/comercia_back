@@ -9,6 +9,7 @@ import { ModulosService } from './modulos.service';
 import { EjecutablesService } from './ejecutables.service';
 import { AsignacionesService } from './asignaciones.service';
 import { MiPlataformaService } from './mi-plataforma.service';
+import { AccesoPlataformaService } from './acceso-plataforma.service';
 
 @Module({
   imports: [PrismaModule, AuthModule],
@@ -18,6 +19,9 @@ import { MiPlataformaService } from './mi-plataforma.service';
     EjecutablesService,
     AsignacionesService,
     MiPlataformaService,
+    AccesoPlataformaService,
   ],
+  // Otros módulos (ej. locales) lo usan para autorizar el acceso a sus datos
+  exports: [AccesoPlataformaService],
 })
 export class PlataformaModule {}

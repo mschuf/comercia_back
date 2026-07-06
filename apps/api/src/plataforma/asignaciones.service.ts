@@ -11,7 +11,7 @@ import type { AsignacionEmpresaDto } from './interfaces/asignacion.interface';
 export class AsignacionesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // Qué módulos/páginas tiene habilitada una empresa (para pintar el ABM)
+  // Qué módulos/páginas/roles tiene habilitados una empresa (para pintar el ABM)
   async deEmpresa(empresaId: number): Promise<AsignacionEmpresaDto> {
     const empresa = await this.prisma.empresa.findUnique({
       where: { id: empresaId },
@@ -33,14 +33,15 @@ export class AsignacionesService {
       modulos: modulos.map((m) => ({
         moduloId: m.moduloId,
         todasLasPaginas: m.todasLasPaginas,
-        paginaIds: paginas
+        rolIds: m.rolIds,
+        paginas: paginas
           .filter((p) => p.pagina.moduloId === m.moduloId)
-          .map((p) => p.paginaId),
+          .map((p) => ({ paginaId: p.paginaId, rolIds: p.rolIds })),
       })),
     };
   }
 
-  // Habilita (o actualiza) un módulo para una empresa, con sus páginas
+  // Habilita (o actualiza) un módulo para una empresa, con páginas y roles
   async asignarModulo(dto: AsignarModuloDto): Promise<AsignacionEmpresaDto> {
     const [empresa, modulo] = await Promise.all([
       this.prisma.empresa.findUnique({
@@ -59,24 +60,41 @@ export class AsignacionesService {
       throw new NotFoundException('El módulo no existe');
     }
 
-    // Regla anti fail-open: enviar paginaIds implica restringir. Nunca conceder
+    // Regla anti fail-open: enviar páginas implica restringir. Nunca conceder
     // "todas las páginas" por accidente al omitir el flag con páginas presentes.
-    const enviaPaginas =
-      Array.isArray(dto.paginaIds) && dto.paginaIds.length > 0;
+    const enviaPaginas = Array.isArray(dto.paginas) && dto.paginas.length > 0;
     if (dto.todasLasPaginas === true && enviaPaginas) {
       throw new BadRequestException(
-        'No se pueden enviar paginaIds cuando todasLasPaginas es true',
+        'No se pueden enviar paginas cuando todasLasPaginas es true',
       );
     }
     const todasLasPaginas = dto.todasLasPaginas ?? !enviaPaginas;
-    const paginaIds = todasLasPaginas ? [] : (dto.paginaIds ?? []);
+    const paginas = todasLasPaginas ? [] : (dto.paginas ?? []);
+    const rolIdsModulo = dto.rolIds ?? [];
+
+    // Los roles indicados deben existir
+    const rolIdsTodos = [
+      ...new Set([...rolIdsModulo, ...paginas.flatMap((p) => p.rolIds ?? [])]),
+    ];
+    if (rolIdsTodos.length > 0) {
+      const rolesValidos = await this.prisma.rol.count({
+        where: { id: { in: rolIdsTodos } },
+      });
+      if (rolesValidos !== rolIdsTodos.length) {
+        throw new BadRequestException('Algún rol indicado no existe');
+      }
+    }
 
     // Si son páginas específicas, deben pertenecer al módulo
-    if (paginaIds.length > 0) {
+    if (paginas.length > 0) {
+      const ids = paginas.map((p) => p.paginaId);
+      if (new Set(ids).size !== ids.length) {
+        throw new BadRequestException('Hay páginas repetidas en la lista');
+      }
       const validas = await this.prisma.pagina.count({
-        where: { id: { in: paginaIds }, moduloId: dto.moduloId },
+        where: { id: { in: ids }, moduloId: dto.moduloId },
       });
-      if (validas !== paginaIds.length) {
+      if (validas !== ids.length) {
         throw new BadRequestException(
           'Alguna página no pertenece al módulo indicado',
         );
@@ -95,8 +113,9 @@ export class AsignacionesService {
           empresaId: dto.empresaId,
           moduloId: dto.moduloId,
           todasLasPaginas,
+          rolIds: rolIdsModulo,
         },
-        update: { todasLasPaginas },
+        update: { todasLasPaginas, rolIds: rolIdsModulo },
       });
 
       // Reemplaza las páginas específicas de ese módulo para la empresa
@@ -108,11 +127,12 @@ export class AsignacionesService {
       await tx.empresaPagina.deleteMany({
         where: { empresaId: dto.empresaId, paginaId: { in: idsDelModulo } },
       });
-      if (paginaIds.length > 0) {
+      if (paginas.length > 0) {
         await tx.empresaPagina.createMany({
-          data: paginaIds.map((paginaId) => ({
+          data: paginas.map((p) => ({
             empresaId: dto.empresaId,
-            paginaId,
+            paginaId: p.paginaId,
+            rolIds: p.rolIds ?? [],
           })),
         });
       }

@@ -11,11 +11,14 @@ export function Modal({
   abierto,
   onCerrar,
   children,
+  ancho = "md",
 }: {
   titulo: string;
   abierto: boolean;
   onCerrar: () => void;
   children: ReactNode;
+  // "lg" para formularios anchos (ej. con mapa); "md" es el default histórico
+  ancho?: "md" | "lg";
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const disparadorRef = useRef<HTMLElement | null>(null);
@@ -65,7 +68,9 @@ export function Modal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 6 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="relative w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl outline-none dark:border-zinc-800 dark:bg-zinc-900"
+            className={`relative w-full ${
+              ancho === "lg" ? "max-w-2xl" : "max-w-md"
+            } max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-6 shadow-2xl outline-none dark:border-zinc-800 dark:bg-zinc-900`}
           >
             <header className="flex items-start justify-between gap-4">
               <h2 className="text-lg font-bold tracking-tight">{titulo}</h2>

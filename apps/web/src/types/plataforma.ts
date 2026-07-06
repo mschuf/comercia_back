@@ -56,11 +56,23 @@ export interface ModuloMenu {
   paginas: PaginaMenu[];
 }
 
-// --- Asignaciones empresa ↔ módulos/páginas ---
+// --- Asignaciones empresa ↔ módulos/páginas (con visibilidad por rol) ---
+// rolIds vacío = visible para todos los roles de la empresa
+export interface Rol {
+  id: number;
+  descripcion: string;
+}
+
+export interface PaginaAsignada {
+  paginaId: number;
+  rolIds: number[];
+}
+
 export interface EmpresaModulo {
   moduloId: number;
   todasLasPaginas: boolean;
-  paginaIds: number[];
+  rolIds: number[];
+  paginas: PaginaAsignada[];
 }
 
 export interface AsignacionEmpresa {

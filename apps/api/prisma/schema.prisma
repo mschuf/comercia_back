@@ -25,6 +25,7 @@ model Empresa {
   usuarios  Usuario[]
   modulos   EmpresaModulo[]
   paginas   EmpresaPagina[]
+  locales   Local[]         @relation("EmpresaLocales")
   createdAt DateTime        @default(now()) @map("created_at")
   updatedAt DateTime        @default(now()) @updatedAt @map("updated_at")
 
@@ -127,6 +128,7 @@ model Ejecutable {
 
 // Una empresa habilita un módulo. `todasLasPaginas` = ve todas las páginas del
 // módulo; si es false, solo las listadas en EmpresaPagina.
+// `rolIds` = roles que ven el módulo dentro de la empresa; vacío = todos los roles.
 model EmpresaModulo {
   id             Int      @id @default(autoincrement())
   empresaId      Int      @map("empresa_id")
@@ -134,23 +136,48 @@ model EmpresaModulo {
   moduloId       Int      @map("modulo_id")
   modulo         Modulo   @relation(fields: [moduloId], references: [id], onDelete: Cascade)
   todasLasPaginas Boolean @default(true) @map("todas_las_paginas")
+  rolIds         Int[]    @default([]) @map("rol_ids")
   createdAt      DateTime @default(now()) @map("created_at")
 
   @@unique([empresaId, moduloId])
   @@map("empresa_modulos")
 }
 
-// Páginas específicas que ve una empresa (cuando su módulo no es todasLasPaginas)
+// Páginas específicas que ve una empresa (cuando su módulo no es todasLasPaginas).
+// `rolIds` = roles que ven ESTA página; vacío = todos los roles del módulo.
 model EmpresaPagina {
   id        Int      @id @default(autoincrement())
   empresaId Int      @map("empresa_id")
   empresa   Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   paginaId  Int      @map("pagina_id")
   pagina    Pagina   @relation(fields: [paginaId], references: [id], onDelete: Cascade)
+  rolIds    Int[]    @default([]) @map("rol_ids")
   createdAt DateTime @default(now()) @map("created_at")
 
   @@unique([empresaId, paginaId])
   @@map("empresa_paginas")
+}
+
+// Locales geolocalizados (módulo Impulsador). Los carga el teamleader y puede
+// asignarlos a un usuario (impulsador) de su misma empresa.
+model Local {
+  id          Int      @id @default(autoincrement())
+  empresaId   Int      @map("empresa_id")
+  empresa     Empresa  @relation("EmpresaLocales", fields: [empresaId], references: [id], onDelete: Cascade)
+  nombre      String
+  latitud     Float
+  longitud    Float
+  // Impulsador al que se le asigna el local (opcional)
+  usuarioId   Int?     @map("usuario_id")
+  usuario     Usuario? @relation("LocalesAsignados", fields: [usuarioId], references: [id], onDelete: SetNull)
+  // Quién lo cargó (teamleader)
+  creadoPorId Int      @map("creado_por_id")
+  creadoPor   Usuario  @relation("LocalesCreados", fields: [creadoPorId], references: [id])
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("locales")
 }
 
 model Rol {
@@ -187,6 +214,8 @@ model Usuario {
   // Permiso de administración del sistema (configura el ABM de la plataforma).
   // Independiente del rol de negocio. Se activa a mano en la BD.
   esSuperadmin Boolean   @default(false) @map("es_superadmin")
+  localesAsignados Local[] @relation("LocalesAsignados")
+  localesCreados   Local[] @relation("LocalesCreados")
   isActive     Boolean   @default(true) @map("is_active")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")

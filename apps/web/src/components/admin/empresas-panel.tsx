@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { Empresa } from "@/types/empresa";
-import type { AsignacionEmpresa, Modulo } from "@/types/plataforma";
+import type {
+  AsignacionEmpresa,
+  EmpresaModulo,
+  Modulo,
+  PaginaAsignada,
+  Rol,
+} from "@/types/plataforma";
 import { errorBox } from "@/components/ui";
 
 const BASE = "/admin/plataforma";
@@ -11,6 +17,7 @@ const BASE = "/admin/plataforma";
 export function EmpresasPanel() {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [modulos, setModulos] = useState<Modulo[]>([]);
+  const [roles, setRoles] = useState<Rol[]>([]);
   const [empresaId, setEmpresaId] = useState<number | "">("");
   const [asignacion, setAsignacion] = useState<AsignacionEmpresa | null>(null);
   const [cargando, setCargando] = useState(true);
@@ -22,10 +29,12 @@ export function EmpresasPanel() {
     Promise.all([
       apiFetch<{ empresas: Empresa[] }>("/empresas"),
       apiFetch<Modulo[]>(`${BASE}/modulos`),
+      apiFetch<Rol[]>(`${BASE}/roles`),
     ])
-      .then(([e, m]) => {
+      .then(([e, m, r]) => {
         setEmpresas(e.empresas);
         setModulos(m);
+        setRoles(r);
         if (e.empresas.length > 0) setEmpresaId(e.empresas[0].id);
       })
       .catch((err) =>
@@ -56,29 +65,30 @@ export function EmpresasPanel() {
     };
   }, [empresaId]);
 
-  function estadoModulo(moduloId: number) {
+  function estadoModulo(moduloId: number): EmpresaModulo | null {
     return asignacion?.modulos.find((m) => m.moduloId === moduloId) ?? null;
   }
 
-  async function alternarModulo(moduloId: number, habilitar: boolean) {
+  // Guarda la asignación completa del módulo (roles + páginas). La API exige
+  // NO enviar `paginas` cuando todasLasPaginas es true (regla anti fail-open).
+  async function guardarAsignacion(
+    moduloId: number,
+    todasLasPaginas: boolean,
+    rolIds: number[],
+    paginas: PaginaAsignada[],
+  ) {
     if (empresaId === "") return;
     setErrorAccion(null);
     setGuardando(moduloId);
     try {
-      if (habilitar) {
-        await apiFetch(`${BASE}/asignaciones`, {
-          method: "POST",
-          body: JSON.stringify({
-            empresaId,
-            moduloId,
-            todasLasPaginas: true,
-          }),
-        });
-      } else {
-        await apiFetch(`${BASE}/empresas/${empresaId}/modulos/${moduloId}`, {
-          method: "DELETE",
-        });
-      }
+      await apiFetch(`${BASE}/asignaciones`, {
+        method: "POST",
+        body: JSON.stringify(
+          todasLasPaginas
+            ? { empresaId, moduloId, todasLasPaginas: true, rolIds }
+            : { empresaId, moduloId, todasLasPaginas: false, rolIds, paginas },
+        ),
+      });
       await cargarAsignacion(empresaId);
     } catch (err) {
       setErrorAccion(
@@ -89,23 +99,17 @@ export function EmpresasPanel() {
     }
   }
 
-  async function guardarPaginas(
-    moduloId: number,
-    todasLasPaginas: boolean,
-    paginaIds: number[],
-  ) {
+  async function alternarModulo(moduloId: number, habilitar: boolean) {
     if (empresaId === "") return;
+    if (habilitar) {
+      await guardarAsignacion(moduloId, true, [], []);
+      return;
+    }
     setErrorAccion(null);
     setGuardando(moduloId);
     try {
-      await apiFetch(`${BASE}/asignaciones`, {
-        method: "POST",
-        body: JSON.stringify({
-          empresaId,
-          moduloId,
-          todasLasPaginas,
-          paginaIds,
-        }),
+      await apiFetch(`${BASE}/empresas/${empresaId}/modulos/${moduloId}`, {
+        method: "DELETE",
       });
       await cargarAsignacion(empresaId);
     } catch (err) {
@@ -176,12 +180,31 @@ export function EmpresasPanel() {
               </div>
 
               {habilitado && estado && (
-                <SelectorPaginas
-                  modulo={m}
-                  estado={estado}
-                  deshabilitado={guardando === m.id}
-                  onGuardar={(todas, ids) => guardarPaginas(m.id, todas, ids)}
-                />
+                <>
+                  <SelectorRoles
+                    etiqueta="Roles que ven el módulo"
+                    roles={roles}
+                    seleccion={estado.rolIds}
+                    deshabilitado={guardando === m.id}
+                    onCambio={(rolIds) =>
+                      guardarAsignacion(
+                        m.id,
+                        estado.todasLasPaginas,
+                        rolIds,
+                        estado.paginas,
+                      )
+                    }
+                  />
+                  <SelectorPaginas
+                    modulo={m}
+                    estado={estado}
+                    roles={roles}
+                    deshabilitado={guardando === m.id}
+                    onGuardar={(todas, paginas) =>
+                      guardarAsignacion(m.id, todas, estado.rolIds, paginas)
+                    }
+                  />
+                </>
               )}
             </div>
           );
@@ -191,24 +214,96 @@ export function EmpresasPanel() {
   );
 }
 
+// Chips de roles: ninguno seleccionado = visible para todos los roles
+function SelectorRoles({
+  etiqueta,
+  roles,
+  seleccion,
+  deshabilitado,
+  onCambio,
+  compacto = false,
+}: {
+  etiqueta: string;
+  roles: Rol[];
+  seleccion: number[];
+  deshabilitado: boolean;
+  onCambio: (rolIds: number[]) => void;
+  compacto?: boolean;
+}) {
+  function toggle(rolId: number) {
+    const set = new Set(seleccion);
+    if (set.has(rolId)) set.delete(rolId);
+    else set.add(rolId);
+    onCambio([...set]);
+  }
+
+  return (
+    <div className={compacto ? "mt-1.5" : "mt-3 border-t border-zinc-100 pt-3 dark:border-zinc-800"}>
+      <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
+        {etiqueta}{" "}
+        <span className="font-normal">
+          ({seleccion.length === 0 ? "todos los roles" : `${seleccion.length} seleccionados`})
+        </span>
+      </p>
+      <div className="mt-1.5 flex flex-wrap gap-1.5">
+        {roles.map((r) => {
+          const activo = seleccion.includes(r.id);
+          return (
+            <button
+              key={r.id}
+              type="button"
+              disabled={deshabilitado}
+              onClick={() => toggle(r.id)}
+              className={`rounded-full px-2.5 py-1 text-xs font-medium transition focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-50 ${
+                activo
+                  ? "bg-brand-700 text-white hover:bg-brand-800"
+                  : "border border-zinc-300 text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+              }`}
+            >
+              {r.descripcion}
+            </button>
+          );
+        })}
+        {roles.length === 0 && (
+          <p className="text-xs text-zinc-400">No hay roles cargados.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function SelectorPaginas({
   modulo,
   estado,
+  roles,
   deshabilitado,
   onGuardar,
 }: {
   modulo: Modulo;
-  estado: { todasLasPaginas: boolean; paginaIds: number[] };
+  estado: EmpresaModulo;
+  roles: Rol[];
   deshabilitado: boolean;
-  onGuardar: (todasLasPaginas: boolean, paginaIds: number[]) => void;
+  onGuardar: (todasLasPaginas: boolean, paginas: PaginaAsignada[]) => void;
 }) {
   const paginas = modulo.paginas ?? [];
 
+  function asignadaDe(paginaId: number): PaginaAsignada | null {
+    return estado.paginas.find((p) => p.paginaId === paginaId) ?? null;
+  }
+
   function togglePagina(paginaId: number) {
-    const set = new Set(estado.paginaIds);
-    if (set.has(paginaId)) set.delete(paginaId);
-    else set.add(paginaId);
-    onGuardar(false, [...set]);
+    const existente = asignadaDe(paginaId);
+    const nuevas = existente
+      ? estado.paginas.filter((p) => p.paginaId !== paginaId)
+      : [...estado.paginas, { paginaId, rolIds: [] }];
+    onGuardar(false, nuevas);
+  }
+
+  function cambiarRolesPagina(paginaId: number, rolIds: number[]) {
+    onGuardar(
+      false,
+      estado.paginas.map((p) => (p.paginaId === paginaId ? { ...p, rolIds } : p)),
+    );
   }
 
   return (
@@ -229,7 +324,7 @@ function SelectorPaginas({
         <button
           type="button"
           disabled={deshabilitado}
-          onClick={() => onGuardar(false, estado.paginaIds)}
+          onClick={() => onGuardar(false, estado.paginas)}
           className={`rounded-lg px-3 py-1.5 text-xs font-medium transition disabled:opacity-50 ${
             !estado.todasLasPaginas
               ? "bg-brand-700 text-white"
@@ -241,28 +336,42 @@ function SelectorPaginas({
       </div>
 
       {!estado.todasLasPaginas && (
-        <div className="mt-3 flex flex-col gap-1.5">
+        <div className="mt-3 flex flex-col gap-2">
           {paginas.length === 0 && (
             <p className="text-xs text-zinc-400">
               Este módulo no tiene páginas.
             </p>
           )}
-          {paginas.map((p) => (
-            <label
-              key={p.id}
-              className="flex cursor-pointer items-center gap-2 text-sm"
-            >
-              <input
-                type="checkbox"
-                disabled={deshabilitado}
-                checked={estado.paginaIds.includes(p.id)}
-                onChange={() => togglePagina(p.id)}
-                className="h-4 w-4 accent-brand-700"
-              />
-              {p.nombre}
-              <span className="text-xs text-zinc-400">/{p.ruta}</span>
-            </label>
-          ))}
+          {paginas.map((p) => {
+            const asignada = asignadaDe(p.id);
+            return (
+              <div key={p.id}>
+                <label className="flex cursor-pointer items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    disabled={deshabilitado}
+                    checked={asignada !== null}
+                    onChange={() => togglePagina(p.id)}
+                    className="h-4 w-4 accent-brand-700"
+                  />
+                  {p.nombre}
+                  <span className="text-xs text-zinc-400">/{p.ruta}</span>
+                </label>
+                {asignada && (
+                  <div className="ml-6">
+                    <SelectorRoles
+                      etiqueta="Roles que ven la página"
+                      roles={roles}
+                      seleccion={asignada.rolIds}
+                      deshabilitado={deshabilitado}
+                      onCambio={(rolIds) => cambiarRolesPagina(p.id, rolIds)}
+                      compacto
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

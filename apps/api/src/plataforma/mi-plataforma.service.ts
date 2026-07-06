@@ -1,17 +1,19 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import type { ModuloMenu } from './interfaces/plataforma.interface';
+import { rolVe } from './utils/visibilidad';
 
 @Injectable()
 export class MiPlataformaService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // Menú del usuario: los módulos que su empresa habilitó, con las páginas
-  // visibles (todas, o solo las asignadas). Solo módulos/páginas activos.
+  // Menú del usuario: módulos que su empresa habilitó Y que su rol puede ver,
+  // con las páginas visibles (todas, o solo las asignadas a su rol).
+  // rolIds vacío en la asignación = visible para todos los roles.
   async menu(usuarioId: number): Promise<ModuloMenu[]> {
     const usuario = await this.prisma.usuario.findUnique({
       where: { id: usuarioId },
-      select: { empresaId: true, isActive: true },
+      select: { empresaId: true, rolId: true, isActive: true },
     });
     if (!usuario || !usuario.isActive) {
       throw new UnauthorizedException();
@@ -35,17 +37,26 @@ export class MiPlataformaService {
     // Páginas específicas visibles (cuando el módulo no es "todas las páginas")
     const paginasAsignadas = await this.prisma.empresaPagina.findMany({
       where: { empresaId: usuario.empresaId },
-      select: { paginaId: true },
+      select: { paginaId: true, rolIds: true },
     });
-    const visiblesEspecificas = new Set(
-      paginasAsignadas.map((p) => p.paginaId),
+    const asignacionPorPagina = new Map(
+      paginasAsignadas.map((p) => [p.paginaId, p.rolIds]),
     );
 
     return (
       habilitados
+        .filter((em) => rolVe(em.rolIds, usuario.rolId))
         .map((em) => {
           const paginas = em.modulo.paginas
-            .filter((p) => em.todasLasPaginas || visiblesEspecificas.has(p.id))
+            .filter((p) => {
+              if (em.todasLasPaginas) {
+                return true;
+              }
+              const rolIdsPagina = asignacionPorPagina.get(p.id);
+              return (
+                rolIdsPagina !== undefined && rolVe(rolIdsPagina, usuario.rolId)
+              );
+            })
             .map((p) => ({
               id: p.id,
               nombre: p.nombre,
