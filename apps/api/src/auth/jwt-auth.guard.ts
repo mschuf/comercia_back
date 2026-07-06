@@ -5,13 +5,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import type { Request } from 'express';
 import { AUTH_COOKIE } from './auth.constants';
-import type { TokenPayload } from './auth.service';
-
-export interface RequestConUsuario extends Request {
-  usuarioId: number;
-}
+import type { TokenPayload } from './interfaces/token-payload.interface';
+import type { RequestConUsuario } from './interfaces/request-con-usuario.interface';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {

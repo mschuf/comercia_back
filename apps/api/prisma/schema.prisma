@@ -15,32 +15,142 @@ datasource db {
 }
 
 model Empresa {
-  id        Int       @id @default(autoincrement())
-  nombre    String    @unique
-  dbName    String?   @map("db_name")
+  id        Int             @id @default(autoincrement())
+  nombre    String          @unique
+  dbName    String?         @map("db_name")
   // Una empresa puede pertenecer a otra (casa matriz → sucursales)
-  empresaId Int?      @map("empresas_id")
-  padre     Empresa?  @relation("EmpresaJerarquia", fields: [empresaId], references: [id])
-  hijas     Empresa[] @relation("EmpresaJerarquia")
+  empresaId Int?            @map("empresas_id")
+  padre     Empresa?        @relation("EmpresaJerarquia", fields: [empresaId], references: [id])
+  hijas     Empresa[]       @relation("EmpresaJerarquia")
   usuarios  Usuario[]
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+  modulos   EmpresaModulo[]
+  paginas   EmpresaPagina[]
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @default(now()) @updatedAt @map("updated_at")
 
   @@map("empresas")
 }
 
 model Conexion {
-  id           Int      @id @default(autoincrement())
-  nombre       String   @unique
+  id           Int          @id @default(autoincrement())
+  nombre       String       @unique
   servernode   String?
-  userDb       String?  @map("user_db")
-  passwordDb   String?  @map("password_db")
-  serviceLayer String?  @map("service_layer")
-  versionTls   String?  @map("version_tls")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+  userDb       String?      @map("user_db")
+  passwordDb   String?      @map("password_db")
+  serviceLayer String?      @map("service_layer")
+  versionTls   String?      @map("version_tls")
+  ejecutables  Ejecutable[]
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @default(now()) @updatedAt @map("updated_at")
 
   @@map("conexiones")
+}
+
+// ============================================================
+// Plataforma modular: una empresa habilita módulos; cada módulo tiene páginas;
+// cada página tiene ejecutables (proc/función/vista/query contra el motor que
+// sea). Todo se configura por tabla desde el ABM del superadmin.
+// ============================================================
+
+// Qué tipo de objeto de base de datos ejecuta la página
+enum TipoEjecutable {
+  PROCEDURE
+  FUNCTION
+  VIEW
+  QUERY
+}
+
+// Motor donde vive el ejecutable. Hoy se ejecuta de verdad POSTGRESQL; el resto
+// queda declarado para configurarse y activarse cuando exista su driver+servidor.
+enum MotorBd {
+  POSTGRESQL
+  SAP_HANA
+  ORACLE
+  MYSQL
+  SQLSERVER
+}
+
+model Modulo {
+  id        Int             @id @default(autoincrement())
+  nombre    String
+  // Segmento de ruta del módulo (ej. "ventas"). Único entre módulos.
+  ruta      String          @unique
+  icono     String?
+  orden     Int             @default(0)
+  activo    Boolean         @default(true)
+  paginas   Pagina[]
+  empresas  EmpresaModulo[]
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @default(now()) @updatedAt @map("updated_at")
+
+  @@map("modulos")
+}
+
+model Pagina {
+  id        Int             @id @default(autoincrement())
+  moduloId  Int             @map("modulo_id")
+  modulo    Modulo          @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  nombre    String
+  // Segmento de ruta dentro del módulo (ej. "listado"). Único por módulo.
+  ruta      String
+  icono     String?
+  orden     Int             @default(0)
+  activo    Boolean         @default(true)
+  ejecutables Ejecutable[]
+  empresas  EmpresaPagina[]
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([moduloId, ruta])
+  @@map("paginas")
+}
+
+model Ejecutable {
+  id         Int            @id @default(autoincrement())
+  paginaId   Int            @map("pagina_id")
+  pagina     Pagina         @relation(fields: [paginaId], references: [id], onDelete: Cascade)
+  nombre     String
+  tipo       TipoEjecutable
+  motor      MotorBd        @default(POSTGRESQL)
+  // Conexión externa (SAP HANA, Oracle, ...). null = base propia de comercIA.
+  conexionId Int?           @map("conexion_id")
+  conexion   Conexion?      @relation(fields: [conexionId], references: [id])
+  // Nombre del proc/función/vista o la sentencia SQL a ejecutar
+  sentencia  String
+  orden      Int            @default(0)
+  activo     Boolean        @default(true)
+  createdAt  DateTime       @default(now()) @map("created_at")
+  updatedAt  DateTime       @default(now()) @updatedAt @map("updated_at")
+
+  @@map("ejecutables")
+}
+
+// Una empresa habilita un módulo. `todasLasPaginas` = ve todas las páginas del
+// módulo; si es false, solo las listadas en EmpresaPagina.
+model EmpresaModulo {
+  id             Int      @id @default(autoincrement())
+  empresaId      Int      @map("empresa_id")
+  empresa        Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  moduloId       Int      @map("modulo_id")
+  modulo         Modulo   @relation(fields: [moduloId], references: [id], onDelete: Cascade)
+  todasLasPaginas Boolean @default(true) @map("todas_las_paginas")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@unique([empresaId, moduloId])
+  @@map("empresa_modulos")
+}
+
+// Páginas específicas que ve una empresa (cuando su módulo no es todasLasPaginas)
+model EmpresaPagina {
+  id        Int      @id @default(autoincrement())
+  empresaId Int      @map("empresa_id")
+  empresa   Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  paginaId  Int      @map("pagina_id")
+  pagina    Pagina   @relation(fields: [paginaId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([empresaId, paginaId])
+  @@map("empresa_paginas")
 }
 
 model Rol {
@@ -74,6 +184,9 @@ model Usuario {
   superiorId   Int?      @map("superior_id")
   superior     Usuario?  @relation("UsuarioJerarquia", fields: [superiorId], references: [id])
   subordinados Usuario[] @relation("UsuarioJerarquia")
+  // Permiso de administración del sistema (configura el ABM de la plataforma).
+  // Independiente del rol de negocio. Se activa a mano en la BD.
+  esSuperadmin Boolean   @default(false) @map("es_superadmin")
   isActive     Boolean   @default(true) @map("is_active")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")

@@ -74,6 +74,21 @@
 - El front consume esto con el componente `apps/web/src/components/paginacion.tsx`
   y el tipo `RespuestaPaginada<T>` (regla espejo en `apps/web/AGENTS.md`).
 
+## Organización del código del backend (OBLIGATORIA)
+
+- **Interfaces y tipos** NO se definen dentro de un service/controller/guard: van
+  en una carpeta `interfaces/` del módulo, un archivo por concepto con sufijo
+  `.interface.ts` (ej. `auth/interfaces/usuario-sesion.interface.ts`,
+  `plataforma/interfaces/asignacion.interface.ts`). Los DTOs de ENTRADA
+  (clases con class-validator) van en `dto/`.
+- **Funciones puras** (validaciones, hashing, formateo, transforms — sin estado
+  ni dependencias de Nest) van en una carpeta `utils/`, un archivo por tema
+  (`auth/utils/ruc.ts`, `auth/utils/password.ts`, `common/utils/transforms.ts`).
+  No usar el sufijo `.util.ts` suelto en la raíz del módulo.
+- Lo compartido entre módulos vive en `common/` (`common/utils/`,
+  `common/interfaces/`). Sin duplicar helpers entre módulos: si dos lo usan, va a `common`.
+- Imports directos, sin archivos barrel (`index.ts` re-exportador).
+
 ## Backend Rules
 
 - Keep validation at the edge: DTOs plus global `ValidationPipe`.

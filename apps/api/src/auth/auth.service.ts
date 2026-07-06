@@ -13,24 +13,10 @@ import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { hashPassword, verifyPassword } from './password.util';
-import { esRucParaguayoValido, normalizarRucPy } from './ruc.util';
-
-export interface UsuarioSesion {
-  id: number;
-  nombre: string;
-  apellido: string;
-  correo: string;
-  nombreLogin: string;
-  ruc: string;
-  celular: string;
-  empresa: { id: number; nombre: string };
-  rol: { id: number; descripcion: string } | null;
-}
-
-export interface TokenPayload {
-  sub: number;
-}
+import { hashPassword, verifyPassword } from './utils/password';
+import { esRucParaguayoValido, normalizarRucPy } from './utils/ruc';
+import type { UsuarioSesion } from './interfaces/usuario-sesion.interface';
+import type { TokenPayload } from './interfaces/token-payload.interface';
 
 const TIPOS_CELULAR_VALIDOS = new Set(['MOBILE', 'FIXED_LINE_OR_MOBILE']);
 
@@ -200,6 +186,7 @@ export class AuthService {
     nombreLogin: string;
     ruc: string;
     celular: string;
+    esSuperadmin: boolean;
     empresa: { id: number; nombre: string };
     rol: { id: number; descripcion: string } | null;
   }): UsuarioSesion {
@@ -211,6 +198,7 @@ export class AuthService {
       nombreLogin: usuario.nombreLogin,
       ruc: usuario.ruc,
       celular: usuario.celular,
+      esSuperadmin: usuario.esSuperadmin,
       empresa: { id: usuario.empresa.id, nombre: usuario.empresa.nombre },
       rol: usuario.rol
         ? { id: usuario.rol.id, descripcion: usuario.rol.descripcion }

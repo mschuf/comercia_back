@@ -1,6 +1,6 @@
 import { IsString, Length, MaxLength } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { lowerTrimString } from './transforms';
+import { lowerTrimString } from '../../common/utils/transforms';
 
 export class LoginDto {
   // Correo o nombre de usuario, indistintamente

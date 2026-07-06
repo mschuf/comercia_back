@@ -1,4 +1,4 @@
-import { calcularDvRucPy, esRucParaguayoValido } from './ruc.util';
+import { calcularDvRucPy, esRucParaguayoValido } from './ruc';
 
 describe('RUC paraguayo', () => {
   it('acepta un RUC cuyo dígito verificador coincide con el calculado', () => {

@@ -1,4 +1,4 @@
-import { hashPassword, verifyPassword } from './password.util';
+import { hashPassword, verifyPassword } from './password';
 
 describe('hash de contraseñas (scrypt)', () => {
   it('genera hashes distintos para la misma contraseña (salt aleatorio)', async () => {

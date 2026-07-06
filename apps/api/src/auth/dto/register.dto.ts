@@ -9,7 +9,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { lowerTrimString, trimString } from './transforms';
+import { lowerTrimString, trimString } from '../../common/utils/transforms';
 
 export class RegisterDto {
   @IsString()

@@ -1,4 +1,5 @@
-// Usuario de la sesión, tal como lo devuelve la API (/auth/me, /auth/login)
+// Forma mínima del usuario que devuelve la API (/auth/me, /auth/login).
+// Sin campos internos (passwordHash, etc.) — ver reglas de exposición en AGENTS.md.
 export interface UsuarioSesion {
   id: number;
   nombre: string;

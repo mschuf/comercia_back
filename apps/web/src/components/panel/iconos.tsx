@@ -1,0 +1,87 @@
+// Mapa de íconos de módulos/páginas. La config guarda un nombre ("ventas",
+// "clientes"...) y acá se resuelve al SVG; si no está, usa un ícono genérico.
+
+type Props = { className?: string };
+
+function Base({ children, className }: Props & { children: React.ReactNode }) {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className={className ?? "h-5 w-5 shrink-0"}
+      aria-hidden
+    >
+      {children}
+    </svg>
+  );
+}
+
+const ICONOS: Record<string, (p: Props) => React.ReactNode> = {
+  inicio: (p) => (
+    <Base {...p}>
+      <path
+        fillRule="evenodd"
+        d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-3a1 1 0 01-1-1v-3H9v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z"
+        clipRule="evenodd"
+      />
+    </Base>
+  ),
+  ventas: (p) => (
+    <Base {...p}>
+      <path d="M12 9a1 1 0 01-1-1V3c0-.552.45-1.007.997-.93a7.004 7.004 0 015.933 5.933c.078.547-.378.997-.93.997h-5z" />
+      <path d="M8.003 4.07C8.55 3.994 9 4.449 9 5v5a1 1 0 001 1h5c.552 0 1.007.45.93.997A7.001 7.001 0 012 11a7.002 7.002 0 016.003-6.93z" />
+    </Base>
+  ),
+  clientes: (p) => (
+    <Base {...p}>
+      <path d="M7 8a3 3 0 100-6 3 3 0 000 6zM14.5 9a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM1.615 16.428a1.224 1.224 0 01-.569-1.175 6.002 6.002 0 0111.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 017 18a9.953 9.953 0 01-5.385-1.572zM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 00-1.588-3.755 4.502 4.502 0 015.874 2.636.818.818 0 01-.36.98A7.465 7.465 0 0114.5 16z" />
+    </Base>
+  ),
+  pedidos: (p) => (
+    <Base {...p}>
+      <path
+        fillRule="evenodd"
+        d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm1 8a.75.75 0 000 1.5h6a.75.75 0 000-1.5H7zm0 3a.75.75 0 000 1.5h6a.75.75 0 000-1.5H7z"
+        clipRule="evenodd"
+      />
+    </Base>
+  ),
+  reportes: (p) => (
+    <Base {...p}>
+      <path d="M15.5 2A1.5 1.5 0 0017 3.5v13a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 013 16.5v-13A1.5 1.5 0 014.5 2h11zM7 14a1 1 0 10-2 0v1a1 1 0 102 0v-1zm4-3a1 1 0 10-2 0v4a1 1 0 102 0v-4zm4-3a1 1 0 10-2 0v7a1 1 0 102 0V8z" />
+    </Base>
+  ),
+  inventario: (p) => (
+    <Base {...p}>
+      <path d="M10.362 1.093a1 1 0 00-.724 0L2.523 3.998A1 1 0 002 4.93v9.14a1 1 0 00.523.877l7.115 2.905a1 1 0 00.724 0l7.115-2.905A1 1 0 0018 14.07V4.93a1 1 0 00-.523-.877L10.362 1.093z" />
+    </Base>
+  ),
+  equipo: (p) => (
+    <Base {...p}>
+      <path d="M10 9a3 3 0 100-6 3 3 0 000 6zM6 8a2 2 0 11-4 0 2 2 0 014 0zM1.49 15.326a.78.78 0 01-.358-.442 3 3 0 014.308-3.516 6.484 6.484 0 00-1.905 3.959c-.023.222-.014.442.025.654a4.97 4.97 0 01-2.07-.655zM16.44 15.98a4.97 4.97 0 002.07-.654.78.78 0 00.357-.442 3 3 0 00-4.308-3.517 6.484 6.484 0 011.907 3.96 2.32 2.32 0 01-.026.654zM18 8a2 2 0 11-4 0 2 2 0 014 0zM5.304 16.19a.844.844 0 01-.277-.71 5 5 0 019.947 0 .843.843 0 01-.277.71A6.975 6.975 0 0110 18a6.974 6.974 0 01-4.696-1.81z" />
+    </Base>
+  ),
+};
+
+function Generico(p: Props) {
+  return (
+    <Base {...p}>
+      <path
+        fillRule="evenodd"
+        d="M4.25 2A2.25 2.25 0 002 4.25v2.5A2.25 2.25 0 004.25 9h2.5A2.25 2.25 0 009 6.75v-2.5A2.25 2.25 0 006.75 2h-2.5zm0 9A2.25 2.25 0 002 13.25v2.5A2.25 2.25 0 004.25 18h2.5A2.25 2.25 0 009 15.75v-2.5A2.25 2.25 0 006.75 11h-2.5zm9-9A2.25 2.25 0 0011 4.25v2.5A2.25 2.25 0 0013.25 9h2.5A2.25 2.25 0 0018 6.75v-2.5A2.25 2.25 0 0015.75 2h-2.5zm0 9A2.25 2.25 0 0011 13.25v2.5A2.25 2.25 0 0013.25 18h2.5A2.25 2.25 0 0018 15.75v-2.5A2.25 2.25 0 0015.75 11h-2.5z"
+        clipRule="evenodd"
+      />
+    </Base>
+  );
+}
+
+export function IconoModulo({
+  nombre,
+  className,
+}: {
+  nombre: string | null;
+  className?: string;
+}) {
+  const Comp = (nombre && ICONOS[nombre]) || Generico;
+  return <Comp className={className} />;
+}

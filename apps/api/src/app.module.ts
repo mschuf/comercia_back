@@ -9,6 +9,7 @@ import configuration from './config/configuration';
 import { validateEnv } from './config/env.schema';
 import { EmpresasModule } from './empresas/empresas.module';
 import { HealthModule } from './health/health.module';
+import { PlataformaModule } from './plataforma/plataforma.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -33,6 +34,7 @@ import { PrismaModule } from './prisma/prisma.module';
     HealthModule,
     AuthModule,
     EmpresasModule,
+    PlataformaModule,
   ],
   controllers: [AppController],
   providers: [

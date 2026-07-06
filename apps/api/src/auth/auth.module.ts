@@ -6,6 +6,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TOKEN_DURACION } from './auth.constants';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { SuperadminGuard } from './superadmin.guard';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtAuthGuard],
-  exports: [JwtAuthGuard, JwtModule],
+  providers: [AuthService, JwtAuthGuard, SuperadminGuard],
+  exports: [JwtAuthGuard, SuperadminGuard, JwtModule],
 })
 export class AuthModule {}
