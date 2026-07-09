@@ -64,6 +64,10 @@ services:
       THROTTLE_TTL: ${THROTTLE_TTL:-60000}
       THROTTLE_LIMIT: ${THROTTLE_LIMIT:-100}
       SWAGGER_ENABLED: ${SWAGGER_ENABLED:-false}
+      # Fotos de visitas: persisten en el volumen uploads_data
+      UPLOADS_DIR: /app/uploads
+    volumes:
+      - uploads_data:/app/uploads
     depends_on:
       postgres:
         condition: service_healthy
@@ -117,5 +121,6 @@ networks:
 
 volumes:
   postgres_data:
+  uploads_data:
   caddy_data:
   caddy_config:

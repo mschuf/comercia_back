@@ -2,10 +2,11 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { AccesoPlataformaService } from '../plataforma/acceso-plataforma.service';
+import { ConfigImpulsadorService } from '../impulsador/config-impulsador.service';
+import { PAGINAS_IMPULSADOR } from '../impulsador/impulsador.constants';
+import type { UsuarioImpulsador } from '../impulsador/interfaces/usuario-impulsador.interface';
 import {
   PaginacionDto,
   respuestaPaginada,
@@ -13,34 +14,28 @@ import {
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
 import { ActualizarLocalDto, CrearLocalDto } from './dto/local.dto';
-import type { LocalDto, UsuarioAsignable } from './interfaces/local.interface';
-
-// Este módulo vive en la página "locales" del módulo "impulsador": el acceso a
-// sus datos respeta la habilitación por empresa y la visibilidad por rol que
-// configuró el superadmin (no basta con estar autenticado).
-const MODULO_RUTA = 'impulsador';
-const PAGINA_RUTA = 'locales';
-
-// Roles que gestionan locales (ABM completo dentro de su empresa).
-// El resto (ej. IMPULSADOR) solo ve los locales que tiene asignados.
-const ROLES_GESTORES = ['GERENTE', 'JEFE', 'SUPERVISOR', 'TEAMLEADER'];
-
-interface UsuarioLocales {
-  id: number;
-  empresaId: number;
-  esGestor: boolean;
-}
+import type {
+  LocalDetalleDto,
+  LocalDto,
+  UsuarioAsignable,
+} from './interfaces/local.interface';
+import { aTareaLocalDto, SELECT_TAREA_LOCAL } from './tareas-local.service';
 
 type LocalConRelaciones = {
   id: number;
   nombre: string;
   latitud: number;
   longitud: number;
+  zona: { id: number; nombre: string } | null;
+  radioMetros: number | null;
+  fechaVisita: Date | null;
+  requiereFotoPresencia: boolean;
   activo: boolean;
   createdAt: Date;
   updatedAt: Date;
   usuario: { id: number; nombre: string; apellido: string } | null;
   creadoPor: { id: number; nombre: string; apellido: string };
+  _count: { tareas: number };
 };
 
 const SELECT_LOCAL = {
@@ -48,11 +43,17 @@ const SELECT_LOCAL = {
   nombre: true,
   latitud: true,
   longitud: true,
+  zona: { select: { id: true, nombre: true } },
+  radioMetros: true,
+  fechaVisita: true,
+  requiereFotoPresencia: true,
   activo: true,
   createdAt: true,
   updatedAt: true,
   usuario: { select: { id: true, nombre: true, apellido: true } },
   creadoPor: { select: { id: true, nombre: true, apellido: true } },
+  // Solo cuenta tareas activas: es lo que un operativo ve en el checklist
+  _count: { select: { tareas: { where: { activo: true } } } },
 } as const;
 
 function aLocalDto(local: LocalConRelaciones): LocalDto {
@@ -61,6 +62,11 @@ function aLocalDto(local: LocalConRelaciones): LocalDto {
     nombre: local.nombre,
     latitud: local.latitud,
     longitud: local.longitud,
+    zona: local.zona ? { id: local.zona.id, nombre: local.zona.nombre } : null,
+    radioMetros: local.radioMetros,
+    fechaVisita: local.fechaVisita?.toISOString() ?? null,
+    requiereFotoPresencia: local.requiereFotoPresencia,
+    tareasCount: local._count.tareas,
     activo: local.activo,
     asignadoA: local.usuario
       ? {
@@ -81,34 +87,17 @@ function aLocalDto(local: LocalConRelaciones): LocalDto {
 export class LocalesService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly acceso: AccesoPlataformaService,
+    private readonly configImpulsador: ConfigImpulsadorService,
   ) {}
 
-  private async usuarioActual(usuarioId: number): Promise<UsuarioLocales> {
-    // Cortafuegos: la empresa debe tener el módulo Impulsador habilitado y el
-    // rol del usuario debe poder verlo. Un rol excluido por el superadmin no
-    // entra por la API aunque sepa la URL (autenticado ≠ autorizado).
-    await this.acceso.exigirAccesoPagina(usuarioId, MODULO_RUTA, PAGINA_RUTA);
-
-    const usuario = await this.prisma.usuario.findUnique({
-      where: { id: usuarioId },
-      select: {
-        id: true,
-        empresaId: true,
-        isActive: true,
-        rol: { select: { descripcion: true } },
-      },
-    });
-    if (!usuario || !usuario.isActive) {
-      throw new UnauthorizedException();
-    }
-    return {
-      id: usuario.id,
-      empresaId: usuario.empresaId,
-      esGestor:
-        usuario.rol !== null &&
-        ROLES_GESTORES.includes(usuario.rol.descripcion.toUpperCase()),
-    };
+  private usuarioActual(usuarioId: number): Promise<UsuarioImpulsador> {
+    // El acceso por página y el permiso gestor/operativo salen de la config
+    // del módulo Impulsador. Alcanza con ver alguna de las tres páginas
+    // porque las vistas de mapa y de visitas también listan locales.
+    return this.configImpulsador.usuarioImpulsador(
+      usuarioId,
+      PAGINAS_IMPULSADOR,
+    );
   }
 
   // Gestor: todos los locales de su empresa. Impulsador: solo los asignados a él.
@@ -141,8 +130,17 @@ export class LocalesService {
     if (!actual.esGestor) {
       throw new ForbiddenException('Solo un gestor puede asignar locales');
     }
+    const config = await this.configImpulsador.deEmpresa(actual.empresaId);
     const usuarios = await this.prisma.usuario.findMany({
-      where: { empresaId: actual.empresaId, isActive: true },
+      where: {
+        empresaId: actual.empresaId,
+        isActive: true,
+        // Si la empresa configuró roles operativos, el select solo ofrece
+        // usuarios de esos roles; lista vacía = cualquier usuario activo
+        ...(config.rolOperativoIds.length > 0
+          ? { rolId: { in: config.rolOperativoIds } }
+          : {}),
+      },
       select: {
         id: true,
         nombre: true,
@@ -173,6 +171,17 @@ export class LocalesService {
     }
   }
 
+  // La zona debe existir y ser de la empresa del gestor (mensaje neutro)
+  private async zonaDeEmpresa(id: number, empresaId: number): Promise<void> {
+    const zona = await this.prisma.zona.findUnique({
+      where: { id },
+      select: { empresaId: true },
+    });
+    if (!zona || zona.empresaId !== empresaId) {
+      throw new NotFoundException('La zona no existe');
+    }
+  }
+
   async crear(usuarioId: number, dto: CrearLocalDto): Promise<LocalDto> {
     const actual = await this.usuarioActual(usuarioId);
     if (!actual.esGestor) {
@@ -181,12 +190,19 @@ export class LocalesService {
     if (dto.usuarioId != null) {
       await this.validarAsignado(actual.empresaId, dto.usuarioId);
     }
+    if (dto.zonaId != null) {
+      await this.zonaDeEmpresa(dto.zonaId, actual.empresaId);
+    }
     const local = await this.prisma.local.create({
       data: {
         empresaId: actual.empresaId,
         nombre: dto.nombre,
         latitud: dto.latitud,
         longitud: dto.longitud,
+        zonaId: dto.zonaId ?? null,
+        radioMetros: dto.radioMetros ?? null,
+        fechaVisita: dto.fechaVisita ? new Date(dto.fechaVisita) : null,
+        requiereFotoPresencia: dto.requiereFotoPresencia ?? false,
         usuarioId: dto.usuarioId ?? null,
         creadoPorId: actual.id,
       },
@@ -223,19 +239,65 @@ export class LocalesService {
     if (dto.usuarioId != null) {
       await this.validarAsignado(actual.empresaId, dto.usuarioId);
     }
+    if (dto.zonaId != null) {
+      await this.zonaDeEmpresa(dto.zonaId, actual.empresaId);
+    }
     const local = await this.prisma.local.update({
       where: { id },
       data: {
         nombre: dto.nombre,
         latitud: dto.latitud,
         longitud: dto.longitud,
+        // undefined = no tocar; null = quitar de la zona
+        zonaId: dto.zonaId,
+        // undefined = no tocar; null = volver al default de la config
+        radioMetros: dto.radioMetros,
+        // undefined = no tocar; null = sin visita programada
+        fechaVisita:
+          dto.fechaVisita === undefined
+            ? undefined
+            : dto.fechaVisita
+              ? new Date(dto.fechaVisita)
+              : null,
+        requiereFotoPresencia: dto.requiereFotoPresencia,
         // undefined = no tocar; null = desasignar
-        usuarioId: dto.usuarioId === undefined ? undefined : dto.usuarioId,
+        usuarioId: dto.usuarioId,
         activo: dto.activo,
       },
       select: SELECT_LOCAL,
     });
     return aLocalDto(local);
+  }
+
+  // Detalle con checklist: gestor ve cualquier local de su empresa (tareas
+  // incluidas las inactivas); el operativo solo su local asignado y activas.
+  async detalle(usuarioId: number, id: number): Promise<LocalDetalleDto> {
+    const actual = await this.usuarioActual(usuarioId);
+    const local = await this.prisma.local.findUnique({
+      where: { id },
+      select: {
+        ...SELECT_LOCAL,
+        empresaId: true,
+        usuarioId: true,
+        tareas: {
+          where: actual.esGestor ? {} : { activo: true },
+          select: SELECT_TAREA_LOCAL,
+          orderBy: [{ orden: 'asc' }, { id: 'asc' }],
+        },
+      },
+    });
+    // Mensaje neutro: no revela si el local existe pero es ajeno
+    if (!local || local.empresaId !== actual.empresaId) {
+      throw new NotFoundException('El local no existe');
+    }
+    if (!actual.esGestor && local.usuarioId !== actual.id) {
+      throw new NotFoundException('El local no existe');
+    }
+    return {
+      ...aLocalDto(local),
+      tareas: local.tareas.map(aTareaLocalDto),
+      radioMetrosEfectivo: local.radioMetros ?? actual.radioMetrosDefecto,
+    };
   }
 
   async eliminar(usuarioId: number, id: number): Promise<{ ok: true }> {

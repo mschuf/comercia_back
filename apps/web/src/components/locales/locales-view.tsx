@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { apiFetch, ApiError } from "@/lib/api";
-import { usePanel } from "@/components/panel/contexto";
 import { Modal } from "@/components/modal";
 import { Paginacion } from "@/components/paginacion";
 import {
@@ -14,12 +13,16 @@ import {
   labelBase,
 } from "@/components/ui";
 import { formatoCoordenada, formatoFechaHora } from "@/utils/formato";
+import { fechaInputAIso, formatoFecha, isoAFechaInput } from "@/utils/fechas";
 import type { RespuestaPaginada } from "@/types/paginacion";
-import {
-  ROLES_GESTORES_LOCALES,
-  type Local,
-  type UsuarioAsignable,
+import type {
+  Local,
+  LocalDetalle,
+  TareaLocal,
+  UsuarioAsignable,
 } from "@/types/local";
+import type { Zona } from "@/types/territorio";
+import type { ConfigImpulsador } from "@/types/impulsador-config";
 
 // Leaflet solo existe en el navegador: import dinámico sin SSR
 const MapaPicker = dynamic(
@@ -37,6 +40,12 @@ interface FormLocal {
   latitud: string;
   longitud: string;
   usuarioId: number | "";
+  zonaId: number | "";
+  // Texto libre del input numérico; "" = usa el radio por defecto de la config
+  radioMetros: string;
+  // "" o "aaaa-mm-dd" (input type="date")
+  fechaVisita: string;
+  requiereFotoPresencia: boolean;
   activo: boolean;
 }
 
@@ -45,6 +54,10 @@ const FORM_VACIO: FormLocal = {
   latitud: "",
   longitud: "",
   usuarioId: "",
+  zonaId: "",
+  radioMetros: "",
+  fechaVisita: "",
+  requiereFotoPresencia: false,
   activo: true,
 };
 
@@ -68,10 +81,10 @@ function EstadoLocal({ activo }: { activo: boolean }) {
 }
 
 export function LocalesView() {
-  const { usuario } = usePanel();
-  const esGestor =
-    usuario.rol !== null &&
-    ROLES_GESTORES_LOCALES.includes(usuario.rol.descripcion.toUpperCase());
+  // La regla de qué roles gestionan vive en el backend: mientras la config
+  // carga nos comportamos como no-gestor (sin botones de gestión).
+  const [config, setConfig] = useState<ConfigImpulsador | null>(null);
+  const esGestor = config?.esGestor ?? false;
 
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(7);
@@ -80,9 +93,11 @@ export function LocalesView() {
   const [errorCarga, setErrorCarga] = useState<string | null>(null);
 
   const [asignables, setAsignables] = useState<UsuarioAsignable[]>([]);
+  const [zonas, setZonas] = useState<Zona[]>([]);
 
   // null = cerrado; "nuevo" = alta; Local = edición
   const [editando, setEditando] = useState<Local | "nuevo" | null>(null);
+  const [checklistDe, setChecklistDe] = useState<Local | null>(null);
   const [form, setForm] = useState<FormLocal>(FORM_VACIO);
   const [guardando, setGuardando] = useState(false);
   const [errorForm, setErrorForm] = useState<string | null>(null);
@@ -134,11 +149,29 @@ export function LocalesView() {
   }, [page, limit]);
 
   useEffect(() => {
+    let vigente = true;
+    apiFetch<ConfigImpulsador>("/impulsador/config")
+      .then((data) => {
+        if (vigente) setConfig(data);
+      })
+      .catch(() => undefined);
+    return () => {
+      vigente = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (!esGestor) return;
     let vigente = true;
     apiFetch<UsuarioAsignable[]>("/locales/usuarios-asignables")
       .then((data) => {
         if (vigente) setAsignables(data);
+      })
+      .catch(() => undefined);
+    // Puede fallar con 403 si la empresa no tiene la página de zonas: sin zonas
+    apiFetch<Zona[]>("/zonas/todas")
+      .then((data) => {
+        if (vigente) setZonas(data);
       })
       .catch(() => undefined);
     return () => {
@@ -158,6 +191,10 @@ export function LocalesView() {
       latitud: formatoCoordenada(local.latitud),
       longitud: formatoCoordenada(local.longitud),
       usuarioId: local.asignadoA?.id ?? "",
+      zonaId: local.zona?.id ?? "",
+      radioMetros: local.radioMetros?.toString() ?? "",
+      fechaVisita: isoAFechaInput(local.fechaVisita),
+      requiereFotoPresencia: local.requiereFotoPresencia,
       activo: local.activo,
     });
     setErrorForm(null);
@@ -191,6 +228,15 @@ export function LocalesView() {
       setErrorForm("La longitud debe ser un número entre -180 y 180");
       return;
     }
+    let radioMetros: number | null = null;
+    if (form.radioMetros !== "") {
+      const radio = Number(form.radioMetros);
+      if (!Number.isInteger(radio) || radio < 10 || radio > 50000) {
+        setErrorForm("El radio debe ser un entero entre 10 y 50000 metros");
+        return;
+      }
+      radioMetros = radio;
+    }
 
     setErrorForm(null);
     setGuardando(true);
@@ -201,6 +247,10 @@ export function LocalesView() {
         latitud,
         longitud,
         usuarioId: form.usuarioId === "" ? null : form.usuarioId,
+        zonaId: form.zonaId === "" ? null : form.zonaId,
+        radioMetros,
+        fechaVisita: fechaInputAIso(form.fechaVisita),
+        requiereFotoPresencia: form.requiereFotoPresencia,
         ...(inicial ? { activo: form.activo } : {}),
       };
       if (inicial) {
@@ -329,10 +379,44 @@ export function LocalesView() {
                       {formatoCoordenada(l.longitud)}
                     </dd>
                   </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <dt className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                        Zona
+                      </dt>
+                      <dd className="mt-0.5 break-words text-zinc-700 dark:text-zinc-200">
+                        {l.zona ? (
+                          l.zona.nombre
+                        ) : (
+                          <span className="text-zinc-400 dark:text-zinc-500">
+                            —
+                          </span>
+                        )}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                        Próx. visita
+                      </dt>
+                      <dd className="mt-0.5 text-zinc-700 [font-variant-numeric:tabular-nums] dark:text-zinc-200">
+                        {formatoFecha(l.fechaVisita)}
+                      </dd>
+                    </div>
+                  </div>
                 </dl>
 
                 {esGestor && (
                   <div className="mt-4 grid grid-cols-2 gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+                    <button
+                      type="button"
+                      onClick={() => setChecklistDe(l)}
+                      className="col-span-2 inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-zinc-300 px-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    >
+                      Checklist
+                      <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                        {l.tareasCount}
+                      </span>
+                    </button>
                     <button
                       type="button"
                       onClick={() => abrirEdicion(l)}
@@ -377,12 +461,14 @@ export function LocalesView() {
           </div>
 
           <div className="mt-4 hidden overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 md:block">
-            <table className="w-full min-w-[640px] text-left text-sm">
+            <table className="w-full min-w-[760px] text-left text-sm">
               <thead>
                 <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
                   <th className="px-4 py-3 font-medium">Nombre</th>
                   <th className="px-4 py-3 font-medium">Coordenadas</th>
+                  <th className="px-4 py-3 font-medium">Zona</th>
                   <th className="px-4 py-3 font-medium">Asignado a</th>
+                  <th className="px-4 py-3 font-medium">Próx. visita</th>
                   <th className="px-4 py-3 font-medium">Actualizado</th>
                   <th className="px-4 py-3 font-medium">Estado</th>
                   {esGestor && (
@@ -404,11 +490,21 @@ export function LocalesView() {
                       {formatoCoordenada(l.longitud)}
                     </td>
                     <td className="px-4 py-3">
+                      {l.zona ? (
+                        l.zona.nombre
+                      ) : (
+                        <span className="text-zinc-400">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
                       {l.asignadoA ? (
                         l.asignadoA.nombre
                       ) : (
                         <span className="text-zinc-400">Sin asignar</span>
                       )}
+                    </td>
+                    <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                      {formatoFecha(l.fechaVisita)}
                     </td>
                     <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
                       {formatoFechaHora(l.updatedAt)}
@@ -418,7 +514,18 @@ export function LocalesView() {
                     </td>
                     {esGestor && (
                       <td className="px-4 py-3">
-                        <div className="flex justify-end gap-1.5">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setChecklistDe(l)}
+                            aria-label={`Checklist de ${l.nombre}`}
+                            className="inline-flex h-9 items-center gap-1 rounded-lg px-2.5 text-xs font-medium text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                          >
+                            Checklist
+                            <span className="rounded-full bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+                              {l.tareasCount}
+                            </span>
+                          </button>
                           <button
                             type="button"
                             onClick={() => abrirEdicion(l)}
@@ -574,6 +681,69 @@ export function LocalesView() {
             </select>
           </label>
 
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <label className={labelBase}>
+              Zona
+              <select
+                value={form.zonaId}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    zonaId: e.target.value === "" ? "" : Number(e.target.value),
+                  }))
+                }
+                className={inputBase}
+              >
+                <option value="">Sin zona</option>
+                {zonas.map((z) => (
+                  <option key={z.id} value={z.id}>
+                    {z.nombre} — {z.territorioNombre}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={labelBase}>
+              Radio de verificación (m)
+              <input
+                type="number"
+                inputMode="numeric"
+                min={10}
+                max={50000}
+                value={form.radioMetros}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, radioMetros: e.target.value }))
+                }
+                placeholder="Por defecto (config)"
+                className={inputBase}
+              />
+            </label>
+            <label className={labelBase}>
+              Próxima visita
+              <input
+                type="date"
+                value={form.fechaVisita}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, fechaVisita: e.target.value }))
+                }
+                className={inputBase}
+              />
+            </label>
+            <label className="flex cursor-pointer items-center gap-2 pt-6 text-sm text-zinc-700 dark:text-zinc-300">
+              <input
+                type="checkbox"
+                checked={form.requiereFotoPresencia}
+                onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    requiereFotoPresencia: e.target.checked,
+                  }))
+                }
+                className="h-4 w-4 accent-brand-700"
+              />
+              Exigir foto de presencia al visitar
+            </label>
+          </div>
+
           {editando !== null && editando !== "nuevo" && (
             <label className="flex cursor-pointer items-center gap-2 text-sm">
               <input
@@ -639,6 +809,315 @@ export function LocalesView() {
           </button>
         </div>
       </Modal>
+
+      {/* Modal de checklist: al cerrar se refresca el listado (tareasCount pudo cambiar) */}
+      {checklistDe && (
+        <ModalChecklist
+          local={checklistDe}
+          onCerrar={() => {
+            setChecklistDe(null);
+            void cargar();
+          }}
+        />
+      )}
     </div>
+  );
+}
+
+// ============================================================
+// Checklist de tareas de un local
+// ============================================================
+
+function ModalChecklist({
+  local,
+  onCerrar,
+}: {
+  local: Local;
+  onCerrar: () => void;
+}) {
+  const [detalle, setDetalle] = useState<LocalDetalle | null>(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [mutando, setMutando] = useState(false);
+  // Confirmación inline de borrado: id de la tarea con los botones Sí/No visibles
+  const [confirmandoId, setConfirmandoId] = useState<number | null>(null);
+  const [avisoDesactivada, setAvisoDesactivada] = useState(false);
+
+  const [nuevaDescripcion, setNuevaDescripcion] = useState("");
+  const [nuevaRequiereFoto, setNuevaRequiereFoto] = useState(false);
+
+  useEffect(() => {
+    let vigente = true;
+    apiFetch<LocalDetalle>(`/locales/${local.id}`)
+      .then((data) => {
+        if (vigente) setDetalle(data);
+      })
+      .catch((err) => {
+        if (vigente) {
+          setError(
+            err instanceof ApiError
+              ? err.message
+              : "No se pudo cargar el checklist",
+          );
+        }
+      })
+      .finally(() => {
+        if (vigente) setCargando(false);
+      });
+    return () => {
+      vigente = false;
+    };
+  }, [local.id]);
+
+  // Toda mutación re-lee el detalle para reflejar el estado real del servidor
+  async function mutar(fn: () => Promise<unknown>): Promise<boolean> {
+    if (mutando) return false;
+    setError(null);
+    setMutando(true);
+    try {
+      await fn();
+      setDetalle(await apiFetch<LocalDetalle>(`/locales/${local.id}`));
+      return true;
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "No se pudo guardar el cambio",
+      );
+      return false;
+    } finally {
+      setMutando(false);
+    }
+  }
+
+  function actualizarTarea(
+    tareaId: number,
+    cambios: Partial<Pick<TareaLocal, "requiereFoto" | "orden" | "activo">>,
+  ) {
+    void mutar(() =>
+      apiFetch(`/locales/${local.id}/tareas/${tareaId}`, {
+        method: "PATCH",
+        body: JSON.stringify(cambios),
+      }),
+    );
+  }
+
+  function eliminarTarea(tareaId: number) {
+    setConfirmandoId(null);
+    void mutar(async () => {
+      const res = await apiFetch<{ ok: boolean; desactivada: boolean }>(
+        `/locales/${local.id}/tareas/${tareaId}`,
+        { method: "DELETE" },
+      );
+      if (res.desactivada) {
+        setAvisoDesactivada(true);
+        // Aviso temporal: se oculta solo después de unos segundos
+        setTimeout(() => setAvisoDesactivada(false), 6000);
+      }
+    });
+  }
+
+  async function agregarTarea(e: React.FormEvent) {
+    e.preventDefault();
+    const descripcion = nuevaDescripcion.trim();
+    if (descripcion.length === 0 || mutando) return;
+    // La nueva tarea va al final del checklist
+    const orden =
+      (detalle?.tareas ?? []).reduce((max, t) => Math.max(max, t.orden), 0) + 1;
+    const ok = await mutar(() =>
+      apiFetch(`/locales/${local.id}/tareas`, {
+        method: "POST",
+        body: JSON.stringify({
+          descripcion,
+          requiereFoto: nuevaRequiereFoto,
+          orden,
+        }),
+      }),
+    );
+    if (ok) {
+      setNuevaDescripcion("");
+      setNuevaRequiereFoto(false);
+    }
+  }
+
+  const tareas = detalle?.tareas ?? [];
+
+  return (
+    <Modal
+      titulo={`Checklist — ${local.nombre}`}
+      abierto
+      onCerrar={onCerrar}
+      ancho="lg"
+    >
+      {error && <p className={`${errorBox} mb-3`}>{error}</p>}
+      {avisoDesactivada && (
+        <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300">
+          La tarea tenía respuestas de visitas: se desactivó en lugar de
+          borrarse.
+        </p>
+      )}
+
+      {cargando ? (
+        <p className="text-sm text-zinc-400">Cargando checklist...</p>
+      ) : detalle === null ? null : tareas.length === 0 ? (
+        <p className="rounded-lg border border-dashed border-zinc-300 px-3 py-6 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">
+          Este local todavía no tiene tareas. Agregá la primera acá abajo.
+        </p>
+      ) : (
+        <ul className="flex flex-col gap-2">
+          {tareas.map((t) => (
+            <li
+              key={t.id}
+              className="rounded-lg border border-zinc-200 p-3 dark:border-zinc-800"
+            >
+              <p
+                className={`text-sm ${
+                  t.activo
+                    ? "text-zinc-800 dark:text-zinc-100"
+                    : "text-zinc-400 line-through dark:text-zinc-500"
+                }`}
+              >
+                {t.descripcion}
+              </p>
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+                <label className="flex h-8 cursor-pointer items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                  <input
+                    type="checkbox"
+                    checked={t.requiereFoto}
+                    disabled={mutando}
+                    onChange={(e) =>
+                      actualizarTarea(t.id, { requiereFoto: e.target.checked })
+                    }
+                    className="h-3.5 w-3.5 accent-brand-700 disabled:cursor-not-allowed"
+                  />
+                  📷 requiere foto
+                </label>
+                <label className="flex items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                  Orden
+                  <input
+                    // La key remonta el input cuando el servidor confirma otro orden
+                    key={`${t.id}-${t.orden}`}
+                    type="number"
+                    defaultValue={t.orden}
+                    min={0}
+                    disabled={mutando}
+                    onBlur={(e) => {
+                      const n = Number(e.target.value);
+                      if (
+                        e.target.value.trim() !== "" &&
+                        Number.isInteger(n) &&
+                        n >= 0 &&
+                        n !== t.orden
+                      ) {
+                        actualizarTarea(t.id, { orden: n });
+                      }
+                    }}
+                    className="w-16 rounded-lg border border-zinc-300 bg-white px-2 py-1 text-xs text-zinc-900 outline-none transition focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                  />
+                </label>
+                <button
+                  type="button"
+                  disabled={mutando}
+                  onClick={() => actualizarTarea(t.id, { activo: !t.activo })}
+                  className={`rounded-full px-2.5 py-1 text-xs font-medium transition focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-50 ${
+                    t.activo
+                      ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:hover:bg-emerald-900"
+                      : "bg-zinc-100 text-zinc-500 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
+                  }`}
+                >
+                  {t.activo ? "Activa" : "Inactiva"}
+                </button>
+                <div className="ml-auto">
+                  {confirmandoId === t.id ? (
+                    <span className="flex items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-300">
+                      ¿Eliminar?
+                      <button
+                        type="button"
+                        disabled={mutando}
+                        onClick={() => eliminarTarea(t.id)}
+                        className="rounded-md bg-red-600 px-2.5 py-1 text-xs font-semibold text-white transition hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-600/40 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        Sí
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmandoId(null)}
+                        className="rounded-md border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-600 transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                      >
+                        No
+                      </button>
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={mutando}
+                      onClick={() => setConfirmandoId(t.id)}
+                      aria-label={`Eliminar tarea ${t.descripcion}`}
+                      className="grid h-8 w-8 place-items-center rounded-lg text-zinc-400 transition hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-600/40 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-red-950 dark:hover:text-red-400"
+                    >
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="h-4 w-4"
+                        aria-hidden
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {!cargando && detalle !== null && (
+        <form
+          onSubmit={agregarTarea}
+          className="mt-4 border-t border-zinc-100 pt-4 dark:border-zinc-800"
+        >
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+            Nueva tarea
+          </p>
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <input
+              type="text"
+              value={nuevaDescripcion}
+              onChange={(e) => setNuevaDescripcion(e.target.value)}
+              placeholder="Ej. Verificar exhibición en góndola"
+              maxLength={300}
+              className={`${inputBase} sm:flex-1`}
+            />
+            <label className="flex h-11 shrink-0 cursor-pointer items-center gap-1.5 text-sm text-zinc-600 dark:text-zinc-300">
+              <input
+                type="checkbox"
+                checked={nuevaRequiereFoto}
+                onChange={(e) => setNuevaRequiereFoto(e.target.checked)}
+                className="h-4 w-4 accent-brand-700"
+              />
+              📷 Foto
+            </label>
+            <button
+              type="submit"
+              disabled={mutando || nuevaDescripcion.trim().length === 0}
+              className={btnPrimary}
+            >
+              Agregar
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="mt-5 flex justify-end">
+        <button type="button" onClick={onCerrar} className={btnGhost}>
+          Cerrar
+        </button>
+      </div>
+    </Modal>
   );
 }

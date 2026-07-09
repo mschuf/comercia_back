@@ -42,6 +42,9 @@ COPY --from=build --chown=api:nodejs /app/node_modules/@prisma/engines /app/node
 # El esquema, las migraciones y prisma.config.ts se necesitan para `prisma migrate deploy`
 COPY --chown=api:nodejs apps/api/prisma /app/apps/api/prisma
 COPY --chown=api:nodejs apps/api/prisma.config.ts /app/apps/api/prisma.config.ts
+# Carpeta de archivos subidos (fotos de visitas); en prod se monta el volumen
+# uploads_data acá. Se crea con dueño api para que el proceso pueda escribir.
+RUN mkdir -p /app/uploads && chown api:nodejs /app/uploads
 USER api
 WORKDIR /app/apps/api
 EXPOSE 3001

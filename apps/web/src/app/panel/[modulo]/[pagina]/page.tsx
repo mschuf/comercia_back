@@ -3,12 +3,16 @@
 import { use, type ComponentType } from "react";
 import { usePanel } from "@/components/panel/contexto";
 import { LocalesView } from "@/components/locales/locales-view";
+import { MapaView } from "@/components/impulsador/mapa-view";
+import { VisitasView } from "@/components/impulsador/visitas-view";
 
 // Registro de vistas con interfaz propia: "ruta-modulo/ruta-pagina" → componente.
 // Las páginas que no estén acá muestran el placeholder de "configurada" (su
 // ejecución de datos por ejecutables llega en la próxima etapa).
 const VISTAS: Record<string, ComponentType> = {
   "impulsador/locales": LocalesView,
+  "impulsador/mapa": MapaView,
+  "impulsador/visitas": VisitasView,
 };
 
 export default function PaginaModulo({

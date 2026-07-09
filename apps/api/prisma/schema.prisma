@@ -26,6 +26,9 @@ model Empresa {
   modulos   EmpresaModulo[]
   paginas   EmpresaPagina[]
   locales   Local[]         @relation("EmpresaLocales")
+  territorios Territorio[]  @relation("EmpresaTerritorios")
+  zonas     Zona[]          @relation("EmpresaZonas")
+  configImpulsador ConfigImpulsador? @relation("EmpresaConfigImpulsador")
   createdAt DateTime        @default(now()) @map("created_at")
   updatedAt DateTime        @default(now()) @updatedAt @map("updated_at")
 
@@ -158,7 +161,54 @@ model EmpresaPagina {
   @@map("empresa_paginas")
 }
 
-// Locales geolocalizados (módulo Impulsador). Los carga el teamleader y puede
+// ============================================================
+// Módulo Impulsador: jerarquía geográfica (territorio > zona > local),
+// checklist por local y visitas con verificación de ubicación.
+// ============================================================
+
+// Territorio geográfico de una empresa (nivel superior de la jerarquía).
+// El polígono se dibuja en el mapa y se guarda como [[lat, lng], ...].
+model Territorio {
+  id          Int      @id @default(autoincrement())
+  empresaId   Int      @map("empresa_id")
+  empresa     Empresa  @relation("EmpresaTerritorios", fields: [empresaId], references: [id], onDelete: Cascade)
+  nombre      String
+  // Color de relleno en el mapa (hex #rrggbb)
+  color       String   @default("#047857")
+  // Vértices del área [[lat, lng], ...]; null = sin delimitar todavía
+  poligono    Json?
+  activo      Boolean  @default(true)
+  zonas       Zona[]
+  creadoPorId Int      @map("creado_por_id")
+  creadoPor   Usuario  @relation("TerritoriosCreados", fields: [creadoPorId], references: [id])
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("territorios")
+}
+
+// Zona dentro de un territorio; agrupa locales.
+model Zona {
+  id           Int        @id @default(autoincrement())
+  empresaId    Int        @map("empresa_id")
+  empresa      Empresa    @relation("EmpresaZonas", fields: [empresaId], references: [id], onDelete: Cascade)
+  territorioId Int        @map("territorio_id")
+  // Borrar un territorio borra sus zonas (los locales quedan sin zona)
+  territorio   Territorio @relation(fields: [territorioId], references: [id], onDelete: Cascade)
+  nombre       String
+  color        String     @default("#0284c7")
+  poligono     Json?
+  activo       Boolean    @default(true)
+  locales      Local[]
+  creadoPorId  Int        @map("creado_por_id")
+  creadoPor    Usuario    @relation("ZonasCreadas", fields: [creadoPorId], references: [id])
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @default(now()) @updatedAt @map("updated_at")
+
+  @@map("zonas")
+}
+
+// Locales geolocalizados (módulo Impulsador). Los carga un rol gestor y puede
 // asignarlos a un usuario (impulsador) de su misma empresa.
 model Local {
   id          Int      @id @default(autoincrement())
@@ -167,17 +217,107 @@ model Local {
   nombre      String
   latitud     Float
   longitud    Float
+  // Zona a la que pertenece (opcional hasta que el gestor la asigne)
+  zonaId      Int?     @map("zona_id")
+  zona        Zona?    @relation(fields: [zonaId], references: [id], onDelete: SetNull)
+  // Radio en metros para verificar presencia; null = usa el de la config
+  radioMetros Int?     @map("radio_metros")
+  // Próxima visita programada por el gestor
+  fechaVisita DateTime? @map("fecha_visita")
+  // El gestor exige una foto de presencia al finalizar la visita
+  requiereFotoPresencia Boolean @default(false) @map("requiere_foto_presencia")
   // Impulsador al que se le asigna el local (opcional)
   usuarioId   Int?     @map("usuario_id")
   usuario     Usuario? @relation("LocalesAsignados", fields: [usuarioId], references: [id], onDelete: SetNull)
-  // Quién lo cargó (teamleader)
+  // Quién lo cargó (rol gestor)
   creadoPorId Int      @map("creado_por_id")
   creadoPor   Usuario  @relation("LocalesCreados", fields: [creadoPorId], references: [id])
   activo      Boolean  @default(true)
+  tareas      TareaLocal[]
+  visitas     Visita[]
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("locales")
+}
+
+// Ítem del checklist de un local. `requiereFoto` habilita la cámara para
+// esa tarea durante la visita.
+model TareaLocal {
+  id           Int      @id @default(autoincrement())
+  localId      Int      @map("local_id")
+  local        Local    @relation(fields: [localId], references: [id], onDelete: Cascade)
+  descripcion  String
+  requiereFoto Boolean  @default(false) @map("requiere_foto")
+  orden        Int      @default(0)
+  activo       Boolean  @default(true)
+  respuestas   VisitaTarea[]
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("tareas_local")
+}
+
+// Visita de un usuario a un local. La ubicación reportada se verifica contra
+// el radio del local y queda registrada con fecha y hora.
+model Visita {
+  id                 Int       @id @default(autoincrement())
+  localId            Int       @map("local_id")
+  local              Local     @relation(fields: [localId], references: [id], onDelete: Cascade)
+  usuarioId          Int       @map("usuario_id")
+  usuario            Usuario   @relation("VisitasRealizadas", fields: [usuarioId], references: [id], onDelete: Cascade)
+  iniciadaEn         DateTime  @default(now()) @map("iniciada_en")
+  completadaEn       DateTime? @map("completada_en")
+  // Ubicación reportada al iniciar y su distancia al local
+  latitud            Float
+  longitud           Float
+  distanciaMetros    Float     @map("distancia_metros")
+  // Ubicación reportada al finalizar (botón "Registrar visita")
+  latitudFin         Float?    @map("latitud_fin")
+  longitudFin        Float?    @map("longitud_fin")
+  distanciaFinMetros Float?    @map("distancia_fin_metros")
+  // Nombre de archivo de la foto de presencia (en UPLOADS_DIR del servidor)
+  fotoPresencia      String?   @map("foto_presencia")
+  tareas             VisitaTarea[]
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  @@index([localId, usuarioId])
+  @@map("visitas")
+}
+
+// Estado de cada tarea del checklist dentro de una visita.
+model VisitaTarea {
+  id           Int        @id @default(autoincrement())
+  visitaId     Int        @map("visita_id")
+  visita       Visita     @relation(fields: [visitaId], references: [id], onDelete: Cascade)
+  tareaId      Int        @map("tarea_id")
+  tarea        TareaLocal @relation(fields: [tareaId], references: [id], onDelete: Cascade)
+  completada   Boolean    @default(false)
+  comentario   String?
+  // Nombre de archivo de la foto tomada para esta tarea
+  foto         String?
+  completadaEn DateTime?  @map("completada_en")
+
+  @@unique([visitaId, tareaId])
+  @@map("visita_tareas")
+}
+
+// Configuración del módulo Impulsador por empresa: qué roles gestionan
+// (cargan locales/zonas/checklists y asignan) y qué roles operan (visitan),
+// más el radio de verificación por defecto. Listas vacías = comportamiento
+// por defecto (gestores clásicos; cualquier usuario asignado puede visitar).
+model ConfigImpulsador {
+  id                 Int      @id @default(autoincrement())
+  empresaId          Int      @unique @map("empresa_id")
+  empresa            Empresa  @relation("EmpresaConfigImpulsador", fields: [empresaId], references: [id], onDelete: Cascade)
+  rolGestorIds       Int[]    @default([]) @map("rol_gestor_ids")
+  rolOperativoIds    Int[]    @default([]) @map("rol_operativo_ids")
+  radioMetrosDefecto Int      @default(200) @map("radio_metros_defecto")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("config_impulsador")
 }
 
 model Rol {
@@ -216,6 +356,9 @@ model Usuario {
   esSuperadmin Boolean   @default(false) @map("es_superadmin")
   localesAsignados Local[] @relation("LocalesAsignados")
   localesCreados   Local[] @relation("LocalesCreados")
+  territoriosCreados Territorio[] @relation("TerritoriosCreados")
+  zonasCreadas       Zona[]       @relation("ZonasCreadas")
+  visitas            Visita[]     @relation("VisitasRealizadas")
   isActive     Boolean   @default(true) @map("is_active")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")

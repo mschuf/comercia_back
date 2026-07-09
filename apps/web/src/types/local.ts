@@ -5,6 +5,13 @@ export interface Local {
   nombre: string;
   latitud: number;
   longitud: number;
+  zona: { id: number; nombre: string } | null;
+  // Radio de verificación de presencia; null = usa el default de la config
+  radioMetros: number | null;
+  // Próxima visita programada por el gestor (ISO 8601)
+  fechaVisita: string | null;
+  requiereFotoPresencia: boolean;
+  tareasCount: number;
   activo: boolean;
   asignadoA: { id: number; nombre: string } | null;
   creadoPor: { id: number; nombre: string };
@@ -12,17 +19,24 @@ export interface Local {
   updatedAt: string;
 }
 
+// Ítem del checklist de un local
+export interface TareaLocal {
+  id: number;
+  descripcion: string;
+  requiereFoto: boolean;
+  orden: number;
+  activo: boolean;
+}
+
+// Detalle con checklist (GET /locales/:id)
+export interface LocalDetalle extends Local {
+  tareas: TareaLocal[];
+  // Radio efectivo: el del local o el default de la config de la empresa
+  radioMetrosEfectivo: number;
+}
+
 export interface UsuarioAsignable {
   id: number;
   nombre: string;
   rol: string | null;
 }
-
-// Roles que pueden gestionar locales (ABM). Debe coincidir con el backend
-// (apps/api/src/locales/locales.service.ts). El resto solo ve los suyos.
-export const ROLES_GESTORES_LOCALES = [
-  "GERENTE",
-  "JEFE",
-  "SUPERVISOR",
-  "TEAMLEADER",
-];

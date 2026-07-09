@@ -16,4 +16,7 @@ export default () => ({
     throttleTtl: Number(process.env.THROTTLE_TTL),
     throttleLimit: Number(process.env.THROTTLE_LIMIT),
   },
+  uploads: {
+    dir: process.env.UPLOADS_DIR ?? './uploads',
+  },
 });

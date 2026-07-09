@@ -91,4 +91,29 @@ export class AccesoPlataformaService {
       rolId: usuario.rolId,
     };
   }
+
+  // Igual que exigirAccesoPagina, pero acepta varias páginas del módulo: pasa
+  // si el usuario puede ver ALGUNA. Para endpoints que sirven a más de una
+  // vista (ej. los datos del mapa sirven a "mapa" y a "locales").
+  async exigirAccesoAlgunaPagina(
+    usuarioId: number,
+    moduloRuta: string,
+    paginasRutas: string[],
+  ): Promise<UsuarioConAcceso> {
+    let ultimoError: unknown = new ForbiddenException(
+      'No tenés acceso a esta sección',
+    );
+    for (const paginaRuta of paginasRutas) {
+      try {
+        return await this.exigirAccesoPagina(usuarioId, moduloRuta, paginaRuta);
+      } catch (error) {
+        // 401 (usuario inexistente/inactivo) no depende de la página: cortar
+        if (error instanceof UnauthorizedException) {
+          throw error;
+        }
+        ultimoError = error;
+      }
+    }
+    throw ultimoError;
+  }
 }

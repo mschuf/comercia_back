@@ -35,6 +35,15 @@ export class LocalesController {
     return this.locales.usuariosAsignables(req.usuarioId);
   }
 
+  // Declarada después de las rutas GET estáticas para no capturarlas
+  @Get(':id')
+  detalle(
+    @Req() req: RequestConUsuario,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.locales.detalle(req.usuarioId, id);
+  }
+
   @Post()
   crear(@Req() req: RequestConUsuario, @Body() dto: CrearLocalDto) {
     return this.locales.crear(req.usuarioId, dto);

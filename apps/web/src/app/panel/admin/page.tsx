@@ -5,8 +5,9 @@ import { useEffect, useState } from "react";
 import { usePanel } from "@/components/panel/contexto";
 import { ModulosPanel } from "@/components/admin/modulos-panel";
 import { EmpresasPanel } from "@/components/admin/empresas-panel";
+import { ImpulsadorPanel } from "@/components/admin/impulsador-panel";
 
-type Tab = "modulos" | "empresas";
+type Tab = "modulos" | "empresas" | "impulsador";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -55,10 +56,19 @@ export default function AdminPage() {
         >
           Acceso por empresa
         </button>
+        <button
+          type="button"
+          onClick={() => setTab("impulsador")}
+          className={tabClase("impulsador")}
+        >
+          Impulsador
+        </button>
       </div>
 
       <div className="mt-6">
-        {tab === "modulos" ? <ModulosPanel /> : <EmpresasPanel />}
+        {tab === "modulos" && <ModulosPanel />}
+        {tab === "empresas" && <EmpresasPanel />}
+        {tab === "impulsador" && <ImpulsadorPanel />}
       </div>
     </div>
   );
