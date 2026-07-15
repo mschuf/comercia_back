@@ -31,6 +31,7 @@ import {
 
 const COLOR_SIN_ZONA = "#b91c1c";
 const COLOR_DIBUJO = "#059669";
+const COLOR_MOVIMIENTO = "#7c3aed";
 
 // Los divIcon se cachean por color: la paleta es acotada y así no se crea
 // un ícono nuevo por marker en cada render
@@ -57,20 +58,52 @@ const iconoVertice = divIcon({
   iconAnchor: [7, 7],
 });
 
-function ClicksDibujo({
-  onVertice,
+const iconoDestino = divIcon({
+  className: "",
+  html: `<div style="width:22px;height:22px;border-radius:50%;background:#fff;border:4px solid ${COLOR_MOVIMIENTO};box-shadow:0 2px 8px rgba(0,0,0,.4);"></div>`,
+  iconSize: [22, 22],
+  iconAnchor: [11, 11],
+});
+
+function ClicksMapa({
+  onClick,
 }: {
-  onVertice: (lat: number, lng: number) => void;
+  onClick: (lat: number, lng: number) => void;
 }) {
   useMapEvents({
     click(e) {
-      onVertice(e.latlng.lat, e.latlng.lng);
+      onClick(e.latlng.lat, e.latlng.lng);
     },
   });
   return null;
 }
 
-// Encuadra todo el contenido cuando el trigger numérico cambia (botón Centrar).
+function CentrarSeleccion({
+  trigger,
+  puntos,
+}: {
+  trigger: number;
+  puntos: [number, number][];
+}) {
+  const map = useMap();
+  const puntosRef = useRef(puntos);
+
+  useEffect(() => {
+    puntosRef.current = puntos;
+  }, [puntos]);
+
+  useEffect(() => {
+    if (trigger === 0 || puntosRef.current.length === 0) return;
+    map.fitBounds(latLngBounds(puntosRef.current), {
+      padding: [48, 48],
+      maxZoom: 17,
+    });
+  }, [trigger, map]);
+
+  return null;
+}
+
+// Encuadra todo el contenido cuando el trigger numérico cambia (botón Ver todo).
 // Los puntos van por ref para que un refetch no vuelva a mover el mapa.
 function CentrarTodo({
   trigger,
@@ -105,9 +138,14 @@ interface MapaEditorProps {
   visibilidad: VisibilidadCapas;
   seleccion: SeleccionMapa | null;
   modoDibujo: boolean;
+  modoMover: boolean;
   vertices: [number, number][];
+  verticesMover: [number, number][];
+  destinoMover: [number, number] | null;
+  centrarSeleccionTrigger: number;
   onAgregarVertice: (lat: number, lng: number) => void;
   onMoverVertice: (indice: number, lat: number, lng: number) => void;
+  onPosicionarMovimiento: (lat: number, lng: number) => void;
   onClickLocal: (id: number) => void;
   onClickElemento: (tipo: "territorio" | "zona", id: number) => void;
 }
@@ -119,9 +157,14 @@ export function MapaEditor({
   visibilidad,
   seleccion,
   modoDibujo,
+  modoMover,
   vertices,
+  verticesMover,
+  destinoMover,
+  centrarSeleccionTrigger,
   onAgregarVertice,
   onMoverVertice,
+  onPosicionarMovimiento,
   onClickLocal,
   onClickElemento,
 }: MapaEditorProps) {
@@ -142,20 +185,29 @@ export function MapaEditor({
     return puntos;
   }, [territorios, zonas, locales]);
 
+  const puntosSeleccionados = useMemo(() => {
+    if (!seleccion) return [];
+    const elemento =
+      seleccion.tipo === "territorio"
+        ? territorios.find((territorio) => territorio.id === seleccion.id)
+        : zonas.find((zona) => zona.id === seleccion.id);
+    return elemento?.poligono ?? [];
+  }, [seleccion, territorios, zonas]);
+
   const esSeleccionado = (tipo: "territorio" | "zona", id: number) =>
     seleccion !== null && seleccion.tipo === tipo && seleccion.id === id;
 
   // Mientras se redibuja un elemento, su polígono original se oculta para que
   // no se superponga con la vista previa del dibujo
-  const ocultoPorDibujo = (tipo: "territorio" | "zona", id: number) =>
-    modoDibujo && esSeleccionado(tipo, id);
+  const ocultoPorHerramienta = (tipo: "territorio" | "zona", id: number) =>
+    (modoDibujo || modoMover) && esSeleccionado(tipo, id);
 
   return (
     // isolate: los panes de Leaflet usan z-index altos; sin esto se dibujan
     // por encima de modales y del resto de la página
     <div
       className={`relative isolate h-[52dvh] min-h-[320px] w-full overflow-hidden rounded-xl border border-zinc-300 bg-zinc-100 shadow-sm dark:border-zinc-700 dark:bg-zinc-950 lg:h-[70dvh] lg:min-h-[420px] ${
-        modoDibujo ? "[&_.leaflet-container]:cursor-crosshair" : ""
+        modoDibujo || modoMover ? "[&_.leaflet-container]:cursor-crosshair" : ""
       } [&_.leaflet-control-attribution]:!bg-white/90 [&_.leaflet-control-attribution]:!text-zinc-600 dark:[&_.leaflet-control-attribution]:!bg-zinc-950/85 dark:[&_.leaflet-control-attribution]:!text-zinc-300 dark:[&_.leaflet-control-zoom_a]:!border-zinc-700 dark:[&_.leaflet-control-zoom_a]:!bg-zinc-900 dark:[&_.leaflet-control-zoom_a]:!text-zinc-100 dark:[&_.mapa-etiquetas-oscuras]:brightness-150 dark:[&_.mapa-etiquetas-oscuras]:contrast-125`}
     >
       <MapContainer
@@ -186,7 +238,7 @@ export function MapaEditor({
         {visibilidad.territorios &&
           territorios.map((t) =>
             t.poligono === null ||
-            ocultoPorDibujo("territorio", t.id) ? null : (
+            ocultoPorHerramienta("territorio", t.id) ? null : (
               <Polygon
                 key={`territorio-${t.id}`}
                 positions={t.poligono}
@@ -201,7 +253,8 @@ export function MapaEditor({
                 }}
                 eventHandlers={{
                   click: () => {
-                    if (!modoDibujo) onClickElemento("territorio", t.id);
+                    if (!modoDibujo && !modoMover)
+                      onClickElemento("territorio", t.id);
                   },
                 }}
               >
@@ -213,7 +266,7 @@ export function MapaEditor({
         {/* Las zonas se renderizan después de los territorios para quedar encima */}
         {visibilidad.zonas &&
           zonas.map((z) =>
-            z.poligono === null || ocultoPorDibujo("zona", z.id) ? null : (
+            z.poligono === null || ocultoPorHerramienta("zona", z.id) ? null : (
               <Polygon
                 key={`zona-${z.id}`}
                 positions={z.poligono}
@@ -226,7 +279,8 @@ export function MapaEditor({
                 }}
                 eventHandlers={{
                   click: () => {
-                    if (!modoDibujo) onClickElemento("zona", z.id);
+                    if (!modoDibujo && !modoMover)
+                      onClickElemento("zona", z.id);
                   },
                 }}
               >
@@ -249,7 +303,7 @@ export function MapaEditor({
               )}
               eventHandlers={{
                 click: () => {
-                  if (!modoDibujo) onClickLocal(l.id);
+                  if (!modoDibujo && !modoMover) onClickLocal(l.id);
                 },
               }}
             >
@@ -261,7 +315,7 @@ export function MapaEditor({
 
         {modoDibujo && (
           <>
-            <ClicksDibujo onVertice={onAgregarVertice} />
+            <ClicksMapa onClick={onAgregarVertice} />
             {vertices.length >= 2 && (
               <Polyline
                 positions={vertices}
@@ -303,7 +357,38 @@ export function MapaEditor({
           </>
         )}
 
+        {modoMover && (
+          <>
+            <ClicksMapa onClick={onPosicionarMovimiento} />
+            {verticesMover.length >= 3 && (
+              <Polygon
+                positions={verticesMover}
+                pathOptions={{
+                  color: COLOR_MOVIMIENTO,
+                  weight: 3,
+                  fillColor: COLOR_MOVIMIENTO,
+                  fillOpacity: 0.24,
+                  dashArray: "7 5",
+                }}
+              />
+            )}
+            {destinoMover && (
+              <Marker
+                position={destinoMover}
+                icon={iconoDestino}
+                zIndexOffset={1200}
+              >
+                <Tooltip direction="top">Nuevo centro</Tooltip>
+              </Marker>
+            )}
+          </>
+        )}
+
         <CentrarTodo trigger={triggerCentrar} puntos={puntosTodos} />
+        <CentrarSeleccion
+          trigger={centrarSeleccionTrigger}
+          puntos={puntosSeleccionados}
+        />
       </MapContainer>
 
       {/* bottom-8 para no tapar la atribución de Leaflet; z arriba de sus panes */}
@@ -324,7 +409,7 @@ export function MapaEditor({
           <circle cx="12" cy="12" r="7" />
           <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
         </svg>
-        Centrar
+        Ver todo
       </button>
     </div>
   );

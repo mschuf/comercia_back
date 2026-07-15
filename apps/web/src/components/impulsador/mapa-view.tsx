@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api";
@@ -15,6 +15,8 @@ import {
   labelBase,
 } from "@/components/ui";
 import { formatoFecha } from "@/utils/fechas";
+import { trasladarPoligono } from "@/utils/poligono";
+import { normalizarBusqueda } from "@/utils/texto";
 import type { Territorio, Zona } from "@/types/territorio";
 import type { LocalMapa, MapaDatos } from "@/types/mapa";
 import type { LocalDetalle, UsuarioAsignable } from "@/types/local";
@@ -107,16 +109,49 @@ function IconoTacho() {
   );
 }
 
-function BotonIcono({
+function IconoCentrar() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      className="h-4 w-4"
+      aria-hidden
+    >
+      <circle cx="10" cy="10" r="4" />
+      <path d="M10 1.5v3M10 15.5v3M1.5 10h3M15.5 10h3" />
+    </svg>
+  );
+}
+
+function IconoMover() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+      aria-hidden
+    >
+      <path d="M10 2v16M2 10h16M10 2L8 4M10 2l2 2M18 10l-2-2M18 10l-2 2M10 18l-2-2M10 18l2-2M2 10l2-2M2 10l2 2" />
+    </svg>
+  );
+}
+
+function BotonHerramienta({
   children,
   onClick,
-  titulo,
+  etiqueta,
   peligro,
   disabled,
 }: {
   children: React.ReactNode;
   onClick: () => void;
-  titulo: string;
+  etiqueta: string;
   peligro?: boolean;
   disabled?: boolean;
 }) {
@@ -124,51 +159,16 @@ function BotonIcono({
     <button
       type="button"
       onClick={onClick}
-      title={titulo}
-      aria-label={titulo}
       disabled={disabled}
-      className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg transition focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-40 ${
+      className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border px-3 text-xs font-medium transition focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-40 ${
         peligro
-          ? "text-zinc-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950 dark:hover:text-red-400"
-          : "text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+          ? "border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+          : "border-zinc-200 bg-white text-zinc-700 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-brand-800 dark:hover:bg-brand-950 dark:hover:text-brand-200"
       }`}
     >
       {children}
+      {etiqueta}
     </button>
-  );
-}
-
-// Swatch clickeable con <input type="color"> nativo encima (invisible).
-// key={color} re-sincroniza el input no controlado cuando el color cambia
-// desde afuera (refetch); el PATCH se dispara recién al blur para no
-// bombardear la API con cada movimiento del selector.
-function ColorSwatch({
-  color,
-  etiqueta,
-  onCambiar,
-}: {
-  color: string;
-  etiqueta: string;
-  onCambiar: (color: string) => void;
-}) {
-  return (
-    <span className="relative inline-block h-6 w-6 shrink-0 rounded-md focus-within:ring-2 focus-within:ring-brand-600/40">
-      <span
-        aria-hidden
-        className="absolute inset-0 rounded-md border border-black/10 dark:border-white/20"
-        style={{ backgroundColor: color }}
-      />
-      <input
-        key={color}
-        type="color"
-        defaultValue={color}
-        aria-label={etiqueta}
-        onBlur={(e) => {
-          if (e.target.value !== color) onCambiar(e.target.value);
-        }}
-        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-      />
-    </span>
   );
 }
 
@@ -203,10 +203,20 @@ export function MapaView() {
   });
   // Acordeón del panel en mobile (en lg el panel está siempre visible)
   const [panelAbierto, setPanelAbierto] = useState(false);
+  const [busquedaPanel, setBusquedaPanel] = useState("");
+  const [centrarSeleccionTrigger, setCentrarSeleccionTrigger] = useState(0);
 
   const [modoDibujo, setModoDibujo] = useState(false);
   const [verticesDibujo, setVerticesDibujo] = useState<[number, number][]>([]);
   const [teniaPoligono, setTeniaPoligono] = useState(false);
+  const [modoMover, setModoMover] = useState(false);
+  const [poligonoBaseMover, setPoligonoBaseMover] = useState<
+    [number, number][]
+  >([]);
+  const [verticesMover, setVerticesMover] = useState<[number, number][]>([]);
+  const [destinoMover, setDestinoMover] = useState<[number, number] | null>(
+    null,
+  );
   const [guardandoArea, setGuardandoArea] = useState(false);
   const [errorArea, setErrorArea] = useState<string | null>(null);
   const [confirmandoQuitar, setConfirmandoQuitar] = useState(false);
@@ -235,9 +245,6 @@ export function MapaView() {
   const [eliminando, setEliminando] = useState<Eliminando | null>(null);
   const [borrando, setBorrando] = useState(false);
   const [errorEliminar, setErrorEliminar] = useState<string | null>(null);
-
-  // Errores de acciones rápidas del panel (ej. PATCH de color)
-  const [errorAccion, setErrorAccion] = useState<string | null>(null);
 
   const [localAbierto, setLocalAbierto] = useState<LocalMapa | null>(null);
   const [detalleLocal, setDetalleLocal] = useState<LocalDetalle | null>(null);
@@ -299,16 +306,49 @@ export function MapaView() {
     };
   }, [esGestor]);
 
-  const elementoSeleccionado =
-    seleccion === null || datos === null
-      ? null
-      : seleccion.tipo === "territorio"
-        ? (datos.territorios.find((t) => t.id === seleccion.id) ?? null)
-        : (datos.zonas.find((z) => z.id === seleccion.id) ?? null);
+  const territorioSeleccionado =
+    seleccion?.tipo === "territorio"
+      ? (datos?.territorios.find((t) => t.id === seleccion.id) ?? null)
+      : null;
+  const zonaSeleccionada =
+    seleccion?.tipo === "zona"
+      ? (datos?.zonas.find((z) => z.id === seleccion.id) ?? null)
+      : null;
+  const elementoSeleccionado = territorioSeleccionado ?? zonaSeleccionada;
+  const modoHerramientaActivo = modoDibujo || modoMover;
+
+  const gruposPanel = useMemo(() => {
+    if (!datos) return [];
+    const consulta = normalizarBusqueda(busquedaPanel.trim());
+
+    return datos.territorios
+      .map((territorio) => {
+        const zonas = datos.zonas.filter(
+          (zona) => zona.territorioId === territorio.id,
+        );
+        if (!consulta) return { territorio, zonas };
+
+        const coincideTerritorio = normalizarBusqueda(
+          `${territorio.nombre} ${territorio.responsable?.nombre ?? ""}`,
+        ).includes(consulta);
+        const zonasCoincidentes = zonas.filter((zona) =>
+          normalizarBusqueda(
+            `${zona.nombre} ${zona.repositores.map((r) => r.nombre).join(" ")}`,
+          ).includes(consulta),
+        );
+
+        return {
+          territorio,
+          zonas: coincideTerritorio ? zonas : zonasCoincidentes,
+          coincide: coincideTerritorio || zonasCoincidentes.length > 0,
+        };
+      })
+      .filter((grupo) => !("coincide" in grupo) || grupo.coincide);
+  }, [busquedaPanel, datos]);
 
   function alternarSeleccion(tipo: "territorio" | "zona", id: number) {
     // La selección queda fija mientras se dibuja: es el destino del polígono
-    if (modoDibujo) return;
+    if (modoHerramientaActivo) return;
     setSeleccion((s) =>
       s !== null && s.tipo === tipo && s.id === id ? null : { tipo, id },
     );
@@ -334,6 +374,97 @@ export function MapaView() {
     setVerticesDibujo([]);
     setTeniaPoligono(false);
     setErrorArea(null);
+  }
+
+  function iniciarMover(tipo: "territorio" | "zona", id: number) {
+    const elemento =
+      tipo === "territorio"
+        ? datos?.territorios.find((territorio) => territorio.id === id)
+        : datos?.zonas.find((zona) => zona.id === id);
+    if (!elemento?.poligono) return;
+
+    setSeleccion({ tipo, id });
+    setPoligonoBaseMover([...elemento.poligono]);
+    setVerticesMover([...elemento.poligono]);
+    setDestinoMover(null);
+    setErrorArea(null);
+    setModoMover(true);
+    setPanelAbierto(false);
+  }
+
+  function salirMover() {
+    setModoMover(false);
+    setPoligonoBaseMover([]);
+    setVerticesMover([]);
+    setDestinoMover(null);
+    setErrorArea(null);
+  }
+
+  const posicionarMovimiento = useCallback(
+    (lat: number, lng: number) => {
+      const poligonoTrasladado = trasladarPoligono(poligonoBaseMover, [
+        lat,
+        lng,
+      ]);
+      if (!poligonoTrasladado) {
+        setErrorArea(
+          "No se puede mover el área fuera de los límites del mapa.",
+        );
+        return;
+      }
+
+      setVerticesMover(poligonoTrasladado);
+      setDestinoMover([lat, lng]);
+      setErrorArea(null);
+    },
+    [poligonoBaseMover],
+  );
+
+  async function guardarMovimiento() {
+    if (!seleccion || !destinoMover || guardandoArea) return;
+    setGuardandoArea(true);
+    setErrorArea(null);
+    try {
+      await apiFetch(rutaElemento(seleccion.tipo, seleccion.id), {
+        method: "PATCH",
+        body: JSON.stringify({ poligono: verticesMover }),
+      });
+      salirMover();
+      await cargar();
+    } catch (err) {
+      setErrorArea(
+        err instanceof ApiError
+          ? err.message
+          : "No se pudo guardar la nueva posición",
+      );
+    } finally {
+      setGuardandoArea(false);
+    }
+  }
+
+  function centrarSeleccionado() {
+    if (!elementoSeleccionado?.poligono) return;
+    setCentrarSeleccionTrigger((trigger) => trigger + 1);
+    setPanelAbierto(false);
+  }
+
+  function editarSeleccionado() {
+    if (territorioSeleccionado) {
+      abrirRenombrarTerritorio(territorioSeleccionado);
+    } else if (zonaSeleccionada) {
+      abrirRenombrarZona(zonaSeleccionada);
+    }
+  }
+
+  function eliminarSeleccionado() {
+    if (!seleccion || !elementoSeleccionado) return;
+    setErrorEliminar(null);
+    setEliminando({
+      tipo: seleccion.tipo,
+      id: elementoSeleccionado.id,
+      nombre: elementoSeleccionado.nombre,
+      zonasCount: territorioSeleccionado?.zonasCount ?? 0,
+    });
   }
 
   const agregarVertice = useCallback((lat: number, lng: number) => {
@@ -387,25 +518,6 @@ export function MapaView() {
       );
     } finally {
       setGuardandoArea(false);
-    }
-  }
-
-  async function cambiarColor(
-    tipo: "territorio" | "zona",
-    id: number,
-    color: string,
-  ) {
-    setErrorAccion(null);
-    try {
-      await apiFetch(rutaElemento(tipo, id), {
-        method: "PATCH",
-        body: JSON.stringify({ color }),
-      });
-      await cargar();
-    } catch (err) {
-      setErrorAccion(
-        err instanceof ApiError ? err.message : "No se pudo cambiar el color",
-      );
     }
   }
 
@@ -552,6 +664,7 @@ export function MapaView() {
       ) {
         setSeleccion(null);
         if (modoDibujo) salirDibujo();
+        if (modoMover) salirMover();
       }
       setEliminando(null);
       await cargar();
@@ -566,7 +679,7 @@ export function MapaView() {
     }
   }
 
-  // El detalle (con checklist) se pide recién al abrir el modal del local.
+  // El detalle se pide recién al abrir el modal del local.
   // El token descarta respuestas viejas si se abre otro local enseguida.
   const pedidoDetalleRef = useRef(0);
 
@@ -631,47 +744,50 @@ export function MapaView() {
       : null;
 
   const panel = (
-    <div className="flex flex-col gap-3">
-      {/* Capas visibles */}
-      <div className="flex flex-wrap gap-2">
-        {(
-          [
-            ["territorios", "Territorios"],
-            ["zonas", "Zonas"],
-            ["locales", "Locales"],
-          ] as const
-        ).map(([capa, etiqueta]) => (
-          <label
-            key={capa}
-            className={`flex h-8 cursor-pointer items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition focus-within:ring-2 focus-within:ring-brand-600/40 ${
-              visibilidad[capa]
-                ? "border-brand-600 bg-brand-50 text-brand-800 dark:border-brand-600 dark:bg-brand-950 dark:text-brand-200"
-                : "border-zinc-300 text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
-            }`}
-          >
-            <input
-              type="checkbox"
-              checked={visibilidad[capa]}
-              onChange={() =>
-                setVisibilidad((v) => ({ ...v, [capa]: !v[capa] }))
-              }
-              className="h-3.5 w-3.5 cursor-pointer accent-brand-700"
-            />
-            {etiqueta}
-          </label>
-        ))}
+    <div className="flex flex-col gap-4">
+      <div>
+        <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+          Organización del mapa
+        </h2>
+        <div className="mt-2 grid grid-cols-3 gap-2">
+          {[
+            [datos.territorios.length, "Territorios"],
+            [datos.zonas.length, "Zonas"],
+            [datos.locales.length, "Locales"],
+          ].map(([cantidad, etiqueta]) => (
+            <div
+              key={etiqueta}
+              className="rounded-lg bg-zinc-50 px-2 py-2 text-center dark:bg-zinc-800/70"
+            >
+              <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                {cantidad}
+              </p>
+              <p className="truncate text-[10px] font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                {etiqueta}
+              </p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      {errorAccion && <p className={errorBox}>{errorAccion}</p>}
+      <label className="sr-only" htmlFor="buscar-elemento-mapa">
+        Buscar territorio, zona o usuario
+      </label>
+      <input
+        id="buscar-elemento-mapa"
+        type="search"
+        value={busquedaPanel}
+        onChange={(event) => setBusquedaPanel(event.target.value)}
+        placeholder="Buscar territorio, zona o usuario…"
+        className={inputBase}
+      />
 
       {esGestor && (
         <div className="grid grid-cols-2 gap-2">
           <button
             type="button"
             onClick={abrirNuevoTerritorio}
-            disabled={modoDibujo}
-            aria-label="Crear territorio"
-            title="Crear territorio"
+            disabled={modoHerramientaActivo}
             className={`${btnPrimary} min-h-11 gap-2`}
           >
             <IconoMas className="h-5 w-5" /> Territorio
@@ -679,9 +795,7 @@ export function MapaView() {
           <button
             type="button"
             onClick={abrirNuevaZona}
-            disabled={modoDibujo || datos.territorios.length === 0}
-            aria-label="Crear zona"
-            title="Crear zona"
+            disabled={modoHerramientaActivo || datos.territorios.length === 0}
             className={`${btnPrimary} min-h-11 gap-2`}
           >
             <IconoMas className="h-5 w-5" /> Zona
@@ -689,185 +803,221 @@ export function MapaView() {
         </div>
       )}
 
-      {datos.territorios.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-6 text-center dark:border-zinc-700 dark:bg-zinc-900">
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            {esGestor
-              ? "Todavía no hay territorios. Creá el primero con «+ Territorio» y delimitalo en el mapa."
-              : "Todavía no hay territorios delimitados en tu empresa."}
-          </p>
+      {elementoSeleccionado && seleccion && (
+        <section className="rounded-xl border border-brand-200 bg-brand-50/70 p-3 dark:border-brand-900 dark:bg-brand-950/40">
+          <div className="flex items-start gap-2">
+            <PuntoColor color={elementoSeleccionado.color} />
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-brand-700 dark:text-brand-300">
+                {seleccion.tipo === "territorio" ? "Territorio" : "Zona"}
+              </p>
+              <h3 className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                {elementoSeleccionado.nombre}
+              </h3>
+              <p className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-300">
+                {territorioSeleccionado
+                  ? (territorioSeleccionado.responsable?.nombre ??
+                    "Sin responsable")
+                  : `${zonaSeleccionada?.localesCount ?? 0} locales · ${zonaSeleccionada?.repositores.length ?? 0} repositores`}
+              </p>
+            </div>
+            {elementoSeleccionado.poligono === null && <BadgeSinDelimitar />}
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <BotonHerramienta
+              etiqueta="Centrar"
+              onClick={centrarSeleccionado}
+              disabled={
+                modoHerramientaActivo || elementoSeleccionado.poligono === null
+              }
+            >
+              <IconoCentrar />
+            </BotonHerramienta>
+            {esGestor && (
+              <BotonHerramienta
+                etiqueta="Mover"
+                onClick={() => iniciarMover(seleccion.tipo, seleccion.id)}
+                disabled={
+                  modoHerramientaActivo ||
+                  elementoSeleccionado.poligono === null
+                }
+              >
+                <IconoMover />
+              </BotonHerramienta>
+            )}
+            {esGestor && (
+              <BotonHerramienta
+                etiqueta="Editar límite"
+                onClick={() => iniciarDibujo(seleccion.tipo, seleccion.id)}
+                disabled={modoHerramientaActivo}
+              >
+                <IconoPoligono />
+              </BotonHerramienta>
+            )}
+            {esGestor && (
+              <BotonHerramienta
+                etiqueta="Editar datos"
+                onClick={editarSeleccionado}
+                disabled={modoHerramientaActivo}
+              >
+                <IconoLapiz />
+              </BotonHerramienta>
+            )}
+            {esGestor && (
+              <BotonHerramienta
+                etiqueta="Eliminar"
+                onClick={eliminarSeleccionado}
+                peligro
+                disabled={modoHerramientaActivo}
+              >
+                <IconoTacho />
+              </BotonHerramienta>
+            )}
+          </div>
+          {elementoSeleccionado.poligono === null && esGestor && (
+            <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
+              Dibujá su límite para habilitar las herramientas de centrar y
+              mover.
+            </p>
+          )}
+        </section>
+      )}
+
+      <div>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+          Capas visibles
+        </p>
+        <div className="grid grid-cols-3 gap-2">
+          {(
+            [
+              ["territorios", "Territorios"],
+              ["zonas", "Zonas"],
+              ["locales", "Locales"],
+            ] as const
+          ).map(([capa, etiqueta]) => (
+            <label
+              key={capa}
+              className={`flex min-h-11 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-2 text-[11px] font-medium transition focus-within:ring-2 focus-within:ring-brand-600/40 ${
+                visibilidad[capa]
+                  ? "border-brand-600 bg-brand-50 text-brand-800 dark:border-brand-600 dark:bg-brand-950 dark:text-brand-200"
+                  : "border-zinc-300 text-zinc-500 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={visibilidad[capa]}
+                onChange={() =>
+                  setVisibilidad((visible) => ({
+                    ...visible,
+                    [capa]: !visible[capa],
+                  }))
+                }
+                className="h-4 w-4 cursor-pointer accent-brand-700"
+              />
+              {etiqueta}
+            </label>
+          ))}
         </div>
-      ) : (
-        <div className="flex flex-col gap-1">
-          {datos.territorios.map((t) => {
-            const zonasDelTerritorio = datos.zonas.filter(
-              (z) => z.territorioId === t.id,
-            );
-            const territorioSeleccionado =
-              seleccion?.tipo === "territorio" && seleccion.id === t.id;
-            return (
-              <div key={t.id}>
-                <div
-                  className={`flex items-center gap-2 rounded-lg px-1.5 py-1 ${
-                    territorioSeleccionado
-                      ? "bg-brand-50 dark:bg-brand-950/60"
-                      : ""
-                  }`}
-                >
-                  {esGestor ? (
-                    <ColorSwatch
-                      color={t.color}
-                      etiqueta={`Cambiar color de ${t.nombre}`}
-                      onCambiar={(c) => cambiarColor("territorio", t.id, c)}
-                    />
-                  ) : (
-                    <span
-                      aria-hidden
-                      className="h-5 w-5 shrink-0 rounded-md border border-black/10 dark:border-white/20"
-                      style={{ backgroundColor: t.color }}
-                    />
-                  )}
+      </div>
+
+      <div>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+          Territorios y zonas
+        </p>
+        {datos.territorios.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-zinc-300 p-5 text-center dark:border-zinc-700">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              {esGestor
+                ? "Todavía no hay territorios. Creá el primero para organizar el mapa."
+                : "Todavía no hay territorios en tu empresa."}
+            </p>
+          </div>
+        ) : gruposPanel.length === 0 ? (
+          <p className="rounded-lg bg-zinc-50 p-4 text-center text-sm text-zinc-500 dark:bg-zinc-800/60 dark:text-zinc-400">
+            No hay resultados para “{busquedaPanel}”.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-1">
+            {gruposPanel.map(({ territorio, zonas: zonasDelTerritorio }) => {
+              const estaSeleccionado =
+                seleccion?.tipo === "territorio" &&
+                seleccion.id === territorio.id;
+              return (
+                <div key={territorio.id}>
                   <button
                     type="button"
-                    onClick={() => alternarSeleccion("territorio", t.id)}
-                    className="flex h-10 min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded text-left text-sm font-medium text-zinc-800 transition hover:text-brand-700 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-zinc-100 dark:hover:text-brand-200"
+                    onClick={() =>
+                      alternarSeleccion("territorio", territorio.id)
+                    }
+                    disabled={modoHerramientaActivo}
+                    className={`flex min-h-11 w-full items-center gap-2 rounded-lg px-2 text-left transition focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-60 ${
+                      estaSeleccionado
+                        ? "bg-brand-100 text-brand-900 dark:bg-brand-950 dark:text-brand-100"
+                        : "text-zinc-800 hover:bg-zinc-100 dark:text-zinc-100 dark:hover:bg-zinc-800"
+                    }`}
                   >
-                    <span className="truncate">{t.nombre}</span>
-                    <span className="shrink-0 text-xs font-normal text-zinc-400 dark:text-zinc-500">
-                      {t.zonasCount} {t.zonasCount === 1 ? "zona" : "zonas"}
-                    </span>
-                    {t.responsable && (
-                      <span className="hidden truncate text-xs font-normal text-zinc-500 sm:inline dark:text-zinc-400">
-                        · {t.responsable.nombre}
+                    <PuntoColor color={territorio.color} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold">
+                        {territorio.nombre}
                       </span>
-                    )}
-                  </button>
-                  {t.poligono === null && <BadgeSinDelimitar />}
-                  {esGestor && (
-                    <span className="flex shrink-0">
-                      <BotonIcono
-                        titulo={`Renombrar ${t.nombre}`}
-                        onClick={() => abrirRenombrarTerritorio(t)}
-                        disabled={modoDibujo}
-                      >
-                        <IconoLapiz />
-                      </BotonIcono>
-                      <BotonIcono
-                        titulo={`Delimitar ${t.nombre} en el mapa`}
-                        onClick={() => iniciarDibujo("territorio", t.id)}
-                        disabled={modoDibujo}
-                      >
-                        <IconoPoligono />
-                      </BotonIcono>
-                      <BotonIcono
-                        titulo={`Eliminar ${t.nombre}`}
-                        peligro
-                        onClick={() => {
-                          setErrorEliminar(null);
-                          setEliminando({
-                            tipo: "territorio",
-                            id: t.id,
-                            nombre: t.nombre,
-                            zonasCount: t.zonasCount,
-                          });
-                        }}
-                        disabled={modoDibujo}
-                      >
-                        <IconoTacho />
-                      </BotonIcono>
+                      <span className="block truncate text-xs font-normal text-zinc-500 dark:text-zinc-400">
+                        {territorio.zonasCount}{" "}
+                        {territorio.zonasCount === 1 ? "zona" : "zonas"}
+                        {territorio.responsable
+                          ? ` · ${territorio.responsable.nombre}`
+                          : " · Sin responsable"}
+                      </span>
                     </span>
+                    {territorio.poligono === null && <BadgeSinDelimitar />}
+                  </button>
+
+                  {zonasDelTerritorio.length > 0 && (
+                    <div className="ml-3 border-l border-zinc-200 pl-2 dark:border-zinc-800">
+                      {zonasDelTerritorio.map((zona) => {
+                        const zonaEstaSeleccionada =
+                          seleccion?.tipo === "zona" &&
+                          seleccion.id === zona.id;
+                        return (
+                          <button
+                            key={zona.id}
+                            type="button"
+                            onClick={() => alternarSeleccion("zona", zona.id)}
+                            disabled={modoHerramientaActivo}
+                            className={`flex min-h-11 w-full items-center gap-2 rounded-lg px-2 text-left transition focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-60 ${
+                              zonaEstaSeleccionada
+                                ? "bg-brand-100 text-brand-900 dark:bg-brand-950 dark:text-brand-100"
+                                : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                            }`}
+                          >
+                            <PuntoColor color={zona.color} />
+                            <span className="min-w-0 flex-1">
+                              <span className="block truncate text-sm font-medium">
+                                {zona.nombre}
+                              </span>
+                              <span className="block truncate text-xs text-zinc-500 dark:text-zinc-400">
+                                {zona.localesCount}{" "}
+                                {zona.localesCount === 1 ? "local" : "locales"}
+                                {" · "}
+                                {zona.repositores.length}{" "}
+                                {zona.repositores.length === 1
+                                  ? "repositor"
+                                  : "repositores"}
+                              </span>
+                            </span>
+                            {zona.poligono === null && <BadgeSinDelimitar />}
+                          </button>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
-
-                {zonasDelTerritorio.length > 0 && (
-                  <div className="ml-4 flex flex-col border-l border-zinc-200 pl-2 dark:border-zinc-800">
-                    {zonasDelTerritorio.map((z) => {
-                      const zonaSeleccionada =
-                        seleccion?.tipo === "zona" && seleccion.id === z.id;
-                      return (
-                        <div
-                          key={z.id}
-                          className={`flex items-center gap-2 rounded-lg px-1.5 py-0.5 ${
-                            zonaSeleccionada
-                              ? "bg-brand-50 dark:bg-brand-950/60"
-                              : ""
-                          }`}
-                        >
-                          {esGestor ? (
-                            <ColorSwatch
-                              color={z.color}
-                              etiqueta={`Cambiar color de ${z.nombre}`}
-                              onCambiar={(c) => cambiarColor("zona", z.id, c)}
-                            />
-                          ) : (
-                            <span
-                              aria-hidden
-                              className="h-5 w-5 shrink-0 rounded-md border border-black/10 dark:border-white/20"
-                              style={{ backgroundColor: z.color }}
-                            />
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => alternarSeleccion("zona", z.id)}
-                            className="flex h-10 min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded text-left text-sm text-zinc-700 transition hover:text-brand-700 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-zinc-200 dark:hover:text-brand-200"
-                          >
-                            <span className="truncate">{z.nombre}</span>
-                            <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">
-                              {z.localesCount}{" "}
-                              {z.localesCount === 1 ? "local" : "locales"}
-                            </span>
-                            <span className="hidden text-xs text-zinc-500 sm:inline dark:text-zinc-400">
-                              · {z.repositores.length}{" "}
-                              {z.repositores.length === 1
-                                ? "repositor"
-                                : "repositores"}
-                            </span>
-                          </button>
-                          {z.poligono === null && <BadgeSinDelimitar />}
-                          {esGestor && (
-                            <span className="flex shrink-0">
-                              <BotonIcono
-                                titulo={`Renombrar ${z.nombre}`}
-                                onClick={() => abrirRenombrarZona(z)}
-                                disabled={modoDibujo}
-                              >
-                                <IconoLapiz />
-                              </BotonIcono>
-                              <BotonIcono
-                                titulo={`Delimitar ${z.nombre} en el mapa`}
-                                onClick={() => iniciarDibujo("zona", z.id)}
-                                disabled={modoDibujo}
-                              >
-                                <IconoPoligono />
-                              </BotonIcono>
-                              <BotonIcono
-                                titulo={`Eliminar ${z.nombre}`}
-                                peligro
-                                onClick={() => {
-                                  setErrorEliminar(null);
-                                  setEliminando({
-                                    tipo: "zona",
-                                    id: z.id,
-                                    nombre: z.nombre,
-                                    zonasCount: 0,
-                                  });
-                                }}
-                                disabled={modoDibujo}
-                              >
-                                <IconoTacho />
-                              </BotonIcono>
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 
@@ -875,7 +1025,7 @@ export function MapaView() {
     <div>
       <p className="text-sm text-zinc-500 dark:text-zinc-400">
         {esGestor
-          ? "Delimitá territorios y zonas con polígonos y mirá los locales de tu empresa sobre el mapa."
+          ? "Organizá territorios y zonas, buscá responsables y seleccioná un área para centrarla, moverla o editar sus límites."
           : "Consultá los territorios, las zonas y los locales de tu empresa sobre el mapa."}
       </p>
 
@@ -883,14 +1033,19 @@ export function MapaView() {
 
       <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-start">
         {/* Panel lateral (acordeón en mobile) */}
-        <div className="lg:w-80 lg:shrink-0">
+        <div className="lg:w-[23rem] lg:shrink-0">
           <button
             type="button"
             onClick={() => setPanelAbierto((a) => !a)}
             aria-expanded={panelAbierto}
             className="flex h-11 w-full cursor-pointer items-center justify-between rounded-xl border border-zinc-200 bg-white px-3 text-sm font-semibold text-zinc-800 transition hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 lg:hidden"
           >
-            Territorios y zonas
+            <span>
+              Territorios y zonas
+              <span className="ml-1 font-normal text-zinc-500 dark:text-zinc-400">
+                · {datos.territorios.length + datos.zonas.length}
+              </span>
+            </span>
             <svg
               viewBox="0 0 20 20"
               fill="currentColor"
@@ -932,14 +1087,14 @@ export function MapaView() {
                   type="button"
                   onClick={() => setVerticesDibujo((v) => v.slice(0, -1))}
                   disabled={verticesDibujo.length === 0}
-                  className={`${btnGhost} disabled:cursor-not-allowed disabled:opacity-50`}
+                  className={`${btnGhost} min-h-11 disabled:cursor-not-allowed disabled:opacity-50`}
                 >
                   Deshacer punto
                 </button>
                 <button
                   type="button"
                   onClick={salirDibujo}
-                  className={btnGhost}
+                  className={`${btnGhost} min-h-11`}
                 >
                   Cancelar
                 </button>
@@ -948,7 +1103,7 @@ export function MapaView() {
                     type="button"
                     onClick={() => setConfirmandoQuitar(true)}
                     disabled={guardandoArea}
-                    className="inline-flex items-center justify-center rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+                    className="inline-flex min-h-11 items-center justify-center rounded-lg border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 disabled:cursor-not-allowed disabled:opacity-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
                   >
                     Quitar delimitación
                   </button>
@@ -957,9 +1112,45 @@ export function MapaView() {
                   type="button"
                   onClick={guardarArea}
                   disabled={verticesDibujo.length < 3 || guardandoArea}
-                  className={btnPrimary}
+                  className={`${btnPrimary} min-h-11`}
                 >
                   {guardandoArea ? "Guardando..." : "Guardar área"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {modoMover && (
+            <div className="sticky top-2 z-20 mb-3 flex flex-col gap-2 rounded-xl border border-violet-200 bg-violet-50/95 p-3 shadow-sm backdrop-blur dark:border-violet-900 dark:bg-violet-950/90">
+              <div>
+                <p className="text-sm font-semibold text-violet-900 dark:text-violet-100">
+                  Moviendo: {elementoSeleccionado?.nombre ?? "—"}
+                </p>
+                <p className="mt-1 text-xs text-violet-800 dark:text-violet-200">
+                  Hacé clic en el mapa para ubicar el nuevo centro. Se mueve el
+                  polígono completo sin cambiar su forma.
+                </p>
+                <p className="mt-1 text-xs text-zinc-600 dark:text-zinc-300">
+                  Los locales, sus coordenadas GPS y las demás áreas no se
+                  modifican.
+                </p>
+              </div>
+              {errorArea && <p className={errorBox}>{errorArea}</p>}
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={salirMover}
+                  className={`${btnGhost} min-h-11`}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={guardarMovimiento}
+                  disabled={!destinoMover || guardandoArea}
+                  className={`${btnPrimary} min-h-11`}
+                >
+                  {guardandoArea ? "Guardando..." : "Guardar posición"}
                 </button>
               </div>
             </div>
@@ -972,9 +1163,14 @@ export function MapaView() {
             visibilidad={visibilidad}
             seleccion={seleccion}
             modoDibujo={modoDibujo}
+            modoMover={modoMover}
             vertices={verticesDibujo}
+            verticesMover={verticesMover}
+            destinoMover={destinoMover}
+            centrarSeleccionTrigger={centrarSeleccionTrigger}
             onAgregarVertice={agregarVertice}
             onMoverVertice={moverVertice}
+            onPosicionarMovimiento={posicionarMovimiento}
             onClickLocal={abrirLocal}
             onClickElemento={alternarSeleccion}
           />
