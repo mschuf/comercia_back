@@ -64,3 +64,5 @@ export class ListarVisitasDto extends PaginacionDto {
   @Max(MAX_INT4)
   localId?: number;
 }
+
+export class ListarVisitasEquipoDto extends PaginacionDto {}

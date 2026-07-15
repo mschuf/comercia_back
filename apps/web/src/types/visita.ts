@@ -44,3 +44,33 @@ export interface VisitaResumen {
   tareasTotal: number;
   tareasCompletadas: number;
 }
+
+export interface VisitaEquipoTarea {
+  id: number;
+  descripcion: string;
+  requiereFoto: boolean;
+  orden: number;
+  completada: boolean;
+}
+
+export interface VisitaEquipoUltimaVisita {
+  id: number;
+  usuarioId: number;
+  usuarioNombre: string;
+  iniciadaEn: string;
+  completadaEn: string | null;
+  tareasTotal: number;
+  tareasCompletadas: number;
+}
+
+export interface VisitaEquipoLocal {
+  localId: number;
+  localNombre: string;
+  zona: { id: number; nombre: string } | null;
+  fechaVisita: string | null;
+  requiereFotoPresencia: boolean;
+  activo: boolean;
+  asignadoA: { id: number; nombre: string } | null;
+  ultimaVisita: VisitaEquipoUltimaVisita | null;
+  tareas: VisitaEquipoTarea[];
+}

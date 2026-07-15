@@ -22,8 +22,13 @@ export function Modal({
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
   const disparadorRef = useRef<HTMLElement | null>(null);
+  const onCerrarRef = useRef(onCerrar);
   const anchoClase =
     ancho === "xl" ? "max-w-5xl" : ancho === "lg" ? "max-w-2xl" : "max-w-md";
+
+  useEffect(() => {
+    onCerrarRef.current = onCerrar;
+  }, [onCerrar]);
 
   useEffect(() => {
     if (!abierto) {
@@ -36,7 +41,7 @@ export function Modal({
 
     function alTeclear(e: KeyboardEvent) {
       if (e.key === "Escape") {
-        onCerrar();
+        onCerrarRef.current();
       }
     }
     document.addEventListener("keydown", alTeclear);
@@ -45,7 +50,7 @@ export function Modal({
       document.body.style.overflow = "";
       disparadorRef.current?.focus?.();
     };
-  }, [abierto, onCerrar]);
+  }, [abierto]);
 
   return (
     <AnimatePresence>

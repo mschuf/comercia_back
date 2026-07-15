@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import type { Prisma } from '../../generated/prisma/client';
 import { distanciaMetros } from '../common/utils/geo';
 import {
   rangoPaginacion,
@@ -16,6 +17,7 @@ import {
   ActualizarVisitaTareaDto,
   FinalizarVisitaDto,
   IniciarVisitaDto,
+  ListarVisitasEquipoDto,
   ListarVisitasDto,
 } from './dto/visita.dto';
 import { FotosService } from './fotos.service';
@@ -23,6 +25,7 @@ import { PAGINAS_IMPULSADOR } from './impulsador.constants';
 import type { UsuarioImpulsador } from './interfaces/usuario-impulsador.interface';
 import type {
   VisitaDto,
+  VisitaEquipoLocalDto,
   VisitaResumenDto,
   VisitaTareaDto,
 } from './interfaces/visita.interface';
@@ -73,6 +76,30 @@ type VisitaResumen = {
   local: { nombre: string };
   usuario: { nombre: string; apellido: string };
   tareas: { completada: boolean }[];
+};
+
+type LocalEquipo = {
+  id: number;
+  nombre: string;
+  zona: { id: number; nombre: string } | null;
+  fechaVisita: Date | null;
+  requiereFotoPresencia: boolean;
+  activo: boolean;
+  usuario: { id: number; nombre: string; apellido: string } | null;
+  tareas: {
+    id: number;
+    descripcion: string;
+    requiereFoto: boolean;
+    orden: number;
+  }[];
+  visitas: {
+    id: number;
+    usuarioId: number;
+    iniciadaEn: Date;
+    completadaEn: Date | null;
+    usuario: { nombre: string; apellido: string };
+    tareas: { tareaId: number; completada: boolean }[];
+  }[];
 };
 
 // `activo` no viaja al front: se usa para decidir qué tareas exige finalizar()
@@ -133,6 +160,42 @@ const SELECT_VISITA_RESUMEN = {
   tareas: { select: { completada: true } },
 } as const;
 
+const SELECT_LOCAL_EQUIPO = {
+  id: true,
+  nombre: true,
+  zona: { select: { id: true, nombre: true } },
+  fechaVisita: true,
+  requiereFotoPresencia: true,
+  activo: true,
+  usuario: { select: { id: true, nombre: true, apellido: true } },
+  tareas: {
+    where: { activo: true },
+    select: {
+      id: true,
+      descripcion: true,
+      requiereFoto: true,
+      orden: true,
+    },
+    orderBy: [{ orden: 'asc' }, { id: 'asc' }],
+  },
+  visitas: {
+    select: {
+      id: true,
+      usuarioId: true,
+      iniciadaEn: true,
+      completadaEn: true,
+      usuario: { select: { nombre: true, apellido: true } },
+      tareas: { select: { tareaId: true, completada: true } },
+    },
+    orderBy: [{ iniciadaEn: 'desc' }, { id: 'desc' }],
+    take: 1,
+  },
+} satisfies Prisma.LocalSelect;
+
+function nombreCompleto(usuario: { nombre: string; apellido: string }): string {
+  return `${usuario.nombre} ${usuario.apellido}`.trim();
+}
+
 function aVisitaTareaDto(tarea: VisitaTareaConTarea): VisitaTareaDto {
   return {
     id: tarea.id,
@@ -156,7 +219,7 @@ function aVisitaDto(
     localId: visita.localId,
     localNombre: visita.local.nombre,
     usuarioId: visita.usuarioId,
-    usuarioNombre: `${visita.usuario.nombre} ${visita.usuario.apellido}`.trim(),
+    usuarioNombre: nombreCompleto(visita.usuario),
     iniciadaEn: visita.iniciadaEn.toISOString(),
     completadaEn: visita.completadaEn?.toISOString() ?? null,
     distanciaMetros: visita.distanciaMetros,
@@ -176,13 +239,52 @@ function aVisitaResumenDto(visita: VisitaResumen): VisitaResumenDto {
     localId: visita.localId,
     localNombre: visita.local.nombre,
     usuarioId: visita.usuarioId,
-    usuarioNombre: `${visita.usuario.nombre} ${visita.usuario.apellido}`.trim(),
+    usuarioNombre: nombreCompleto(visita.usuario),
     iniciadaEn: visita.iniciadaEn.toISOString(),
     completadaEn: visita.completadaEn?.toISOString() ?? null,
     distanciaMetros: visita.distanciaMetros,
     fotoPresencia: visita.fotoPresencia,
     tareasTotal: visita.tareas.length,
     tareasCompletadas: visita.tareas.filter((t) => t.completada).length,
+  };
+}
+
+function aVisitaEquipoLocalDto(local: LocalEquipo): VisitaEquipoLocalDto {
+  const ultimaVisita = local.visitas[0] ?? null;
+  const completadas = new Set(
+    ultimaVisita?.tareas.filter((t) => t.completada).map((t) => t.tareaId) ??
+      [],
+  );
+  const tareas = local.tareas.map((tarea) => ({
+    id: tarea.id,
+    descripcion: tarea.descripcion,
+    requiereFoto: tarea.requiereFoto,
+    orden: tarea.orden,
+    completada: completadas.has(tarea.id),
+  }));
+
+  return {
+    localId: local.id,
+    localNombre: local.nombre,
+    zona: local.zona ? { id: local.zona.id, nombre: local.zona.nombre } : null,
+    fechaVisita: local.fechaVisita?.toISOString() ?? null,
+    requiereFotoPresencia: local.requiereFotoPresencia,
+    activo: local.activo,
+    asignadoA: local.usuario
+      ? { id: local.usuario.id, nombre: nombreCompleto(local.usuario) }
+      : null,
+    ultimaVisita: ultimaVisita
+      ? {
+          id: ultimaVisita.id,
+          usuarioId: ultimaVisita.usuarioId,
+          usuarioNombre: nombreCompleto(ultimaVisita.usuario),
+          iniciadaEn: ultimaVisita.iniciadaEn.toISOString(),
+          completadaEn: ultimaVisita.completadaEn?.toISOString() ?? null,
+          tareasTotal: tareas.length,
+          tareasCompletadas: tareas.filter((t) => t.completada).length,
+        }
+      : null,
+    tareas,
   };
 }
 
@@ -298,8 +400,9 @@ export class VisitasService {
       throw new NotFoundException('El local no existe');
     }
     const puedeVisitar =
-      usuario.esGestor ||
-      (local.usuarioId === usuario.id && usuario.esOperativo);
+      !usuario.esGestor &&
+      local.usuarioId === usuario.id &&
+      usuario.esOperativo;
     if (!puedeVisitar) {
       throw new ForbiddenException('No tenés permiso para visitar este local');
     }
@@ -397,6 +500,35 @@ export class VisitasService {
     ]);
     return respuestaPaginada(
       visitas.map(aVisitaResumenDto),
+      total,
+      page,
+      limit,
+    );
+  }
+
+  async equipo(
+    usuarioId: number,
+    query: ListarVisitasEquipoDto,
+  ): Promise<RespuestaPaginada<VisitaEquipoLocalDto>> {
+    const usuario = await this.usuarioActual(usuarioId);
+    if (!usuario.esGestor) {
+      throw new ForbiddenException('Solo un gestor puede ver el equipo');
+    }
+
+    const where = { empresaId: usuario.empresaId };
+    const { skip, take, page, limit } = rangoPaginacion(query);
+    const [total, locales] = await Promise.all([
+      this.prisma.local.count({ where }),
+      this.prisma.local.findMany({
+        where,
+        select: SELECT_LOCAL_EQUIPO,
+        orderBy: [{ usuarioId: 'asc' }, { nombre: 'asc' }, { id: 'asc' }],
+        skip,
+        take,
+      }),
+    ]);
+    return respuestaPaginada(
+      locales.map(aVisitaEquipoLocalDto),
       total,
       page,
       limit,

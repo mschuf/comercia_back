@@ -43,3 +43,34 @@ export interface VisitaResumenDto {
   tareasTotal: number;
   tareasCompletadas: number;
 }
+
+export interface VisitaEquipoTareaDto {
+  id: number;
+  descripcion: string;
+  requiereFoto: boolean;
+  orden: number;
+  completada: boolean;
+}
+
+export interface VisitaEquipoUltimaVisitaDto {
+  id: number;
+  usuarioId: number;
+  usuarioNombre: string;
+  iniciadaEn: string;
+  completadaEn: string | null;
+  tareasTotal: number;
+  tareasCompletadas: number;
+}
+
+// Resumen por local para seguimiento del gestor/teamleader.
+export interface VisitaEquipoLocalDto {
+  localId: number;
+  localNombre: string;
+  zona: { id: number; nombre: string } | null;
+  fechaVisita: string | null;
+  requiereFotoPresencia: boolean;
+  activo: boolean;
+  asignadoA: { id: number; nombre: string } | null;
+  ultimaVisita: VisitaEquipoUltimaVisitaDto | null;
+  tareas: VisitaEquipoTareaDto[];
+}

@@ -24,6 +24,7 @@ import {
   ActualizarVisitaTareaDto,
   FinalizarVisitaDto,
   IniciarVisitaDto,
+  ListarVisitasEquipoDto,
   ListarVisitasDto,
 } from './dto/visita.dto';
 import { FOTO_MAX_BYTES } from './impulsador.constants';
@@ -68,6 +69,14 @@ export class VisitasController {
   @Get()
   listar(@Req() req: RequestConUsuario, @Query() query: ListarVisitasDto) {
     return this.visitas.listar(req.usuarioId, query);
+  }
+
+  @Get('equipo')
+  equipo(
+    @Req() req: RequestConUsuario,
+    @Query() query: ListarVisitasEquipoDto,
+  ) {
+    return this.visitas.equipo(req.usuarioId, query);
   }
 
   @Get(':id')
