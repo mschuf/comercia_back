@@ -11,6 +11,7 @@ import type {
   Rol,
 } from "@/types/plataforma";
 import { errorBox } from "@/components/ui";
+import type { RespuestaPaginada } from "@/types/paginacion";
 
 const BASE = "/admin/plataforma";
 
@@ -27,19 +28,21 @@ export function EmpresasPanel() {
 
   useEffect(() => {
     Promise.all([
-      apiFetch<{ empresas: Empresa[] }>("/empresas"),
+      apiFetch<RespuestaPaginada<Empresa>>("/empresas?page=1&limit=50"),
       apiFetch<Modulo[]>(`${BASE}/modulos`),
       apiFetch<Rol[]>(`${BASE}/roles`),
     ])
       .then(([e, m, r]) => {
-        setEmpresas(e.empresas);
+        setEmpresas(e.items);
         setModulos(m);
         setRoles(r);
-        if (e.empresas.length > 0) setEmpresaId(e.empresas[0].id);
+        if (e.items.length > 0) setEmpresaId(e.items[0].id);
       })
       .catch((err) =>
         setErrorCarga(
-          err instanceof ApiError ? err.message : "No se pudieron cargar los datos",
+          err instanceof ApiError
+            ? err.message
+            : "No se pudieron cargar los datos",
         ),
       )
       .finally(() => setCargando(false));
@@ -238,11 +241,21 @@ function SelectorRoles({
   }
 
   return (
-    <div className={compacto ? "mt-1.5" : "mt-3 border-t border-zinc-100 pt-3 dark:border-zinc-800"}>
+    <div
+      className={
+        compacto
+          ? "mt-1.5"
+          : "mt-3 border-t border-zinc-100 pt-3 dark:border-zinc-800"
+      }
+    >
       <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
         {etiqueta}{" "}
         <span className="font-normal">
-          ({seleccion.length === 0 ? "todos los roles" : `${seleccion.length} seleccionados`})
+          (
+          {seleccion.length === 0
+            ? "todos los roles"
+            : `${seleccion.length} seleccionados`}
+          )
         </span>
       </p>
       <div className="mt-1.5 flex flex-wrap gap-1.5">
@@ -302,7 +315,9 @@ function SelectorPaginas({
   function cambiarRolesPagina(paginaId: number, rolIds: number[]) {
     onGuardar(
       false,
-      estado.paginas.map((p) => (p.paginaId === paginaId ? { ...p, rolIds } : p)),
+      estado.paginas.map((p) =>
+        p.paginaId === paginaId ? { ...p, rolIds } : p,
+      ),
     );
   }
 

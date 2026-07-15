@@ -26,6 +26,11 @@ export class ConfigImpulsadorController {
   miConfig(@Req() req: RequestConUsuario) {
     return this.configImpulsador.paraUsuario(req.usuarioId);
   }
+
+  @Get('responsables-territorio')
+  responsablesTerritorio(@Req() req: RequestConUsuario) {
+    return this.configImpulsador.responsablesTerritorio(req.usuarioId);
+  }
 }
 
 // Config por empresa: SOLO superadmin (JwtAuthGuard + SuperadminGuard en todo)

@@ -4,6 +4,7 @@ export interface ZonaDto {
   territorioId: number;
   territorioNombre: string;
   nombre: string;
+  repositores: { id: number; nombre: string }[];
   color: string;
   poligono: [number, number][] | null;
   activo: boolean;

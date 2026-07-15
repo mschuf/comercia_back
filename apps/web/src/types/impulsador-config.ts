@@ -4,6 +4,7 @@
 export interface ConfigImpulsador {
   rolGestorIds: number[];
   rolOperativoIds: number[];
+  rolAdminUsuarioIds: number[];
   radioMetrosDefecto: number;
   esGestor: boolean;
   esOperativo: boolean;
@@ -14,5 +15,6 @@ export interface ConfigImpulsadorAdmin {
   empresaId: number;
   rolGestorIds: number[];
   rolOperativoIds: number[];
+  rolAdminUsuarioIds: number[];
   radioMetrosDefecto: number;
 }

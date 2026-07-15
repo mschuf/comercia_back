@@ -2,6 +2,7 @@
 export interface VisitaTareaDto {
   id: number;
   tareaId: number;
+  titulo: string;
   descripcion: string;
   requiereFoto: boolean;
   orden: number;
@@ -17,6 +18,7 @@ export interface VisitaDto {
   id: number;
   localId: number;
   localNombre: string;
+  clienteNombre: string;
   usuarioId: number;
   usuarioNombre: string;
   iniciadaEn: string;
@@ -34,6 +36,7 @@ export interface VisitaResumenDto {
   id: number;
   localId: number;
   localNombre: string;
+  clienteNombre: string;
   usuarioId: number;
   usuarioNombre: string;
   iniciadaEn: string;
@@ -46,6 +49,7 @@ export interface VisitaResumenDto {
 
 export interface VisitaEquipoTareaDto {
   id: number;
+  titulo: string;
   descripcion: string;
   requiereFoto: boolean;
   orden: number;
@@ -66,6 +70,7 @@ export interface VisitaEquipoUltimaVisitaDto {
 export interface VisitaEquipoLocalDto {
   localId: number;
   localNombre: string;
+  clienteNombre: string;
   zona: { id: number; nombre: string } | null;
   fechaVisita: string | null;
   requiereFotoPresencia: boolean;

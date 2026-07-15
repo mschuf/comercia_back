@@ -495,14 +495,19 @@ export function VisitasView() {
                                                 : "bg-amber-500"
                                             }`}
                                           />
-                                          <span
-                                            className={`min-w-0 flex-1 break-words ${
-                                              tarea.completada
-                                                ? "text-zinc-700 dark:text-zinc-200"
-                                                : "text-zinc-500 dark:text-zinc-400"
-                                            }`}
-                                          >
-                                            {tarea.descripcion}
+                                          <span className="min-w-0 flex-1 break-words">
+                                            <span
+                                              className={`block font-medium ${
+                                                tarea.completada
+                                                  ? "text-zinc-700 dark:text-zinc-200"
+                                                  : "text-zinc-600 dark:text-zinc-300"
+                                              }`}
+                                            >
+                                              {tarea.titulo}
+                                            </span>
+                                            <span className="mt-0.5 block leading-relaxed text-zinc-500 dark:text-zinc-400">
+                                              {tarea.descripcion}
+                                            </span>
                                           </span>
                                           <span
                                             className={`shrink-0 rounded-full px-2 py-0.5 font-medium ${

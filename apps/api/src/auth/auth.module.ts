@@ -22,6 +22,6 @@ import { SuperadminGuard } from './superadmin.guard';
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtAuthGuard, SuperadminGuard],
-  exports: [JwtAuthGuard, SuperadminGuard, JwtModule],
+  exports: [AuthService, JwtAuthGuard, SuperadminGuard, JwtModule],
 })
 export class AuthModule {}

@@ -38,6 +38,7 @@ type VisitaTareaConTarea = {
   foto: string | null;
   completadaEn: Date | null;
   tarea: {
+    titulo: string;
     descripcion: string;
     requiereFoto: boolean;
     orden: number;
@@ -56,6 +57,7 @@ type VisitaConRelaciones = {
   local: {
     empresaId: number;
     nombre: string;
+    cliente: { nombre: string };
     latitud: number;
     longitud: number;
     radioMetros: number | null;
@@ -73,7 +75,7 @@ type VisitaResumen = {
   completadaEn: Date | null;
   distanciaMetros: number;
   fotoPresencia: string | null;
-  local: { nombre: string };
+  local: { nombre: string; cliente: { nombre: string } };
   usuario: { nombre: string; apellido: string };
   tareas: { completada: boolean }[];
 };
@@ -86,12 +88,16 @@ type LocalEquipo = {
   requiereFotoPresencia: boolean;
   activo: boolean;
   usuario: { id: number; nombre: string; apellido: string } | null;
-  tareas: {
-    id: number;
-    descripcion: string;
-    requiereFoto: boolean;
-    orden: number;
-  }[];
+  cliente: {
+    nombre: string;
+    tareas: {
+      id: number;
+      titulo: string;
+      descripcion: string;
+      requiereFoto: boolean;
+      orden: number;
+    }[];
+  };
   visitas: {
     id: number;
     usuarioId: number;
@@ -112,6 +118,7 @@ const SELECT_VISITA_TAREA = {
   completadaEn: true,
   tarea: {
     select: {
+      titulo: true,
       descripcion: true,
       requiereFoto: true,
       orden: true,
@@ -134,6 +141,7 @@ const SELECT_VISITA = {
     select: {
       empresaId: true,
       nombre: true,
+      cliente: { select: { nombre: true } },
       latitud: true,
       longitud: true,
       radioMetros: true,
@@ -155,7 +163,7 @@ const SELECT_VISITA_RESUMEN = {
   completadaEn: true,
   distanciaMetros: true,
   fotoPresencia: true,
-  local: { select: { nombre: true } },
+  local: { select: { nombre: true, cliente: { select: { nombre: true } } } },
   usuario: { select: { nombre: true, apellido: true } },
   tareas: { select: { completada: true } },
 } as const;
@@ -168,15 +176,21 @@ const SELECT_LOCAL_EQUIPO = {
   requiereFotoPresencia: true,
   activo: true,
   usuario: { select: { id: true, nombre: true, apellido: true } },
-  tareas: {
-    where: { activo: true },
+  cliente: {
     select: {
-      id: true,
-      descripcion: true,
-      requiereFoto: true,
-      orden: true,
+      nombre: true,
+      tareas: {
+        where: { activo: true },
+        select: {
+          id: true,
+          titulo: true,
+          descripcion: true,
+          requiereFoto: true,
+          orden: true,
+        },
+        orderBy: [{ orden: 'asc' }, { id: 'asc' }],
+      },
     },
-    orderBy: [{ orden: 'asc' }, { id: 'asc' }],
   },
   visitas: {
     select: {
@@ -200,6 +214,7 @@ function aVisitaTareaDto(tarea: VisitaTareaConTarea): VisitaTareaDto {
   return {
     id: tarea.id,
     tareaId: tarea.tareaId,
+    titulo: tarea.tarea.titulo,
     descripcion: tarea.tarea.descripcion,
     requiereFoto: tarea.tarea.requiereFoto,
     orden: tarea.tarea.orden,
@@ -218,6 +233,7 @@ function aVisitaDto(
     id: visita.id,
     localId: visita.localId,
     localNombre: visita.local.nombre,
+    clienteNombre: visita.local.cliente.nombre,
     usuarioId: visita.usuarioId,
     usuarioNombre: nombreCompleto(visita.usuario),
     iniciadaEn: visita.iniciadaEn.toISOString(),
@@ -238,6 +254,7 @@ function aVisitaResumenDto(visita: VisitaResumen): VisitaResumenDto {
     id: visita.id,
     localId: visita.localId,
     localNombre: visita.local.nombre,
+    clienteNombre: visita.local.cliente.nombre,
     usuarioId: visita.usuarioId,
     usuarioNombre: nombreCompleto(visita.usuario),
     iniciadaEn: visita.iniciadaEn.toISOString(),
@@ -255,8 +272,9 @@ function aVisitaEquipoLocalDto(local: LocalEquipo): VisitaEquipoLocalDto {
     ultimaVisita?.tareas.filter((t) => t.completada).map((t) => t.tareaId) ??
       [],
   );
-  const tareas = local.tareas.map((tarea) => ({
+  const tareas = local.cliente.tareas.map((tarea) => ({
     id: tarea.id,
+    titulo: tarea.titulo,
     descripcion: tarea.descripcion,
     requiereFoto: tarea.requiereFoto,
     orden: tarea.orden,
@@ -266,6 +284,7 @@ function aVisitaEquipoLocalDto(local: LocalEquipo): VisitaEquipoLocalDto {
   return {
     localId: local.id,
     localNombre: local.nombre,
+    clienteNombre: local.cliente.nombre,
     zona: local.zona ? { id: local.zona.id, nombre: local.zona.nombre } : null,
     fechaVisita: local.fechaVisita?.toISOString() ?? null,
     requiereFotoPresencia: local.requiereFotoPresencia,
@@ -393,6 +412,7 @@ export class VisitasService {
         latitud: true,
         longitud: true,
         radioMetros: true,
+        clienteId: true,
       },
     });
     // Neutro: mismo mensaje si es de otra empresa o está inactivo
@@ -407,8 +427,8 @@ export class VisitasService {
       throw new ForbiddenException('No tenés permiso para visitar este local');
     }
 
-    const tareasActivas = await this.prisma.tareaLocal.findMany({
-      where: { localId: local.id, activo: true },
+    const tareasActivas = await this.prisma.tareaCliente.findMany({
+      where: { clienteId: local.clienteId, activo: true },
       select: { id: true },
       orderBy: [{ orden: 'asc' }, { id: 'asc' }],
     });

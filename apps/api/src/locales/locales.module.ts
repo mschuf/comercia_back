@@ -12,5 +12,6 @@ import { TareasLocalService } from './tareas-local.service';
   imports: [PrismaModule, AuthModule, PlataformaModule, ImpulsadorModule],
   controllers: [LocalesController, TareasLocalController],
   providers: [LocalesService, TareasLocalService],
+  exports: [TareasLocalService],
 })
 export class LocalesModule {}

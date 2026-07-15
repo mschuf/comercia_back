@@ -5,6 +5,7 @@ import { ZonaDto } from './zona.interface';
 export interface LocalMapaDto {
   id: number;
   nombre: string;
+  clienteNombre: string;
   latitud: number;
   longitud: number;
   zonaId: number | null;

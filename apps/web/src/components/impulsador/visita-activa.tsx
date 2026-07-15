@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
 import { apiSubirFoto, urlFotoVisita } from "@/lib/api-archivos";
 import { obtenerUbicacion } from "@/lib/geolocalizacion";
@@ -132,13 +132,10 @@ export function VisitaActiva({
 }) {
   // La visita se va actualizando con la respuesta de cada endpoint
   const [visita, setVisita] = useState<Visita>(visitaInicial);
-  const [comentariosAbiertos, setComentariosAbiertos] = useState<Set<number>>(
-    () =>
-      new Set(
-        visitaInicial.tareas.filter((t) => t.comentario).map((t) => t.id),
-      ),
-  );
-  const [borradores, setBorradores] = useState<Record<number, string>>({});
+  const [descripcionesRealizadas, setDescripcionesRealizadas] = useState<
+    Record<number, string>
+  >({});
+  const guardadosDescripcion = useRef(new Map<number, Promise<boolean>>());
   const [tareaOcupada, setTareaOcupada] = useState<number | null>(null);
   const [fotoEnProceso, setFotoEnProceso] = useState<{
     clave: number | "presencia";
@@ -155,9 +152,9 @@ export function VisitaActiva({
 
   const pendientes: string[] = [];
   for (const t of tareas) {
-    if (!t.completada) pendientes.push(`Completar «${t.descripcion}»`);
+    if (!t.completada) pendientes.push(`Completar «${t.titulo}»`);
     if (t.requiereFoto && !t.foto)
-      pendientes.push(`Sacar la foto de «${t.descripcion}»`);
+      pendientes.push(`Sacar la foto de «${t.titulo}»`);
   }
   if (visita.requiereFotoPresencia && !visita.fotoPresencia) {
     pendientes.push("Sacar la foto de presencia");
@@ -168,17 +165,31 @@ export function VisitaActiva({
     return fotoEnProceso.accion;
   }
 
+  function aplicarCambiosTarea(tareaId: number, cambios: Partial<VisitaTarea>) {
+    setVisita((actual) => ({
+      ...actual,
+      tareas: actual.tareas.map((tarea) =>
+        tarea.id === tareaId ? { ...tarea, ...cambios } : tarea,
+      ),
+    }));
+  }
+
   async function alternarTarea(t: VisitaTarea) {
     if (tareaOcupada !== null) return;
     setError(null);
     setTareaOcupada(t.id);
     try {
-      setVisita(
-        await apiFetch<Visita>(`/visitas/${visita.id}/tareas/${t.id}`, {
+      const actualizada = await apiFetch<VisitaTarea>(
+        `/visitas/${visita.id}/tareas/${t.id}`,
+        {
           method: "PATCH",
           body: JSON.stringify({ completada: !t.completada }),
-        }),
+        },
       );
+      aplicarCambiosTarea(t.id, {
+        completada: actualizada.completada,
+        completadaEn: actualizada.completadaEn,
+      });
     } catch (err) {
       setError(
         err instanceof ApiError
@@ -190,30 +201,49 @@ export function VisitaActiva({
     }
   }
 
-  async function guardarComentario(t: VisitaTarea) {
-    const borrador = borradores[t.id];
-    if (borrador === undefined) return; // sin cambios
+  function guardarDescripcionRealizada(t: VisitaTarea): Promise<boolean> {
+    const guardadoExistente = guardadosDescripcion.current.get(t.id);
+    if (guardadoExistente) return guardadoExistente;
+
+    const borrador = descripcionesRealizadas[t.id];
+    if (borrador === undefined) return Promise.resolve(true); // sin cambios
     const texto = borrador.trim();
-    if (texto === (t.comentario ?? "")) return;
-    try {
-      setVisita(
-        await apiFetch<Visita>(`/visitas/${visita.id}/tareas/${t.id}`, {
-          method: "PATCH",
-          body: JSON.stringify({ comentario: texto === "" ? null : texto }),
-        }),
-      );
-      setBorradores((b) => {
-        const resto = { ...b };
-        delete resto[t.id];
-        return resto;
+    if (texto === (t.comentario ?? "")) return Promise.resolve(true);
+    setError(null);
+
+    const guardado = apiFetch<VisitaTarea>(
+      `/visitas/${visita.id}/tareas/${t.id}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ comentario: texto === "" ? null : texto }),
+      },
+    )
+      .then((actualizada) => {
+        aplicarCambiosTarea(t.id, { comentario: actualizada.comentario });
+        setDescripcionesRealizadas((actuales) => {
+          if (actuales[t.id] !== borrador) return actuales;
+          const resto = { ...actuales };
+          delete resto[t.id];
+          return resto;
+        });
+        return true;
+      })
+      .catch((err: unknown) => {
+        setError(
+          err instanceof ApiError
+            ? err.message
+            : "No se pudo guardar la descripción de lo realizado",
+        );
+        return false;
+      })
+      .finally(() => {
+        if (guardadosDescripcion.current.get(t.id) === guardado) {
+          guardadosDescripcion.current.delete(t.id);
+        }
       });
-    } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "No se pudo guardar el comentario",
-      );
-    }
+
+    guardadosDescripcion.current.set(t.id, guardado);
+    return guardado;
   }
 
   async function subirFotoTarea(t: VisitaTarea, archivo: File) {
@@ -221,12 +251,11 @@ export function VisitaActiva({
     setError(null);
     setFotoEnProceso({ clave: t.id, accion: "subiendo" });
     try {
-      setVisita(
-        await apiSubirFoto<Visita>(
-          `/visitas/${visita.id}/tareas/${t.id}/foto`,
-          archivo,
-        ),
+      const actualizada = await apiSubirFoto<VisitaTarea>(
+        `/visitas/${visita.id}/tareas/${t.id}/foto`,
+        archivo,
       );
+      aplicarCambiosTarea(t.id, { foto: actualizada.foto });
     } catch (err) {
       setError(
         err instanceof ApiError ? err.message : "No se pudo subir la foto",
@@ -241,11 +270,11 @@ export function VisitaActiva({
     setError(null);
     setFotoEnProceso({ clave: t.id, accion: "quitando" });
     try {
-      const actualizada = await apiFetch<Visita>(
+      const actualizada = await apiFetch<VisitaTarea>(
         `/visitas/${visita.id}/tareas/${t.id}/foto`,
         { method: "DELETE" },
       );
-      if (actualizada) setVisita(actualizada);
+      aplicarCambiosTarea(t.id, { foto: actualizada.foto });
     } catch (err) {
       setError(
         err instanceof ApiError ? err.message : "No se pudo quitar la foto",
@@ -299,6 +328,11 @@ export function VisitaActiva({
     setError(null);
     setFinalizando(true);
     try {
+      const descripcionesGuardadas = await Promise.all(
+        tareas.map(guardarDescripcionRealizada),
+      );
+      if (descripcionesGuardadas.some((guardada) => !guardada)) return;
+
       const ubicacion = await obtenerUbicacion();
       setVisita(
         await apiFetch<Visita>(`/visitas/${visita.id}/finalizar`, {
@@ -400,42 +434,53 @@ export function VisitaActiva({
                       onChange={() => alternarTarea(t)}
                       className="h-5 w-5 shrink-0 cursor-pointer accent-brand-700 disabled:cursor-not-allowed"
                     />
-                    <span
-                      className={`text-sm ${
-                        t.completada
-                          ? "text-zinc-400 line-through dark:text-zinc-500"
-                          : "text-zinc-800 dark:text-zinc-100"
-                      }`}
-                    >
-                      {t.descripcion}
+                    <span className="min-w-0 flex-1">
+                      <span
+                        className={`block text-sm font-semibold ${
+                          t.completada
+                            ? "text-zinc-400 line-through dark:text-zinc-500"
+                            : "text-zinc-800 dark:text-zinc-100"
+                        }`}
+                      >
+                        {t.titulo}
+                      </span>
+                      <span className="mt-1 block text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+                        {t.descripcion}
+                      </span>
                     </span>
                   </label>
 
-                  {comentariosAbiertos.has(t.id) ? (
+                  <label
+                    htmlFor={`descripcion-realizada-${t.id}`}
+                    className="mt-3 block text-xs font-medium text-zinc-700 dark:text-zinc-300"
+                  >
+                    Descripción de lo realizado{" "}
+                    <span className="font-normal text-zinc-400 dark:text-zinc-500">
+                      (opcional)
+                    </span>
                     <textarea
-                      value={borradores[t.id] ?? t.comentario ?? ""}
+                      id={`descripcion-realizada-${t.id}`}
+                      value={
+                        descripcionesRealizadas[t.id] ?? t.comentario ?? ""
+                      }
                       onChange={(e) =>
-                        setBorradores((b) => ({
-                          ...b,
+                        setDescripcionesRealizadas((actuales) => ({
+                          ...actuales,
                           [t.id]: e.target.value,
                         }))
                       }
-                      onBlur={() => guardarComentario(t)}
+                      onBlur={() => {
+                        void guardarDescripcionRealizada(t);
+                      }}
                       rows={2}
-                      placeholder="Escribí un comentario…"
+                      maxLength={500}
+                      placeholder="Contá brevemente qué hiciste en esta tarea…"
                       className={`${inputBase} mt-2 resize-y`}
                     />
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setComentariosAbiertos((s) => new Set(s).add(t.id))
-                      }
-                      className="mt-1 rounded text-xs font-medium text-brand-700 transition hover:underline focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-brand-300"
-                    >
-                      + comentario
-                    </button>
-                  )}
+                    <span className="mt-1 block font-normal text-zinc-400 dark:text-zinc-500">
+                      Se guarda al salir del campo.
+                    </span>
+                  </label>
 
                   {t.requiereFoto && (
                     <div className="mt-3 border-t border-zinc-100 pt-3 dark:border-zinc-800">

@@ -5,6 +5,7 @@ import { apiFetch, ApiError } from "@/lib/api";
 import type { Empresa } from "@/types/empresa";
 import type { Rol } from "@/types/plataforma";
 import type { ConfigImpulsadorAdmin } from "@/types/impulsador-config";
+import type { RespuestaPaginada } from "@/types/paginacion";
 import { btnPrimary, errorBox, inputBase, labelBase } from "@/components/ui";
 
 export function ImpulsadorPanel() {
@@ -18,6 +19,7 @@ export function ImpulsadorPanel() {
   const [config, setConfig] = useState<ConfigImpulsadorAdmin | null>(null);
   const [rolGestorIds, setRolGestorIds] = useState<number[]>([]);
   const [rolOperativoIds, setRolOperativoIds] = useState<number[]>([]);
+  const [rolAdminUsuarioIds, setRolAdminUsuarioIds] = useState<number[]>([]);
   const [radioMetros, setRadioMetros] = useState("");
 
   const [guardando, setGuardando] = useState(false);
@@ -27,13 +29,13 @@ export function ImpulsadorPanel() {
 
   useEffect(() => {
     Promise.all([
-      apiFetch<{ empresas: Empresa[] }>("/empresas"),
+      apiFetch<RespuestaPaginada<Empresa>>("/empresas?page=1&limit=50"),
       apiFetch<Rol[]>("/admin/plataforma/roles"),
     ])
       .then(([e, r]) => {
-        setEmpresas(e.empresas);
+        setEmpresas(e.items);
         setRoles(r);
-        if (e.empresas.length > 0) setEmpresaId(e.empresas[0].id);
+        if (e.items.length > 0) setEmpresaId(e.items[0].id);
       })
       .catch((err) =>
         setErrorCarga(
@@ -57,6 +59,7 @@ export function ImpulsadorPanel() {
         setConfig(c);
         setRolGestorIds(c.rolGestorIds);
         setRolOperativoIds(c.rolOperativoIds);
+        setRolAdminUsuarioIds(c.rolAdminUsuarioIds);
         setRadioMetros(String(c.radioMetrosDefecto));
       })
       .catch((err) => {
@@ -95,6 +98,7 @@ export function ImpulsadorPanel() {
           body: JSON.stringify({
             rolGestorIds,
             rolOperativoIds,
+            rolAdminUsuarioIds,
             radioMetrosDefecto: radio,
           }),
         },
@@ -102,6 +106,7 @@ export function ImpulsadorPanel() {
       setConfig(data);
       setRolGestorIds(data.rolGestorIds);
       setRolOperativoIds(data.rolOperativoIds);
+      setRolAdminUsuarioIds(data.rolAdminUsuarioIds);
       setRadioMetros(String(data.radioMetrosDefecto));
       setGuardado(true);
       if (timeoutGuardado.current) clearTimeout(timeoutGuardado.current);
@@ -150,9 +155,7 @@ export function ImpulsadorPanel() {
       {errorAccion && <p className={`${errorBox} mt-4`}>{errorAccion}</p>}
 
       {empresaId !== "" && config === null && !errorAccion && (
-        <p className="mt-4 text-sm text-zinc-400">
-          Cargando configuración...
-        </p>
+        <p className="mt-4 text-sm text-zinc-400">Cargando configuración...</p>
       )}
 
       {config !== null && (
@@ -175,6 +178,15 @@ export function ImpulsadorPanel() {
             onCambio={setRolOperativoIds}
           />
 
+          <ChipsRoles
+            etiqueta="Roles que administran usuarios"
+            ayuda="Crean usuarios, asignan roles y superiores dentro de su empresa. Sin selección: solo GERENTE. El superadmin puede hacerlo en cualquier empresa."
+            roles={roles}
+            seleccion={rolAdminUsuarioIds}
+            deshabilitado={guardando}
+            onCambio={setRolAdminUsuarioIds}
+          />
+
           <label className={`${labelBase} sm:max-w-xs`}>
             Radio de verificación por defecto (m)
             <input
@@ -188,8 +200,8 @@ export function ImpulsadorPanel() {
               className={`${inputBase} disabled:cursor-not-allowed disabled:opacity-50`}
             />
             <span className="text-xs font-normal text-zinc-400 dark:text-zinc-500">
-              Distancia máxima al local para poder registrar la visita; se
-              puede pisar por local.
+              Distancia máxima al local para poder registrar la visita; se puede
+              pisar por local.
             </span>
           </label>
 

@@ -3,6 +3,7 @@
 export interface VisitaTarea {
   id: number;
   tareaId: number;
+  titulo: string;
   descripcion: string;
   requiereFoto: boolean;
   orden: number;
@@ -18,6 +19,7 @@ export interface Visita {
   id: number;
   localId: number;
   localNombre: string;
+  clienteNombre: string;
   usuarioId: number;
   usuarioNombre: string;
   iniciadaEn: string;
@@ -35,6 +37,7 @@ export interface VisitaResumen {
   id: number;
   localId: number;
   localNombre: string;
+  clienteNombre: string;
   usuarioId: number;
   usuarioNombre: string;
   iniciadaEn: string;
@@ -47,6 +50,7 @@ export interface VisitaResumen {
 
 export interface VisitaEquipoTarea {
   id: number;
+  titulo: string;
   descripcion: string;
   requiereFoto: boolean;
   orden: number;
@@ -66,6 +70,7 @@ export interface VisitaEquipoUltimaVisita {
 export interface VisitaEquipoLocal {
   localId: number;
   localNombre: string;
+  clienteNombre: string;
   zona: { id: number; nombre: string } | null;
   fechaVisita: string | null;
   requiereFotoPresencia: boolean;

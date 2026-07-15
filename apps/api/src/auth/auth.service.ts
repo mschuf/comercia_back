@@ -5,20 +5,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import {
-  getCountries,
-  parsePhoneNumberFromString,
-} from 'libphonenumber-js/max';
 import { Prisma } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { hashPassword, verifyPassword } from './utils/password';
-import { esRucParaguayoValido, normalizarRucPy } from './utils/ruc';
+import { normalizarCelular, normalizarRucUsuario } from './utils/datos-usuario';
 import type { UsuarioSesion } from './interfaces/usuario-sesion.interface';
 import type { TokenPayload } from './interfaces/token-payload.interface';
-
-const TIPOS_CELULAR_VALIDOS = new Set(['MOBILE', 'FIXED_LINE_OR_MOBILE']);
 
 const MENSAJES_DUPLICADO: Record<string, string> = {
   correo: 'Ya existe un usuario registrado con ese correo',
@@ -33,11 +27,12 @@ export class AuthService {
     private readonly jwt: JwtService,
   ) {}
 
-  async register(
+  async crearUsuario(
     dto: RegisterDto,
-  ): Promise<{ usuario: UsuarioSesion; token: string }> {
-    const celularE164 = this.validarCelular(dto.celular, dto.celularPais);
-    const ruc = this.validarRuc(dto.ruc, dto.celularPais);
+    asignacion: { rolId: number; superiorId?: number | null },
+  ): Promise<UsuarioSesion> {
+    const celularE164 = normalizarCelular(dto.celular, dto.celularPais);
+    const ruc = normalizarRucUsuario(dto.ruc, dto.celularPais);
 
     const empresa = await this.prisma.empresa.findUnique({
       where: { id: dto.empresaId },
@@ -73,6 +68,8 @@ export class AuthService {
           correo: dto.correo,
           nombreLogin: dto.nombreLogin,
           empresaId: dto.empresaId,
+          rolId: asignacion.rolId,
+          superiorId: asignacion.superiorId ?? null,
           ruc,
           celular: celularE164,
           passwordHash,
@@ -96,17 +93,14 @@ export class AuthService {
         throw e;
       });
 
-    return {
-      usuario: this.aSesion(usuario),
-      token: this.firmarToken(usuario.id),
-    };
+    return this.aSesion(usuario);
   }
 
   async login(
     dto: LoginDto,
   ): Promise<{ usuario: UsuarioSesion; token: string }> {
     // El identificador llega en minúsculas (DTO); correo y nombreLogin se
-    // guardan en minúsculas en el register: misma normalización en ambos lados.
+    // Se guardan en minúsculas al crear el usuario: misma normalización aquí.
     const usuario = await this.prisma.usuario.findFirst({
       where: {
         OR: [{ correo: dto.identificador }, { nombreLogin: dto.identificador }],
@@ -141,36 +135,6 @@ export class AuthService {
       throw new UnauthorizedException();
     }
     return this.aSesion(usuario);
-  }
-
-  private validarCelular(celular: string, pais: string): string {
-    if (!(getCountries() as string[]).includes(pais)) {
-      throw new BadRequestException('El país del celular no es válido');
-    }
-    const parsed = parsePhoneNumberFromString(celular, pais as never);
-    if (!parsed || !parsed.isValid() || parsed.country !== pais) {
-      throw new BadRequestException(
-        'El celular no es válido para el país seleccionado',
-      );
-    }
-    const tipo = parsed.getType();
-    if (tipo !== undefined && !TIPOS_CELULAR_VALIDOS.has(tipo)) {
-      throw new BadRequestException('El número ingresado no es un celular');
-    }
-    return parsed.number; // formato E.164, ej: +595971234567
-  }
-
-  private validarRuc(ruc: string, pais: string): string {
-    if (pais === 'PY') {
-      const normalizado = normalizarRucPy(ruc.toUpperCase());
-      if (!esRucParaguayoValido(normalizado)) {
-        throw new BadRequestException(
-          'El RUC no es válido: revisá el número y su dígito verificador (ej: 80012345-0)',
-        );
-      }
-      return normalizado; // siempre se guarda con guion: 1234567-9
-    }
-    return ruc.trim().toUpperCase();
   }
 
   private firmarToken(usuarioId: number): string {

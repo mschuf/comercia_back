@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
@@ -71,16 +70,6 @@ export default function LoginPage() {
           {enviando ? "Entrando..." : "Entrar"}
         </button>
       </form>
-
-      <p className="mt-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
-        ¿Todavía no tenés cuenta?{" "}
-        <Link
-          href="/register"
-          className="font-semibold text-brand-700 hover:underline dark:text-brand-500"
-        >
-          Registrate
-        </Link>
-      </p>
     </AuthShell>
   );
 }

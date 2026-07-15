@@ -1,0 +1,360 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { apiFetch, ApiError } from "@/lib/api";
+import { IconoMas } from "@/components/icono-mas";
+import { Modal } from "@/components/modal";
+import { Paginacion } from "@/components/paginacion";
+import {
+  btnGhost,
+  btnPrimary,
+  errorBox,
+  inputBase,
+  labelBase,
+} from "@/components/ui";
+import type { ConfigImpulsador } from "@/types/impulsador-config";
+import type { RespuestaPaginada } from "@/types/paginacion";
+import type { TareaGlobal } from "@/types/tarea";
+
+interface FormTarea {
+  titulo: string;
+  descripcion: string;
+  requiereFoto: boolean;
+  orden: number;
+  activo: boolean;
+}
+
+const FORM_INICIAL: FormTarea = {
+  titulo: "",
+  descripcion: "",
+  requiereFoto: false,
+  orden: 0,
+  activo: true,
+};
+
+export function TareasView() {
+  const [datos, setDatos] = useState<RespuestaPaginada<TareaGlobal> | null>(
+    null,
+  );
+  const [config, setConfig] = useState<ConfigImpulsador | null>(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(7);
+  const [editando, setEditando] = useState<TareaGlobal | "nueva" | null>(null);
+  const [form, setForm] = useState<FormTarea>(FORM_INICIAL);
+  const [error, setError] = useState<string | null>(null);
+  const [guardando, setGuardando] = useState(false);
+
+  const cargar = useCallback(() => {
+    apiFetch<RespuestaPaginada<TareaGlobal>>(
+      `/tareas?page=${page}&limit=${limit}`,
+    )
+      .then((respuesta) => {
+        setDatos(respuesta);
+        setError(null);
+      })
+      .catch((e) =>
+        setError(
+          e instanceof ApiError
+            ? e.message
+            : "No se pudieron cargar las tareas",
+        ),
+      );
+  }, [page, limit]);
+
+  useEffect(() => cargar(), [cargar]);
+
+  useEffect(() => {
+    apiFetch<ConfigImpulsador>("/impulsador/config")
+      .then(setConfig)
+      .catch((e) =>
+        setError(
+          e instanceof ApiError
+            ? e.message
+            : "No se pudieron comprobar los permisos",
+        ),
+      );
+  }, []);
+
+  function abrir(tarea: TareaGlobal | "nueva") {
+    setForm(
+      tarea === "nueva"
+        ? {
+            ...FORM_INICIAL,
+            orden: (datos?.items.at(-1)?.orden ?? -1) + 1,
+          }
+        : {
+            titulo: tarea.titulo,
+            descripcion: tarea.descripcion,
+            requiereFoto: tarea.requiereFoto,
+            orden: tarea.orden,
+            activo: tarea.activo,
+          },
+    );
+    setError(null);
+    setEditando(tarea);
+  }
+
+  async function guardar(e: React.FormEvent) {
+    e.preventDefault();
+    if (editando === null) return;
+    setGuardando(true);
+    setError(null);
+    try {
+      await apiFetch(
+        editando === "nueva" ? "/tareas" : `/tareas/${editando.id}`,
+        {
+          method: editando === "nueva" ? "POST" : "PATCH",
+          body: JSON.stringify({
+            titulo: form.titulo.trim(),
+            descripcion: form.descripcion.trim(),
+            requiereFoto: form.requiereFoto,
+            orden: form.orden,
+            ...(editando === "nueva" ? {} : { activo: form.activo }),
+          }),
+        },
+      );
+      setEditando(null);
+      cargar();
+    } catch (e) {
+      setError(
+        e instanceof ApiError ? e.message : "No se pudo guardar la tarea",
+      );
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  const esGestor = config?.esGestor === true;
+
+  return (
+    <div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 className="text-xl font-bold">Tareas</h2>
+          <p className="mt-1 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">
+            El mismo checklist se aplica a todos los clientes, locales y
+            repositores. Al editar una tarea se actualizan las existentes y se
+            crean automáticamente las que falten.
+          </p>
+        </div>
+        {esGestor && (
+          <button
+            type="button"
+            onClick={() => abrir("nueva")}
+            aria-label="Crear tarea"
+            title="Crear tarea"
+            className={`${btnPrimary} h-11 w-11 shrink-0 p-0`}
+          >
+            <IconoMas className="h-5 w-5" />
+          </button>
+        )}
+      </div>
+
+      {error && editando === null && (
+        <p className={`${errorBox} mt-4`}>{error}</p>
+      )}
+
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        {(datos?.items ?? []).map((tarea) => {
+          const completa = tarea.clientesAsignados === tarea.clientesEmpresa;
+          return (
+            <article
+              key={tarea.id}
+              className="flex min-h-44 flex-col rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+            >
+              <div className="flex items-start gap-3">
+                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-brand-50 text-sm font-bold text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+                  {tarea.orden}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p
+                    className={`font-semibold ${
+                      tarea.activo
+                        ? "text-zinc-900 dark:text-zinc-100"
+                        : "text-zinc-400 line-through dark:text-zinc-500"
+                    }`}
+                  >
+                    {tarea.titulo}
+                  </p>
+                  <p
+                    className={`mt-1 text-sm ${
+                      tarea.activo
+                        ? "text-zinc-600 dark:text-zinc-300"
+                        : "text-zinc-400 dark:text-zinc-500"
+                    }`}
+                  >
+                    {tarea.descripcion}
+                  </p>
+                  <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
+                    <span
+                      className={`rounded-full px-2 py-1 font-medium ${
+                        tarea.activo
+                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                          : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                      }`}
+                    >
+                      {tarea.activo ? "Activa" : "Inactiva"}
+                    </span>
+                    {tarea.requiereFoto && (
+                      <span className="rounded-full bg-sky-100 px-2 py-1 font-medium text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+                        Requiere foto
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-auto pt-4">
+                <p
+                  className={`text-xs ${
+                    completa
+                      ? "text-zinc-500 dark:text-zinc-400"
+                      : "font-medium text-amber-700 dark:text-amber-300"
+                  }`}
+                >
+                  {tarea.clientesAsignados}/{tarea.clientesEmpresa} clientes ·{" "}
+                  {tarea.localesEmpresa} locales
+                </p>
+                {esGestor && (
+                  <button
+                    type="button"
+                    onClick={() => abrir(tarea)}
+                    className={`${btnGhost} mt-3 w-full`}
+                  >
+                    Editar
+                  </button>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      {datos && datos.items.length === 0 && (
+        <p className="mt-5 rounded-xl border border-dashed border-zinc-300 bg-white px-4 py-10 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+          Todavía no hay tareas.
+        </p>
+      )}
+
+      {datos && datos.total > 0 && (
+        <Paginacion
+          page={datos.page}
+          totalPages={datos.totalPages}
+          total={datos.total}
+          limit={datos.limit}
+          onPageChange={setPage}
+          onLimitChange={(nuevo) => {
+            setLimit(nuevo);
+            setPage(1);
+          }}
+        />
+      )}
+
+      <Modal
+        titulo={editando === "nueva" ? "Nueva tarea" : "Editar tarea"}
+        abierto={editando !== null}
+        onCerrar={() => setEditando(null)}
+      >
+        <form onSubmit={guardar} className="flex flex-col gap-4">
+          <label className={labelBase}>
+            Título
+            <input
+              type="text"
+              value={form.titulo}
+              onChange={(e) =>
+                setForm((actual) => ({
+                  ...actual,
+                  titulo: e.target.value,
+                }))
+              }
+              minLength={2}
+              maxLength={120}
+              required
+              className={inputBase}
+            />
+          </label>
+          <label className={labelBase}>
+            Descripción / instrucciones
+            <textarea
+              value={form.descripcion}
+              onChange={(e) =>
+                setForm((actual) => ({
+                  ...actual,
+                  descripcion: e.target.value,
+                }))
+              }
+              minLength={2}
+              maxLength={300}
+              rows={4}
+              required
+              className={inputBase}
+            />
+          </label>
+          <label className={labelBase}>
+            Orden
+            <input
+              type="number"
+              value={form.orden}
+              min={0}
+              required
+              onChange={(e) =>
+                setForm((actual) => ({
+                  ...actual,
+                  orden: Number(e.target.value),
+                }))
+              }
+              className={inputBase}
+            />
+          </label>
+          <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+            <input
+              type="checkbox"
+              checked={form.requiereFoto}
+              onChange={(e) =>
+                setForm((actual) => ({
+                  ...actual,
+                  requiereFoto: e.target.checked,
+                }))
+              }
+              className="h-4 w-4 accent-brand-700"
+            />
+            Exigir foto para completar esta tarea
+          </label>
+          {editando !== "nueva" && (
+            <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+              <input
+                type="checkbox"
+                checked={form.activo}
+                onChange={(e) =>
+                  setForm((actual) => ({
+                    ...actual,
+                    activo: e.target.checked,
+                  }))
+                }
+                className="h-4 w-4 accent-brand-700"
+              />
+              Tarea activa
+            </label>
+          )}
+          <p className="rounded-lg bg-brand-50 px-3 py-2.5 text-xs text-brand-800 dark:bg-brand-950 dark:text-brand-200">
+            Al guardar, este cambio se sincroniza con todos los clientes y sus
+            locales sin borrar las respuestas de visitas anteriores.
+          </p>
+          {error && <p className={errorBox}>{error}</p>}
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setEditando(null)}
+              className={btnGhost}
+            >
+              Cancelar
+            </button>
+            <button type="submit" disabled={guardando} className={btnPrimary}>
+              {guardando ? "Guardando..." : "Guardar"}
+            </button>
+          </div>
+        </form>
+      </Modal>
+    </div>
+  );
+}

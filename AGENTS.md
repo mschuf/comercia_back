@@ -45,9 +45,8 @@
   `aSesion()` de `auth.service.ts`). `passwordHash`, `password_db` de
   conexiones, tokens y campos internos JAMÁS salen por la API.
 - **Todo endpoint nuevo lleva `JwtAuthGuard`** salvo justificación escrita en un
-  comentario. Los únicos públicos permitidos hoy: `health`, `auth/login`,
-  `auth/register` y `empresas` (lo necesita el formulario de registro, y solo
-  expone id + nombre).
+  comentario. Los únicos públicos permitidos hoy: `health` y `auth/login`.
+  El alta de usuarios se realiza desde el ABM autenticado de usuarios.
 - **Autenticado ≠ autorizado**: además del guard, verificar DENTRO del handler
   que el recurso pertenezca al usuario o a su alcance (su empresa, su equipo,
   sus clientes). Un vendedor no ve los datos de otro vendedor.

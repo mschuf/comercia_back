@@ -12,7 +12,14 @@ import type {
 } from "@/types/plataforma";
 import { MOTORES, TIPOS_EJECUTABLE } from "@/types/plataforma";
 import { Modal } from "@/components/modal";
-import { btnGhost, btnPrimary, errorBox, inputBase, labelBase } from "@/components/ui";
+import { IconoMas } from "@/components/icono-mas";
+import {
+  btnGhost,
+  btnPrimary,
+  errorBox,
+  inputBase,
+  labelBase,
+} from "@/components/ui";
 
 const BASE = "/admin/plataforma";
 
@@ -24,15 +31,19 @@ export function ModulosPanel() {
 
   // Estado de los formularios modales
   const [formModulo, setFormModulo] = useState<Modulo | "nuevo" | null>(null);
-  const [formPagina, setFormPagina] = useState<
-    { pagina: Pagina | "nuevo"; moduloId: number } | null
-  >(null);
-  const [formEjec, setFormEjec] = useState<
-    { ejec: Ejecutable | "nuevo"; paginaId: number } | null
-  >(null);
-  const [aEliminar, setAEliminar] = useState<
-    { tipo: "modulo" | "pagina" | "ejecutable"; id: number; nombre: string } | null
-  >(null);
+  const [formPagina, setFormPagina] = useState<{
+    pagina: Pagina | "nuevo";
+    moduloId: number;
+  } | null>(null);
+  const [formEjec, setFormEjec] = useState<{
+    ejec: Ejecutable | "nuevo";
+    paginaId: number;
+  } | null>(null);
+  const [aEliminar, setAEliminar] = useState<{
+    tipo: "modulo" | "pagina" | "ejecutable";
+    id: number;
+    nombre: string;
+  } | null>(null);
   const [eliminando, setEliminando] = useState(false);
   const [errorEliminar, setErrorEliminar] = useState<string | null>(null);
   const [errorCarga, setErrorCarga] = useState<string | null>(null);
@@ -53,7 +64,9 @@ export function ModulosPanel() {
       })
       .catch((err) =>
         setErrorCarga(
-          err instanceof ApiError ? err.message : "No se pudieron cargar los módulos",
+          err instanceof ApiError
+            ? err.message
+            : "No se pudieron cargar los módulos",
         ),
       )
       .finally(() => setCargando(false));
@@ -108,9 +121,11 @@ export function ModulosPanel() {
         <button
           type="button"
           onClick={() => setFormModulo("nuevo")}
-          className={btnPrimary}
+          aria-label="Crear módulo"
+          title="Crear módulo"
+          className={`${btnPrimary} h-11 w-11 shrink-0 p-0`}
         >
-          + Nuevo módulo
+          <IconoMas className="h-5 w-5" />
         </button>
       </div>
 
@@ -142,14 +157,16 @@ export function ModulosPanel() {
               </button>
               <div className="flex-1">
                 <p className="font-semibold">
-                  {m.nombre}{" "}
-                  {!m.activo && <Etiqueta>inactivo</Etiqueta>}
+                  {m.nombre} {!m.activo && <Etiqueta>inactivo</Etiqueta>}
                 </p>
                 <p className="text-xs text-zinc-400">
                   /{m.ruta} · {m.paginas?.length ?? 0} páginas
                 </p>
               </div>
-              <BotonIcono onClick={() => setFormModulo(m)} titulo="Editar módulo">
+              <BotonIcono
+                onClick={() => setFormModulo(m)}
+                titulo="Editar módulo"
+              >
                 <IconoLapiz />
               </BotonIcono>
               <BotonIcono
@@ -174,9 +191,11 @@ export function ModulosPanel() {
                     onClick={() =>
                       setFormPagina({ pagina: "nuevo", moduloId: m.id })
                     }
-                    className="text-xs font-semibold text-brand-700 hover:underline dark:text-brand-400"
+                    aria-label={`Crear página en ${m.nombre}`}
+                    title="Crear página"
+                    className="grid h-11 w-11 shrink-0 place-items-center rounded-lg text-brand-700 transition hover:bg-brand-50 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-brand-400 dark:hover:bg-brand-950"
                   >
-                    + Agregar página
+                    <IconoMas className="h-5 w-5" />
                   </button>
                 </div>
                 {(m.paginas ?? []).length === 0 && (
@@ -205,9 +224,11 @@ export function ModulosPanel() {
                           onClick={() =>
                             setFormEjec({ ejec: "nuevo", paginaId: p.id })
                           }
-                          className="text-xs font-semibold text-brand-700 hover:underline dark:text-brand-400"
+                          aria-label={`Crear ejecutable en ${p.nombre}`}
+                          title="Crear ejecutable"
+                          className="grid h-11 w-11 shrink-0 place-items-center rounded-lg text-brand-700 transition hover:bg-brand-50 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-brand-400 dark:hover:bg-brand-950"
                         >
-                          + Ejecutable
+                          <IconoMas className="h-5 w-5" />
                         </button>
                         <BotonIcono
                           onClick={() =>
@@ -245,7 +266,9 @@ export function ModulosPanel() {
                               <span className="rounded bg-brand-50 px-1.5 py-0.5 text-[10px] font-medium text-brand-700 dark:bg-brand-950 dark:text-brand-300">
                                 {e.tipo}
                               </span>
-                              <span className="flex-1 truncate">{e.nombre}</span>
+                              <span className="flex-1 truncate">
+                                {e.nombre}
+                              </span>
                               <BotonIcono
                                 onClick={() =>
                                   setFormEjec({ ejec: e, paginaId: p.id })
@@ -795,7 +818,12 @@ function BotonIcono({
 
 function IconoLapiz() {
   return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden>
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="h-4 w-4"
+      aria-hidden
+    >
       <path d="M2.695 14.762l-1.262 3.155a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
     </svg>
   );
@@ -803,7 +831,12 @@ function IconoLapiz() {
 
 function IconoTacho() {
   return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden>
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="h-4 w-4"
+      aria-hidden
+    >
       <path
         fillRule="evenodd"
         d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"

@@ -14,9 +14,12 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { RequestConUsuario } from '../auth/interfaces/request-con-usuario.interface';
-import { PaginacionDto } from '../common/utils/paginacion';
 import { LocalesService } from './locales.service';
-import { ActualizarLocalDto, CrearLocalDto } from './dto/local.dto';
+import {
+  ActualizarLocalDto,
+  CrearLocalDto,
+  ListarLocalesDto,
+} from './dto/local.dto';
 
 // La autorización fina (gestor vs impulsador, empresa propia) vive en el service
 @ApiTags('locales')
@@ -26,8 +29,8 @@ export class LocalesController {
   constructor(private readonly locales: LocalesService) {}
 
   @Get()
-  listar(@Req() req: RequestConUsuario, @Query() paginacion: PaginacionDto) {
-    return this.locales.listar(req.usuarioId, paginacion);
+  listar(@Req() req: RequestConUsuario, @Query() query: ListarLocalesDto) {
+    return this.locales.listar(req.usuarioId, query);
   }
 
   @Get('usuarios-asignables')

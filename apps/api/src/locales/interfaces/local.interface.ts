@@ -4,6 +4,7 @@ import { TareaLocalDto } from './tarea-local.interface';
 export interface LocalDto {
   id: number;
   nombre: string;
+  cliente: { id: number; nombre: string };
   latitud: number;
   longitud: number;
   zona: { id: number; nombre: string } | null;
@@ -23,6 +24,8 @@ export interface LocalDto {
 // Detalle de un local con su checklist (editor del gestor y flujo de visita)
 export interface LocalDetalleDto extends LocalDto {
   tareas: TareaLocalDto[];
+  descripcionTareas: string;
+  imagenReferencia: string | null;
   // Radio efectivo: el del local o el default de la config de la empresa
   radioMetrosEfectivo: number;
 }
@@ -31,5 +34,6 @@ export interface LocalDetalleDto extends LocalDto {
 export interface UsuarioAsignable {
   id: number;
   nombre: string;
+  nombreLogin: string;
   rol: string | null;
 }

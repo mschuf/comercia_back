@@ -9,6 +9,12 @@ import type { LocalMapaDto, MapaDatosDto } from './interfaces/mapa.interface';
 const SELECT_LOCAL_MAPA = {
   id: true,
   nombre: true,
+  cliente: {
+    select: {
+      nombre: true,
+      _count: { select: { tareas: { where: { activo: true } } } },
+    },
+  },
   latitud: true,
   longitud: true,
   zonaId: true,
@@ -17,13 +23,12 @@ const SELECT_LOCAL_MAPA = {
   requiereFotoPresencia: true,
   activo: true,
   usuario: { select: { nombre: true, apellido: true } },
-  // Solo las tareas vigentes cuentan para el badge del pin
-  _count: { select: { tareas: { where: { activo: true } } } },
 } as const;
 
 type LocalParaMapa = {
   id: number;
   nombre: string;
+  cliente: { nombre: string; _count: { tareas: number } };
   latitud: number;
   longitud: number;
   zonaId: number | null;
@@ -32,13 +37,13 @@ type LocalParaMapa = {
   requiereFotoPresencia: boolean;
   activo: boolean;
   usuario: { nombre: string; apellido: string } | null;
-  _count: { tareas: number };
 };
 
 function aLocalMapaDto(l: LocalParaMapa): LocalMapaDto {
   return {
     id: l.id,
     nombre: l.nombre,
+    clienteNombre: l.cliente.nombre,
     latitud: l.latitud,
     longitud: l.longitud,
     zonaId: l.zonaId,
@@ -49,7 +54,7 @@ function aLocalMapaDto(l: LocalParaMapa): LocalMapaDto {
       ? `${l.usuario.nombre} ${l.usuario.apellido}`.trim()
       : null,
     activo: l.activo,
-    tareasCount: l._count.tareas,
+    tareasCount: l.cliente._count.tareas,
   };
 }
 
@@ -72,10 +77,26 @@ export class MapaService {
     const whereLocales = usuario.esGestor
       ? { empresaId: usuario.empresaId, activo: true }
       : { empresaId: usuario.empresaId, usuarioId: usuario.id, activo: true };
+    const whereTerritorios = usuario.esGestor
+      ? { empresaId: usuario.empresaId, activo: true }
+      : {
+          empresaId: usuario.empresaId,
+          activo: true,
+          zonas: {
+            some: { repositores: { some: { usuarioId: usuario.id } } },
+          },
+        };
+    const whereZonas = usuario.esGestor
+      ? { empresaId: usuario.empresaId, activo: true }
+      : {
+          empresaId: usuario.empresaId,
+          activo: true,
+          repositores: { some: { usuarioId: usuario.id } },
+        };
 
     const [territorios, zonas, locales] = await Promise.all([
       this.prisma.territorio.findMany({
-        where: { empresaId: usuario.empresaId, activo: true },
+        where: whereTerritorios,
         select: SELECT_TERRITORIO,
         orderBy: { nombre: 'asc' },
         // Excepción documentada a la paginación: el mapa dibuja todas las
@@ -83,7 +104,7 @@ export class MapaService {
         take: 500,
       }),
       this.prisma.zona.findMany({
-        where: { empresaId: usuario.empresaId, activo: true },
+        where: whereZonas,
         select: SELECT_ZONA,
         orderBy: [{ territorio: { nombre: 'asc' } }, { nombre: 'asc' }],
         // Misma excepción que territorios: capas completas del mapa

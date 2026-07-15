@@ -1,19 +1,17 @@
 // Helpers de fechas (funciones puras).
 //
-// La fecha de visita programada viaja a la API como ISO con hora 12:00Z:
-// anclarla al mediodía UTC evita que el día se corra al mostrarla en
-// cualquier huso horario (Paraguay es UTC-3/-4).
-
 export function fechaInputAIso(fecha: string): string | null {
   if (!fecha) return null;
-  return `${fecha}T12:00:00.000Z`;
+  const d = new Date(fecha);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
 }
 
 export function isoAFechaInput(iso: string | null): string {
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  return d.toISOString().slice(0, 10);
+  const local = new Date(d.getTime() - d.getTimezoneOffset() * 60_000);
+  return local.toISOString().slice(0, 16);
 }
 
 export function formatoFecha(iso: string | null): string {

@@ -11,8 +11,11 @@ import { EmpresasModule } from './empresas/empresas.module';
 import { HealthModule } from './health/health.module';
 import { ImpulsadorModule } from './impulsador/impulsador.module';
 import { LocalesModule } from './locales/locales.module';
+import { ClientesModule } from './clientes/clientes.module';
 import { PlataformaModule } from './plataforma/plataforma.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
+import { TareasModule } from './tareas/tareas.module';
 
 @Module({
   imports: [
@@ -39,6 +42,9 @@ import { PrismaModule } from './prisma/prisma.module';
     PlataformaModule,
     ImpulsadorModule,
     LocalesModule,
+    ClientesModule,
+    UsuariosModule,
+    TareasModule,
   ],
   controllers: [AppController],
   providers: [

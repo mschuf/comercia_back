@@ -1,8 +1,14 @@
-import { esRolGestor, esRolOperativo } from './roles-impulsador';
+import {
+  esRolAdminUsuarios,
+  esRolGestor,
+  esRolOperativo,
+} from './roles-impulsador';
 
 describe('esRolGestor', () => {
   it('sin config usa el fallback por descripción (case-insensitive)', () => {
     expect(esRolGestor(5, 'teamleader', [])).toBe(true);
+    expect(esRolGestor(5, 'Team Leader', [])).toBe(true);
+    expect(esRolGestor(5, 'TEAM_LEADER', [])).toBe(true);
     expect(esRolGestor(5, 'GERENTE', [])).toBe(true);
     expect(esRolGestor(5, 'IMPULSADOR', [])).toBe(false);
     expect(esRolGestor(5, null, [])).toBe(false);
@@ -12,6 +18,18 @@ describe('esRolGestor', () => {
     expect(esRolGestor(5, 'IMPULSADOR', [5])).toBe(true);
     expect(esRolGestor(5, 'TEAMLEADER', [9])).toBe(false);
     expect(esRolGestor(null, 'TEAMLEADER', [9])).toBe(false);
+  });
+});
+
+describe('esRolAdminUsuarios', () => {
+  it('usa GERENTE como fallback seguro', () => {
+    expect(esRolAdminUsuarios(1, 'GERENTE', [])).toBe(true);
+    expect(esRolAdminUsuarios(2, 'TEAMLEADER', [])).toBe(false);
+  });
+
+  it('respeta la configuración explícita por empresa', () => {
+    expect(esRolAdminUsuarios(4, 'TEAMLEADER', [4])).toBe(true);
+    expect(esRolAdminUsuarios(1, 'GERENTE', [4])).toBe(false);
   });
 });
 

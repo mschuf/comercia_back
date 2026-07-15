@@ -19,6 +19,7 @@ import type { TareaLocalDto } from './interfaces/tarea-local.interface';
 
 type TareaLocalFila = {
   id: number;
+  titulo: string;
   descripcion: string;
   requiereFoto: boolean;
   orden: number;
@@ -27,6 +28,7 @@ type TareaLocalFila = {
 
 export const SELECT_TAREA_LOCAL = {
   id: true,
+  titulo: true,
   descripcion: true,
   requiereFoto: true,
   orden: true,
@@ -36,6 +38,7 @@ export const SELECT_TAREA_LOCAL = {
 export function aTareaLocalDto(tarea: TareaLocalFila): TareaLocalDto {
   return {
     id: tarea.id,
+    titulo: tarea.titulo,
     descripcion: tarea.descripcion,
     requiereFoto: tarea.requiereFoto,
     orden: tarea.orden,
@@ -57,29 +60,162 @@ export class TareasLocalService {
     );
   }
 
+  private async clienteDeEmpresa(
+    clienteId: number,
+    empresaId: number,
+  ): Promise<void> {
+    const cliente = await this.prisma.cliente.findUnique({
+      where: { id: clienteId },
+      select: { empresaId: true },
+    });
+    if (!cliente || cliente.empresaId !== empresaId) {
+      throw new NotFoundException('El cliente no existe');
+    }
+  }
+
+  async listarCliente(
+    usuarioId: number,
+    clienteId: number,
+  ): Promise<TareaLocalDto[]> {
+    const actual = await this.usuarioActual(usuarioId);
+    await this.clienteDeEmpresa(clienteId, actual.empresaId);
+    if (!actual.esGestor) {
+      const asignados = await this.prisma.local.count({
+        where: { clienteId, usuarioId: actual.id, activo: true },
+      });
+      if (asignados === 0) {
+        throw new NotFoundException('El cliente no existe');
+      }
+    }
+    const tareas = await this.prisma.tareaCliente.findMany({
+      where: actual.esGestor ? { clienteId } : { clienteId, activo: true },
+      select: SELECT_TAREA_LOCAL,
+      orderBy: [{ orden: 'asc' }, { id: 'asc' }],
+      take: MAX_TAREAS_POR_LOCAL,
+    });
+    return tareas.map(aTareaLocalDto);
+  }
+
+  async crearCliente(
+    usuarioId: number,
+    clienteId: number,
+    dto: CrearTareaLocalDto,
+  ): Promise<TareaLocalDto> {
+    const actual = await this.usuarioActual(usuarioId);
+    if (!actual.esGestor) {
+      throw new ForbiddenException('Solo un gestor puede editar el checklist');
+    }
+    await this.clienteDeEmpresa(clienteId, actual.empresaId);
+    const cantidad = await this.prisma.tareaCliente.count({
+      where: { clienteId },
+    });
+    if (cantidad >= MAX_TAREAS_POR_LOCAL) {
+      throw new BadRequestException(
+        'El checklist llegó al máximo de 100 tareas',
+      );
+    }
+    let orden = dto.orden;
+    if (orden === undefined) {
+      const agregado = await this.prisma.tareaCliente.aggregate({
+        where: { clienteId },
+        _max: { orden: true },
+      });
+      orden = (agregado._max.orden ?? -1) + 1;
+    }
+    const tarea = await this.prisma.tareaCliente.create({
+      data: {
+        clienteId,
+        titulo: dto.titulo,
+        descripcion: dto.descripcion,
+        requiereFoto: dto.requiereFoto ?? false,
+        orden,
+      },
+      select: SELECT_TAREA_LOCAL,
+    });
+    return aTareaLocalDto(tarea);
+  }
+
+  async actualizarCliente(
+    usuarioId: number,
+    clienteId: number,
+    tareaId: number,
+    dto: ActualizarTareaLocalDto,
+  ): Promise<TareaLocalDto> {
+    const actual = await this.usuarioActual(usuarioId);
+    if (!actual.esGestor) {
+      throw new ForbiddenException('Solo un gestor puede editar el checklist');
+    }
+    await this.clienteDeEmpresa(clienteId, actual.empresaId);
+    await this.tareaDelCliente(tareaId, clienteId);
+    const tarea = await this.prisma.tareaCliente.update({
+      where: { id: tareaId },
+      data: {
+        titulo: dto.titulo,
+        descripcion: dto.descripcion,
+        requiereFoto: dto.requiereFoto,
+        orden: dto.orden,
+        activo: dto.activo,
+      },
+      select: SELECT_TAREA_LOCAL,
+    });
+    return aTareaLocalDto(tarea);
+  }
+
+  async eliminarCliente(
+    usuarioId: number,
+    clienteId: number,
+    tareaId: number,
+  ): Promise<{ ok: true; desactivada: boolean }> {
+    const actual = await this.usuarioActual(usuarioId);
+    if (!actual.esGestor) {
+      throw new ForbiddenException('Solo un gestor puede editar el checklist');
+    }
+    await this.clienteDeEmpresa(clienteId, actual.empresaId);
+    await this.tareaDelCliente(tareaId, clienteId);
+    const respuestas = await this.prisma.visitaTarea.count({
+      where: { tareaId },
+    });
+    if (respuestas > 0) {
+      await this.prisma.tareaCliente.update({
+        where: { id: tareaId },
+        data: { activo: false },
+      });
+      return { ok: true, desactivada: true };
+    }
+    await this.prisma.tareaCliente.delete({ where: { id: tareaId } });
+    return { ok: true, desactivada: false };
+  }
+
   // El local debe ser de la empresa del usuario antes de tocar sus tareas.
   // Devuelve el asignado para chequear visibilidad del no gestor.
   private async localDeEmpresa(
     localId: number,
     empresaId: number,
-  ): Promise<{ id: number; usuarioId: number | null }> {
+  ): Promise<{ id: number; clienteId: number; usuarioId: number | null }> {
     const local = await this.prisma.local.findUnique({
       where: { id: localId },
-      select: { id: true, empresaId: true, usuarioId: true },
+      select: { id: true, clienteId: true, empresaId: true, usuarioId: true },
     });
     if (!local || local.empresaId !== empresaId) {
       throw new NotFoundException('El local no existe');
     }
-    return { id: local.id, usuarioId: local.usuarioId };
+    return {
+      id: local.id,
+      clienteId: local.clienteId,
+      usuarioId: local.usuarioId,
+    };
   }
 
   // La tarea debe pertenecer al local ya validado contra la empresa
-  private async tareaDelLocal(tareaId: number, localId: number): Promise<void> {
-    const tarea = await this.prisma.tareaLocal.findUnique({
+  private async tareaDelCliente(
+    tareaId: number,
+    clienteId: number,
+  ): Promise<void> {
+    const tarea = await this.prisma.tareaCliente.findUnique({
       where: { id: tareaId },
-      select: { localId: true },
+      select: { clienteId: true },
     });
-    if (!tarea || tarea.localId !== localId) {
+    if (!tarea || tarea.clienteId !== clienteId) {
       throw new NotFoundException('La tarea no existe');
     }
   }
@@ -93,8 +229,10 @@ export class TareasLocalService {
     }
     // Sin paginar (excepción a la regla): el checklist está acotado por
     // MAX_TAREAS_POR_LOCAL, así que el take fijo cubre el peor caso.
-    const tareas = await this.prisma.tareaLocal.findMany({
-      where: actual.esGestor ? { localId } : { localId, activo: true },
+    const tareas = await this.prisma.tareaCliente.findMany({
+      where: actual.esGestor
+        ? { clienteId: local.clienteId }
+        : { clienteId: local.clienteId, activo: true },
       select: SELECT_TAREA_LOCAL,
       orderBy: [{ orden: 'asc' }, { id: 'asc' }],
       take: MAX_TAREAS_POR_LOCAL,
@@ -111,9 +249,11 @@ export class TareasLocalService {
     if (!actual.esGestor) {
       throw new ForbiddenException('Solo un gestor puede editar el checklist');
     }
-    await this.localDeEmpresa(localId, actual.empresaId);
+    const local = await this.localDeEmpresa(localId, actual.empresaId);
 
-    const cantidad = await this.prisma.tareaLocal.count({ where: { localId } });
+    const cantidad = await this.prisma.tareaCliente.count({
+      where: { clienteId: local.clienteId },
+    });
     if (cantidad >= MAX_TAREAS_POR_LOCAL) {
       throw new BadRequestException(
         'El checklist llegó al máximo de 100 tareas',
@@ -123,16 +263,17 @@ export class TareasLocalService {
     let orden = dto.orden;
     if (orden === undefined) {
       // Sin orden explícito la tarea va al final del checklist
-      const agregado = await this.prisma.tareaLocal.aggregate({
-        where: { localId },
+      const agregado = await this.prisma.tareaCliente.aggregate({
+        where: { clienteId: local.clienteId },
         _max: { orden: true },
       });
       orden = (agregado._max.orden ?? -1) + 1;
     }
 
-    const tarea = await this.prisma.tareaLocal.create({
+    const tarea = await this.prisma.tareaCliente.create({
       data: {
-        localId,
+        clienteId: local.clienteId,
+        titulo: dto.titulo,
         descripcion: dto.descripcion,
         requiereFoto: dto.requiereFoto ?? false,
         orden,
@@ -152,12 +293,13 @@ export class TareasLocalService {
     if (!actual.esGestor) {
       throw new ForbiddenException('Solo un gestor puede editar el checklist');
     }
-    await this.localDeEmpresa(localId, actual.empresaId);
-    await this.tareaDelLocal(tareaId, localId);
+    const local = await this.localDeEmpresa(localId, actual.empresaId);
+    await this.tareaDelCliente(tareaId, local.clienteId);
 
-    const tarea = await this.prisma.tareaLocal.update({
+    const tarea = await this.prisma.tareaCliente.update({
       where: { id: tareaId },
       data: {
+        titulo: dto.titulo,
         descripcion: dto.descripcion,
         requiereFoto: dto.requiereFoto,
         orden: dto.orden,
@@ -177,8 +319,8 @@ export class TareasLocalService {
     if (!actual.esGestor) {
       throw new ForbiddenException('Solo un gestor puede editar el checklist');
     }
-    await this.localDeEmpresa(localId, actual.empresaId);
-    await this.tareaDelLocal(tareaId, localId);
+    const local = await this.localDeEmpresa(localId, actual.empresaId);
+    await this.tareaDelCliente(tareaId, local.clienteId);
 
     // Regla: si la tarea ya tiene respuestas de visitas, borrarla arrastraría
     // ese historial (VisitaTarea cae en cascada), así que solo se desactiva.
@@ -187,13 +329,13 @@ export class TareasLocalService {
       where: { tareaId },
     });
     if (respuestas > 0) {
-      await this.prisma.tareaLocal.update({
+      await this.prisma.tareaCliente.update({
         where: { id: tareaId },
         data: { activo: false },
       });
       return { ok: true, desactivada: true };
     }
-    await this.prisma.tareaLocal.delete({ where: { id: tareaId } });
+    await this.prisma.tareaCliente.delete({ where: { id: tareaId } });
     return { ok: true, desactivada: false };
   }
 }

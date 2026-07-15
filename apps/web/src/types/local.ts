@@ -3,6 +3,7 @@
 export interface Local {
   id: number;
   nombre: string;
+  cliente: { id: number; nombre: string };
   latitud: number;
   longitud: number;
   zona: { id: number; nombre: string } | null;
@@ -22,6 +23,7 @@ export interface Local {
 // Ítem del checklist de un local
 export interface TareaLocal {
   id: number;
+  titulo: string;
   descripcion: string;
   requiereFoto: boolean;
   orden: number;
@@ -31,6 +33,8 @@ export interface TareaLocal {
 // Detalle con checklist (GET /locales/:id)
 export interface LocalDetalle extends Local {
   tareas: TareaLocal[];
+  descripcionTareas: string;
+  imagenReferencia: string | null;
   // Radio efectivo: el del local o el default de la config de la empresa
   radioMetrosEfectivo: number;
 }
@@ -38,5 +42,6 @@ export interface LocalDetalle extends Local {
 export interface UsuarioAsignable {
   id: number;
   nombre: string;
+  nombreLogin?: string;
   rol: string | null;
 }

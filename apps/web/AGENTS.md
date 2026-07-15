@@ -1,4 +1,5 @@
 <!-- BEGIN:nextjs-agent-rules -->
+
 # This is NOT the Next.js you know
 
 This version has breaking changes. APIs, conventions, and file structure may differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any Next.js code. Heed deprecation notices.
@@ -48,6 +49,18 @@ This version has breaking changes. APIs, conventions, and file structure may dif
   `cursor-pointer` explícito.
 - Además del hover, incluir `focus-visible` (anillo de foco) para uso con teclado.
 - Deshabilitados: `disabled:opacity-50 disabled:cursor-not-allowed`.
+
+## Botones de alta en ABM
+
+- Todo botón que abra el alta de una entidad debe mostrar exclusivamente el
+  ícono `+` usando `src/components/icono-mas.tsx`, sin texto ni nombre de la
+  entidad al lado. Debe ser un objetivo táctil cuadrado de al menos 44 px e
+  incluir `aria-label="Crear <entidad>"` y `title="Crear <entidad>"`.
+- Excepción: si hay dos o más botones de alta contiguos y el ícono solo resulta
+  ambiguo, cada botón debe mostrar `+` y el nombre corto de su entidad. Ejemplo
+  en Mapa: `+ Territorio` y `+ Zona`.
+- Esta regla aplica a todos los ABM existentes y nuevos. Los títulos de los
+  modales y los botones que confirman el formulario pueden usar `Crear ...`.
 
 ## Modales
 

@@ -14,6 +14,11 @@ import { trimString } from '../../common/utils/transforms';
 export class CrearTareaLocalDto {
   @IsString()
   @Transform(trimString)
+  @Length(2, 120)
+  titulo!: string;
+
+  @IsString()
+  @Transform(trimString)
   @Length(2, 300)
   descripcion!: string;
 
@@ -30,6 +35,12 @@ export class CrearTareaLocalDto {
 }
 
 export class ActualizarTareaLocalDto {
+  @IsOptional()
+  @IsString()
+  @Transform(trimString)
+  @Length(2, 120)
+  titulo?: string;
+
   @IsOptional()
   @IsString()
   @Transform(trimString)

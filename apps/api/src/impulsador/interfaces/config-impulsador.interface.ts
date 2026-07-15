@@ -2,6 +2,7 @@
 export interface ConfigImpulsadorDto {
   rolGestorIds: number[];
   rolOperativoIds: number[];
+  rolAdminUsuarioIds: number[];
   radioMetrosDefecto: number;
   // Cómo aplica al usuario que consulta
   esGestor: boolean;
@@ -13,5 +14,12 @@ export interface ConfigImpulsadorAdminDto {
   empresaId: number;
   rolGestorIds: number[];
   rolOperativoIds: number[];
+  rolAdminUsuarioIds: number[];
   radioMetrosDefecto: number;
+}
+
+export interface UsuarioAsignableImpulsadorDto {
+  id: number;
+  nombre: string;
+  rol: string | null;
 }

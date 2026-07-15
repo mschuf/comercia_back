@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsInt,
@@ -11,13 +11,35 @@ import {
   Min,
 } from 'class-validator';
 import { MAX_INT4 } from '../../common/utils/numeros';
+import { PaginacionDto } from '../../common/utils/paginacion';
 import { trimString } from '../../common/utils/transforms';
 
 // Cotas del radio de verificación (espejo de impulsador.constants)
 const RADIO_MIN = 10;
 const RADIO_MAX = 50_000;
 
+export class ListarLocalesDto extends PaginacionDto {
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  clienteId?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  usuarioId?: number;
+}
+
 export class CrearLocalDto {
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  clienteId!: number;
+
   @IsString()
   @Transform(trimString)
   @Length(2, 120)
@@ -33,12 +55,11 @@ export class CrearLocalDto {
   @Max(180)
   longitud!: number;
 
-  // Zona a la que pertenece (opcional)
-  @IsOptional()
+  // Todo local pertenece a una zona.
   @IsInt()
   @Min(1)
   @Max(MAX_INT4)
-  zonaId?: number | null;
+  zonaId!: number;
 
   // Radio en metros para verificar presencia; null = default de la config
   @IsOptional()
@@ -57,14 +78,20 @@ export class CrearLocalDto {
   @IsBoolean()
   requiereFotoPresencia?: boolean;
 
-  // Impulsador al que se asigna el local (opcional)
-  @IsOptional()
+  // Repositor asignado al local y habilitado en la zona.
   @IsInt()
+  @Min(1)
   @Max(MAX_INT4)
-  usuarioId?: number | null;
+  usuarioId!: number;
 }
 
 export class ActualizarLocalDto {
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  clienteId?: number;
+
   @IsOptional()
   @IsString()
   @Transform(trimString)

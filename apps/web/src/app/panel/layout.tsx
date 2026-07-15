@@ -23,6 +23,8 @@ export default function PanelLayout({
   const pathname = usePathname();
   const [usuario, setUsuario] = useState<UsuarioSesion | null>(null);
   const [modulos, setModulos] = useState<ModuloMenu[]>([]);
+  const [puedeAdministrarUsuarios, setPuedeAdministrarUsuarios] =
+    useState(false);
   const [cargando, setCargando] = useState(true);
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [datosAbierto, setDatosAbierto] = useState(false);
@@ -35,10 +37,14 @@ export default function PanelLayout({
       apiFetch<{ modulos: ModuloMenu[] }>("/mi-plataforma").catch(() => ({
         modulos: [],
       })),
+      apiFetch("/usuarios/meta")
+        .then(() => true)
+        .catch(() => false),
     ])
-      .then(([me, menu]) => {
+      .then(([me, menu, administraUsuarios]) => {
         setUsuario(me.usuario);
         setModulos(menu.modulos);
+        setPuedeAdministrarUsuarios(administraUsuarios);
       })
       .catch(() => router.replace("/login"))
       .finally(() => setCargando(false));
@@ -185,6 +191,16 @@ export default function PanelLayout({
                     >
                       <IconoPersona /> Mis Datos
                     </button>
+                    {puedeAdministrarUsuarios && (
+                      <Link
+                        role="menuitem"
+                        href="/panel/usuarios"
+                        onClick={() => setMenuAbierto(false)}
+                        className={itemMenu}
+                      >
+                        <IconoPersona /> Usuarios
+                      </Link>
+                    )}
                     {usuario.esSuperadmin && (
                       <Link
                         role="menuitem"

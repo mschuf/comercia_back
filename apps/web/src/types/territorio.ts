@@ -3,6 +3,7 @@
 export interface Territorio {
   id: number;
   nombre: string;
+  responsable: { id: number; nombre: string } | null;
   // Color de relleno en el mapa (hex #rrggbb)
   color: string;
   // Vértices [[lat, lng], ...]; null = sin delimitar todavía
@@ -18,6 +19,7 @@ export interface Zona {
   territorioId: number;
   territorioNombre: string;
   nombre: string;
+  repositores: { id: number; nombre: string }[];
   color: string;
   poligono: [number, number][] | null;
   activo: boolean;

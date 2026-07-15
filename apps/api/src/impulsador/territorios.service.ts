@@ -24,6 +24,7 @@ import { esPoligonoValido, type Poligono } from './utils/poligono';
 export const SELECT_TERRITORIO = {
   id: true,
   nombre: true,
+  responsable: { select: { id: true, nombre: true, apellido: true } },
   color: true,
   poligono: true,
   activo: true,
@@ -35,6 +36,7 @@ export const SELECT_TERRITORIO = {
 type TerritorioConConteo = {
   id: number;
   nombre: string;
+  responsable: { id: number; nombre: string; apellido: string } | null;
   color: string;
   poligono: Prisma.JsonValue | null;
   activo: boolean;
@@ -47,6 +49,12 @@ export function aTerritorioDto(t: TerritorioConConteo): TerritorioDto {
   return {
     id: t.id,
     nombre: t.nombre,
+    responsable: t.responsable
+      ? {
+          id: t.responsable.id,
+          nombre: `${t.responsable.nombre} ${t.responsable.apellido}`.trim(),
+        }
+      : null,
     color: t.color,
     // El Json de Prisma llega opaco; la forma se garantizó al guardar
     poligono: (t.poligono as [number, number][] | null) ?? null,
@@ -93,7 +101,14 @@ export class TerritoriosService {
       usuarioId,
       PAGINAS_IMPULSADOR,
     );
-    const where = { empresaId: usuario.empresaId };
+    const where = usuario.esGestor
+      ? { empresaId: usuario.empresaId }
+      : {
+          empresaId: usuario.empresaId,
+          zonas: {
+            some: { repositores: { some: { usuarioId: usuario.id } } },
+          },
+        };
     const { skip, take, page, limit } = rangoPaginacion(paginacion);
     const [total, territorios] = await Promise.all([
       this.prisma.territorio.count({ where }),
@@ -122,7 +137,15 @@ export class TerritoriosService {
       PAGINAS_IMPULSADOR,
     );
     const territorios = await this.prisma.territorio.findMany({
-      where: { empresaId: usuario.empresaId, activo: true },
+      where: usuario.esGestor
+        ? { empresaId: usuario.empresaId, activo: true }
+        : {
+            empresaId: usuario.empresaId,
+            activo: true,
+            zonas: {
+              some: { repositores: { some: { usuarioId: usuario.id } } },
+            },
+          },
       select: SELECT_TERRITORIO,
       orderBy: { nombre: 'asc' },
       take: 200,
@@ -141,12 +164,19 @@ export class TerritoriosService {
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede crear territorios');
     }
+    if (dto.responsableId != null) {
+      await this.configImpulsador.validarResponsableTerritorio(
+        usuario.empresaId,
+        dto.responsableId,
+      );
+    }
     const territorio = await this.prisma.territorio.create({
       data: {
         // empresa y autor SIEMPRE del usuario actual, jamás del payload
         empresaId: usuario.empresaId,
         creadoPorId: usuario.id,
         nombre: dto.nombre,
+        responsableId: dto.responsableId ?? null,
         color: dto.color ?? '#047857',
         poligono: poligonoParaGuardar(dto.poligono ?? null),
       },
@@ -183,10 +213,17 @@ export class TerritoriosService {
       throw new ForbiddenException('Solo un gestor puede editar territorios');
     }
     await this.territorioDeEmpresa(id, usuario.empresaId);
+    if (dto.responsableId != null) {
+      await this.configImpulsador.validarResponsableTerritorio(
+        usuario.empresaId,
+        dto.responsableId,
+      );
+    }
     const territorio = await this.prisma.territorio.update({
       where: { id },
       data: {
         nombre: dto.nombre,
+        responsableId: dto.responsableId,
         color: dto.color,
         activo: dto.activo,
         poligono: poligonoParaGuardar(dto.poligono),

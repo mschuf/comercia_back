@@ -2,16 +2,26 @@ import { Transform } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
+  IsInt,
   IsOptional,
   IsString,
   Length,
   Matches,
+  Max,
+  Min,
 } from 'class-validator';
+import { MAX_INT4 } from '../../common/utils/numeros';
 import { trimString } from '../../common/utils/transforms';
 
 const COLOR_HEX = /^#[0-9a-fA-F]{6}$/;
 
 export class CrearTerritorioDto {
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  responsableId?: number | null;
+
   @IsString()
   @Transform(trimString)
   @Length(2, 120)
@@ -30,6 +40,12 @@ export class CrearTerritorioDto {
 }
 
 export class ActualizarTerritorioDto {
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  responsableId?: number | null;
+
   @IsOptional()
   @IsString()
   @Transform(trimString)

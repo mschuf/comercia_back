@@ -12,18 +12,13 @@ import { ActualizarConfigImpulsadorDto } from './dto/config-impulsador.dto';
 import type {
   ConfigImpulsadorAdminDto,
   ConfigImpulsadorDto,
+  UsuarioAsignableImpulsadorDto,
 } from './interfaces/config-impulsador.interface';
+import type { ConfigEmpresa } from './interfaces/config-empresa.interface';
 import type { UsuarioImpulsador } from './interfaces/usuario-impulsador.interface';
 
 // Debe coincidir con el default de la columna radio_metros_defecto del schema
 const RADIO_METROS_DEFECTO = 200;
-
-// Config efectiva de una empresa (con defaults si nunca la guardó)
-interface ConfigEmpresa {
-  rolGestorIds: number[];
-  rolOperativoIds: number[];
-  radioMetrosDefecto: number;
-}
 
 @Injectable()
 export class ConfigImpulsadorService {
@@ -39,6 +34,7 @@ export class ConfigImpulsadorService {
       select: {
         rolGestorIds: true,
         rolOperativoIds: true,
+        rolAdminUsuarioIds: true,
         radioMetrosDefecto: true,
       },
     });
@@ -46,6 +42,7 @@ export class ConfigImpulsadorService {
       config ?? {
         rolGestorIds: [],
         rolOperativoIds: [],
+        rolAdminUsuarioIds: [],
         radioMetrosDefecto: RADIO_METROS_DEFECTO,
       }
     );
@@ -104,10 +101,101 @@ export class ConfigImpulsadorService {
     return {
       rolGestorIds: config.rolGestorIds,
       rolOperativoIds: config.rolOperativoIds,
+      rolAdminUsuarioIds: config.rolAdminUsuarioIds,
       radioMetrosDefecto: config.radioMetrosDefecto,
       esGestor: usuario.esGestor,
       esOperativo: usuario.esOperativo,
     };
+  }
+
+  async validarResponsableTerritorio(
+    empresaId: number,
+    usuarioId: number,
+  ): Promise<void> {
+    const [usuario, config] = await Promise.all([
+      this.prisma.usuario.findUnique({
+        where: { id: usuarioId },
+        select: {
+          empresaId: true,
+          rolId: true,
+          isActive: true,
+          rol: { select: { descripcion: true } },
+        },
+      }),
+      this.deEmpresa(empresaId),
+    ]);
+    if (
+      !usuario ||
+      !usuario.isActive ||
+      usuario.empresaId !== empresaId ||
+      !esRolGestor(
+        usuario.rolId,
+        usuario.rol?.descripcion ?? null,
+        config.rolGestorIds,
+      )
+    ) {
+      throw new NotFoundException('El responsable no existe');
+    }
+  }
+
+  async validarRepositores(
+    empresaId: number,
+    usuarioIds: number[],
+  ): Promise<number[]> {
+    const ids = [...new Set(usuarioIds)];
+    if (ids.length === 0) return ids;
+    const [usuarios, config] = await Promise.all([
+      this.prisma.usuario.findMany({
+        where: { id: { in: ids }, empresaId, isActive: true },
+        select: { id: true, rolId: true },
+        take: 200,
+      }),
+      this.deEmpresa(empresaId),
+    ]);
+    if (
+      usuarios.length !== ids.length ||
+      usuarios.some((u) => !esRolOperativo(u.rolId, config.rolOperativoIds))
+    ) {
+      throw new BadRequestException(
+        'Algún repositor no existe o no tiene un rol operativo',
+      );
+    }
+    return ids;
+  }
+
+  async responsablesTerritorio(
+    usuarioId: number,
+  ): Promise<UsuarioAsignableImpulsadorDto[]> {
+    const actual = await this.usuarioImpulsador(usuarioId, PAGINAS_IMPULSADOR);
+    if (!actual.esGestor) return [];
+    const config = await this.deEmpresa(actual.empresaId);
+    const usuarios = await this.prisma.usuario.findMany({
+      where: {
+        empresaId: actual.empresaId,
+        isActive: true,
+        ...(config.rolGestorIds.length > 0
+          ? { rolId: { in: config.rolGestorIds } }
+          : {}),
+      },
+      select: {
+        id: true,
+        nombre: true,
+        apellido: true,
+        rolId: true,
+        rol: { select: { descripcion: true } },
+      },
+      orderBy: [{ nombre: 'asc' }, { apellido: 'asc' }],
+      take: 200,
+    });
+    return usuarios
+      .filter((u) =>
+        esRolGestor(u.rolId, u.rol?.descripcion ?? null, config.rolGestorIds),
+      )
+      .map((u) => ({
+        id: u.id,
+        nombre: `${u.nombre} ${u.apellido}`.trim(),
+        rol: u.rol?.descripcion ?? null,
+      }));
   }
 
   private async exigirEmpresa(empresaId: number): Promise<void> {
@@ -136,10 +224,13 @@ export class ConfigImpulsadorService {
 
     const rolGestorIds = dto.rolGestorIds ?? [];
     const rolOperativoIds = dto.rolOperativoIds ?? [];
+    const rolAdminUsuarioIds = dto.rolAdminUsuarioIds ?? [];
     const radioMetrosDefecto = dto.radioMetrosDefecto ?? RADIO_METROS_DEFECTO;
 
     // Los roles indicados deben existir (mismo patrón que asignaciones)
-    const rolIdsTodos = [...new Set([...rolGestorIds, ...rolOperativoIds])];
+    const rolIdsTodos = [
+      ...new Set([...rolGestorIds, ...rolOperativoIds, ...rolAdminUsuarioIds]),
+    ];
     if (rolIdsTodos.length > 0) {
       const rolesValidos = await this.prisma.rol.count({
         where: { id: { in: rolIdsTodos } },
@@ -151,12 +242,24 @@ export class ConfigImpulsadorService {
 
     const config = await this.prisma.configImpulsador.upsert({
       where: { empresaId },
-      create: { empresaId, rolGestorIds, rolOperativoIds, radioMetrosDefecto },
-      update: { rolGestorIds, rolOperativoIds, radioMetrosDefecto },
+      create: {
+        empresaId,
+        rolGestorIds,
+        rolOperativoIds,
+        rolAdminUsuarioIds,
+        radioMetrosDefecto,
+      },
+      update: {
+        rolGestorIds,
+        rolOperativoIds,
+        rolAdminUsuarioIds,
+        radioMetrosDefecto,
+      },
       select: {
         empresaId: true,
         rolGestorIds: true,
         rolOperativoIds: true,
+        rolAdminUsuarioIds: true,
         radioMetrosDefecto: true,
       },
     });
@@ -164,6 +267,7 @@ export class ConfigImpulsadorService {
       empresaId: config.empresaId,
       rolGestorIds: config.rolGestorIds,
       rolOperativoIds: config.rolOperativoIds,
+      rolAdminUsuarioIds: config.rolAdminUsuarioIds,
       radioMetrosDefecto: config.radioMetrosDefecto,
     };
   }

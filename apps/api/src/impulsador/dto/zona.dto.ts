@@ -1,5 +1,6 @@
 import { Transform, Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsInt,
@@ -17,6 +18,14 @@ import { trimString } from '../../common/utils/transforms';
 const COLOR_HEX = /^#[0-9a-fA-F]{6}$/;
 
 export class CrearZonaDto {
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(1, { message: 'Solo se puede asignar un repositor por zona' })
+  @IsInt({ each: true })
+  @Min(1, { each: true })
+  @Max(MAX_INT4, { each: true })
+  usuarioIds?: number[];
+
   // Territorio al que pertenece la zona (obligatorio: la jerarquía es
   // territorio > zona > local)
   @IsInt()
@@ -40,6 +49,14 @@ export class CrearZonaDto {
 }
 
 export class ActualizarZonaDto {
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(1, { message: 'Solo se puede asignar un repositor por zona' })
+  @IsInt({ each: true })
+  @Min(1, { each: true })
+  @Max(MAX_INT4, { each: true })
+  usuarioIds?: number[];
+
   // Una zona siempre pertenece a un territorio (no admite null)
   @IsOptional()
   @IsInt()

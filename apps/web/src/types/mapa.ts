@@ -4,6 +4,7 @@ import type { Territorio, Zona } from "@/types/territorio";
 export interface LocalMapa {
   id: number;
   nombre: string;
+  clienteNombre: string;
   latitud: number;
   longitud: number;
   zonaId: number | null;

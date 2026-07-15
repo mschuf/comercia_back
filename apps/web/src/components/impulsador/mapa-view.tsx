@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { apiFetch, ApiError } from "@/lib/api";
 import { Modal } from "@/components/modal";
+import { IconoMas } from "@/components/icono-mas";
+import { SelectorUsuario } from "@/components/selector-usuario";
 import {
   btnGhost,
   btnPrimary,
@@ -14,7 +16,7 @@ import {
 import { formatoFecha } from "@/utils/fechas";
 import type { Territorio, Zona } from "@/types/territorio";
 import type { LocalMapa, MapaDatos } from "@/types/mapa";
-import type { LocalDetalle } from "@/types/local";
+import type { LocalDetalle, UsuarioAsignable } from "@/types/local";
 import type {
   SeleccionMapa,
   VisibilidadCapas,
@@ -22,8 +24,7 @@ import type {
 
 // Leaflet solo existe en el navegador: import dinámico sin SSR
 const MapaEditor = dynamic(
-  () =>
-    import("@/components/impulsador/mapa-editor").then((m) => m.MapaEditor),
+  () => import("@/components/impulsador/mapa-editor").then((m) => m.MapaEditor),
   {
     ssr: false,
     loading: () => (
@@ -38,12 +39,14 @@ const COLOR_ZONA_DEFECTO = "#0284c7";
 interface FormTerritorio {
   nombre: string;
   color: string;
+  responsableId: number | "";
 }
 
 interface FormZona {
   territorioId: number | "";
   nombre: string;
   color: string;
+  usuarioId: number | "";
 }
 
 interface Eliminando {
@@ -59,7 +62,12 @@ function rutaElemento(tipo: "territorio" | "zona", id: number): string {
 
 function IconoLapiz() {
   return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden>
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="h-4 w-4"
+      aria-hidden
+    >
       <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
     </svg>
   );
@@ -83,7 +91,12 @@ function IconoPoligono() {
 
 function IconoTacho() {
   return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden>
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="h-4 w-4"
+      aria-hidden
+    >
       <path
         fillRule="evenodd"
         d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
@@ -204,13 +217,17 @@ export function MapaView() {
   const [formTerritorio, setFormTerritorio] = useState<FormTerritorio>({
     nombre: "",
     color: COLOR_TERRITORIO_DEFECTO,
+    responsableId: "",
   });
   const [editZona, setEditZona] = useState<Zona | "nuevo" | null>(null);
   const [formZona, setFormZona] = useState<FormZona>({
     territorioId: "",
     nombre: "",
     color: COLOR_ZONA_DEFECTO,
+    usuarioId: "",
   });
+  const [responsables, setResponsables] = useState<UsuarioAsignable[]>([]);
+  const [repositores, setRepositores] = useState<UsuarioAsignable[]>([]);
   const [guardandoForm, setGuardandoForm] = useState(false);
   const [errorForm, setErrorForm] = useState<string | null>(null);
 
@@ -249,9 +266,7 @@ export function MapaView() {
       .catch((err) => {
         if (vigente) {
           setErrorCarga(
-            err instanceof ApiError
-              ? err.message
-              : "No se pudo cargar el mapa",
+            err instanceof ApiError ? err.message : "No se pudo cargar el mapa",
           );
         }
       })
@@ -264,6 +279,24 @@ export function MapaView() {
   }, []);
 
   const esGestor = datos?.esGestor ?? false;
+
+  useEffect(() => {
+    if (!esGestor) return;
+    let vigente = true;
+    Promise.all([
+      apiFetch<UsuarioAsignable[]>("/impulsador/responsables-territorio"),
+      apiFetch<UsuarioAsignable[]>("/locales/usuarios-asignables"),
+    ])
+      .then(([lideres, operativos]) => {
+        if (!vigente) return;
+        setResponsables(lideres);
+        setRepositores(operativos);
+      })
+      .catch(() => undefined);
+    return () => {
+      vigente = false;
+    };
+  }, [esGestor]);
 
   const elementoSeleccionado =
     seleccion === null || datos === null
@@ -376,13 +409,21 @@ export function MapaView() {
   }
 
   function abrirNuevoTerritorio() {
-    setFormTerritorio({ nombre: "", color: COLOR_TERRITORIO_DEFECTO });
+    setFormTerritorio({
+      nombre: "",
+      color: COLOR_TERRITORIO_DEFECTO,
+      responsableId: "",
+    });
     setErrorForm(null);
     setEditTerritorio("nuevo");
   }
 
   function abrirRenombrarTerritorio(t: Territorio) {
-    setFormTerritorio({ nombre: t.nombre, color: t.color });
+    setFormTerritorio({
+      nombre: t.nombre,
+      color: t.color,
+      responsableId: t.responsable?.id ?? "",
+    });
     setErrorForm(null);
     setEditTerritorio(t);
   }
@@ -398,7 +439,14 @@ export function MapaView() {
     setGuardandoForm(true);
     setErrorForm(null);
     try {
-      const body = JSON.stringify({ nombre, color: formTerritorio.color });
+      const body = JSON.stringify({
+        nombre,
+        color: formTerritorio.color,
+        responsableId:
+          formTerritorio.responsableId === ""
+            ? null
+            : formTerritorio.responsableId,
+      });
       if (editTerritorio === "nuevo") {
         await apiFetch("/territorios", { method: "POST", body });
       } else {
@@ -425,13 +473,19 @@ export function MapaView() {
       territorioId: datos?.territorios[0]?.id ?? "",
       nombre: "",
       color: COLOR_ZONA_DEFECTO,
+      usuarioId: "",
     });
     setErrorForm(null);
     setEditZona("nuevo");
   }
 
   function abrirRenombrarZona(z: Zona) {
-    setFormZona({ territorioId: z.territorioId, nombre: z.nombre, color: z.color });
+    setFormZona({
+      territorioId: z.territorioId,
+      nombre: z.nombre,
+      color: z.color,
+      usuarioId: z.repositores[0]?.id ?? "",
+    });
     setErrorForm(null);
     setEditZona(z);
   }
@@ -458,12 +512,17 @@ export function MapaView() {
             territorioId: formZona.territorioId,
             nombre,
             color: formZona.color,
+            usuarioIds: formZona.usuarioId === "" ? [] : [formZona.usuarioId],
           }),
         });
       } else {
         await apiFetch(`/zonas/${editZona.id}`, {
           method: "PATCH",
-          body: JSON.stringify({ nombre, color: formZona.color }),
+          body: JSON.stringify({
+            nombre,
+            color: formZona.color,
+            usuarioIds: formZona.usuarioId === "" ? [] : [formZona.usuarioId],
+          }),
         });
       }
       setEditZona(null);
@@ -610,17 +669,21 @@ export function MapaView() {
             type="button"
             onClick={abrirNuevoTerritorio}
             disabled={modoDibujo}
-            className={btnPrimary}
+            aria-label="Crear territorio"
+            title="Crear territorio"
+            className={`${btnPrimary} min-h-11 gap-2`}
           >
-            + Territorio
+            <IconoMas className="h-5 w-5" /> Territorio
           </button>
           <button
             type="button"
             onClick={abrirNuevaZona}
             disabled={modoDibujo || datos.territorios.length === 0}
-            className={btnPrimary}
+            aria-label="Crear zona"
+            title="Crear zona"
+            className={`${btnPrimary} min-h-11 gap-2`}
           >
-            + Zona
+            <IconoMas className="h-5 w-5" /> Zona
           </button>
         </div>
       )}
@@ -672,6 +735,11 @@ export function MapaView() {
                     <span className="shrink-0 text-xs font-normal text-zinc-400 dark:text-zinc-500">
                       {t.zonasCount} {t.zonasCount === 1 ? "zona" : "zonas"}
                     </span>
+                    {t.responsable && (
+                      <span className="hidden truncate text-xs font-normal text-zinc-500 sm:inline dark:text-zinc-400">
+                        · {t.responsable.nombre}
+                      </span>
+                    )}
                   </button>
                   {t.poligono === null && <BadgeSinDelimitar />}
                   {esGestor && (
@@ -746,6 +814,12 @@ export function MapaView() {
                             <span className="shrink-0 text-xs text-zinc-400 dark:text-zinc-500">
                               {z.localesCount}{" "}
                               {z.localesCount === 1 ? "local" : "locales"}
+                            </span>
+                            <span className="hidden text-xs text-zinc-500 sm:inline dark:text-zinc-400">
+                              · {z.repositores.length}{" "}
+                              {z.repositores.length === 1
+                                ? "repositor"
+                                : "repositores"}
                             </span>
                           </button>
                           {z.poligono === null && <BadgeSinDelimitar />}
@@ -846,9 +920,9 @@ export function MapaView() {
                 </p>
                 <p className="text-xs text-brand-800 dark:text-brand-200">
                   {verticesDibujo.length}{" "}
-                  {verticesDibujo.length === 1 ? "punto" : "puntos"} — hacé
-                  clic en el mapa para agregar puntos y arrastrá los vértices
-                  para ajustarlos
+                  {verticesDibujo.length === 1 ? "punto" : "puntos"} — hacé clic
+                  en el mapa para agregar puntos y arrastrá los vértices para
+                  ajustarlos
                 </p>
               </div>
               {errorArea && <p className={errorBox}>{errorArea}</p>}
@@ -861,7 +935,11 @@ export function MapaView() {
                 >
                   Deshacer punto
                 </button>
-                <button type="button" onClick={salirDibujo} className={btnGhost}>
+                <button
+                  type="button"
+                  onClick={salirDibujo}
+                  className={btnGhost}
+                >
                   Cancelar
                 </button>
                 {teniaPoligono && (
@@ -905,7 +983,9 @@ export function MapaView() {
       {/* Modal alta/renombrar territorio */}
       <Modal
         titulo={
-          editTerritorio === "nuevo" ? "Nuevo territorio" : "Renombrar territorio"
+          editTerritorio === "nuevo"
+            ? "Nuevo territorio"
+            : "Renombrar territorio"
         }
         abierto={editTerritorio !== null}
         onCerrar={() => setEditTerritorio(null)}
@@ -936,6 +1016,28 @@ export function MapaView() {
               className="h-11 w-full cursor-pointer rounded-lg border border-zinc-300 bg-white p-1 dark:border-zinc-700 dark:bg-zinc-900"
             />
           </label>
+          <label className={labelBase}>
+            Responsable del territorio
+            <select
+              value={formTerritorio.responsableId}
+              onChange={(e) =>
+                setFormTerritorio((f) => ({
+                  ...f,
+                  responsableId:
+                    e.target.value === "" ? "" : Number(e.target.value),
+                }))
+              }
+              className={inputBase}
+            >
+              <option value="">Sin responsable</option>
+              {responsables.map((usuario) => (
+                <option key={usuario.id} value={usuario.id}>
+                  {usuario.nombre}
+                  {usuario.rol ? ` — ${usuario.rol}` : ""}
+                </option>
+              ))}
+            </select>
+          </label>
           {errorForm && <p className={errorBox}>{errorForm}</p>}
           <div className="flex flex-col-reverse gap-2 pt-1 sm:flex-row sm:justify-end">
             <button
@@ -945,7 +1047,11 @@ export function MapaView() {
             >
               Cancelar
             </button>
-            <button type="submit" disabled={guardandoForm} className={btnPrimary}>
+            <button
+              type="submit"
+              disabled={guardandoForm}
+              className={btnPrimary}
+            >
               {guardandoForm
                 ? "Guardando..."
                 : editTerritorio === "nuevo"
@@ -1021,6 +1127,24 @@ export function MapaView() {
               className="h-11 w-full cursor-pointer rounded-lg border border-zinc-300 bg-white p-1 dark:border-zinc-700 dark:bg-zinc-900"
             />
           </label>
+          <div>
+            <p className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
+              Repositor de la zona
+            </p>
+            <SelectorUsuario
+              usuarios={repositores}
+              value={formZona.usuarioId}
+              onChange={(usuarioId) =>
+                setFormZona((formulario) => ({
+                  ...formulario,
+                  usuarioId,
+                }))
+              }
+            />
+            <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+              Podés buscar y seleccionar un solo repositor.
+            </p>
+          </div>
           {errorForm && <p className={errorBox}>{errorForm}</p>}
           <div className="flex flex-col-reverse gap-2 pt-1 sm:flex-row sm:justify-end">
             <button
@@ -1030,7 +1154,11 @@ export function MapaView() {
             >
               Cancelar
             </button>
-            <button type="submit" disabled={guardandoForm} className={btnPrimary}>
+            <button
+              type="submit"
+              disabled={guardandoForm}
+              className={btnPrimary}
+            >
               {guardandoForm
                 ? "Guardando..."
                 : editZona === "nuevo"
@@ -1044,7 +1172,9 @@ export function MapaView() {
       {/* Modal de confirmación de borrado */}
       <Modal
         titulo={
-          eliminando?.tipo === "territorio" ? "Eliminar territorio" : "Eliminar zona"
+          eliminando?.tipo === "territorio"
+            ? "Eliminar territorio"
+            : "Eliminar zona"
         }
         abierto={eliminando !== null}
         onCerrar={() => setEliminando(null)}
@@ -1196,15 +1326,20 @@ export function MapaView() {
                         key={tarea.id}
                         className="flex items-start justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2 dark:border-zinc-800"
                       >
-                        <span
-                          className={`text-sm ${
-                            tarea.activo
-                              ? "text-zinc-700 dark:text-zinc-200"
-                              : "text-zinc-400 line-through dark:text-zinc-500"
-                          }`}
-                        >
-                          {tarea.descripcion}
-                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className={`text-sm font-medium ${
+                              tarea.activo
+                                ? "text-zinc-700 dark:text-zinc-200"
+                                : "text-zinc-400 line-through dark:text-zinc-500"
+                            }`}
+                          >
+                            {tarea.titulo}
+                          </p>
+                          <p className="mt-0.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+                            {tarea.descripcion}
+                          </p>
+                        </div>
                         <span className="flex shrink-0 gap-1">
                           {tarea.requiereFoto && (
                             <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-700 dark:bg-sky-950 dark:text-sky-300">
@@ -1224,7 +1359,7 @@ export function MapaView() {
             </div>
 
             <p className="text-xs text-zinc-400 dark:text-zinc-500">
-              Para editar este local y su checklist andá a la vista Locales.
+              Para administrar este checklist, andá a la pantalla Tareas.
             </p>
 
             <div className="flex justify-end">

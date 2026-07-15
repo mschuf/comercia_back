@@ -2,6 +2,7 @@
 export interface TerritorioDto {
   id: number;
   nombre: string;
+  responsable: { id: number; nombre: string } | null;
   color: string;
   poligono: [number, number][] | null;
   activo: boolean;

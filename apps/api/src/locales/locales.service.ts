@@ -8,12 +8,15 @@ import { ConfigImpulsadorService } from '../impulsador/config-impulsador.service
 import { PAGINAS_IMPULSADOR } from '../impulsador/impulsador.constants';
 import type { UsuarioImpulsador } from '../impulsador/interfaces/usuario-impulsador.interface';
 import {
-  PaginacionDto,
   respuestaPaginada,
   rangoPaginacion,
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
-import { ActualizarLocalDto, CrearLocalDto } from './dto/local.dto';
+import {
+  ActualizarLocalDto,
+  CrearLocalDto,
+  ListarLocalesDto,
+} from './dto/local.dto';
 import type {
   LocalDetalleDto,
   LocalDto,
@@ -24,6 +27,13 @@ import { aTareaLocalDto, SELECT_TAREA_LOCAL } from './tareas-local.service';
 type LocalConRelaciones = {
   id: number;
   nombre: string;
+  cliente: {
+    id: number;
+    nombre: string;
+    descripcionTareas: string;
+    imagenReferencia: string | null;
+    _count: { tareas: number };
+  };
   latitud: number;
   longitud: number;
   zona: { id: number; nombre: string } | null;
@@ -35,12 +45,20 @@ type LocalConRelaciones = {
   updatedAt: Date;
   usuario: { id: number; nombre: string; apellido: string } | null;
   creadoPor: { id: number; nombre: string; apellido: string };
-  _count: { tareas: number };
 };
 
 const SELECT_LOCAL = {
   id: true,
   nombre: true,
+  cliente: {
+    select: {
+      id: true,
+      nombre: true,
+      descripcionTareas: true,
+      imagenReferencia: true,
+      _count: { select: { tareas: { where: { activo: true } } } },
+    },
+  },
   latitud: true,
   longitud: true,
   zona: { select: { id: true, nombre: true } },
@@ -52,21 +70,20 @@ const SELECT_LOCAL = {
   updatedAt: true,
   usuario: { select: { id: true, nombre: true, apellido: true } },
   creadoPor: { select: { id: true, nombre: true, apellido: true } },
-  // Solo cuenta tareas activas: es lo que un operativo ve en el checklist
-  _count: { select: { tareas: { where: { activo: true } } } },
 } as const;
 
 function aLocalDto(local: LocalConRelaciones): LocalDto {
   return {
     id: local.id,
     nombre: local.nombre,
+    cliente: { id: local.cliente.id, nombre: local.cliente.nombre },
     latitud: local.latitud,
     longitud: local.longitud,
     zona: local.zona ? { id: local.zona.id, nombre: local.zona.nombre } : null,
     radioMetros: local.radioMetros,
     fechaVisita: local.fechaVisita?.toISOString() ?? null,
     requiereFotoPresencia: local.requiereFotoPresencia,
-    tareasCount: local._count.tareas,
+    tareasCount: local.cliente._count.tareas,
     activo: local.activo,
     asignadoA: local.usuario
       ? {
@@ -103,14 +120,18 @@ export class LocalesService {
   // Gestor: todos los locales de su empresa. Impulsador: solo los asignados a él.
   async listar(
     usuarioId: number,
-    paginacion: PaginacionDto,
+    query: ListarLocalesDto,
   ): Promise<RespuestaPaginada<LocalDto>> {
     const actual = await this.usuarioActual(usuarioId);
-    const where = actual.esGestor
-      ? { empresaId: actual.empresaId }
-      : { empresaId: actual.empresaId, usuarioId: actual.id, activo: true };
+    const where = {
+      empresaId: actual.empresaId,
+      clienteId: query.clienteId,
+      ...(actual.esGestor
+        ? { usuarioId: query.usuarioId }
+        : { usuarioId: actual.id, activo: true }),
+    };
 
-    const { skip, take, page, limit } = rangoPaginacion(paginacion);
+    const { skip, take, page, limit } = rangoPaginacion(query);
     const [total, locales] = await Promise.all([
       this.prisma.local.count({ where }),
       this.prisma.local.findMany({
@@ -145,6 +166,7 @@ export class LocalesService {
         id: true,
         nombre: true,
         apellido: true,
+        nombreLogin: true,
         rol: { select: { descripcion: true } },
       },
       orderBy: [{ nombre: 'asc' }, { apellido: 'asc' }],
@@ -153,6 +175,7 @@ export class LocalesService {
     return usuarios.map((u) => ({
       id: u.id,
       nombre: `${u.nombre} ${u.apellido}`.trim(),
+      nombreLogin: u.nombreLogin,
       rol: u.rol?.descripcion ?? null,
     }));
   }
@@ -171,6 +194,16 @@ export class LocalesService {
     }
   }
 
+  private async clienteDeEmpresa(id: number, empresaId: number): Promise<void> {
+    const cliente = await this.prisma.cliente.findUnique({
+      where: { id },
+      select: { empresaId: true, activo: true },
+    });
+    if (!cliente || cliente.empresaId !== empresaId || !cliente.activo) {
+      throw new NotFoundException('El cliente no existe');
+    }
+  }
+
   // La zona debe existir y ser de la empresa del gestor (mensaje neutro)
   private async zonaDeEmpresa(id: number, empresaId: number): Promise<void> {
     const zona = await this.prisma.zona.findUnique({
@@ -182,28 +215,44 @@ export class LocalesService {
     }
   }
 
+  private async validarRepositorDeZona(
+    zonaId: number,
+    usuarioId: number,
+  ): Promise<void> {
+    const asignacion = await this.prisma.zonaUsuario.findUnique({
+      where: { zonaId_usuarioId: { zonaId, usuarioId } },
+      select: { id: true },
+    });
+    if (!asignacion) {
+      throw new ForbiddenException(
+        'El repositor debe estar asignado a la zona del local',
+      );
+    }
+  }
+
   async crear(usuarioId: number, dto: CrearLocalDto): Promise<LocalDto> {
     const actual = await this.usuarioActual(usuarioId);
     if (!actual.esGestor) {
       throw new ForbiddenException('Solo un gestor puede crear locales');
     }
-    if (dto.usuarioId != null) {
-      await this.validarAsignado(actual.empresaId, dto.usuarioId);
-    }
-    if (dto.zonaId != null) {
-      await this.zonaDeEmpresa(dto.zonaId, actual.empresaId);
-    }
+    await Promise.all([
+      this.clienteDeEmpresa(dto.clienteId, actual.empresaId),
+      this.validarAsignado(actual.empresaId, dto.usuarioId),
+      this.zonaDeEmpresa(dto.zonaId, actual.empresaId),
+    ]);
+    await this.validarRepositorDeZona(dto.zonaId, dto.usuarioId);
     const local = await this.prisma.local.create({
       data: {
         empresaId: actual.empresaId,
+        clienteId: dto.clienteId,
         nombre: dto.nombre,
         latitud: dto.latitud,
         longitud: dto.longitud,
-        zonaId: dto.zonaId ?? null,
+        zonaId: dto.zonaId,
         radioMetros: dto.radioMetros ?? null,
         fechaVisita: dto.fechaVisita ? new Date(dto.fechaVisita) : null,
         requiereFotoPresencia: dto.requiereFotoPresencia ?? false,
-        usuarioId: dto.usuarioId ?? null,
+        usuarioId: dto.usuarioId,
         creadoPorId: actual.id,
       },
       select: SELECT_LOCAL,
@@ -215,15 +264,31 @@ export class LocalesService {
   private async localDeEmpresa(
     id: number,
     empresaId: number,
-  ): Promise<{ id: number }> {
+  ): Promise<{
+    id: number;
+    clienteId: number;
+    zonaId: number | null;
+    usuarioId: number | null;
+  }> {
     const local = await this.prisma.local.findUnique({
       where: { id },
-      select: { id: true, empresaId: true },
+      select: {
+        id: true,
+        empresaId: true,
+        clienteId: true,
+        zonaId: true,
+        usuarioId: true,
+      },
     });
     if (!local || local.empresaId !== empresaId) {
       throw new NotFoundException('El local no existe');
     }
-    return { id: local.id };
+    return {
+      id: local.id,
+      clienteId: local.clienteId,
+      zonaId: local.zonaId,
+      usuarioId: local.usuarioId,
+    };
   }
 
   async actualizar(
@@ -235,16 +300,26 @@ export class LocalesService {
     if (!actual.esGestor) {
       throw new ForbiddenException('Solo un gestor puede editar locales');
     }
-    await this.localDeEmpresa(id, actual.empresaId);
+    const existente = await this.localDeEmpresa(id, actual.empresaId);
+    const clienteId = dto.clienteId ?? existente.clienteId;
+    const zonaId = dto.zonaId === undefined ? existente.zonaId : dto.zonaId;
+    const usuarioAsignadoId =
+      dto.usuarioId === undefined ? existente.usuarioId : dto.usuarioId;
+    await this.clienteDeEmpresa(clienteId, actual.empresaId);
     if (dto.usuarioId != null) {
       await this.validarAsignado(actual.empresaId, dto.usuarioId);
     }
     if (dto.zonaId != null) {
       await this.zonaDeEmpresa(dto.zonaId, actual.empresaId);
     }
+    if (zonaId === null || usuarioAsignadoId === null) {
+      throw new ForbiddenException('El local debe tener zona y repositor');
+    }
+    await this.validarRepositorDeZona(zonaId, usuarioAsignadoId);
     const local = await this.prisma.local.update({
       where: { id },
       data: {
+        clienteId: dto.clienteId,
         nombre: dto.nombre,
         latitud: dto.latitud,
         longitud: dto.longitud,
@@ -279,10 +354,19 @@ export class LocalesService {
         ...SELECT_LOCAL,
         empresaId: true,
         usuarioId: true,
-        tareas: {
-          where: actual.esGestor ? {} : { activo: true },
-          select: SELECT_TAREA_LOCAL,
-          orderBy: [{ orden: 'asc' }, { id: 'asc' }],
+        cliente: {
+          select: {
+            id: true,
+            nombre: true,
+            descripcionTareas: true,
+            imagenReferencia: true,
+            _count: { select: { tareas: { where: { activo: true } } } },
+            tareas: {
+              where: actual.esGestor ? {} : { activo: true },
+              select: SELECT_TAREA_LOCAL,
+              orderBy: [{ orden: 'asc' }, { id: 'asc' }],
+            },
+          },
         },
       },
     });
@@ -295,7 +379,9 @@ export class LocalesService {
     }
     return {
       ...aLocalDto(local),
-      tareas: local.tareas.map(aTareaLocalDto),
+      tareas: local.cliente.tareas.map(aTareaLocalDto),
+      descripcionTareas: local.cliente.descripcionTareas,
+      imagenReferencia: local.cliente.imagenReferencia,
       radioMetrosEfectivo: local.radioMetros ?? actual.radioMetrosDefecto,
     };
   }

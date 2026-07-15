@@ -19,6 +19,14 @@ export class ActualizarConfigImpulsadorDto {
   @Max(MAX_INT4, { each: true })
   rolOperativoIds?: number[];
 
+  // Roles que administran usuarios de su propia empresa.
+  @IsOptional()
+  @IsArray()
+  @IsInt({ each: true })
+  @Min(1, { each: true })
+  @Max(MAX_INT4, { each: true })
+  rolAdminUsuarioIds?: number[];
+
   @IsOptional()
   @IsInt()
   @Min(RADIO_METROS_MIN)
