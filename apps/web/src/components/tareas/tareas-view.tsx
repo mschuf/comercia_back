@@ -130,11 +130,11 @@ export function TareasView() {
     <div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-xl font-bold">Tareas</h2>
+          <h1 className="text-xl font-bold">Tareas</h1>
           <p className="mt-1 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">
-            El mismo checklist se aplica a todos los clientes, locales y
-            repositores. Al editar una tarea se actualizan las existentes y se
-            crean automáticamente las que falten.
+            El mismo checklist se aplica a todos los clientes y sus locales. Al
+            editar una tarea se actualizan las existentes y se crean
+            automáticamente las que falten.
           </p>
         </div>
         {esGestor && (
@@ -154,81 +154,109 @@ export function TareasView() {
         <p className={`${errorBox} mt-4`}>{error}</p>
       )}
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-        {(datos?.items ?? []).map((tarea) => {
-          const completa = tarea.clientesAsignados === tarea.clientesEmpresa;
-          return (
-            <article
-              key={tarea.id}
-              className="flex min-h-44 flex-col rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
-            >
-              <div className="flex items-start gap-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-brand-50 text-sm font-bold text-brand-700 dark:bg-brand-950 dark:text-brand-300">
-                  {tarea.orden}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={`font-semibold ${
-                      tarea.activo
-                        ? "text-zinc-900 dark:text-zinc-100"
-                        : "text-zinc-400 line-through dark:text-zinc-500"
-                    }`}
+      {datos && datos.items.length > 0 && (
+        <div className="mt-5 overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+          <table className="w-full min-w-[860px] text-left text-sm">
+            <thead>
+              <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                <th
+                  scope="col"
+                  className="w-20 px-4 py-3 text-center font-medium"
+                >
+                  Orden
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  Tarea
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  Estado
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  Foto
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  Alcance
+                </th>
+                {esGestor && (
+                  <th scope="col" className="px-4 py-3 text-right font-medium">
+                    Acción
+                  </th>
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {datos.items.map((tarea) => {
+                const completa =
+                  tarea.clientesAsignados === tarea.clientesEmpresa;
+                return (
+                  <tr
+                    key={tarea.id}
+                    className="border-b border-zinc-100 align-top transition last:border-0 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
                   >
-                    {tarea.titulo}
-                  </p>
-                  <p
-                    className={`mt-1 text-sm ${
-                      tarea.activo
-                        ? "text-zinc-600 dark:text-zinc-300"
-                        : "text-zinc-400 dark:text-zinc-500"
-                    }`}
-                  >
-                    {tarea.descripcion}
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-1.5 text-xs">
-                    <span
-                      className={`rounded-full px-2 py-1 font-medium ${
-                        tarea.activo
-                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                          : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                    <td className="px-4 py-3 text-center font-semibold text-brand-700 [font-variant-numeric:tabular-nums] dark:text-brand-300">
+                      {tarea.orden}
+                    </td>
+                    <td className="max-w-md px-4 py-3">
+                      <p
+                        className={`font-semibold ${
+                          tarea.activo
+                            ? "text-zinc-900 dark:text-zinc-100"
+                            : "text-zinc-400 line-through dark:text-zinc-500"
+                        }`}
+                      >
+                        {tarea.titulo}
+                      </p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+                        {tarea.descripcion}
+                      </p>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
+                          tarea.activo
+                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                            : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                        }`}
+                      >
+                        {tarea.activo ? "Activa" : "Inactiva"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
+                      {tarea.requiereFoto ? "Requerida" : "No"}
+                    </td>
+                    <td
+                      className={`px-4 py-3 text-xs ${
+                        completa
+                          ? "text-zinc-500 dark:text-zinc-400"
+                          : "font-medium text-amber-700 dark:text-amber-300"
                       }`}
                     >
-                      {tarea.activo ? "Activa" : "Inactiva"}
-                    </span>
-                    {tarea.requiereFoto && (
-                      <span className="rounded-full bg-sky-100 px-2 py-1 font-medium text-sky-700 dark:bg-sky-950 dark:text-sky-300">
-                        Requiere foto
+                      <span className="block whitespace-nowrap">
+                        {tarea.clientesAsignados}/{tarea.clientesEmpresa}{" "}
+                        clientes
                       </span>
+                      <span className="mt-0.5 block whitespace-nowrap">
+                        {tarea.localesEmpresa} locales
+                      </span>
+                    </td>
+                    {esGestor && (
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => abrir(tarea)}
+                          className={`${btnGhost} min-h-11 whitespace-nowrap`}
+                        >
+                          Editar
+                        </button>
+                      </td>
                     )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-auto pt-4">
-                <p
-                  className={`text-xs ${
-                    completa
-                      ? "text-zinc-500 dark:text-zinc-400"
-                      : "font-medium text-amber-700 dark:text-amber-300"
-                  }`}
-                >
-                  {tarea.clientesAsignados}/{tarea.clientesEmpresa} clientes ·{" "}
-                  {tarea.localesEmpresa} locales
-                </p>
-                {esGestor && (
-                  <button
-                    type="button"
-                    onClick={() => abrir(tarea)}
-                    className={`${btnGhost} mt-3 w-full`}
-                  >
-                    Editar
-                  </button>
-                )}
-              </div>
-            </article>
-          );
-        })}
-      </div>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {datos && datos.items.length === 0 && (
         <p className="mt-5 rounded-xl border border-dashed border-zinc-300 bg-white px-4 py-10 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">

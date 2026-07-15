@@ -12,17 +12,9 @@ import { formatoFecha, formatoFechaHora } from "@/utils/fechas";
 import type { ConfigImpulsador } from "@/types/impulsador-config";
 import type { Local } from "@/types/local";
 import type { RespuestaPaginada } from "@/types/paginacion";
-import type {
-  Visita,
-  VisitaEquipoLocal,
-  VisitaResumen,
-} from "@/types/visita";
+import type { Visita, VisitaEquipoLocal, VisitaResumen } from "@/types/visita";
 
 type Tab = "locales" | "historial";
-type GrupoEquipo = {
-  usuario: { id: number; nombre: string } | null;
-  locales: VisitaEquipoLocal[];
-};
 
 const badgeBase =
   "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium";
@@ -59,7 +51,11 @@ function claseProximaVisita(fechaIso: string | null): string {
   const f = new Date(fechaIso);
   if (Number.isNaN(f.getTime())) return badgeZinc;
   const hoy = new Date();
-  const diaVisita = new Date(f.getFullYear(), f.getMonth(), f.getDate()).getTime();
+  const diaVisita = new Date(
+    f.getFullYear(),
+    f.getMonth(),
+    f.getDate(),
+  ).getTime();
   const diaHoy = new Date(
     hoy.getFullYear(),
     hoy.getMonth(),
@@ -311,23 +307,6 @@ export function VisitasView() {
   const itemsLocales = locales?.items ?? [];
   const itemsEquipo = equipo?.items ?? [];
   const itemsHistorial = historial?.items ?? [];
-  const gruposEquipo = Array.from(
-    itemsEquipo
-      .reduce<Map<string, GrupoEquipo>>((acc, local) => {
-        const clave = local.asignadoA ? String(local.asignadoA.id) : "sin";
-        const grupo = acc.get(clave);
-        if (grupo) {
-          grupo.locales.push(local);
-        } else {
-          acc.set(clave, {
-            usuario: local.asignadoA,
-            locales: [local],
-          });
-        }
-        return acc;
-      }, new Map<string, GrupoEquipo>())
-      .values(),
-  );
 
   const tabClase = (t: Tab) =>
     `border-b-2 px-4 py-2.5 text-sm font-medium transition ${
@@ -375,162 +354,150 @@ export function VisitasView() {
                     </p>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-6">
-                    {gruposEquipo.map((grupo) => (
-                      <section key={grupo.usuario?.id ?? "sin-asignar"}>
-                        <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                          <div>
-                            <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-                              {grupo.usuario?.nombre ?? "Sin asignar"}
-                            </h3>
-                            <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                              {grupo.locales.length}{" "}
-                              {grupo.locales.length === 1 ? "local" : "locales"}
-                            </p>
-                          </div>
-                          {!grupo.usuario && (
-                            <span className={badgeZinc}>
-                              Sin usuario asignado
-                            </span>
-                          )}
-                        </div>
-
-                        <div className="grid gap-3 lg:grid-cols-2">
-                          {grupo.locales.map((l) => {
-                            const ultima = l.ultimaVisita;
-                            const tareasCompletadas = l.tareas.filter(
-                              (t) => t.completada,
-                            ).length;
-                            return (
-                              <article
-                                key={l.localId}
-                                className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-                              >
-                                <div className="flex items-start justify-between gap-3">
-                                  <div className="min-w-0">
-                                    <h4 className="break-words text-base font-semibold leading-snug text-zinc-900 dark:text-zinc-100">
-                                      {l.localNombre}
-                                    </h4>
-                                    <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-                                      {l.zona?.nombre ?? "Sin zona"}
-                                    </p>
-                                  </div>
-                                  <span
-                                    className={`${badgeBase} ${
-                                      l.activo
-                                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                                        : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
-                                    }`}
-                                  >
-                                    {l.activo ? "Activo" : "Inactivo"}
+                  <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+                    <table className="w-full min-w-[1120px] text-left text-sm">
+                      <thead>
+                        <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Asignado a
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Local
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Zona
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Próxima visita
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Estado
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Última visita
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Tareas
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Presencia
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {itemsEquipo.map((l) => {
+                          const ultima = l.ultimaVisita;
+                          const tareasCompletadas = l.tareas.filter(
+                            (tarea) => tarea.completada,
+                          ).length;
+                          return (
+                            <tr
+                              key={l.localId}
+                              className="border-b border-zinc-100 align-top transition last:border-0 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
+                            >
+                              <td className="px-4 py-3 font-medium text-zinc-800 dark:text-zinc-200">
+                                {l.asignadoA?.nombre ?? (
+                                  <span className="text-zinc-400 dark:text-zinc-500">
+                                    Sin asignar
                                   </span>
-                                </div>
-
-                                <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                                  <span
-                                    className={claseProximaVisita(
-                                      l.fechaVisita,
-                                    )}
-                                  >
-                                    Prox. visita: {formatoFecha(l.fechaVisita)}
-                                  </span>
-                                  <span className={badgeZinc}>
-                                    {tareasCompletadas}/{l.tareas.length} tareas
-                                  </span>
-                                  {l.requiereFotoPresencia && (
-                                    <span className={badgeZinc}>
-                                      Foto requerida
+                                )}
+                              </td>
+                              <td className="px-4 py-3">
+                                <span className="block font-semibold text-zinc-900 dark:text-zinc-100">
+                                  {l.localNombre}
+                                </span>
+                                <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                                  {l.clienteNombre}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
+                                {l.zona?.nombre ?? "Sin zona"}
+                              </td>
+                              <td className="px-4 py-3">
+                                <span
+                                  className={claseProximaVisita(l.fechaVisita)}
+                                >
+                                  {formatoFecha(l.fechaVisita)}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <span
+                                  className={`${badgeBase} ${
+                                    l.activo
+                                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                                      : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                                  }`}
+                                >
+                                  {l.activo ? "Activo" : "Inactivo"}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                {ultima ? (
+                                  <div className="flex flex-col items-start gap-1">
+                                    <span className="whitespace-nowrap text-xs text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                                      {formatoFechaHora(ultima.iniciadaEn)}
                                     </span>
-                                  )}
-                                </div>
-
-                                <div className="mt-4 border-t border-zinc-100 pt-3 dark:border-zinc-800">
-                                  <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
-                                    Ultima visita
-                                  </p>
-                                  {ultima ? (
-                                    <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-zinc-700 dark:text-zinc-200">
-                                      <span className="[font-variant-numeric:tabular-nums]">
-                                        {formatoFechaHora(ultima.iniciadaEn)}
-                                      </span>
-                                      <span
-                                        className={`${badgeBase} ${
-                                          ultima.completadaEn
-                                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                                            : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
-                                        }`}
-                                      >
-                                        {ultima.completadaEn
-                                          ? "Completada"
-                                          : "En curso"}
-                                      </span>
-                                    </div>
-                                  ) : (
-                                    <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
-                                      Sin visitas registradas
-                                    </p>
-                                  )}
-                                </div>
-
-                                <div className="mt-4 border-t border-zinc-100 pt-3 dark:border-zinc-800">
-                                  <p className="text-[11px] font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
-                                    Tareas del local
-                                  </p>
-                                  {l.tareas.length === 0 ? (
-                                    <p className="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
-                                      Sin tareas cargadas.
-                                    </p>
-                                  ) : (
-                                    <ul className="mt-2 max-h-44 space-y-1.5 overflow-y-auto pr-1">
+                                    <span
+                                      className={`${badgeBase} ${
+                                        ultima.completadaEn
+                                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                                          : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                                      }`}
+                                    >
+                                      {ultima.completadaEn
+                                        ? "Completada"
+                                        : "En curso"}
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="text-zinc-400 dark:text-zinc-500">
+                                    Sin visitas
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3">
+                                {l.tareas.length === 0 ? (
+                                  <span className="text-zinc-400 dark:text-zinc-500">
+                                    Sin tareas
+                                  </span>
+                                ) : (
+                                  <details className="min-w-52">
+                                    <summary className="min-h-11 cursor-pointer select-none py-2 font-medium text-brand-700 hover:underline focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-brand-300">
+                                      {tareasCompletadas}/{l.tareas.length}{" "}
+                                      completas
+                                    </summary>
+                                    <ul className="mt-1 max-h-52 space-y-2 overflow-y-auto border-t border-zinc-100 pt-2 text-xs dark:border-zinc-800">
                                       {l.tareas.map((tarea) => (
-                                        <li
-                                          key={tarea.id}
-                                          className="flex items-start gap-2 text-xs"
-                                        >
+                                        <li key={tarea.id} className="min-w-64">
                                           <span
-                                            aria-hidden
-                                            className={`mt-1 h-2 w-2 shrink-0 rounded-full ${
+                                            className={`font-medium ${
                                               tarea.completada
-                                                ? "bg-emerald-500"
-                                                : "bg-amber-500"
-                                            }`}
-                                          />
-                                          <span className="min-w-0 flex-1 break-words">
-                                            <span
-                                              className={`block font-medium ${
-                                                tarea.completada
-                                                  ? "text-zinc-700 dark:text-zinc-200"
-                                                  : "text-zinc-600 dark:text-zinc-300"
-                                              }`}
-                                            >
-                                              {tarea.titulo}
-                                            </span>
-                                            <span className="mt-0.5 block leading-relaxed text-zinc-500 dark:text-zinc-400">
-                                              {tarea.descripcion}
-                                            </span>
-                                          </span>
-                                          <span
-                                            className={`shrink-0 rounded-full px-2 py-0.5 font-medium ${
-                                              tarea.completada
-                                                ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                                                : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                                                ? "text-emerald-700 dark:text-emerald-300"
+                                                : "text-amber-700 dark:text-amber-300"
                                             }`}
                                           >
-                                            {tarea.completada
-                                              ? "Completa"
-                                              : "Pendiente"}
+                                            {tarea.completada ? "✓" : "○"}{" "}
+                                            {tarea.titulo}
+                                          </span>
+                                          <span className="mt-0.5 block text-zinc-500 dark:text-zinc-400">
+                                            {tarea.descripcion}
                                           </span>
                                         </li>
                                       ))}
                                     </ul>
-                                  )}
-                                </div>
-                              </article>
-                            );
-                          })}
-                        </div>
-                      </section>
-                    ))}
+                                  </details>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
+                                {l.requiereFotoPresencia
+                                  ? "Foto requerida"
+                                  : "Opcional"}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 )}
 
@@ -558,6 +525,9 @@ export function VisitasView() {
               {errorLocales && (
                 <p className={`${errorBox} mb-4`}>{errorLocales}</p>
               )}
+              {errorInicio && (
+                <p className={`${errorBox} mb-4`}>{errorInicio.mensaje}</p>
+              )}
 
               {itemsLocales.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-10 text-center dark:border-zinc-700 dark:bg-zinc-900">
@@ -566,67 +536,89 @@ export function VisitasView() {
                   </p>
                 </div>
               ) : (
-                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-                  {itemsLocales.map((l) => (
-                    <article
-                      key={l.id}
-                      className="flex flex-col rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-                    >
-                      <div className="min-w-0">
-                        <h3 className="break-words text-base font-semibold leading-snug text-zinc-900 dark:text-zinc-100">
-                          {l.nombre}
-                        </h3>
-                        {l.zona && (
-                          <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-                            {l.zona.nombre}
-                          </p>
+                <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+                  <table className="w-full min-w-[820px] text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Local
+                        </th>
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Zona
+                        </th>
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Próxima visita
+                        </th>
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Tareas
+                        </th>
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Presencia
+                        </th>
+                        {puedeIniciarVisitas && (
+                          <th
+                            scope="col"
+                            className="px-4 py-3 text-right font-medium"
+                          >
+                            Acción
+                          </th>
                         )}
-                      </div>
-
-                      <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                        <span className={claseProximaVisita(l.fechaVisita)}>
-                          Próx. visita: {formatoFecha(l.fechaVisita)}
-                        </span>
-                        <span className={badgeZinc}>
-                          {l.tareasCount}{" "}
-                          {l.tareasCount === 1 ? "tarea" : "tareas"}
-                        </span>
-                        {l.requiereFotoPresencia && (
-                          <span className={badgeZinc}>
-                            📷 foto de presencia
-                          </span>
-                        )}
-                      </div>
-
-                      {(puedeIniciarVisitas ||
-                        errorInicio?.localId === l.id) && (
-                        <div className="mt-auto pt-4">
-                          {errorInicio?.localId === l.id && (
-                            <p className={`${errorBox} mb-3`}>
-                              {errorInicio.mensaje}
-                            </p>
-                          )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {itemsLocales.map((l) => (
+                        <tr
+                          key={l.id}
+                          className="border-b border-zinc-100 align-middle transition last:border-0 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
+                        >
+                          <td className="px-4 py-3">
+                            <span className="block font-semibold text-zinc-900 dark:text-zinc-100">
+                              {l.nombre}
+                            </span>
+                            <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                              {l.cliente.nombre}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
+                            {l.zona?.nombre ?? "Sin zona"}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={claseProximaVisita(l.fechaVisita)}>
+                              {formatoFecha(l.fechaVisita)}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-zinc-600 [font-variant-numeric:tabular-nums] dark:text-zinc-300">
+                            {l.tareasCount}{" "}
+                            {l.tareasCount === 1 ? "tarea" : "tareas"}
+                          </td>
+                          <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
+                            {l.requiereFotoPresencia
+                              ? "Foto requerida"
+                              : "Opcional"}
+                          </td>
                           {puedeIniciarVisitas && (
-                            <button
-                              type="button"
-                              onClick={() => iniciarVisita(l)}
-                              disabled={iniciando !== null}
-                              className={`${btnPrimary} h-11 w-full gap-2`}
-                            >
-                              {iniciando === l.id ? (
-                                <>
-                                  <Spinner />
-                                  Obteniendo ubicación…
-                                </>
-                              ) : (
-                                "Iniciar visita"
-                              )}
-                            </button>
+                            <td className="px-4 py-3 text-right">
+                              <button
+                                type="button"
+                                onClick={() => iniciarVisita(l)}
+                                disabled={iniciando !== null}
+                                className={`${btnPrimary} h-11 whitespace-nowrap gap-2`}
+                              >
+                                {iniciando === l.id ? (
+                                  <>
+                                    <Spinner />
+                                    Obteniendo ubicación…
+                                  </>
+                                ) : (
+                                  "Iniciar visita"
+                                )}
+                              </button>
+                            </td>
                           )}
-                        </div>
-                      )}
-                    </article>
-                  ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
 
@@ -667,96 +659,67 @@ export function VisitasView() {
                   </p>
                 </div>
               ) : (
-                <>
-                  {/* Cards en mobile */}
-                  <div className="grid gap-3 md:hidden">
-                    {itemsHistorial.map((v) => (
-                      <article
-                        key={v.id}
-                        className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <h3 className="break-words text-base font-semibold leading-snug text-zinc-900 dark:text-zinc-100">
-                              {v.localNombre}
-                            </h3>
-                            {config.esGestor && (
-                              <p className="mt-0.5 text-xs text-zinc-500 dark:text-zinc-400">
-                                {v.usuarioNombre}
-                              </p>
-                            )}
-                            <p className="mt-1 text-xs text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-                              Iniciada {formatoFechaHora(v.iniciadaEn)}
-                            </p>
-                          </div>
-                          <BotonFoto visita={v} onVer={setFotoAmpliada} />
-                        </div>
-                        <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                          <EstadoVisita visita={v} />
-                          <span
-                            className={`${badgeZinc} [font-variant-numeric:tabular-nums]`}
-                          >
-                            {Math.round(v.distanciaMetros)} m
-                          </span>
-                          <span
-                            className={`${badgeZinc} [font-variant-numeric:tabular-nums]`}
-                          >
-                            ✓ {v.tareasCompletadas}/{v.tareasTotal}
-                          </span>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-
-                  {/* Tabla en desktop */}
-                  <div className="hidden overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 md:block">
-                    <table className="w-full min-w-[640px] text-left text-sm">
-                      <thead>
-                        <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                          <th className="px-4 py-3 font-medium">Local</th>
+                <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+                  <table className="w-full min-w-[760px] text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Local
+                        </th>
+                        {config.esGestor && (
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Usuario
+                          </th>
+                        )}
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Iniciada
+                        </th>
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Estado
+                        </th>
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Distancia
+                        </th>
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Checklist
+                        </th>
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Foto
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {itemsHistorial.map((v) => (
+                        <tr
+                          key={v.id}
+                          className="border-b border-zinc-100 align-middle transition last:border-0 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
+                        >
+                          <td className="px-4 py-3 font-medium">
+                            {v.localNombre}
+                          </td>
                           {config.esGestor && (
-                            <th className="px-4 py-3 font-medium">Usuario</th>
+                            <td className="px-4 py-3">{v.usuarioNombre}</td>
                           )}
-                          <th className="px-4 py-3 font-medium">Iniciada</th>
-                          <th className="px-4 py-3 font-medium">Estado</th>
-                          <th className="px-4 py-3 font-medium">Distancia</th>
-                          <th className="px-4 py-3 font-medium">Checklist</th>
-                          <th className="px-4 py-3 font-medium">Foto</th>
+                          <td className="whitespace-nowrap px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                            {formatoFechaHora(v.iniciadaEn)}
+                          </td>
+                          <td className="px-4 py-3">
+                            <EstadoVisita visita={v} />
+                          </td>
+                          <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                            {Math.round(v.distanciaMetros)} m
+                          </td>
+                          <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                            {v.tareasCompletadas}/{v.tareasTotal}
+                          </td>
+                          <td className="px-4 py-3">
+                            <BotonFoto visita={v} onVer={setFotoAmpliada} />
+                          </td>
                         </tr>
-                      </thead>
-                      <tbody>
-                        {itemsHistorial.map((v) => (
-                          <tr
-                            key={v.id}
-                            className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/60"
-                          >
-                            <td className="px-4 py-3 font-medium">
-                              {v.localNombre}
-                            </td>
-                            {config.esGestor && (
-                              <td className="px-4 py-3">{v.usuarioNombre}</td>
-                            )}
-                            <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-                              {formatoFechaHora(v.iniciadaEn)}
-                            </td>
-                            <td className="px-4 py-3">
-                              <EstadoVisita visita={v} />
-                            </td>
-                            <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-                              {Math.round(v.distanciaMetros)} m
-                            </td>
-                            <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-                              {v.tareasCompletadas}/{v.tareasTotal}
-                            </td>
-                            <td className="px-4 py-3">
-                              <BotonFoto visita={v} onVer={setFotoAmpliada} />
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
 
               {historial && historial.total > 0 && (

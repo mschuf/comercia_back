@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { apiFetch, ApiError } from "@/lib/api";
 import { Modal } from "@/components/modal";
 import { IconoMas } from "@/components/icono-mas";
@@ -1309,67 +1310,21 @@ export function MapaView() {
               </div>
             </dl>
 
-            <div>
-              <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
-                Checklist ({detalleLocal.tareas.length})
-              </h3>
-              {detalleLocal.tareas.length === 0 ? (
-                <p className="mt-2 text-sm text-zinc-400 dark:text-zinc-500">
-                  Este local todavía no tiene tareas cargadas.
-                </p>
-              ) : (
-                <ul className="mt-2 flex flex-col gap-1.5">
-                  {[...detalleLocal.tareas]
-                    .sort((a, b) => a.orden - b.orden)
-                    .map((tarea) => (
-                      <li
-                        key={tarea.id}
-                        className="flex items-start justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2 dark:border-zinc-800"
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p
-                            className={`text-sm font-medium ${
-                              tarea.activo
-                                ? "text-zinc-700 dark:text-zinc-200"
-                                : "text-zinc-400 line-through dark:text-zinc-500"
-                            }`}
-                          >
-                            {tarea.titulo}
-                          </p>
-                          <p className="mt-0.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-                            {tarea.descripcion}
-                          </p>
-                        </div>
-                        <span className="flex shrink-0 gap-1">
-                          {tarea.requiereFoto && (
-                            <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-medium text-sky-700 dark:bg-sky-950 dark:text-sky-300">
-                              📷 Foto
-                            </span>
-                          )}
-                          {!tarea.activo && (
-                            <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
-                              Inactiva
-                            </span>
-                          )}
-                        </span>
-                      </li>
-                    ))}
-                </ul>
-              )}
-            </div>
-
-            <p className="text-xs text-zinc-400 dark:text-zinc-500">
-              Para administrar este checklist, andá a la pantalla Tareas.
-            </p>
-
-            <div className="flex justify-end">
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button
                 type="button"
                 onClick={() => setLocalAbierto(null)}
-                className={btnGhost}
+                className={`${btnGhost} min-h-11`}
               >
                 Cerrar
               </button>
+              <Link
+                href="/panel/impulsador/tareas"
+                onClick={() => setLocalAbierto(null)}
+                className={`${btnPrimary} min-h-11`}
+              >
+                Tareas ({detalleLocal.tareas.length})
+              </Link>
             </div>
           </div>
         ) : null}
