@@ -14,11 +14,7 @@ import {
   labelBase,
 } from "@/components/ui";
 import { formatoCoordenada } from "@/utils/formato";
-import {
-  fechaInputAIso,
-  formatoFechaHora,
-  isoAFechaInput,
-} from "@/utils/fechas";
+import { formatoFechaHora } from "@/utils/fechas";
 import type { RespuestaPaginada } from "@/types/paginacion";
 import type { Local, UsuarioAsignable } from "@/types/local";
 import type { Zona } from "@/types/territorio";
@@ -45,8 +41,6 @@ interface FormLocal {
   zonaId: number | "";
   // Texto libre del input numérico; "" = usa el radio por defecto de la config
   radioMetros: string;
-  // "" o "aaaa-mm-dd" (input type="date")
-  fechaVisita: string;
   requiereFotoPresencia: boolean;
   activo: boolean;
 }
@@ -64,7 +58,6 @@ const FORM_VACIO: FormLocal = {
   usuarioId: "",
   zonaId: "",
   radioMetros: "",
-  fechaVisita: "",
   requiereFotoPresencia: false,
   activo: true,
 };
@@ -236,7 +229,6 @@ export function LocalesView({
       usuarioId: local.asignadoA?.id ?? "",
       zonaId: local.zona?.id ?? "",
       radioMetros: local.radioMetros?.toString() ?? "",
-      fechaVisita: isoAFechaInput(local.fechaVisita),
       requiereFotoPresencia: local.requiereFotoPresencia,
       activo: local.activo,
     });
@@ -305,7 +297,6 @@ export function LocalesView({
         usuarioId: form.usuarioId,
         zonaId: form.zonaId,
         radioMetros,
-        fechaVisita: fechaInputAIso(form.fechaVisita),
         requiereFotoPresencia: form.requiereFotoPresencia,
         ...(inicial ? { activo: form.activo } : {}),
       };
@@ -878,17 +869,6 @@ export function LocalesView({
                 className={inputBase}
               />
             </label>
-            <label className={labelBase}>
-              Próxima visita
-              <input
-                type="datetime-local"
-                value={form.fechaVisita}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, fechaVisita: e.target.value }))
-                }
-                className={inputBase}
-              />
-            </label>
             <label className="flex cursor-pointer items-center gap-2 pt-6 text-sm text-zinc-700 dark:text-zinc-300">
               <input
                 type="checkbox"
@@ -904,6 +884,10 @@ export function LocalesView({
               Exigir foto de presencia al visitar
             </label>
           </div>
+
+          <p className="rounded-lg bg-zinc-50 p-3 text-xs text-zinc-500 dark:bg-zinc-800/60 dark:text-zinc-400">
+            Los días y horarios se administran desde la pantalla Visitas.
+          </p>
 
           {editando !== null && editando !== "nuevo" && (
             <label className="flex cursor-pointer items-center gap-2 text-sm">

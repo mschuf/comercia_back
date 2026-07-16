@@ -6,9 +6,14 @@ import { urlFotoVisita } from "@/lib/api-archivos";
 import { obtenerUbicacion } from "@/lib/geolocalizacion";
 import { Modal } from "@/components/modal";
 import { Paginacion } from "@/components/paginacion";
+import { EditorProgramacionVisita } from "@/components/impulsador/editor-programacion-visita";
 import { VisitaActiva } from "@/components/impulsador/visita-activa";
 import { btnPrimary, errorBox } from "@/components/ui";
 import { formatoFecha, formatoFechaHora } from "@/utils/fechas";
+import {
+  formatoFechaProgramacion,
+  resumenProgramacion,
+} from "@/utils/programacion-visita";
 import type { ConfigImpulsador } from "@/types/impulsador-config";
 import type { Local } from "@/types/local";
 import type { RespuestaPaginada } from "@/types/paginacion";
@@ -41,6 +46,19 @@ function Spinner() {
         fill="currentColor"
         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
       />
+    </svg>
+  );
+}
+
+function IconoEditar() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="h-4 w-4"
+      aria-hidden
+    >
+      <path d="M13.59 3.59a2 2 0 012.82 2.82l-.79.8-2.83-2.83.8-.79zM11.38 5.79L3 14.17V17h2.83l8.38-8.38-2.83-2.83z" />
     </svg>
   );
 }
@@ -140,6 +158,8 @@ export function VisitasView() {
     useState<RespuestaPaginada<VisitaEquipoLocal> | null>(null);
   const [cargandoEquipo, setCargandoEquipo] = useState(true);
   const [errorEquipo, setErrorEquipo] = useState<string | null>(null);
+  const [editandoProgramacion, setEditandoProgramacion] =
+    useState<VisitaEquipoLocal | null>(null);
 
   // Inicio de visita (geolocalización + POST /visitas)
   const [iniciando, setIniciando] = useState<number | null>(null);
@@ -323,7 +343,7 @@ export function VisitasView() {
           onClick={() => setTab("locales")}
           className={tabClase("locales")}
         >
-          {config.esGestor ? "Equipo" : "Mis locales"}
+          {config.esGestor ? "Programación" : "Mis locales"}
         </button>
         <button
           type="button"
@@ -347,6 +367,16 @@ export function VisitasView() {
                   <p className={`${errorBox} mb-4`}>{errorEquipo}</p>
                 )}
 
+                <div className="mb-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                  <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
+                    Agenda de visitas
+                  </h2>
+                  <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                    Definí visitas únicas, semanales o mensuales. Cada local
+                    puede tener varios días y varios horarios por día.
+                  </p>
+                </div>
+
                 {itemsEquipo.length === 0 ? (
                   <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-10 text-center dark:border-zinc-700 dark:bg-zinc-900">
                     <p className="text-sm text-zinc-500 dark:text-zinc-400">
@@ -355,53 +385,43 @@ export function VisitasView() {
                   </div>
                 ) : (
                   <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-                    <table className="w-full min-w-[1120px] text-left text-sm">
+                    <table className="w-full min-w-[1080px] text-left text-sm">
                       <thead>
                         <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                          <th scope="col" className="px-4 py-3 font-medium">
-                            Asignado a
-                          </th>
                           <th scope="col" className="px-4 py-3 font-medium">
                             Local
                           </th>
                           <th scope="col" className="px-4 py-3 font-medium">
-                            Zona
+                            Asignación
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Programación
                           </th>
                           <th scope="col" className="px-4 py-3 font-medium">
                             Próxima visita
                           </th>
                           <th scope="col" className="px-4 py-3 font-medium">
-                            Estado
-                          </th>
-                          <th scope="col" className="px-4 py-3 font-medium">
                             Última visita
                           </th>
                           <th scope="col" className="px-4 py-3 font-medium">
-                            Tareas
+                            Estado
                           </th>
-                          <th scope="col" className="px-4 py-3 font-medium">
-                            Presencia
+                          <th
+                            scope="col"
+                            className="px-4 py-3 text-right font-medium"
+                          >
+                            Acción
                           </th>
                         </tr>
                       </thead>
                       <tbody>
                         {itemsEquipo.map((l) => {
                           const ultima = l.ultimaVisita;
-                          const tareasCompletadas = l.tareas.filter(
-                            (tarea) => tarea.completada,
-                          ).length;
                           return (
                             <tr
                               key={l.localId}
-                              className="border-b border-zinc-100 align-top transition last:border-0 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
+                              className="border-b border-zinc-100 align-middle transition last:border-0 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
                             >
-                              <td className="px-4 py-3 font-medium text-zinc-800 dark:text-zinc-200">
-                                {l.asignadoA?.nombre ?? (
-                                  <span className="text-zinc-400 dark:text-zinc-500">
-                                    Sin asignar
-                                  </span>
-                                )}
-                              </td>
                               <td className="px-4 py-3">
                                 <span className="block font-semibold text-zinc-900 dark:text-zinc-100">
                                   {l.localNombre}
@@ -410,25 +430,32 @@ export function VisitasView() {
                                   {l.clienteNombre}
                                 </span>
                               </td>
-                              <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
-                                {l.zona?.nombre ?? "Sin zona"}
-                              </td>
                               <td className="px-4 py-3">
+                                <span className="block font-medium text-zinc-700 dark:text-zinc-200">
+                                  {l.asignadoA?.nombre ?? "Sin asignar"}
+                                </span>
+                                <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                                  {l.zona?.nombre ?? "Sin zona"}
+                                </span>
+                              </td>
+                              <td className="max-w-72 px-4 py-3">
+                                <span className="block text-sm text-zinc-700 dark:text-zinc-200">
+                                  {resumenProgramacion(l.programacion)}
+                                </span>
+                                {l.programacion?.fechaFin && (
+                                  <span className="mt-1 block text-xs text-zinc-500 dark:text-zinc-400">
+                                    Hasta{" "}
+                                    {formatoFechaProgramacion(
+                                      l.programacion.fechaFin,
+                                    )}
+                                  </span>
+                                )}
+                              </td>
+                              <td className="whitespace-nowrap px-4 py-3">
                                 <span
                                   className={claseProximaVisita(l.fechaVisita)}
                                 >
-                                  {formatoFecha(l.fechaVisita)}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3">
-                                <span
-                                  className={`${badgeBase} ${
-                                    l.activo
-                                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                                      : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
-                                  }`}
-                                >
-                                  {l.activo ? "Activo" : "Inactivo"}
+                                  {formatoFechaHora(l.fechaVisita)}
                                 </span>
                               </td>
                               <td className="px-4 py-3">
@@ -448,6 +475,10 @@ export function VisitasView() {
                                         ? "Completada"
                                         : "En curso"}
                                     </span>
+                                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                                      {ultima.tareasCompletadas}/
+                                      {ultima.tareasTotal} tareas
+                                    </span>
                                   </div>
                                 ) : (
                                   <span className="text-zinc-400 dark:text-zinc-500">
@@ -456,42 +487,34 @@ export function VisitasView() {
                                 )}
                               </td>
                               <td className="px-4 py-3">
-                                {l.tareas.length === 0 ? (
-                                  <span className="text-zinc-400 dark:text-zinc-500">
-                                    Sin tareas
-                                  </span>
-                                ) : (
-                                  <details className="min-w-52">
-                                    <summary className="min-h-11 cursor-pointer select-none py-2 font-medium text-brand-700 hover:underline focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-brand-300">
-                                      {tareasCompletadas}/{l.tareas.length}{" "}
-                                      completas
-                                    </summary>
-                                    <ul className="mt-1 max-h-52 space-y-2 overflow-y-auto border-t border-zinc-100 pt-2 text-xs dark:border-zinc-800">
-                                      {l.tareas.map((tarea) => (
-                                        <li key={tarea.id} className="min-w-64">
-                                          <span
-                                            className={`font-medium ${
-                                              tarea.completada
-                                                ? "text-emerald-700 dark:text-emerald-300"
-                                                : "text-amber-700 dark:text-amber-300"
-                                            }`}
-                                          >
-                                            {tarea.completada ? "✓" : "○"}{" "}
-                                            {tarea.titulo}
-                                          </span>
-                                          <span className="mt-0.5 block text-zinc-500 dark:text-zinc-400">
-                                            {tarea.descripcion}
-                                          </span>
-                                        </li>
-                                      ))}
-                                    </ul>
-                                  </details>
-                                )}
+                                <span
+                                  className={`${badgeBase} ${
+                                    !l.activo ||
+                                    l.programacion?.activo === false
+                                      ? "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                                      : l.programacion
+                                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                                        : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                                  }`}
+                                >
+                                  {!l.activo
+                                    ? "Local inactivo"
+                                    : l.programacion?.activo === false
+                                      ? "Pausada"
+                                      : l.programacion
+                                        ? "Programada"
+                                        : "Sin programar"}
+                                </span>
                               </td>
-                              <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
-                                {l.requiereFotoPresencia
-                                  ? "Foto requerida"
-                                  : "Opcional"}
+                              <td className="px-4 py-3 text-right">
+                                <button
+                                  type="button"
+                                  onClick={() => setEditandoProgramacion(l)}
+                                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-700 transition hover:border-brand-400 hover:bg-brand-50 hover:text-brand-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-brand-700 dark:hover:bg-brand-950 dark:hover:text-brand-200"
+                                >
+                                  <IconoEditar />
+                                  {l.programacion ? "Editar" : "Programar"}
+                                </button>
                               </td>
                             </tr>
                           );
@@ -738,6 +761,15 @@ export function VisitasView() {
             </>
           )}
         </div>
+      )}
+
+      {editandoProgramacion && (
+        <EditorProgramacionVisita
+          key={editandoProgramacion.localId}
+          local={editandoProgramacion}
+          onCerrar={() => setEditandoProgramacion(null)}
+          onGuardada={() => setRefresco((actual) => actual + 1)}
+        />
       )}
 
       {visitaActiva && (

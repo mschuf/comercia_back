@@ -40,14 +40,17 @@ export default function PaginaModulo({
 
   const Vista = VISTAS[`${modulo}/${pagina}`];
   const usaCabeceraPropia = modulo === "impulsador" && pagina === "tareas";
+  const ocultaNombreModulo = modulo === "impulsador" && pagina === "visitas";
 
   return (
     <div>
       {!usaCabeceraPropia && (
         <>
-          <p className="text-xs font-medium uppercase tracking-wide text-brand-700 dark:text-brand-400">
-            {mod.nombre}
-          </p>
+          {!ocultaNombreModulo && (
+            <p className="text-xs font-medium uppercase tracking-wide text-brand-700 dark:text-brand-400">
+              {mod.nombre}
+            </p>
+          )}
           <h1 className="mt-1 text-2xl font-bold tracking-tight">
             {pag.nombre}
           </h1>

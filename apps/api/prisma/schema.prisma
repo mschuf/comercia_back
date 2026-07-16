@@ -297,10 +297,40 @@ model Local {
   creadoPor             Usuario   @relation("LocalesCreados", fields: [creadoPorId], references: [id])
   activo                Boolean   @default(true)
   visitas               Visita[]
+  programacionVisita    ProgramacionVisita?
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @default(now()) @updatedAt @map("updated_at")
 
   @@map("locales")
+}
+
+enum FrecuenciaVisita {
+  UNICA
+  SEMANAL
+  MENSUAL
+}
+
+// Agenda editable del local. Una programación admite varias ocurrencias el
+// mismo día mediante `horarios` y recurrencias cada N semanas o meses.
+model ProgramacionVisita {
+  id           Int              @id @default(autoincrement())
+  localId      Int              @unique @map("local_id")
+  local        Local            @relation(fields: [localId], references: [id], onDelete: Cascade)
+  frecuencia   FrecuenciaVisita
+  fechaInicio  DateTime         @db.Date @map("fecha_inicio")
+  fechaFin     DateTime?        @db.Date @map("fecha_fin")
+  intervalo    Int              @default(1)
+  // ISO-8601: lunes = 1, domingo = 7.
+  diasSemana   Int[]            @default([]) @map("dias_semana")
+  diasMes      Int[]            @default([]) @map("dias_mes")
+  // Horas locales HH:mm, ordenadas y sin duplicados.
+  horarios     String[]
+  zonaHoraria  String           @default("America/Asuncion") @map("zona_horaria")
+  activo       Boolean          @default(true)
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @default(now()) @updatedAt @map("updated_at")
+
+  @@map("programaciones_visita")
 }
 
 // Ítem del checklist de un local. `requiereFoto` habilita la cámara para

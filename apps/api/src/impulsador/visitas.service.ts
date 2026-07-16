@@ -14,6 +14,10 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigImpulsadorService } from './config-impulsador.service';
 import {
+  FrecuenciaVisitaDto,
+  GuardarProgramacionVisitaDto,
+} from './dto/programacion-visita.dto';
+import {
   ActualizarVisitaTareaDto,
   FinalizarVisitaDto,
   IniciarVisitaDto,
@@ -23,12 +27,18 @@ import {
 import { FotosService } from './fotos.service';
 import { PAGINAS_IMPULSADOR } from './impulsador.constants';
 import type { UsuarioImpulsador } from './interfaces/usuario-impulsador.interface';
+import type { ProgramacionVisitaCalculo } from './interfaces/programacion-visita.interface';
 import type {
   VisitaDto,
   VisitaEquipoLocalDto,
   VisitaResumenDto,
   VisitaTareaDto,
 } from './interfaces/visita.interface';
+import {
+  aProgramacionVisitaDto,
+  proximaOcurrenciaVisita,
+  validarZonaHoraria,
+} from './utils/programacion-visita';
 
 type VisitaTareaConTarea = {
   id: number;
@@ -62,6 +72,8 @@ type VisitaConRelaciones = {
     longitud: number;
     radioMetros: number | null;
     requiereFotoPresencia: boolean;
+    fechaVisita: Date | null;
+    programacionVisita: ProgramacionVisitaCalculo | null;
   };
   usuario: { nombre: string; apellido: string };
   tareas: VisitaTareaConTarea[];
@@ -85,26 +97,17 @@ type LocalEquipo = {
   nombre: string;
   zona: { id: number; nombre: string } | null;
   fechaVisita: Date | null;
-  requiereFotoPresencia: boolean;
   activo: boolean;
+  programacionVisita: ProgramacionVisitaCalculo | null;
   usuario: { id: number; nombre: string; apellido: string } | null;
-  cliente: {
-    nombre: string;
-    tareas: {
-      id: number;
-      titulo: string;
-      descripcion: string;
-      requiereFoto: boolean;
-      orden: number;
-    }[];
-  };
+  cliente: { nombre: string };
   visitas: {
     id: number;
     usuarioId: number;
     iniciadaEn: Date;
     completadaEn: Date | null;
     usuario: { nombre: string; apellido: string };
-    tareas: { tareaId: number; completada: boolean }[];
+    tareas: { completada: boolean }[];
   }[];
 };
 
@@ -146,6 +149,20 @@ const SELECT_VISITA = {
       longitud: true,
       radioMetros: true,
       requiereFotoPresencia: true,
+      fechaVisita: true,
+      programacionVisita: {
+        select: {
+          frecuencia: true,
+          fechaInicio: true,
+          fechaFin: true,
+          intervalo: true,
+          diasSemana: true,
+          diasMes: true,
+          horarios: true,
+          zonaHoraria: true,
+          activo: true,
+        },
+      },
     },
   },
   usuario: { select: { nombre: true, apellido: true } },
@@ -173,25 +190,22 @@ const SELECT_LOCAL_EQUIPO = {
   nombre: true,
   zona: { select: { id: true, nombre: true } },
   fechaVisita: true,
-  requiereFotoPresencia: true,
   activo: true,
-  usuario: { select: { id: true, nombre: true, apellido: true } },
-  cliente: {
+  programacionVisita: {
     select: {
-      nombre: true,
-      tareas: {
-        where: { activo: true },
-        select: {
-          id: true,
-          titulo: true,
-          descripcion: true,
-          requiereFoto: true,
-          orden: true,
-        },
-        orderBy: [{ orden: 'asc' }, { id: 'asc' }],
-      },
+      frecuencia: true,
+      fechaInicio: true,
+      fechaFin: true,
+      intervalo: true,
+      diasSemana: true,
+      diasMes: true,
+      horarios: true,
+      zonaHoraria: true,
+      activo: true,
     },
   },
+  usuario: { select: { id: true, nombre: true, apellido: true } },
+  cliente: { select: { nombre: true } },
   visitas: {
     select: {
       id: true,
@@ -199,7 +213,7 @@ const SELECT_LOCAL_EQUIPO = {
       iniciadaEn: true,
       completadaEn: true,
       usuario: { select: { nombre: true, apellido: true } },
-      tareas: { select: { tareaId: true, completada: true } },
+      tareas: { select: { completada: true } },
     },
     orderBy: [{ iniciadaEn: 'desc' }, { id: 'desc' }],
     take: 1,
@@ -268,18 +282,6 @@ function aVisitaResumenDto(visita: VisitaResumen): VisitaResumenDto {
 
 function aVisitaEquipoLocalDto(local: LocalEquipo): VisitaEquipoLocalDto {
   const ultimaVisita = local.visitas[0] ?? null;
-  const completadas = new Set(
-    ultimaVisita?.tareas.filter((t) => t.completada).map((t) => t.tareaId) ??
-      [],
-  );
-  const tareas = local.cliente.tareas.map((tarea) => ({
-    id: tarea.id,
-    titulo: tarea.titulo,
-    descripcion: tarea.descripcion,
-    requiereFoto: tarea.requiereFoto,
-    orden: tarea.orden,
-    completada: completadas.has(tarea.id),
-  }));
 
   return {
     localId: local.id,
@@ -287,7 +289,9 @@ function aVisitaEquipoLocalDto(local: LocalEquipo): VisitaEquipoLocalDto {
     clienteNombre: local.cliente.nombre,
     zona: local.zona ? { id: local.zona.id, nombre: local.zona.nombre } : null,
     fechaVisita: local.fechaVisita?.toISOString() ?? null,
-    requiereFotoPresencia: local.requiereFotoPresencia,
+    programacion: local.programacionVisita
+      ? aProgramacionVisitaDto(local.programacionVisita)
+      : null,
     activo: local.activo,
     asignadoA: local.usuario
       ? { id: local.usuario.id, nombre: nombreCompleto(local.usuario) }
@@ -299,11 +303,11 @@ function aVisitaEquipoLocalDto(local: LocalEquipo): VisitaEquipoLocalDto {
           usuarioNombre: nombreCompleto(ultimaVisita.usuario),
           iniciadaEn: ultimaVisita.iniciadaEn.toISOString(),
           completadaEn: ultimaVisita.completadaEn?.toISOString() ?? null,
-          tareasTotal: tareas.length,
-          tareasCompletadas: tareas.filter((t) => t.completada).length,
+          tareasTotal: ultimaVisita.tareas.length,
+          tareasCompletadas: ultimaVisita.tareas.filter((t) => t.completada)
+            .length,
         }
       : null,
-    tareas,
   };
 }
 
@@ -555,6 +559,117 @@ export class VisitasService {
     );
   }
 
+  async guardarProgramacion(
+    usuarioId: number,
+    localId: number,
+    dto: GuardarProgramacionVisitaDto,
+  ): Promise<VisitaEquipoLocalDto['programacion']> {
+    const usuario = await this.usuarioActual(usuarioId);
+    if (!usuario.esGestor) {
+      throw new ForbiddenException('Solo un gestor puede programar visitas');
+    }
+
+    const local = await this.prisma.local.findUnique({
+      where: { id: localId },
+      select: { empresaId: true },
+    });
+    if (!local || local.empresaId !== usuario.empresaId) {
+      throw new NotFoundException('El local no existe');
+    }
+    if (!validarZonaHoraria(dto.zonaHoraria)) {
+      throw new BadRequestException('La zona horaria no es válida');
+    }
+    if (dto.fechaFin && dto.fechaFin < dto.fechaInicio) {
+      throw new BadRequestException(
+        'La fecha final no puede ser anterior a la fecha inicial',
+      );
+    }
+    if (
+      dto.frecuencia === FrecuenciaVisitaDto.SEMANAL &&
+      dto.diasSemana.length === 0
+    ) {
+      throw new BadRequestException('Seleccioná al menos un día de la semana');
+    }
+    if (
+      dto.frecuencia === FrecuenciaVisitaDto.MENSUAL &&
+      dto.diasMes.length === 0
+    ) {
+      throw new BadRequestException('Seleccioná al menos un día del mes');
+    }
+
+    const programacion: ProgramacionVisitaCalculo = {
+      frecuencia: dto.frecuencia,
+      fechaInicio: new Date(`${dto.fechaInicio}T00:00:00.000Z`),
+      fechaFin: dto.fechaFin ? new Date(`${dto.fechaFin}T00:00:00.000Z`) : null,
+      intervalo:
+        dto.frecuencia === FrecuenciaVisitaDto.UNICA ? 1 : dto.intervalo,
+      diasSemana:
+        dto.frecuencia === FrecuenciaVisitaDto.SEMANAL
+          ? [...dto.diasSemana].sort((a, b) => a - b)
+          : [],
+      diasMes:
+        dto.frecuencia === FrecuenciaVisitaDto.MENSUAL
+          ? [...dto.diasMes].sort((a, b) => a - b)
+          : [],
+      horarios: [...dto.horarios].sort(),
+      zonaHoraria: dto.zonaHoraria,
+      activo: dto.activo,
+    };
+    const desde = new Date(Date.now() - 60_000);
+    const proxima = proximaOcurrenciaVisita(programacion, desde);
+
+    const guardada = await this.prisma.$transaction(async (tx) => {
+      const actualizada = await tx.programacionVisita.upsert({
+        where: { localId },
+        create: { localId, ...programacion },
+        update: programacion,
+        select: {
+          frecuencia: true,
+          fechaInicio: true,
+          fechaFin: true,
+          intervalo: true,
+          diasSemana: true,
+          diasMes: true,
+          horarios: true,
+          zonaHoraria: true,
+          activo: true,
+        },
+      });
+      await tx.local.update({
+        where: { id: localId },
+        data: { fechaVisita: proxima },
+        select: { id: true },
+      });
+      return actualizada;
+    });
+
+    return aProgramacionVisitaDto(guardada);
+  }
+
+  async quitarProgramacion(usuarioId: number, localId: number): Promise<void> {
+    const usuario = await this.usuarioActual(usuarioId);
+    if (!usuario.esGestor) {
+      throw new ForbiddenException('Solo un gestor puede programar visitas');
+    }
+
+    const local = await this.prisma.local.findUnique({
+      where: { id: localId },
+      select: { empresaId: true },
+    });
+    if (!local || local.empresaId !== usuario.empresaId) {
+      throw new NotFoundException('El local no existe');
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.programacionVisita.deleteMany({ where: { localId } }),
+      this.prisma.local.update({
+        where: { id: localId },
+        data: { fechaVisita: null },
+        select: { id: true },
+      }),
+    ]);
+  }
+
   async detalle(usuarioId: number, id: number): Promise<VisitaDto> {
     const usuario = await this.usuarioActual(usuarioId);
     const visita = await this.visitaVisible(usuario, id);
@@ -686,16 +801,35 @@ export class VisitasService {
       throw new BadRequestException('Falta la foto de presencia en el local');
     }
 
-    const registrada = await this.prisma.visita.update({
-      where: { id: visita.id },
-      data: {
-        completadaEn: new Date(),
-        latitudFin: dto.latitud,
-        longitudFin: dto.longitud,
-        distanciaFinMetros: redondear1Decimal(distancia),
-      },
-      select: SELECT_VISITA,
-    });
+    const completadaEn = new Date();
+    const programacion = visita.local.programacionVisita;
+    const referenciaSiguiente = new Date(
+      Math.max(
+        completadaEn.getTime(),
+        visita.local.fechaVisita?.getTime() ?? 0,
+      ),
+    );
+    const proxima = programacion
+      ? proximaOcurrenciaVisita(programacion, referenciaSiguiente)
+      : visita.local.fechaVisita;
+
+    const [registrada] = await this.prisma.$transaction([
+      this.prisma.visita.update({
+        where: { id: visita.id },
+        data: {
+          completadaEn,
+          latitudFin: dto.latitud,
+          longitudFin: dto.longitud,
+          distanciaFinMetros: redondear1Decimal(distancia),
+        },
+        select: SELECT_VISITA,
+      }),
+      this.prisma.local.update({
+        where: { id: visita.localId },
+        data: { fechaVisita: proxima },
+        select: { id: true },
+      }),
+    ]);
     return aVisitaDto(registrada, usuario.radioMetrosDefecto);
   }
 

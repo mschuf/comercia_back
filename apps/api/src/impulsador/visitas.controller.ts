@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
   Query,
   Req,
   Res,
@@ -20,6 +21,7 @@ import type { Response } from 'express';
 import { extname } from 'node:path';
 import type { RequestConUsuario } from '../auth/interfaces/request-con-usuario.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { GuardarProgramacionVisitaDto } from './dto/programacion-visita.dto';
 import {
   ActualizarVisitaTareaDto,
   FinalizarVisitaDto,
@@ -77,6 +79,24 @@ export class VisitasController {
     @Query() query: ListarVisitasEquipoDto,
   ) {
     return this.visitas.equipo(req.usuarioId, query);
+  }
+
+  @Put('equipo/:localId/programacion')
+  guardarProgramacion(
+    @Req() req: RequestConUsuario,
+    @Param('localId', ParseIntPipe) localId: number,
+    @Body() dto: GuardarProgramacionVisitaDto,
+  ) {
+    return this.visitas.guardarProgramacion(req.usuarioId, localId, dto);
+  }
+
+  @Delete('equipo/:localId/programacion')
+  async quitarProgramacion(
+    @Req() req: RequestConUsuario,
+    @Param('localId', ParseIntPipe) localId: number,
+  ) {
+    await this.visitas.quitarProgramacion(req.usuarioId, localId);
+    return { ok: true };
   }
 
   @Get(':id')

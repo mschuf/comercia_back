@@ -47,15 +47,6 @@ export interface VisitaResumenDto {
   tareasCompletadas: number;
 }
 
-export interface VisitaEquipoTareaDto {
-  id: number;
-  titulo: string;
-  descripcion: string;
-  requiereFoto: boolean;
-  orden: number;
-  completada: boolean;
-}
-
 export interface VisitaEquipoUltimaVisitaDto {
   id: number;
   usuarioId: number;
@@ -73,9 +64,9 @@ export interface VisitaEquipoLocalDto {
   clienteNombre: string;
   zona: { id: number; nombre: string } | null;
   fechaVisita: string | null;
-  requiereFotoPresencia: boolean;
+  programacion: ProgramacionVisitaDto | null;
   activo: boolean;
   asignadoA: { id: number; nombre: string } | null;
   ultimaVisita: VisitaEquipoUltimaVisitaDto | null;
-  tareas: VisitaEquipoTareaDto[];
 }
+import type { ProgramacionVisitaDto } from './programacion-visita.interface';

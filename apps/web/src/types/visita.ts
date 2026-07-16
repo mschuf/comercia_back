@@ -48,15 +48,6 @@ export interface VisitaResumen {
   tareasCompletadas: number;
 }
 
-export interface VisitaEquipoTarea {
-  id: number;
-  titulo: string;
-  descripcion: string;
-  requiereFoto: boolean;
-  orden: number;
-  completada: boolean;
-}
-
 export interface VisitaEquipoUltimaVisita {
   id: number;
   usuarioId: number;
@@ -67,15 +58,28 @@ export interface VisitaEquipoUltimaVisita {
   tareasCompletadas: number;
 }
 
+export type FrecuenciaVisita = "UNICA" | "SEMANAL" | "MENSUAL";
+
+export interface ProgramacionVisita {
+  frecuencia: FrecuenciaVisita;
+  fechaInicio: string;
+  fechaFin: string | null;
+  intervalo: number;
+  diasSemana: number[];
+  diasMes: number[];
+  horarios: string[];
+  zonaHoraria: string;
+  activo: boolean;
+}
+
 export interface VisitaEquipoLocal {
   localId: number;
   localNombre: string;
   clienteNombre: string;
   zona: { id: number; nombre: string } | null;
   fechaVisita: string | null;
-  requiereFotoPresencia: boolean;
+  programacion: ProgramacionVisita | null;
   activo: boolean;
   asignadoA: { id: number; nombre: string } | null;
   ultimaVisita: VisitaEquipoUltimaVisita | null;
-  tareas: VisitaEquipoTarea[];
 }
