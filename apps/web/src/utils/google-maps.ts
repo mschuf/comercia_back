@@ -4,13 +4,25 @@ function coordenada(latitud: number, longitud: number): string {
   return `${latitud},${longitud}`;
 }
 
-export function urlNavegarA(parada: Pick<ParadaRuta, "local">): string {
+export function urlNavegarA(
+  parada: Pick<ParadaRuta, "local">,
+  origen?: { latitud: number; longitud: number } | null,
+): string {
   const destino = coordenada(parada.local.latitud, parada.local.longitud);
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}&travelmode=driving&dir_action=navigate`;
+  const parametros = new URLSearchParams({
+    api: "1",
+    destination: destino,
+    travelmode: "driving",
+    dir_action: "navigate",
+  });
+  if (origen) {
+    parametros.set("origin", coordenada(origen.latitud, origen.longitud));
+  }
+  return `https://www.google.com/maps/dir/?${parametros.toString()}`;
 }
 
 export function urlRutaCompleta(
-  paradas: ParadaRuta[],
+  paradas: Array<Pick<ParadaRuta, "local">>,
   origen?: { latitud: number; longitud: number } | null,
 ): string | null {
   if (paradas.length === 0) return null;

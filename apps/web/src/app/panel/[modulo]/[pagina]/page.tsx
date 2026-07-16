@@ -45,8 +45,7 @@ export default function PaginaModulo({
   }
 
   const Vista = VISTAS[`${modulo}/${pagina}`];
-  const esOperacionCampo =
-    modulo === "team-leader" || modulo === "repositor";
+  const esOperacionCampo = modulo === "team-leader" || modulo === "repositor";
   const usaCabeceraPropia =
     (esOperacionCampo && pagina === "tareas") || modulo === "repositor";
   const ocultaNombreModulo = esOperacionCampo && pagina === "visitas";
@@ -60,7 +59,7 @@ export default function PaginaModulo({
               {mod.nombre}
             </p>
           )}
-          <h1 className="mt-1 text-2xl font-bold tracking-tight">
+          <h1 className="mt-1 text-xl font-bold tracking-tight">
             {pag.nombre}
           </h1>
         </>

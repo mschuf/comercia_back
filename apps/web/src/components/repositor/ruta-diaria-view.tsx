@@ -72,6 +72,8 @@ export function RutaDiariaView() {
   const [ruta, setRuta] = useState<RutaDiaria | null>(null);
   const [pagina, setPagina] = useState(1);
   const [limite, setLimite] = useState(7);
+  const [paginaRuta, setPaginaRuta] = useState(1);
+  const [limiteRuta, setLimiteRuta] = useState(7);
   const [ubicacion, setUbicacion] = useState<{
     latitud: number;
     longitud: number;
@@ -84,6 +86,7 @@ export function RutaDiariaView() {
   const [navegando, setNavegando] = useState<string | null>(null);
   const [visita, setVisita] = useState<Visita | null>(null);
   const temporizadorNavegacion = useRef<number | null>(null);
+  const calculoEnCurso = useRef(false);
 
   const cargarAgenda = useCallback(async () => {
     setCargandoAgenda(true);
@@ -105,33 +108,9 @@ export function RutaDiariaView() {
     }
   }, [pagina, limite]);
 
-  useEffect(() => {
-    const inicio = window.setTimeout(() => void cargarAgenda(), 0);
-    return () => window.clearTimeout(inicio);
-  }, [cargarAgenda]);
-
-  useEffect(
-    () => () => {
-      if (temporizadorNavegacion.current !== null) {
-        window.clearTimeout(temporizadorNavegacion.current);
-      }
-    },
-    [],
-  );
-
-  function indicarNavegacion(mensaje: string) {
-    setNavegando(mensaje);
-    if (temporizadorNavegacion.current !== null) {
-      window.clearTimeout(temporizadorNavegacion.current);
-    }
-    temporizadorNavegacion.current = window.setTimeout(() => {
-      setNavegando(null);
-      temporizadorNavegacion.current = null;
-    }, 1200);
-  }
-
-  async function calcularRuta() {
-    if (calculando) return;
+  const calcularRuta = useCallback(async () => {
+    if (calculoEnCurso.current) return;
+    calculoEnCurso.current = true;
     setCalculando(true);
     setError(null);
     let posicion: { latitud: number; longitud: number } | null = null;
@@ -152,6 +131,7 @@ export function RutaDiariaView() {
         ? `?latitud=${posicion.latitud}&longitud=${posicion.longitud}`
         : "";
       setRuta(await apiFetch<RutaDiaria>(`/repositor/ruta-hoy${consulta}`));
+      setPaginaRuta(1);
     } catch (problema) {
       setError(
         problema instanceof ApiError
@@ -159,8 +139,39 @@ export function RutaDiariaView() {
           : "No pudimos calcular la ruta de hoy",
       );
     } finally {
+      calculoEnCurso.current = false;
       setCalculando(false);
     }
+  }, []);
+
+  useEffect(() => {
+    const inicio = window.setTimeout(() => void cargarAgenda(), 0);
+    return () => window.clearTimeout(inicio);
+  }, [cargarAgenda]);
+
+  useEffect(() => {
+    const inicio = window.setTimeout(() => void calcularRuta(), 0);
+    return () => window.clearTimeout(inicio);
+  }, [calcularRuta]);
+
+  useEffect(
+    () => () => {
+      if (temporizadorNavegacion.current !== null) {
+        window.clearTimeout(temporizadorNavegacion.current);
+      }
+    },
+    [],
+  );
+
+  function indicarNavegacion(mensaje: string) {
+    setNavegando(mensaje);
+    if (temporizadorNavegacion.current !== null) {
+      window.clearTimeout(temporizadorNavegacion.current);
+    }
+    temporizadorNavegacion.current = window.setTimeout(() => {
+      setNavegando(null);
+      temporizadorNavegacion.current = null;
+    }, 1200);
   }
 
   async function abrirVisita(parada: VisitaHoy | ParadaRuta) {
@@ -196,8 +207,17 @@ export function RutaDiariaView() {
 
   const visitasMapa: Array<VisitaHoy | ParadaRuta> =
     ruta?.paradas ?? agenda?.items ?? [];
-  const urlCompleta = ruta ? urlRutaCompleta(ruta.paradas, ubicacion) : null;
-  const siguiente = ruta?.paradas[0] ?? null;
+  const paradasParaMaps = ruta?.paradas ?? agenda?.items ?? [];
+  const urlCompleta = urlRutaCompleta(paradasParaMaps, ubicacion);
+  const totalTabla = ruta ? visitasMapa.length : (agenda?.total ?? 0);
+  const paginaTabla = ruta ? paginaRuta : (agenda?.page ?? pagina);
+  const limiteTabla = ruta ? limiteRuta : (agenda?.limit ?? limite);
+  const totalPaginasTabla = ruta
+    ? Math.max(1, Math.ceil(totalTabla / limiteRuta))
+    : (agenda?.totalPages ?? 1);
+  const visitasTabla = ruta
+    ? visitasMapa.slice((paginaRuta - 1) * limiteRuta, paginaRuta * limiteRuta)
+    : visitasMapa;
   const cargaActiva = calculando
     ? {
         mensaje: "Calculando mejor ruta",
@@ -222,47 +242,41 @@ export function RutaDiariaView() {
           : null;
 
   return (
-    <div className="space-y-6" aria-busy={cargaActiva !== null}>
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-indigo-700 p-5 text-white shadow-xl shadow-indigo-950/20 sm:p-7">
-        <div className="ruta-orbita absolute -right-10 -top-16 h-52 w-52 rounded-full border border-indigo-300/20" />
+    <div
+      className="min-w-0 space-y-4 sm:space-y-5"
+      aria-busy={cargaActiva !== null}
+    >
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-indigo-950 to-indigo-700 p-4 text-white shadow-lg shadow-indigo-950/20 sm:p-5">
+        <div className="ruta-orbita absolute -right-8 -top-16 h-40 w-40 rounded-full border border-indigo-300/20" />
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between"
+          className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
         >
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-indigo-200">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-indigo-200 sm:text-[11px]">
               Visitas programadas de hoy
             </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+            <h1 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
               Mis visitas
             </h1>
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-indigo-100/85 sm:text-base">
-              Primero revisá tus locales en el mapa. La ruta se calcula
-              solamente cuando vos lo pedís.
+            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-indigo-100/85 sm:text-sm">
+              Revisá tus locales mientras calculamos automáticamente el mejor
+              recorrido para hoy.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => void calcularRuta()}
-              disabled={calculando || (agenda?.total ?? 0) === 0}
-              className="min-h-11 rounded-xl bg-white px-4 text-sm font-bold text-indigo-950 shadow-lg transition hover:-translate-y-0.5 hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-white/70 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {calculando
-                ? "Calculando ruta…"
-                : ruta
-                  ? "Volver a calcular"
-                  : "Calcular mejor ruta"}
-            </button>
-            {siguiente ? (
+            {urlCompleta ? (
               <a
-                href={urlNavegarA(siguiente)}
+                href={urlCompleta}
                 target="_blank"
                 rel="noreferrer"
-                onClick={() => indicarNavegacion("Iniciando navegación")}
-                className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/25 bg-white/10 px-4 text-sm font-semibold backdrop-blur transition hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white/70"
+                onClick={() =>
+                  indicarNavegacion("Iniciando navegación de la ruta completa")
+                }
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 text-sm font-semibold backdrop-blur transition hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white/70"
               >
+                <IconoAbrirRuta />
                 Iniciar navegación
               </a>
             ) : null}
@@ -297,8 +311,158 @@ export function RutaDiariaView() {
         </section>
       ) : (
         <>
+          <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(420px,.9fr)] xl:items-stretch">
+            <RutaMapa
+              geometria={ruta?.geometria ?? []}
+              paradas={visitasMapa}
+              ubicacion={ubicacion}
+              calculada={ruta !== null}
+            />
+            <section className="min-w-0 w-full xl:flex xl:h-[68dvh] xl:min-h-[390px] xl:flex-col">
+              <div className="mb-2">
+                <div>
+                  <h2 className="text-base font-bold sm:text-lg">
+                    {ruta ? "Orden recomendado" : "Horario programado"}
+                  </h2>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 sm:text-sm">
+                    {ruta
+                      ? "Ordenado por horarios y tiempos de traslado."
+                      : "Podés abrir el orden programado mientras optimizamos el recorrido."}
+                  </p>
+                </div>
+              </div>
+              <div className="max-h-[430px] w-full overflow-auto rounded-xl border border-zinc-200 bg-white shadow-sm xl:min-h-0 xl:max-h-none xl:flex-1 dark:border-zinc-800 dark:bg-zinc-900">
+                <table className="w-full min-w-[680px] text-left">
+                  <thead className="sticky top-0 z-10 bg-zinc-50 text-[10px] uppercase tracking-wide text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
+                    <tr>
+                      <th scope="col" className="w-12 px-2 py-2.5 text-center">
+                        Orden
+                      </th>
+                      <th scope="col" className="px-2 py-2.5">
+                        Local
+                      </th>
+                      <th scope="col" className="px-2 py-2.5">
+                        Agenda
+                      </th>
+                      <th scope="col" className="px-2 py-2.5">
+                        Recorrido
+                      </th>
+                      <th scope="col" className="px-2 py-2.5 text-right">
+                        Acciones
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                    {visitasTabla.map((parada, indice) => (
+                      <motion.tr
+                        key={parada.clave}
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: indice * 0.035 }}
+                        className="transition-colors hover:bg-indigo-50/60 dark:hover:bg-indigo-950/20"
+                      >
+                        <td className="px-2 py-2.5 text-center align-top">
+                          <span
+                            className={`mx-auto grid h-8 w-8 place-items-center rounded-lg text-xs font-black text-white ${
+                              parada.estado === "ATRASADA"
+                                ? "bg-rose-600"
+                                : parada.estado === "EN_CURSO"
+                                  ? "animate-pulse bg-emerald-600"
+                                  : "bg-indigo-600"
+                            }`}
+                          >
+                            {parada.orden}
+                          </span>
+                        </td>
+                        <td className="max-w-44 px-2 py-2.5 align-top">
+                          <p className="truncate text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-300">
+                            {parada.local.cliente.nombre}
+                          </p>
+                          <p className="truncate text-sm font-bold">
+                            {parada.local.nombre}
+                          </p>
+                        </td>
+                        <td className="whitespace-nowrap px-2 py-2.5 align-top text-[11px] text-zinc-600 dark:text-zinc-300">
+                          <span className="block">
+                            {formatoHora(parada.programadaEn)} programada
+                          </span>
+                          {esParadaCalculada(parada) ? (
+                            <span className="mt-0.5 block text-zinc-500 dark:text-zinc-400">
+                              {formatoHora(parada.llegadaEstimada)} llegada
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="whitespace-nowrap px-2 py-2.5 align-top text-[11px] text-zinc-600 dark:text-zinc-300">
+                          <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+                            {esParadaCalculada(parada)
+                              ? `${formatoDistancia(parada.distanciaDesdeAnteriorMetros)} · ${formatoDuracionSegundos(parada.viajeDesdeAnteriorSegundos)}`
+                              : "Pendiente de cálculo"}
+                          </p>
+                          <span className="mt-0.5 block text-zinc-500 dark:text-zinc-400">
+                            {parada.tareasActivas} tareas
+                          </span>
+                        </td>
+                        <td className="px-2 py-2.5 align-top">
+                          <div className="flex justify-end gap-1.5">
+                            <a
+                              href={urlNavegarA(parada, ubicacion)}
+                              target="_blank"
+                              rel="noreferrer"
+                              onClick={() =>
+                                indicarNavegacion(
+                                  `Iniciando navegación a ${parada.local.nombre}`,
+                                )
+                              }
+                              className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg border border-indigo-200 px-2.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-indigo-500/40 dark:border-indigo-900 dark:text-indigo-300 dark:hover:bg-indigo-950"
+                            >
+                              Navegar
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => void abrirVisita(parada)}
+                              disabled={iniciando !== null}
+                              className="min-h-11 whitespace-nowrap rounded-lg bg-brand-700 px-2.5 text-xs font-semibold text-white transition hover:bg-brand-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              {iniciando === parada.clave
+                                ? "Verificando GPS…"
+                                : "Iniciar visita"}
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {totalTabla > 0 ? (
+                <Paginacion
+                  page={paginaTabla}
+                  totalPages={totalPaginasTabla}
+                  total={totalTabla}
+                  limit={limiteTabla}
+                  onPageChange={(nuevaPagina) => {
+                    if (ruta) {
+                      setPaginaRuta(nuevaPagina);
+                    } else {
+                      setPagina(nuevaPagina);
+                    }
+                  }}
+                  onLimitChange={(nuevoLimite) => {
+                    if (ruta) {
+                      setLimiteRuta(nuevoLimite);
+                      setPaginaRuta(1);
+                    } else {
+                      setLimite(nuevoLimite);
+                      setPagina(1);
+                    }
+                  }}
+                />
+              ) : null}
+            </section>
+          </div>
+
           {ruta ? (
-            <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <section className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {[
                 [
                   "Pendientes",
@@ -323,146 +487,23 @@ export function RutaDiariaView() {
               ].map(([etiqueta, valor, detalle], indice) => (
                 <motion.article
                   key={etiqueta}
-                  initial={{ opacity: 0, y: 12 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: indice * 0.07 }}
-                  className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+                  transition={{ delay: indice * 0.05 }}
+                  className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
                 >
-                  <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
                     {etiqueta}
                   </p>
-                  <p className="mt-1 text-2xl font-black tracking-tight">
+                  <p className="mt-0.5 text-lg font-black tracking-tight sm:text-xl">
                     {valor}
                   </p>
-                  <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
                     {detalle}
                   </p>
                 </motion.article>
               ))}
             </section>
-          ) : null}
-
-          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(340px,.75fr)]">
-            <RutaMapa
-              geometria={ruta?.geometria ?? []}
-              paradas={visitasMapa}
-              ubicacion={ubicacion}
-              calculada={ruta !== null}
-            />
-            <section className="min-w-0">
-              <div className="mb-3 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h2 className="text-lg font-bold">
-                    {ruta ? "Orden recomendado" : "Horario programado"}
-                  </h2>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    {ruta
-                      ? "Ordenado por horarios y tiempos de traslado."
-                      : "Todavía no calculamos distancias ni recorridos."}
-                  </p>
-                </div>
-                {urlCompleta ? (
-                  <a
-                    href={urlCompleta}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={() => indicarNavegacion("Abriendo ruta completa")}
-                    className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 text-sm font-bold text-white shadow-md shadow-indigo-950/20 transition hover:-translate-y-0.5 hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 sm:w-auto dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:focus-visible:ring-offset-zinc-950"
-                  >
-                    <IconoAbrirRuta />
-                    Abrir ruta en Maps
-                  </a>
-                ) : null}
-              </div>
-              <ol className="space-y-3">
-                {visitasMapa.map((parada, indice) => (
-                  <motion.li
-                    key={parada.clave}
-                    initial={{ opacity: 0, x: 16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: indice * 0.055 }}
-                    className="relative overflow-hidden rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
-                  >
-                    <div className="flex gap-3">
-                      <span
-                        className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl font-black text-white ${
-                          parada.estado === "ATRASADA"
-                            ? "bg-rose-600"
-                            : parada.estado === "EN_CURSO"
-                              ? "animate-pulse bg-emerald-600"
-                              : "bg-indigo-600"
-                        }`}
-                      >
-                        {parada.orden}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-300">
-                          {parada.local.cliente.nombre}
-                        </p>
-                        <h3 className="truncate font-bold">
-                          {parada.local.nombre}
-                        </h3>
-                        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                          Programada {formatoHora(parada.programadaEn)}
-                          {esParadaCalculada(parada)
-                            ? ` · Llegada ${formatoHora(parada.llegadaEstimada)}`
-                            : ""}
-                        </p>
-                        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                          {esParadaCalculada(parada)
-                            ? `${formatoDistancia(parada.distanciaDesdeAnteriorMetros)} · ${formatoDuracionSegundos(parada.viajeDesdeAnteriorSegundos)} · `
-                            : ""}
-                          {parada.tareasActivas} tareas
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-3 grid grid-cols-2 gap-2">
-                      <a
-                        href={urlNavegarA(parada)}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={() =>
-                          indicarNavegacion(`Abriendo ${parada.local.nombre}`)
-                        }
-                        className="inline-flex min-h-11 items-center justify-center rounded-xl border border-indigo-200 px-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-indigo-500/40 dark:border-indigo-900 dark:text-indigo-300 dark:hover:bg-indigo-950"
-                      >
-                        Navegar
-                      </a>
-                      <button
-                        type="button"
-                        onClick={() => void abrirVisita(parada)}
-                        disabled={iniciando !== null}
-                        className="min-h-11 rounded-xl bg-brand-700 px-3 text-sm font-semibold text-white transition hover:bg-brand-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        {iniciando === parada.clave
-                          ? "Verificando GPS…"
-                          : parada.visitaAbiertaId
-                            ? "Continuar visita"
-                            : "Iniciar visita"}
-                      </button>
-                    </div>
-                  </motion.li>
-                ))}
-              </ol>
-            </section>
-          </div>
-
-          {!ruta && agenda && agenda.total > 0 ? (
-            <Paginacion
-              page={agenda.page}
-              totalPages={agenda.totalPages}
-              total={agenda.total}
-              limit={agenda.limit}
-              onPageChange={(nuevaPagina) => {
-                setRuta(null);
-                setPagina(nuevaPagina);
-              }}
-              onLimitChange={(nuevoLimite) => {
-                setRuta(null);
-                setLimite(nuevoLimite);
-                setPagina(1);
-              }}
-            />
           ) : null}
         </>
       )}
@@ -474,7 +515,7 @@ export function RutaDiariaView() {
           onFinalizada={() => {
             setVisita(null);
             setRuta(null);
-            void cargarAgenda();
+            void Promise.all([cargarAgenda(), calcularRuta()]);
           }}
         />
       ) : null}

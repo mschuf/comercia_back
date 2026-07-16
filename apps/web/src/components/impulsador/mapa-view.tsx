@@ -1026,25 +1026,25 @@ export function MapaView() {
 
   return (
     <div>
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-emerald-950 to-brand-700 p-5 text-white shadow-xl shadow-emerald-950/15 sm:p-6">
-        <div className="mapa-radar absolute -right-12 -top-20 h-60 w-60 rounded-full border border-emerald-200/15" />
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-emerald-950 to-brand-700 p-4 text-white shadow-lg shadow-emerald-950/15 sm:p-5">
+        <div className="mapa-radar absolute -right-10 -top-16 h-44 w-44 rounded-full border border-emerald-200/15" />
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative"
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-200">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-200 sm:text-[11px]">
             Centro de operaciones
           </p>
-          <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
+          <h2 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
             Cobertura del equipo en un solo mapa
           </h2>
-          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-emerald-50/80">
+          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-emerald-50/80 sm:text-sm">
             {esGestor
               ? "Organizá territorios y zonas, ubicá responsables y ajustá visualmente la cobertura de cada repositor."
               : "Consultá los territorios, las zonas y los locales habilitados para tu empresa."}
           </p>
-          <div className="mt-5 grid grid-cols-3 gap-2 sm:max-w-lg sm:gap-3">
+          <div className="mt-3 grid grid-cols-3 gap-2 sm:max-w-lg">
             {[
               [datos.territorios.length, "Territorios"],
               [datos.zonas.length, "Zonas"],
@@ -1055,9 +1055,9 @@ export function MapaView() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1 + indice * 0.07 }}
-                className="rounded-2xl border border-white/15 bg-white/10 px-3 py-3 backdrop-blur"
+                className="rounded-xl border border-white/15 bg-white/10 px-2.5 py-2 backdrop-blur"
               >
-                <span className="block text-xl font-black sm:text-2xl">
+                <span className="block text-lg font-black sm:text-xl">
                   {cantidad}
                 </span>
                 <span className="block truncate text-[11px] text-emerald-100/80 sm:text-xs">

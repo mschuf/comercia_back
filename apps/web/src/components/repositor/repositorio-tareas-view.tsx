@@ -30,13 +30,13 @@ export function RepositorTareasView() {
   }, [limite, pagina]);
 
   return (
-    <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-950 via-violet-800 to-fuchsia-600 p-5 text-white shadow-xl shadow-violet-950/15 sm:p-7">
-        <div className="absolute right-6 top-5 h-24 w-24 rounded-full border-[18px] border-white/10" />
+    <div className="space-y-4 sm:space-y-5">
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-950 via-violet-800 to-fuchsia-600 p-4 text-white shadow-lg shadow-violet-950/15 sm:p-5">
+        <div className="absolute right-5 top-4 h-20 w-20 rounded-full border-[14px] border-white/10" />
         <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="relative">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-200">Checklist operativo</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Mis tareas</h1>
-          <p className="mt-2 max-w-xl text-sm text-violet-100/90 sm:text-base">Cada checklist está agrupado por cliente y local. Al iniciar una visita vas a poder completarlo y adjuntar fotos.</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-200 sm:text-[11px]">Checklist operativo</p>
+          <h1 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">Mis tareas</h1>
+          <p className="mt-1 max-w-xl text-xs text-violet-100/90 sm:text-sm">Cada checklist está agrupado por cliente y local. Al iniciar una visita vas a poder completarlo y adjuntar fotos.</p>
         </motion.div>
       </section>
 

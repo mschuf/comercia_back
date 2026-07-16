@@ -34,7 +34,7 @@ export default function AdminPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold tracking-tight">Administración</h1>
+      <h1 className="text-xl font-bold tracking-tight">Administración</h1>
       <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
         Configurá los módulos, páginas y ejecutables de la plataforma, y qué ve
         cada empresa.

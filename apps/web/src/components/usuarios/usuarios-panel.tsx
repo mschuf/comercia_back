@@ -158,7 +158,7 @@ export function UsuariosPanel() {
     <div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Usuarios</h1>
+          <h1 className="text-xl font-bold tracking-tight">Usuarios</h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
             Alta, roles, superiores y estado de acceso por empresa.
           </p>

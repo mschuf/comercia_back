@@ -154,7 +154,7 @@ export function RepositorClientesView() {
 
   return (
     <div className="space-y-4 sm:space-y-6" aria-busy={cargaActiva !== null}>
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-950 via-brand-800 to-emerald-600 p-4 text-white shadow-xl shadow-emerald-950/15 sm:rounded-3xl sm:p-7">
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-950 via-brand-800 to-emerald-600 p-4 text-white shadow-lg shadow-emerald-950/15 sm:p-5">
         <div className="absolute -right-14 -top-16 h-44 w-44 rounded-full border border-white/15 bg-white/5" />
         <motion.div
           initial={{ opacity: 0, y: 14 }}
@@ -162,17 +162,17 @@ export function RepositorClientesView() {
           transition={{ duration: 0.45 }}
           className="relative"
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-200">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-200 sm:text-[11px]">
             Mi cartera
           </p>
-          <h1 className="mt-2 text-2xl font-bold tracking-tight sm:text-4xl">
+          <h1 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
             Mis clientes
           </h1>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-emerald-50/85 sm:text-base">
+          <p className="mt-1 max-w-xl text-xs leading-relaxed text-emerald-50/85 sm:text-sm">
             Consultá por separado los clientes y locales asignados a tu
             recorrido.
           </p>
-          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-black/15 px-3 py-1.5 text-sm backdrop-blur sm:mt-5">
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/15 px-2.5 py-1 text-xs backdrop-blur">
             <IconoUbicacion /> {totalLocalesAsignados}{" "}
             {totalLocalesAsignados === 1
               ? "local asignado"

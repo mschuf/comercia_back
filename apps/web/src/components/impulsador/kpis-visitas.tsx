@@ -118,10 +118,10 @@ export function KpisVisitas() {
       <section className="rounded-2xl border border-zinc-200 bg-gradient-to-br from-white to-indigo-50/70 p-4 shadow-sm dark:border-zinc-800 dark:from-zinc-900 dark:to-indigo-950/30 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-300">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-indigo-600 sm:text-[11px] dark:text-indigo-300">
               Rendimiento operativo
             </p>
-            <h2 className="mt-1 text-2xl font-bold tracking-tight">
+            <h2 className="mt-1 text-lg font-bold tracking-tight sm:text-xl">
               Indicadores de visitas
             </h2>
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
