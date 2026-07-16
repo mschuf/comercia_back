@@ -44,6 +44,62 @@ describe('optimizacion de ruta', () => {
     );
   });
 
+  it('parte desde la ubicación actual y visita primero los locales vencidos más cercanos', () => {
+    const ahora = new Date('2026-07-16T17:33:00.000Z');
+    const matriz: MatrizRuta = {
+      distancias: [
+        [0, 9_700, 5_400, 80, 1_800],
+        [9_700, 0, 4_000, 9_600, 8_200],
+        [5_400, 4_000, 0, 5_300, 3_800],
+        [80, 9_600, 5_300, 0, 1_700],
+        [1_800, 8_200, 3_800, 1_700, 0],
+      ],
+      duraciones: [
+        [0, 720, 480, 30, 180],
+        [720, 0, 480, 710, 620],
+        [480, 480, 0, 470, 360],
+        [30, 710, 470, 0, 170],
+        [180, 620, 360, 170, 0],
+      ],
+    };
+    const resultado = optimizarParadas(
+      [
+        {
+          clave: 'juan-valdez',
+          indiceMatriz: 1,
+          programadaEn: new Date('2026-07-16T19:00:00.000Z'),
+        },
+        {
+          clave: 'tienda-movil',
+          indiceMatriz: 2,
+          programadaEn: new Date('2026-07-16T21:00:00.000Z'),
+        },
+        {
+          clave: 'biggie-paseo',
+          indiceMatriz: 3,
+          programadaEn: new Date('2026-07-16T15:13:00.000Z'),
+        },
+        {
+          clave: 'sallustro-paseo',
+          indiceMatriz: 4,
+          programadaEn: new Date('2026-07-16T14:00:00.000Z'),
+        },
+      ],
+      matriz,
+      0,
+      ahora,
+    );
+
+    expect(resultado.map(({ clave }) => clave)).toEqual([
+      'biggie-paseo',
+      'sallustro-paseo',
+      'juan-valdez',
+      'tienda-movil',
+    ]);
+    expect(resultado[0].distanciaDesdeAnteriorMetros).toBe(80);
+    expect(resultado[0].viajeDesdeAnteriorSegundos).toBe(30);
+  });
+
   it('completa celdas nulas de OSRM con el respaldo Haversine', () => {
     const resultado = completarMatriz(
       {

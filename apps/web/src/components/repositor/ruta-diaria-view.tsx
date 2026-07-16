@@ -67,7 +67,6 @@ function esParadaCalculada(
 
 interface AccionesParadaProps {
   parada: VisitaHoy | ParadaRuta;
-  ubicacion: { latitud: number; longitud: number } | null;
   iniciando: string | null;
   onNavegar: (mensaje: string) => void;
   onIniciar: (parada: VisitaHoy | ParadaRuta) => Promise<void>;
@@ -75,7 +74,6 @@ interface AccionesParadaProps {
 
 function AccionesParada({
   parada,
-  ubicacion,
   iniciando,
   onNavegar,
   onIniciar,
@@ -93,7 +91,7 @@ function AccionesParada({
         {iniciando === parada.clave ? "Verificando GPS…" : "Visita"}
       </button>
       <a
-        href={urlNavegarA(parada, ubicacion)}
+        href={urlNavegarA(parada)}
         target="_blank"
         rel="noreferrer"
         onClick={() =>
@@ -164,11 +162,15 @@ export function RutaDiariaView() {
       setAvisoGps(null);
     } catch (problema) {
       setUbicacion(null);
+      setRuta(null);
       setAvisoGps(
         problema instanceof Error
-          ? `${problema.message} La ruta se calculará sin tu punto de partida.`
-          : "La ruta se calculará sin tu punto de partida.",
+          ? `${problema.message} Necesitamos tu ubicación para elegir correctamente el primer local.`
+          : "Necesitamos tu ubicación para elegir correctamente el primer local.",
       );
+      calculoEnCurso.current = false;
+      setCalculando(false);
+      return;
     }
     try {
       const consulta = posicion
@@ -218,6 +220,39 @@ export function RutaDiariaView() {
     }, 1200);
   }
 
+  async function iniciarNavegacionCompleta() {
+    if (navegando !== null || calculoEnCurso.current) return;
+    setNavegando("Actualizando tu ubicación");
+    setError(null);
+    let abriendoMaps = false;
+    try {
+      const posicion = await obtenerUbicacion({ maximumAge: 0 });
+      setUbicacion(posicion);
+      setAvisoGps(null);
+      setNavegando("Recalculando la ruta desde tu ubicación");
+      const nuevaRuta = await apiFetch<RutaDiaria>(
+        `/repositor/ruta-hoy?latitud=${posicion.latitud}&longitud=${posicion.longitud}`,
+      );
+      setRuta(nuevaRuta);
+      setPaginaRuta(1);
+      const url = urlRutaCompleta(nuevaRuta.paradas, posicion);
+      if (url === null) {
+        throw new Error("No hay locales pendientes para iniciar la navegación");
+      }
+      abriendoMaps = true;
+      indicarNavegacion("Abriendo Google Maps");
+      window.location.assign(url);
+    } catch (problema) {
+      setError(
+        problema instanceof Error
+          ? problema.message
+          : "No pudimos iniciar la navegación",
+      );
+    } finally {
+      if (!abriendoMaps) setNavegando(null);
+    }
+  }
+
   async function abrirVisita(parada: VisitaHoy | ParadaRuta) {
     if (iniciando !== null) return;
     setIniciando(parada.clave);
@@ -251,8 +286,6 @@ export function RutaDiariaView() {
 
   const visitasMapa: Array<VisitaHoy | ParadaRuta> =
     ruta?.paradas ?? agenda?.items ?? [];
-  const paradasParaMaps = ruta?.paradas ?? agenda?.items ?? [];
-  const urlCompleta = urlRutaCompleta(paradasParaMaps, ubicacion);
   const totalTabla = ruta ? visitasMapa.length : (agenda?.total ?? 0);
   const paginaTabla = ruta ? paginaRuta : (agenda?.page ?? pagina);
   const limiteTabla = ruta ? limiteRuta : (agenda?.limit ?? limite);
@@ -281,7 +314,11 @@ export function RutaDiariaView() {
           ? {
               mensaje: navegando,
               detalle:
-                "Estamos abriendo Google Maps con el destino seleccionado.",
+                navegando === "Actualizando tu ubicación"
+                  ? "El GPS actual será el punto inicial del recorrido."
+                  : navegando === "Recalculando la ruta desde tu ubicación"
+                    ? "Ordenamos nuevamente los locales antes de abrir el mapa."
+                    : "Estamos abriendo Google Maps con el destino seleccionado.",
             }
           : null;
 
@@ -310,19 +347,17 @@ export function RutaDiariaView() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {urlCompleta ? (
-              <a
-                href={urlCompleta}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() =>
-                  indicarNavegacion("Iniciando navegación de la ruta completa")
-                }
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 text-sm font-semibold backdrop-blur transition hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white/70"
+            {visitasMapa.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => void iniciarNavegacionCompleta()}
+                disabled={navegando !== null || calculando}
+                title="Actualizar ubicación e iniciar la ruta en Google Maps"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 text-sm font-semibold backdrop-blur transition hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white/70 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <IconoAbrirRuta />
                 Iniciar navegación
-              </a>
+              </button>
             ) : null}
           </div>
         </motion.div>
@@ -427,7 +462,6 @@ export function RutaDiariaView() {
                         <td className="px-2 py-2.5 align-top xl:hidden">
                           <AccionesParada
                             parada={parada}
-                            ubicacion={ubicacion}
                             iniciando={iniciando}
                             onNavegar={indicarNavegacion}
                             onIniciar={abrirVisita}
@@ -465,7 +499,6 @@ export function RutaDiariaView() {
                           <div className="flex justify-end">
                             <AccionesParada
                               parada={parada}
-                              ubicacion={ubicacion}
                               iniciando={iniciando}
                               onNavegar={indicarNavegacion}
                               onIniciar={abrirVisita}

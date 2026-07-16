@@ -69,21 +69,29 @@ export function optimizarParadas(
             ? 0
             : matriz.duraciones[indiceActual][candidata.indiceMatriz];
         const llegada = reloj + duracion * 1000;
-        const demora = Math.max(0, llegada - candidata.programadaEn.getTime());
-        const antelacion = Math.max(
-          0,
-          candidata.programadaEn.getTime() - llegada,
+        const inicioVisita = Math.max(
+          llegada,
+          candidata.programadaEn.getTime(),
         );
-        const puntaje =
-          duracion + (demora / 1000) * 5 + (antelacion / 1000) * 0.04;
-        if (mejor === null || puntaje < mejor.puntaje) {
-          return { parada: candidata, puntaje, llegada, duracion };
+        if (
+          mejor === null ||
+          inicioVisita < mejor.inicioVisita ||
+          (inicioVisita === mejor.inicioVisita && duracion < mejor.duracion) ||
+          (inicioVisita === mejor.inicioVisita &&
+            duracion === mejor.duracion &&
+            (candidata.programadaEn.getTime() <
+              mejor.parada.programadaEn.getTime() ||
+              (candidata.programadaEn.getTime() ===
+                mejor.parada.programadaEn.getTime() &&
+                candidata.indiceMatriz < mejor.parada.indiceMatriz)))
+        ) {
+          return { parada: candidata, inicioVisita, llegada, duracion };
         }
         return mejor;
       },
       null as null | {
         parada: ParadaParaOptimizar;
-        puntaje: number;
+        inicioVisita: number;
         llegada: number;
         duracion: number;
       },
@@ -102,8 +110,7 @@ export function optimizarParadas(
     });
     pendientes.splice(pendientes.indexOf(elegida.parada), 1);
     indiceActual = elegida.parada.indiceMatriz;
-    reloj = Math.max(elegida.llegada, elegida.parada.programadaEn.getTime());
-    reloj += DURACION_VISITA_SEGUNDOS * 1000;
+    reloj = elegida.inicioVisita + DURACION_VISITA_SEGUNDOS * 1000;
   }
 
   return resultado;
