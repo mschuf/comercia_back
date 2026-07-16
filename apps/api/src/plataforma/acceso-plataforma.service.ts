@@ -4,14 +4,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import type { UsuarioConAcceso } from './interfaces/usuario-con-acceso.interface';
 import { rolVe } from './utils/visibilidad';
-
-// Datos mínimos del usuario que quedan disponibles tras validar el acceso.
-export interface UsuarioConAcceso {
-  id: number;
-  empresaId: number;
-  rolId: number | null;
-}
 
 // Control de acceso del plano de DATOS de un módulo (no solo del menú):
 // verifica que la empresa del usuario tenga habilitado el módulo Y que el rol
@@ -115,5 +109,79 @@ export class AccesoPlataformaService {
       }
     }
     throw ultimoError;
+  }
+
+  // Variante para una misma funcionalidad expuesta desde más de un módulo
+  // de plataforma (Team Leader y Repositor comparten varias vistas).
+  async exigirAccesoAlgunaPaginaEnModulos(
+    usuarioId: number,
+    modulosRutas: string[],
+    paginasRutas: string[],
+  ): Promise<UsuarioConAcceso> {
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { id: usuarioId },
+      select: { id: true, empresaId: true, rolId: true, isActive: true },
+    });
+    if (!usuario || !usuario.isActive) {
+      throw new UnauthorizedException();
+    }
+
+    const [modulos, paginasAsignadas] = await Promise.all([
+      this.prisma.empresaModulo.findMany({
+        where: {
+          empresaId: usuario.empresaId,
+          modulo: { activo: true, ruta: { in: modulosRutas } },
+        },
+        select: {
+          todasLasPaginas: true,
+          rolIds: true,
+          modulo: {
+            select: {
+              paginas: {
+                where: { activo: true, ruta: { in: paginasRutas } },
+                select: { id: true },
+              },
+            },
+          },
+        },
+      }),
+      this.prisma.empresaPagina.findMany({
+        where: {
+          empresaId: usuario.empresaId,
+          pagina: {
+            activo: true,
+            ruta: { in: paginasRutas },
+            modulo: { activo: true, ruta: { in: modulosRutas } },
+          },
+        },
+        select: { paginaId: true, rolIds: true },
+      }),
+    ]);
+    const rolesPorPagina = new Map(
+      paginasAsignadas.map((pagina) => [pagina.paginaId, pagina.rolIds]),
+    );
+
+    for (const empresaModulo of modulos) {
+      if (!rolVe(empresaModulo.rolIds, usuario.rolId)) continue;
+      for (const pagina of empresaModulo.modulo.paginas) {
+        if (empresaModulo.todasLasPaginas) {
+          return {
+            id: usuario.id,
+            empresaId: usuario.empresaId,
+            rolId: usuario.rolId,
+          };
+        }
+        const rolIds = rolesPorPagina.get(pagina.id);
+        if (rolIds !== undefined && rolVe(rolIds, usuario.rolId)) {
+          return {
+            id: usuario.id,
+            empresaId: usuario.empresaId,
+            rolId: usuario.rolId,
+          };
+        }
+      }
+    }
+
+    throw new ForbiddenException('No tenés acceso a esta sección');
   }
 }

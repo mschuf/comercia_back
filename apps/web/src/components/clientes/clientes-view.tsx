@@ -78,7 +78,7 @@ export function ClientesView({ onVerLocales }: ClientesViewProps) {
   }, [cargar]);
 
   useEffect(() => {
-    apiFetch<ConfigImpulsador>("/impulsador/config")
+    apiFetch<ConfigImpulsador>("/operaciones-campo/config")
       .then(setConfig)
       .catch(() => undefined);
   }, []);

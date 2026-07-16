@@ -5,8 +5,8 @@ import type { RequestConUsuario } from '../auth/interfaces/request-con-usuario.i
 import { MapaService } from './mapa.service';
 
 // La autorización fina (acceso al módulo, gestor vs operativo) vive en el service
-@ApiTags('impulsador')
-@Controller('impulsador')
+@ApiTags('operaciones-campo')
+@Controller('operaciones-campo')
 @UseGuards(JwtAuthGuard)
 export class MapaController {
   constructor(private readonly mapa: MapaService) {}

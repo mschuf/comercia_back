@@ -25,7 +25,7 @@ import {
   ListarVisitasDto,
 } from './dto/visita.dto';
 import { FotosService } from './fotos.service';
-import { PAGINAS_IMPULSADOR } from './impulsador.constants';
+import { PAGINAS_OPERACION_CAMPO } from './impulsador.constants';
 import type { UsuarioImpulsador } from './interfaces/usuario-impulsador.interface';
 import type { ProgramacionVisitaCalculo } from './interfaces/programacion-visita.interface';
 import type {
@@ -358,7 +358,7 @@ export class VisitasService {
   ) {}
 
   private usuarioActual(usuarioId: number): Promise<UsuarioImpulsador> {
-    return this.config.usuarioImpulsador(usuarioId, PAGINAS_IMPULSADOR);
+    return this.config.usuarioImpulsador(usuarioId, PAGINAS_OPERACION_CAMPO);
   }
 
   // Lectura de una visita: el dueño o un gestor de la misma empresa.

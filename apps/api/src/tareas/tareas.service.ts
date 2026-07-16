@@ -53,6 +53,7 @@ function aTareaGlobalDto(
   tarea: TareaGlobalFila,
   clientesEmpresa: number,
   localesEmpresa: number,
+  clientesAsignados = tarea._count.tareas,
 ): TareaGlobalDto {
   return {
     id: tarea.id,
@@ -61,7 +62,7 @@ function aTareaGlobalDto(
     requiereFoto: tarea.requiereFoto,
     orden: tarea.orden,
     activo: tarea.activo,
-    clientesAsignados: tarea._count.tareas,
+    clientesAsignados,
     clientesEmpresa,
     localesEmpresa,
     createdAt: tarea.createdAt.toISOString(),
@@ -122,6 +123,21 @@ export class TareasService {
       empresaId: usuario.empresaId,
       ...(usuario.esGestor ? {} : { activo: true }),
     };
+    const whereClientes = {
+      empresaId: usuario.empresaId,
+      ...(usuario.esGestor
+        ? {}
+        : {
+            activo: true,
+            locales: {
+              some: { usuarioId: usuario.id, activo: true },
+            },
+          }),
+    };
+    const whereLocales = {
+      empresaId: usuario.empresaId,
+      ...(usuario.esGestor ? {} : { usuarioId: usuario.id, activo: true }),
+    };
     const { skip, take, page, limit } = rangoPaginacion(query);
     const [total, tareas, clientesEmpresa, localesEmpresa] = await Promise.all([
       this.prisma.tareaGlobal.count({ where }),
@@ -132,12 +148,17 @@ export class TareasService {
         skip,
         take,
       }),
-      this.prisma.cliente.count({ where: { empresaId: usuario.empresaId } }),
-      this.prisma.local.count({ where: { empresaId: usuario.empresaId } }),
+      this.prisma.cliente.count({ where: whereClientes }),
+      this.prisma.local.count({ where: whereLocales }),
     ]);
     return respuestaPaginada(
       tareas.map((tarea) =>
-        aTareaGlobalDto(tarea, clientesEmpresa, localesEmpresa),
+        aTareaGlobalDto(
+          tarea,
+          clientesEmpresa,
+          localesEmpresa,
+          usuario.esGestor ? tarea._count.tareas : clientesEmpresa,
+        ),
       ),
       total,
       page,

@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigImpulsadorService } from '../impulsador/config-impulsador.service';
-import { PAGINAS_IMPULSADOR } from '../impulsador/impulsador.constants';
+import { PAGINAS_OPERACION_CAMPO } from '../impulsador/impulsador.constants';
 import type { UsuarioImpulsador } from '../impulsador/interfaces/usuario-impulsador.interface';
 import {
   respuestaPaginada,
@@ -109,15 +109,15 @@ export class LocalesService {
 
   private usuarioActual(usuarioId: number): Promise<UsuarioImpulsador> {
     // El acceso por página y el permiso gestor/operativo salen de la config
-    // del módulo Impulsador. Alcanza con ver alguna de las tres páginas
+    // de operaciones de campo. Alcanza con ver alguna de sus páginas.
     // porque las vistas de mapa y de visitas también listan locales.
     return this.configImpulsador.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
   }
 
-  // Gestor: todos los locales de su empresa. Impulsador: solo los asignados a él.
+  // Team Leader: todos los locales de su empresa. Repositor: solo los suyos.
   async listar(
     usuarioId: number,
     query: ListarLocalesDto,

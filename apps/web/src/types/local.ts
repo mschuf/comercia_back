@@ -1,4 +1,4 @@
-// Locales geolocalizados del módulo Impulsador (respuestas de /locales)
+// Locales geolocalizados de operaciones de campo (respuestas de /locales)
 
 export interface Local {
   id: number;

@@ -64,7 +64,7 @@ export function TareasView() {
   useEffect(() => cargar(), [cargar]);
 
   useEffect(() => {
-    apiFetch<ConfigImpulsador>("/impulsador/config")
+    apiFetch<ConfigImpulsador>("/operaciones-campo/config")
       .then(setConfig)
       .catch((e) =>
         setError(
@@ -130,11 +130,13 @@ export function TareasView() {
     <div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold">Tareas</h1>
+          <h1 className="text-xl font-bold">
+            {config !== null && !esGestor ? "Mis tareas" : "Tareas"}
+          </h1>
           <p className="mt-1 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">
-            El mismo checklist se aplica a todos los clientes y sus locales. Al
-            editar una tarea se actualizan las existentes y se crean
-            automáticamente las que falten.
+            {config !== null && !esGestor
+              ? "Estas tareas se aplican a tus clientes y locales asignados."
+              : "El mismo checklist se aplica a todos los clientes y sus locales. Al editar una tarea se actualizan las existentes y se crean automáticamente las que falten."}
           </p>
         </div>
         {esGestor && (

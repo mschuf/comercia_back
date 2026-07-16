@@ -21,7 +21,7 @@ import {
   ListarLocalesDto,
 } from './dto/local.dto';
 
-// La autorización fina (gestor vs impulsador, empresa propia) vive en el service
+// La autorización fina (Team Leader vs Repositor, empresa propia) vive en el service
 @ApiTags('locales')
 @Controller('locales')
 @UseGuards(JwtAuthGuard)

@@ -168,7 +168,7 @@ export function LocalesView({
 
   useEffect(() => {
     let vigente = true;
-    apiFetch<ConfigImpulsador>("/impulsador/config")
+    apiFetch<ConfigImpulsador>("/operaciones-campo/config")
       .then((data) => {
         if (vigente) setConfig(data);
       })

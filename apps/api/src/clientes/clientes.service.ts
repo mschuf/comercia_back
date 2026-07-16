@@ -11,7 +11,7 @@ import {
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
 import { ConfigImpulsadorService } from '../impulsador/config-impulsador.service';
-import { PAGINAS_IMPULSADOR } from '../impulsador/impulsador.constants';
+import { PAGINAS_OPERACION_CAMPO } from '../impulsador/impulsador.constants';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   ActualizarClienteDto,
@@ -62,7 +62,7 @@ export class ClientesService {
   ): Promise<RespuestaPaginada<ClienteDto>> {
     const usuario = await this.config.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
     const where = {
       empresaId: usuario.empresaId,
@@ -92,7 +92,7 @@ export class ClientesService {
   private async exigirGestor(usuarioId: number) {
     const usuario = await this.config.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede administrar clientes');

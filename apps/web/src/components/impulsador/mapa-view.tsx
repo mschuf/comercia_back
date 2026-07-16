@@ -253,7 +253,7 @@ export function MapaView() {
 
   const cargar = useCallback(() => {
     setErrorCarga(null);
-    return apiFetch<MapaDatos>("/impulsador/mapa")
+    return apiFetch<MapaDatos>("/operaciones-campo/mapa")
       .then(setDatos)
       .catch((err) =>
         setErrorCarga(
@@ -264,7 +264,7 @@ export function MapaView() {
 
   useEffect(() => {
     let vigente = true;
-    apiFetch<MapaDatos>("/impulsador/mapa")
+    apiFetch<MapaDatos>("/operaciones-campo/mapa")
       .then((d) => {
         if (vigente) {
           setDatos(d);
@@ -292,7 +292,9 @@ export function MapaView() {
     if (!esGestor) return;
     let vigente = true;
     Promise.all([
-      apiFetch<UsuarioAsignable[]>("/impulsador/responsables-territorio"),
+      apiFetch<UsuarioAsignable[]>(
+        "/operaciones-campo/responsables-territorio",
+      ),
       apiFetch<UsuarioAsignable[]>("/locales/usuarios-asignables"),
     ])
       .then(([lideres, operativos]) => {
@@ -1515,7 +1517,7 @@ export function MapaView() {
                 Cerrar
               </button>
               <Link
-                href="/panel/impulsador/tareas"
+                href="/panel/team-leader/tareas"
                 onClick={() => setLocalAbierto(null)}
                 className={`${btnPrimary} min-h-11`}
               >

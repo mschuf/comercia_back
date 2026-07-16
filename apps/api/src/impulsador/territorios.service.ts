@@ -13,7 +13,7 @@ import {
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
 import { ConfigImpulsadorService } from './config-impulsador.service';
-import { PAGINAS_IMPULSADOR } from './impulsador.constants';
+import { PAGINAS_OPERACION_CAMPO } from './impulsador.constants';
 import {
   ActualizarTerritorioDto,
   CrearTerritorioDto,
@@ -99,7 +99,7 @@ export class TerritoriosService {
   ): Promise<RespuestaPaginada<TerritorioDto>> {
     const usuario = await this.configImpulsador.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
     const where = usuario.esGestor
       ? { empresaId: usuario.empresaId }
@@ -134,7 +134,7 @@ export class TerritoriosService {
   async todos(usuarioId: number): Promise<TerritorioDto[]> {
     const usuario = await this.configImpulsador.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
     const territorios = await this.prisma.territorio.findMany({
       where: usuario.esGestor
@@ -159,7 +159,7 @@ export class TerritoriosService {
   ): Promise<TerritorioDto> {
     const usuario = await this.configImpulsador.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede crear territorios');
@@ -207,7 +207,7 @@ export class TerritoriosService {
   ): Promise<TerritorioDto> {
     const usuario = await this.configImpulsador.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede editar territorios');
@@ -236,7 +236,7 @@ export class TerritoriosService {
   async eliminar(usuarioId: number, id: number): Promise<{ ok: true }> {
     const usuario = await this.configImpulsador.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede eliminar territorios');

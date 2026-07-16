@@ -1,4 +1,4 @@
-// Jerarquía geográfica del módulo Impulsador (respuestas de /territorios y /zonas)
+// Jerarquía geográfica de operaciones de campo (/territorios y /zonas)
 
 export interface Territorio {
   id: number;

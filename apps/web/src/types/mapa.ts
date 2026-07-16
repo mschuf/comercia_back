@@ -1,6 +1,6 @@
 import type { Territorio, Zona } from "@/types/territorio";
 
-// Punto de local para el mapa (GET /impulsador/mapa)
+// Punto de local para el mapa (GET /operaciones-campo/mapa)
 export interface LocalMapa {
   id: number;
   nombre: string;

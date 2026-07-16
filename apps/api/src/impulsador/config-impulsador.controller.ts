@@ -16,8 +16,8 @@ import { ConfigImpulsadorService } from './config-impulsador.service';
 import { ActualizarConfigImpulsadorDto } from './dto/config-impulsador.dto';
 
 // Config del módulo aplicada al usuario actual (el acceso fino vive en el service)
-@ApiTags('impulsador')
-@Controller('impulsador')
+@ApiTags('operaciones-campo')
+@Controller('operaciones-campo')
 @UseGuards(JwtAuthGuard)
 export class ConfigImpulsadorController {
   constructor(private readonly configImpulsador: ConfigImpulsadorService) {}
@@ -34,8 +34,8 @@ export class ConfigImpulsadorController {
 }
 
 // Config por empresa: SOLO superadmin (JwtAuthGuard + SuperadminGuard en todo)
-@ApiTags('admin-impulsador')
-@Controller('admin/impulsador')
+@ApiTags('admin-operaciones-campo')
+@Controller('admin/operaciones-campo')
 @UseGuards(JwtAuthGuard, SuperadminGuard)
 export class AdminConfigImpulsadorController {
   constructor(private readonly configImpulsador: ConfigImpulsadorService) {}

@@ -22,7 +22,7 @@ import {
 } from './dto/territorio.dto';
 
 // La autorización fina (gestor vs operativo, empresa propia) vive en el service
-@ApiTags('impulsador')
+@ApiTags('operaciones-campo')
 @Controller('territorios')
 @UseGuards(JwtAuthGuard)
 export class TerritoriosController {

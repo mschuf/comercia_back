@@ -8,7 +8,7 @@ import type { ConfigImpulsadorAdmin } from "@/types/impulsador-config";
 import type { RespuestaPaginada } from "@/types/paginacion";
 import { btnPrimary, errorBox, inputBase, labelBase } from "@/components/ui";
 
-export function ImpulsadorPanel() {
+export function OperacionesCampoPanel() {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [roles, setRoles] = useState<Rol[]>([]);
   const [empresaId, setEmpresaId] = useState<number | "">("");
@@ -53,7 +53,9 @@ export function ImpulsadorPanel() {
   useEffect(() => {
     if (empresaId === "") return;
     let vigente = true;
-    apiFetch<ConfigImpulsadorAdmin>(`/admin/impulsador/config/${empresaId}`)
+    apiFetch<ConfigImpulsadorAdmin>(
+      `/admin/operaciones-campo/config/${empresaId}`,
+    )
       .then((c) => {
         if (!vigente) return;
         setConfig(c);
@@ -92,7 +94,7 @@ export function ImpulsadorPanel() {
     setGuardando(true);
     try {
       const data = await apiFetch<ConfigImpulsadorAdmin>(
-        `/admin/impulsador/config/${empresaId}`,
+        `/admin/operaciones-campo/config/${empresaId}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -161,8 +163,8 @@ export function ImpulsadorPanel() {
       {config !== null && (
         <div className="mt-5 flex flex-col gap-5 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900 sm:p-5">
           <ChipsRoles
-            etiqueta="Roles gestores"
-            ayuda="Cargan locales, zonas y checklists, y asignan visitadores. Sin selección: GERENTE, JEFE, SUPERVISOR y TEAMLEADER."
+            etiqueta="Roles de Team Leader"
+            ayuda="Administran mapa, clientes, tareas y visitas del equipo. Sin selección: GERENTE, JEFE, SUPERVISOR y TEAM LEADER."
             roles={roles}
             seleccion={rolGestorIds}
             deshabilitado={guardando}
@@ -170,8 +172,8 @@ export function ImpulsadorPanel() {
           />
 
           <ChipsRoles
-            etiqueta="Roles operativos (visitan)"
-            ayuda="Realizan las visitas de sus locales asignados. Sin selección: cualquier usuario asignado."
+            etiqueta="Roles de Repositor"
+            ayuda="Ven sus clientes, tareas y visitas asignadas. Sin selección: cualquier usuario asignado con acceso al módulo Repositor."
             roles={roles}
             seleccion={rolOperativoIds}
             deshabilitado={guardando}

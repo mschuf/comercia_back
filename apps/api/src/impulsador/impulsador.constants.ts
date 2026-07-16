@@ -1,14 +1,17 @@
-// Rutas de plataforma del módulo Impulsador (deben coincidir con las filas
-// de modulos/paginas sembradas por la migración 20260708181000).
-export const MODULO_IMPULSADOR = 'impulsador';
-export const PAGINA_LOCALES = 'locales';
+// Rutas de plataforma para las operaciones de campo. Team Leader y Repositor
+// comparten servicios, pero tienen módulos y menús independientes.
+export const MODULO_TEAM_LEADER = 'team-leader';
+export const MODULO_REPOSITOR = 'repositor';
+export const MODULOS_OPERACION_CAMPO = [MODULO_TEAM_LEADER, MODULO_REPOSITOR];
+
+export const PAGINA_CLIENTES = 'clientes';
 export const PAGINA_MAPA = 'mapa';
 export const PAGINA_TAREAS = 'tareas';
 export const PAGINA_VISITAS = 'visitas';
 
 // Para endpoints compartidos entre vistas: alcanza con poder ver alguna.
-export const PAGINAS_IMPULSADOR = [
-  PAGINA_LOCALES,
+export const PAGINAS_OPERACION_CAMPO = [
+  PAGINA_CLIENTES,
   PAGINA_MAPA,
   PAGINA_TAREAS,
   PAGINA_VISITAS,

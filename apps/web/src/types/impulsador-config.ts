@@ -1,4 +1,4 @@
-// Configuración del módulo Impulsador (GET /impulsador/config).
+// Configuración de operaciones de campo (GET /operaciones-campo/config).
 // esGestor/esOperativo ya vienen calculados para el usuario actual: el front
 // NO decide roles por su cuenta (la regla vive en el backend).
 export interface ConfigImpulsador {
@@ -10,7 +10,7 @@ export interface ConfigImpulsador {
   esOperativo: boolean;
 }
 
-// Vista del superadmin por empresa (GET/PUT /admin/impulsador/config/:empresaId)
+// Vista del superadmin (GET/PUT /admin/operaciones-campo/config/:empresaId)
 export interface ConfigImpulsadorAdmin {
   empresaId: number;
   rolGestorIds: number[];

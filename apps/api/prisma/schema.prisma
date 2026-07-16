@@ -164,7 +164,7 @@ model EmpresaPagina {
 }
 
 // ============================================================
-// Módulo Impulsador: jerarquía geográfica (territorio > zona > local),
+// Operaciones de campo: jerarquía geográfica (territorio > zona > local),
 // checklist por local y visitas con verificación de ubicación.
 // ============================================================
 
@@ -269,8 +269,8 @@ model TareaGlobal {
   @@map("tareas_globales")
 }
 
-// Locales geolocalizados (módulo Impulsador). Los carga un rol gestor y puede
-// asignarlos a un usuario (impulsador) de su misma empresa.
+// Locales geolocalizados. Los carga un Team Leader y puede asignarlos a un
+// Repositor de su misma empresa.
 model Local {
   id                    Int       @id @default(autoincrement())
   empresaId             Int       @map("empresa_id")
@@ -289,7 +289,7 @@ model Local {
   fechaVisita           DateTime? @map("fecha_visita")
   // El gestor exige una foto de presencia al finalizar la visita
   requiereFotoPresencia Boolean   @default(false) @map("requiere_foto_presencia")
-  // Impulsador al que se le asigna el local (opcional)
+  // Repositor al que se le asigna el local (opcional)
   usuarioId             Int?      @map("usuario_id")
   usuario               Usuario?  @relation("LocalesAsignados", fields: [usuarioId], references: [id], onDelete: SetNull)
   // Quién lo cargó (rol gestor)
@@ -399,7 +399,7 @@ model VisitaTarea {
   @@map("visita_tareas")
 }
 
-// Configuración del módulo Impulsador por empresa: qué roles gestionan
+// Configuración de operaciones de campo por empresa: qué roles gestionan
 // (cargan locales/zonas/checklists y asignan) y qué roles operan (visitan),
 // más el radio de verificación por defecto. Listas vacías = comportamiento
 // por defecto (gestores clásicos; cualquier usuario asignado puede visitar).

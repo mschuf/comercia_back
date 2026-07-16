@@ -7,7 +7,10 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { AccesoPlataformaService } from '../plataforma/acceso-plataforma.service';
 import { esRolGestor, esRolOperativo } from '../common/utils/roles-impulsador';
-import { MODULO_IMPULSADOR, PAGINAS_IMPULSADOR } from './impulsador.constants';
+import {
+  MODULOS_OPERACION_CAMPO,
+  PAGINAS_OPERACION_CAMPO,
+} from './impulsador.constants';
 import { ActualizarConfigImpulsadorDto } from './dto/config-impulsador.dto';
 import type {
   ConfigImpulsadorAdminDto,
@@ -56,9 +59,9 @@ export class ConfigImpulsadorService {
     usuarioId: number,
     paginasRutas: string[],
   ): Promise<UsuarioImpulsador> {
-    await this.acceso.exigirAccesoAlgunaPagina(
+    await this.acceso.exigirAccesoAlgunaPaginaEnModulos(
       usuarioId,
-      MODULO_IMPULSADOR,
+      MODULOS_OPERACION_CAMPO,
       paginasRutas,
     );
 
@@ -94,9 +97,12 @@ export class ConfigImpulsadorService {
     };
   }
 
-  // Config de la empresa del usuario + cómo le aplica a él (GET /impulsador/config)
+  // Config de campo de la empresa + permisos efectivos del usuario actual.
   async paraUsuario(usuarioId: number): Promise<ConfigImpulsadorDto> {
-    const usuario = await this.usuarioImpulsador(usuarioId, PAGINAS_IMPULSADOR);
+    const usuario = await this.usuarioImpulsador(
+      usuarioId,
+      PAGINAS_OPERACION_CAMPO,
+    );
     const config = await this.deEmpresa(usuario.empresaId);
     return {
       rolGestorIds: config.rolGestorIds,
@@ -166,7 +172,10 @@ export class ConfigImpulsadorService {
   async responsablesTerritorio(
     usuarioId: number,
   ): Promise<UsuarioAsignableImpulsadorDto[]> {
-    const actual = await this.usuarioImpulsador(usuarioId, PAGINAS_IMPULSADOR);
+    const actual = await this.usuarioImpulsador(
+      usuarioId,
+      PAGINAS_OPERACION_CAMPO,
+    );
     if (!actual.esGestor) return [];
     const config = await this.deEmpresa(actual.empresaId);
     const usuarios = await this.prisma.usuario.findMany({

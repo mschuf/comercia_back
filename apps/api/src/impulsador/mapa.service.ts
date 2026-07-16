@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigImpulsadorService } from './config-impulsador.service';
-import { PAGINA_LOCALES, PAGINA_MAPA } from './impulsador.constants';
+import { PAGINA_MAPA } from './impulsador.constants';
 import { aTerritorioDto, SELECT_TERRITORIO } from './territorios.service';
 import { aZonaDto, SELECT_ZONA } from './zonas.service';
 import type { LocalMapaDto, MapaDatosDto } from './interfaces/mapa.interface';
@@ -70,7 +70,6 @@ export class MapaService {
   async datos(usuarioId: number): Promise<MapaDatosDto> {
     const usuario = await this.configImpulsador.usuarioImpulsador(usuarioId, [
       PAGINA_MAPA,
-      PAGINA_LOCALES,
     ]);
 
     // Gestor: todos los locales de su empresa; operativo: solo los suyos

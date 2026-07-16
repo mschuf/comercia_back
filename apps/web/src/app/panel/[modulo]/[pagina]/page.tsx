@@ -11,10 +11,13 @@ import { TareasView } from "@/components/tareas/tareas-view";
 // Las páginas que no estén acá muestran el placeholder de "configurada" (su
 // ejecución de datos por ejecutables llega en la próxima etapa).
 const VISTAS: Record<string, ComponentType> = {
-  "impulsador/locales": ClientesLocalesView,
-  "impulsador/mapa": MapaView,
-  "impulsador/tareas": TareasView,
-  "impulsador/visitas": VisitasView,
+  "team-leader/mapa": MapaView,
+  "team-leader/clientes": ClientesLocalesView,
+  "team-leader/tareas": TareasView,
+  "team-leader/visitas": VisitasView,
+  "repositor/clientes": ClientesLocalesView,
+  "repositor/tareas": TareasView,
+  "repositor/visitas": VisitasView,
 };
 
 export default function PaginaModulo({
@@ -39,8 +42,10 @@ export default function PaginaModulo({
   }
 
   const Vista = VISTAS[`${modulo}/${pagina}`];
-  const usaCabeceraPropia = modulo === "impulsador" && pagina === "tareas";
-  const ocultaNombreModulo = modulo === "impulsador" && pagina === "visitas";
+  const esOperacionCampo =
+    modulo === "team-leader" || modulo === "repositor";
+  const usaCabeceraPropia = esOperacionCampo && pagina === "tareas";
+  const ocultaNombreModulo = esOperacionCampo && pagina === "visitas";
 
   return (
     <div>

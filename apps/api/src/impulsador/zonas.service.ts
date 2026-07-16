@@ -12,7 +12,7 @@ import {
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
 import { ConfigImpulsadorService } from './config-impulsador.service';
-import { PAGINAS_IMPULSADOR } from './impulsador.constants';
+import { PAGINAS_OPERACION_CAMPO } from './impulsador.constants';
 import { poligonoParaGuardar } from './territorios.service';
 import {
   ActualizarZonaDto,
@@ -89,7 +89,7 @@ export class ZonasService {
   ): Promise<RespuestaPaginada<ZonaDto>> {
     const usuario = await this.configImpulsador.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
     const where = {
       empresaId: usuario.empresaId,
@@ -118,7 +118,7 @@ export class ZonasService {
   async todas(usuarioId: number): Promise<ZonaDto[]> {
     const usuario = await this.configImpulsador.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
     const zonas = await this.prisma.zona.findMany({
       where: {
@@ -152,7 +152,7 @@ export class ZonasService {
   async crear(usuarioId: number, dto: CrearZonaDto): Promise<ZonaDto> {
     const usuario = await this.configImpulsador.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede crear zonas');
@@ -205,7 +205,7 @@ export class ZonasService {
   ): Promise<ZonaDto> {
     const usuario = await this.configImpulsador.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede editar zonas');
@@ -261,7 +261,7 @@ export class ZonasService {
   async eliminar(usuarioId: number, id: number): Promise<{ ok: true }> {
     const usuario = await this.configImpulsador.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede eliminar zonas');

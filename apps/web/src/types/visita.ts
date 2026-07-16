@@ -1,4 +1,4 @@
-// Visitas a locales del módulo Impulsador (respuestas de /visitas)
+// Visitas a locales de operaciones de campo (respuestas de /visitas)
 
 export interface VisitaTarea {
   id: number;
@@ -14,7 +14,7 @@ export interface VisitaTarea {
   completadaEn: string | null;
 }
 
-// Visita completa (flujo del impulsador y detalle)
+// Visita completa (flujo del repositor y detalle)
 export interface Visita {
   id: number;
   localId: number;

@@ -8,7 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ConfigImpulsadorService } from '../impulsador/config-impulsador.service';
 import {
   MAX_TAREAS_POR_LOCAL,
-  PAGINAS_IMPULSADOR,
+  PAGINAS_OPERACION_CAMPO,
 } from '../impulsador/impulsador.constants';
 import type { UsuarioImpulsador } from '../impulsador/interfaces/usuario-impulsador.interface';
 import {
@@ -56,7 +56,7 @@ export class TareasLocalService {
   private usuarioActual(usuarioId: number): Promise<UsuarioImpulsador> {
     return this.configImpulsador.usuarioImpulsador(
       usuarioId,
-      PAGINAS_IMPULSADOR,
+      PAGINAS_OPERACION_CAMPO,
     );
   }
 
