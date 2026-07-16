@@ -65,6 +65,50 @@ function esParadaCalculada(
   return "llegadaEstimada" in visita;
 }
 
+interface AccionesParadaProps {
+  parada: VisitaHoy | ParadaRuta;
+  ubicacion: { latitud: number; longitud: number } | null;
+  iniciando: string | null;
+  onNavegar: (mensaje: string) => void;
+  onIniciar: (parada: VisitaHoy | ParadaRuta) => Promise<void>;
+}
+
+function AccionesParada({
+  parada,
+  ubicacion,
+  iniciando,
+  onNavegar,
+  onIniciar,
+}: AccionesParadaProps) {
+  return (
+    <div className="flex gap-1.5">
+      <button
+        type="button"
+        onClick={() => void onIniciar(parada)}
+        disabled={iniciando !== null}
+        aria-label={`Iniciar visita en ${parada.local.nombre}`}
+        title={`Iniciar visita en ${parada.local.nombre}`}
+        className="min-h-11 whitespace-nowrap rounded-lg bg-brand-700 px-2.5 text-xs font-semibold text-white transition hover:bg-brand-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {iniciando === parada.clave ? "Verificando GPS…" : "Visita"}
+      </button>
+      <a
+        href={urlNavegarA(parada, ubicacion)}
+        target="_blank"
+        rel="noreferrer"
+        onClick={() =>
+          onNavegar(`Iniciando navegación a ${parada.local.nombre}`)
+        }
+        aria-label={`Abrir mapa hacia ${parada.local.nombre}`}
+        title={`Abrir mapa hacia ${parada.local.nombre}`}
+        className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg border border-indigo-200 px-2.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-indigo-500/40 dark:border-indigo-900 dark:text-indigo-300 dark:hover:bg-indigo-950"
+      >
+        Mapa
+      </a>
+    </div>
+  );
+}
+
 export function RutaDiariaView() {
   const [agenda, setAgenda] = useState<RespuestaPaginada<VisitaHoy> | null>(
     null,
@@ -338,6 +382,9 @@ export function RutaDiariaView() {
                       <th scope="col" className="w-12 px-2 py-2.5 text-center">
                         Orden
                       </th>
+                      <th scope="col" className="px-2 py-2.5 xl:hidden">
+                        Acciones
+                      </th>
                       <th scope="col" className="px-2 py-2.5">
                         Local
                       </th>
@@ -347,7 +394,10 @@ export function RutaDiariaView() {
                       <th scope="col" className="px-2 py-2.5">
                         Recorrido
                       </th>
-                      <th scope="col" className="px-2 py-2.5 text-right">
+                      <th
+                        scope="col"
+                        className="hidden px-2 py-2.5 text-right xl:table-cell"
+                      >
                         Acciones
                       </th>
                     </tr>
@@ -373,6 +423,15 @@ export function RutaDiariaView() {
                           >
                             {parada.orden}
                           </span>
+                        </td>
+                        <td className="px-2 py-2.5 align-top xl:hidden">
+                          <AccionesParada
+                            parada={parada}
+                            ubicacion={ubicacion}
+                            iniciando={iniciando}
+                            onNavegar={indicarNavegacion}
+                            onIniciar={abrirVisita}
+                          />
                         </td>
                         <td className="max-w-44 px-2 py-2.5 align-top">
                           <p className="truncate text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-300">
@@ -402,31 +461,15 @@ export function RutaDiariaView() {
                             {parada.tareasActivas} tareas
                           </span>
                         </td>
-                        <td className="px-2 py-2.5 align-top">
-                          <div className="flex justify-end gap-1.5">
-                            <a
-                              href={urlNavegarA(parada, ubicacion)}
-                              target="_blank"
-                              rel="noreferrer"
-                              onClick={() =>
-                                indicarNavegacion(
-                                  `Iniciando navegación a ${parada.local.nombre}`,
-                                )
-                              }
-                              className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg border border-indigo-200 px-2.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-indigo-500/40 dark:border-indigo-900 dark:text-indigo-300 dark:hover:bg-indigo-950"
-                            >
-                              Navegar
-                            </a>
-                            <button
-                              type="button"
-                              onClick={() => void abrirVisita(parada)}
-                              disabled={iniciando !== null}
-                              className="min-h-11 whitespace-nowrap rounded-lg bg-brand-700 px-2.5 text-xs font-semibold text-white transition hover:bg-brand-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-50"
-                            >
-                              {iniciando === parada.clave
-                                ? "Verificando GPS…"
-                                : "Iniciar visita"}
-                            </button>
+                        <td className="hidden px-2 py-2.5 align-top xl:table-cell">
+                          <div className="flex justify-end">
+                            <AccionesParada
+                              parada={parada}
+                              ubicacion={ubicacion}
+                              iniciando={iniciando}
+                              onNavegar={indicarNavegacion}
+                              onIniciar={abrirVisita}
+                            />
                           </div>
                         </td>
                       </motion.tr>
