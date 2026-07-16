@@ -12,7 +12,6 @@ import {
   inputBase,
   labelBase,
 } from "@/components/ui";
-import type { ConfigImpulsador } from "@/types/impulsador-config";
 import type { RespuestaPaginada } from "@/types/paginacion";
 import type { TareaGlobal } from "@/types/tarea";
 
@@ -36,7 +35,6 @@ export function TareasView() {
   const [datos, setDatos] = useState<RespuestaPaginada<TareaGlobal> | null>(
     null,
   );
-  const [config, setConfig] = useState<ConfigImpulsador | null>(null);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(7);
   const [editando, setEditando] = useState<TareaGlobal | "nueva" | null>(null);
@@ -62,18 +60,6 @@ export function TareasView() {
   }, [page, limit]);
 
   useEffect(() => cargar(), [cargar]);
-
-  useEffect(() => {
-    apiFetch<ConfigImpulsador>("/operaciones-campo/config")
-      .then(setConfig)
-      .catch((e) =>
-        setError(
-          e instanceof ApiError
-            ? e.message
-            : "No se pudieron comprobar los permisos",
-        ),
-      );
-  }, []);
 
   function abrir(tarea: TareaGlobal | "nueva") {
     setForm(
@@ -124,32 +110,26 @@ export function TareasView() {
     }
   }
 
-  const esGestor = config?.esGestor === true;
-
   return (
     <div>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold">
-            {config !== null && !esGestor ? "Mis tareas" : "Tareas"}
-          </h1>
+          <h1 className="text-xl font-bold">Tareas</h1>
           <p className="mt-1 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">
-            {config !== null && !esGestor
-              ? "Estas tareas se aplican a tus clientes y locales asignados."
-              : "El mismo checklist se aplica a todos los clientes y sus locales. Al editar una tarea se actualizan las existentes y se crean automáticamente las que falten."}
+            El mismo checklist se aplica a todos los clientes y sus locales. Al
+            editar una tarea se actualizan las existentes y se crean
+            automáticamente las que falten.
           </p>
         </div>
-        {esGestor && (
-          <button
-            type="button"
-            onClick={() => abrir("nueva")}
-            aria-label="Crear tarea"
-            title="Crear tarea"
-            className={`${btnPrimary} h-11 w-11 shrink-0 p-0`}
-          >
-            <IconoMas className="h-5 w-5" />
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => abrir("nueva")}
+          aria-label="Crear tarea"
+          title="Crear tarea"
+          className={`${btnPrimary} h-11 w-11 shrink-0 p-0`}
+        >
+          <IconoMas className="h-5 w-5" />
+        </button>
       </div>
 
       {error && editando === null && (
@@ -179,11 +159,9 @@ export function TareasView() {
                 <th scope="col" className="px-4 py-3 font-medium">
                   Alcance
                 </th>
-                {esGestor && (
-                  <th scope="col" className="px-4 py-3 text-right font-medium">
-                    Acción
-                  </th>
-                )}
+                <th scope="col" className="px-4 py-3 text-right font-medium">
+                  Acción
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -241,17 +219,15 @@ export function TareasView() {
                         {tarea.localesEmpresa} locales
                       </span>
                     </td>
-                    {esGestor && (
-                      <td className="px-4 py-3 text-right">
-                        <button
-                          type="button"
-                          onClick={() => abrir(tarea)}
-                          className={`${btnGhost} min-h-11 whitespace-nowrap`}
-                        >
-                          Editar
-                        </button>
-                      </td>
-                    )}
+                    <td className="px-4 py-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => abrir(tarea)}
+                        className={`${btnGhost} min-h-11 whitespace-nowrap`}
+                      >
+                        Editar
+                      </button>
+                    </td>
                   </tr>
                 );
               })}

@@ -12,7 +12,7 @@ import {
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
 import { PrismaService } from '../prisma/prisma.service';
-import { ConfigImpulsadorService } from './config-impulsador.service';
+import { AccesoOperacionesCampoService } from './acceso-operaciones-campo.service';
 import {
   FrecuenciaVisitaDto,
   GuardarProgramacionVisitaDto,
@@ -25,8 +25,8 @@ import {
   ListarVisitasDto,
 } from './dto/visita.dto';
 import { FotosService } from './fotos.service';
-import { PAGINAS_OPERACION_CAMPO } from './impulsador.constants';
-import type { UsuarioImpulsador } from './interfaces/usuario-impulsador.interface';
+import { PAGINA_VISITAS, RADIO_METROS_DEFECTO } from './impulsador.constants';
+import type { UsuarioOperacionesCampo } from './interfaces/usuario-operaciones-campo.interface';
 import type { ProgramacionVisitaCalculo } from './interfaces/programacion-visita.interface';
 import type {
   VisitaDto,
@@ -241,7 +241,7 @@ function aVisitaTareaDto(tarea: VisitaTareaConTarea): VisitaTareaDto {
 
 function aVisitaDto(
   visita: VisitaConRelaciones,
-  radioMetrosDefecto: number,
+  radioMetrosFallback: number,
 ): VisitaDto {
   return {
     id: visita.id,
@@ -255,7 +255,7 @@ function aVisitaDto(
     distanciaMetros: visita.distanciaMetros,
     fotoPresencia: visita.fotoPresencia,
     requiereFotoPresencia: visita.local.requiereFotoPresencia,
-    radioMetros: visita.local.radioMetros ?? radioMetrosDefecto,
+    radioMetros: visita.local.radioMetros ?? radioMetrosFallback,
     // El checklist se ordena acá porque el select compartido no fija orderBy
     tareas: [...visita.tareas]
       .sort((a, b) => a.tarea.orden - b.tarea.orden || a.id - b.id)
@@ -353,18 +353,18 @@ function tareaDeVisita(
 export class VisitasService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly config: ConfigImpulsadorService,
+    private readonly accesoCampo: AccesoOperacionesCampoService,
     private readonly fotos: FotosService,
   ) {}
 
-  private usuarioActual(usuarioId: number): Promise<UsuarioImpulsador> {
-    return this.config.usuarioImpulsador(usuarioId, PAGINAS_OPERACION_CAMPO);
+  private usuarioActual(usuarioId: number): Promise<UsuarioOperacionesCampo> {
+    return this.accesoCampo.usuario(usuarioId, [PAGINA_VISITAS]);
   }
 
   // Lectura de una visita: el dueño o un gestor de la misma empresa.
   // 404 neutro en cualquier otro caso (no revela existencia).
   private async visitaVisible(
-    usuario: UsuarioImpulsador,
+    usuario: UsuarioOperacionesCampo,
     id: number,
   ): Promise<VisitaConRelaciones> {
     const visita = await this.prisma.visita.findUnique({
@@ -383,7 +383,7 @@ export class VisitasService {
 
   // Mutaciones del flujo: solo el dueño y solo mientras la visita esté abierta
   private async visitaAbiertaPropia(
-    usuario: UsuarioImpulsador,
+    usuario: UsuarioOperacionesCampo,
     id: number,
   ): Promise<VisitaConRelaciones> {
     const visita = await this.prisma.visita.findUnique({
@@ -460,10 +460,10 @@ export class VisitasService {
       if (!visita) {
         throw new NotFoundException('La visita no existe');
       }
-      return aVisitaDto(visita, usuario.radioMetrosDefecto);
+      return aVisitaDto(visita, RADIO_METROS_DEFECTO);
     }
 
-    const radio = local.radioMetros ?? usuario.radioMetrosDefecto;
+    const radio = local.radioMetros ?? RADIO_METROS_DEFECTO;
     const distancia = exigirDentroDelRadio(
       dto.latitud,
       dto.longitud,
@@ -485,7 +485,7 @@ export class VisitasService {
       },
       select: SELECT_VISITA,
     });
-    return aVisitaDto(visita, usuario.radioMetrosDefecto);
+    return aVisitaDto(visita, RADIO_METROS_DEFECTO);
   }
 
   async listar(
@@ -673,7 +673,7 @@ export class VisitasService {
   async detalle(usuarioId: number, id: number): Promise<VisitaDto> {
     const usuario = await this.usuarioActual(usuarioId);
     const visita = await this.visitaVisible(usuario, id);
-    return aVisitaDto(visita, usuario.radioMetrosDefecto);
+    return aVisitaDto(visita, RADIO_METROS_DEFECTO);
   }
 
   async actualizarTarea(
@@ -768,7 +768,7 @@ export class VisitasService {
       select: SELECT_VISITA,
     });
     await this.fotos.borrar(visita.fotoPresencia);
-    return aVisitaDto(actualizada, usuario.radioMetrosDefecto);
+    return aVisitaDto(actualizada, RADIO_METROS_DEFECTO);
   }
 
   async finalizar(
@@ -779,7 +779,7 @@ export class VisitasService {
     const usuario = await this.usuarioActual(usuarioId);
     const visita = await this.visitaAbiertaPropia(usuario, visitaId);
 
-    const radio = visita.local.radioMetros ?? usuario.radioMetrosDefecto;
+    const radio = visita.local.radioMetros ?? RADIO_METROS_DEFECTO;
     const distancia = exigirDentroDelRadio(
       dto.latitud,
       dto.longitud,
@@ -830,7 +830,7 @@ export class VisitasService {
         select: { id: true },
       }),
     ]);
-    return aVisitaDto(registrada, usuario.radioMetrosDefecto);
+    return aVisitaDto(registrada, RADIO_METROS_DEFECTO);
   }
 
   // Devuelve la ruta absoluta de la foto solo si el usuario puede verla: es de

@@ -13,7 +13,6 @@ import {
 } from "@/components/ui";
 import { apiFetch, ApiError } from "@/lib/api";
 import type { Cliente } from "@/types/cliente";
-import type { ConfigImpulsador } from "@/types/impulsador-config";
 import type { RespuestaPaginada } from "@/types/paginacion";
 import { formatoFechaHora } from "@/utils/fechas";
 
@@ -44,7 +43,6 @@ function EstadoCliente({ activo }: { activo: boolean }) {
 
 export function ClientesView({ onVerLocales }: ClientesViewProps) {
   const [datos, setDatos] = useState<RespuestaPaginada<Cliente> | null>(null);
-  const [config, setConfig] = useState<ConfigImpulsador | null>(null);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(7);
   const [editando, setEditando] = useState<Cliente | "nuevo" | null>(null);
@@ -76,12 +74,6 @@ export function ClientesView({ onVerLocales }: ClientesViewProps) {
   useEffect(() => {
     void cargar();
   }, [cargar]);
-
-  useEffect(() => {
-    apiFetch<ConfigImpulsador>("/operaciones-campo/config")
-      .then(setConfig)
-      .catch(() => undefined);
-  }, []);
 
   function abrir(cliente: Cliente | "nuevo") {
     setForm(
@@ -141,7 +133,6 @@ export function ClientesView({ onVerLocales }: ClientesViewProps) {
     }
   }
 
-  const esGestor = config?.esGestor === true;
   const clientes = datos?.items ?? [];
 
   return (
@@ -153,17 +144,15 @@ export function ClientesView({ onVerLocales }: ClientesViewProps) {
             Administrá clientes y abrí sus locales sin salir de esta sección.
           </p>
         </div>
-        {esGestor && (
-          <button
-            type="button"
-            onClick={() => abrir("nuevo")}
-            aria-label="Crear cliente"
-            title="Crear cliente"
-            className={`${btnPrimary} h-11 w-11 shrink-0 p-0`}
-          >
-            <IconoMas className="h-5 w-5" />
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={() => abrir("nuevo")}
+          aria-label="Crear cliente"
+          title="Crear cliente"
+          className={`${btnPrimary} h-11 w-11 shrink-0 p-0`}
+        >
+          <IconoMas className="h-5 w-5" />
+        </button>
       </div>
 
       {errorLista && <p className={`${errorBox} mt-4`}>{errorLista}</p>}
@@ -220,29 +209,25 @@ export function ClientesView({ onVerLocales }: ClientesViewProps) {
                       >
                         Ver locales
                       </button>
-                      {esGestor && (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => abrir(cliente)}
-                            aria-label={`Editar ${cliente.nombre}`}
-                            className="grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-                          >
-                            <IconoEditar />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setErrorEliminar(null);
-                              setEliminando(cliente);
-                            }}
-                            aria-label={`Eliminar ${cliente.nombre}`}
-                            className="grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:text-zinc-400 dark:hover:bg-red-950 dark:hover:text-red-400"
-                          >
-                            <IconoEliminar />
-                          </button>
-                        </>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => abrir(cliente)}
+                        aria-label={`Editar ${cliente.nombre}`}
+                        className="grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                      >
+                        <IconoEditar />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setErrorEliminar(null);
+                          setEliminando(cliente);
+                        }}
+                        aria-label={`Eliminar ${cliente.nombre}`}
+                        className="grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:text-zinc-400 dark:hover:bg-red-950 dark:hover:text-red-400"
+                      >
+                        <IconoEliminar />
+                      </button>
                     </div>
                   </td>
                 </tr>

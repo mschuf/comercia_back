@@ -41,10 +41,10 @@ function iconoPin(color: string): DivIcon {
   const enCache = cachePines.get(color);
   if (enCache) return enCache;
   const icono = divIcon({
-    className: "",
-    html: `<div style="width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${color};border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.4);display:grid;place-items:center;"><div style="width:8px;height:8px;border-radius:50%;background:#fff;"></div></div>`,
-    iconSize: [26, 26],
-    iconAnchor: [13, 26],
+    className: "mapa-pin-contenedor",
+    html: `<div class="mapa-pin" style="--mapa-pin-color:${color}"><span></span></div>`,
+    iconSize: [34, 42],
+    iconAnchor: [17, 40],
   });
   cachePines.set(color, icono);
   return icono;
@@ -250,6 +250,9 @@ export function MapaEditor({
                   dashArray: esSeleccionado("territorio", t.id)
                     ? "6 6"
                     : undefined,
+                  className: esSeleccionado("territorio", t.id)
+                    ? "mapa-area-animada"
+                    : undefined,
                 }}
                 eventHandlers={{
                   click: () => {
@@ -276,6 +279,9 @@ export function MapaEditor({
                   weight: 2,
                   fillOpacity: esSeleccionado("zona", z.id) ? 0.42 : 0.3,
                   dashArray: esSeleccionado("zona", z.id) ? "6 6" : undefined,
+                  className: esSeleccionado("zona", z.id)
+                    ? "mapa-area-animada"
+                    : undefined,
                 }}
                 eventHandlers={{
                   click: () => {

@@ -6,6 +6,9 @@ import { ClientesLocalesView } from "@/components/clientes/clientes-locales-view
 import { MapaView } from "@/components/impulsador/mapa-view";
 import { VisitasView } from "@/components/impulsador/visitas-view";
 import { TareasView } from "@/components/tareas/tareas-view";
+import { RepositorClientesView } from "@/components/repositor/repositorio-clientes-view";
+import { RepositorTareasView } from "@/components/repositor/repositorio-tareas-view";
+import { RutaDiariaView } from "@/components/repositor/ruta-diaria-view";
 
 // Registro de vistas con interfaz propia: "ruta-modulo/ruta-pagina" → componente.
 // Las páginas que no estén acá muestran el placeholder de "configurada" (su
@@ -15,9 +18,9 @@ const VISTAS: Record<string, ComponentType> = {
   "team-leader/clientes": ClientesLocalesView,
   "team-leader/tareas": TareasView,
   "team-leader/visitas": VisitasView,
-  "repositor/clientes": ClientesLocalesView,
-  "repositor/tareas": TareasView,
-  "repositor/visitas": VisitasView,
+  "repositor/clientes": RepositorClientesView,
+  "repositor/tareas": RepositorTareasView,
+  "repositor/visitas": RutaDiariaView,
 };
 
 export default function PaginaModulo({
@@ -44,7 +47,8 @@ export default function PaginaModulo({
   const Vista = VISTAS[`${modulo}/${pagina}`];
   const esOperacionCampo =
     modulo === "team-leader" || modulo === "repositor";
-  const usaCabeceraPropia = esOperacionCampo && pagina === "tareas";
+  const usaCabeceraPropia =
+    (esOperacionCampo && pagina === "tareas") || modulo === "repositor";
   const ocultaNombreModulo = esOperacionCampo && pagina === "visitas";
 
   return (

@@ -11,12 +11,12 @@ import {
   respuestaPaginada,
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
-import { ConfigImpulsadorService } from '../impulsador/config-impulsador.service';
+import { AccesoOperacionesCampoService } from '../impulsador/acceso-operaciones-campo.service';
 import {
   MAX_TAREAS_POR_LOCAL,
   PAGINA_TAREAS,
 } from '../impulsador/impulsador.constants';
-import type { UsuarioImpulsador } from '../impulsador/interfaces/usuario-impulsador.interface';
+import type { UsuarioOperacionesCampo } from '../impulsador/interfaces/usuario-operaciones-campo.interface';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   ActualizarTareaGlobalDto,
@@ -74,14 +74,16 @@ function aTareaGlobalDto(
 export class TareasService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly config: ConfigImpulsadorService,
+    private readonly accesoCampo: AccesoOperacionesCampoService,
   ) {}
 
-  private usuarioActual(usuarioId: number): Promise<UsuarioImpulsador> {
-    return this.config.usuarioImpulsador(usuarioId, [PAGINA_TAREAS]);
+  private usuarioActual(usuarioId: number): Promise<UsuarioOperacionesCampo> {
+    return this.accesoCampo.usuario(usuarioId, [PAGINA_TAREAS]);
   }
 
-  private async exigirGestor(usuarioId: number): Promise<UsuarioImpulsador> {
+  private async exigirGestor(
+    usuarioId: number,
+  ): Promise<UsuarioOperacionesCampo> {
     const usuario = await this.usuarioActual(usuarioId);
     if (!usuario.esGestor) {
       throw new ForbiddenException(

@@ -30,7 +30,6 @@ model Empresa {
   locales          Local[]           @relation("EmpresaLocales")
   territorios      Territorio[]      @relation("EmpresaTerritorios")
   zonas            Zona[]            @relation("EmpresaZonas")
-  configImpulsador ConfigImpulsador? @relation("EmpresaConfigImpulsador")
   createdAt        DateTime          @default(now()) @map("created_at")
   updatedAt        DateTime          @default(now()) @updatedAt @map("updated_at")
 
@@ -397,24 +396,6 @@ model VisitaTarea {
 
   @@unique([visitaId, tareaId])
   @@map("visita_tareas")
-}
-
-// Configuración de operaciones de campo por empresa: qué roles gestionan
-// (cargan locales/zonas/checklists y asignan) y qué roles operan (visitan),
-// más el radio de verificación por defecto. Listas vacías = comportamiento
-// por defecto (gestores clásicos; cualquier usuario asignado puede visitar).
-model ConfigImpulsador {
-  id                 Int      @id @default(autoincrement())
-  empresaId          Int      @unique @map("empresa_id")
-  empresa            Empresa  @relation("EmpresaConfigImpulsador", fields: [empresaId], references: [id], onDelete: Cascade)
-  rolGestorIds       Int[]    @default([]) @map("rol_gestor_ids")
-  rolOperativoIds    Int[]    @default([]) @map("rol_operativo_ids")
-  rolAdminUsuarioIds Int[]    @default([]) @map("rol_admin_usuario_ids")
-  radioMetrosDefecto Int      @default(200) @map("radio_metros_defecto")
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @default(now()) @updatedAt @map("updated_at")
-
-  @@map("config_impulsador")
 }
 
 model Rol {

@@ -13,6 +13,7 @@ import type {
 import { MOTORES, TIPOS_EJECUTABLE } from "@/types/plataforma";
 import { Modal } from "@/components/modal";
 import { IconoMas } from "@/components/icono-mas";
+import { notificarPlataformaActualizada } from "@/lib/eventos-plataforma";
 import {
   btnGhost,
   btnPrimary,
@@ -51,6 +52,7 @@ export function ModulosPanel() {
   async function recargar() {
     const data = await apiFetch<Modulo[]>(`${BASE}/modulos`);
     setModulos(data);
+    notificarPlataformaActualizada();
   }
 
   useEffect(() => {

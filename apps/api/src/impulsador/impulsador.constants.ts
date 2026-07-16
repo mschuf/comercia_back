@@ -9,10 +9,8 @@ export const PAGINA_MAPA = 'mapa';
 export const PAGINA_TAREAS = 'tareas';
 export const PAGINA_VISITAS = 'visitas';
 
-// Para endpoints compartidos entre vistas: alcanza con poder ver alguna.
-export const PAGINAS_OPERACION_CAMPO = [
+export const PAGINAS_REPOSITOR = [
   PAGINA_CLIENTES,
-  PAGINA_MAPA,
   PAGINA_TAREAS,
   PAGINA_VISITAS,
 ];
@@ -21,6 +19,7 @@ export const PAGINAS_OPERACION_CAMPO = [
 export const MAX_TAREAS_POR_LOCAL = 100;
 export const RADIO_METROS_MIN = 10;
 export const RADIO_METROS_MAX = 50_000;
+export const RADIO_METROS_DEFECTO = 200;
 
 // Fotos de visitas
 export const FOTO_MAX_BYTES = 8 * 1024 * 1024;

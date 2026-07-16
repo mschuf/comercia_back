@@ -10,8 +10,8 @@ import {
   respuestaPaginada,
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
-import { ConfigImpulsadorService } from '../impulsador/config-impulsador.service';
-import { PAGINAS_OPERACION_CAMPO } from '../impulsador/impulsador.constants';
+import { AccesoOperacionesCampoService } from '../impulsador/acceso-operaciones-campo.service';
+import { PAGINA_CLIENTES } from '../impulsador/impulsador.constants';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   ActualizarClienteDto,
@@ -53,17 +53,16 @@ function aClienteDto(cliente: ClienteFila): ClienteDto {
 export class ClientesService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly config: ConfigImpulsadorService,
+    private readonly accesoCampo: AccesoOperacionesCampoService,
   ) {}
 
   async listar(
     usuarioId: number,
     query: ListarClientesDto,
   ): Promise<RespuestaPaginada<ClienteDto>> {
-    const usuario = await this.config.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+    const usuario = await this.accesoCampo.usuario(usuarioId, [
+      PAGINA_CLIENTES,
+    ]);
     const where = {
       empresaId: usuario.empresaId,
       ...(usuario.esGestor
@@ -90,10 +89,9 @@ export class ClientesService {
   }
 
   private async exigirGestor(usuarioId: number) {
-    const usuario = await this.config.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+    const usuario = await this.accesoCampo.usuario(usuarioId, [
+      PAGINA_CLIENTES,
+    ]);
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede administrar clientes');
     }

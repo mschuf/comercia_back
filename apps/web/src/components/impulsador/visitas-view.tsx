@@ -3,52 +3,23 @@
 import { useEffect, useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
 import { urlFotoVisita } from "@/lib/api-archivos";
-import { obtenerUbicacion } from "@/lib/geolocalizacion";
 import { Modal } from "@/components/modal";
 import { Paginacion } from "@/components/paginacion";
 import { EditorProgramacionVisita } from "@/components/impulsador/editor-programacion-visita";
-import { VisitaActiva } from "@/components/impulsador/visita-activa";
-import { btnPrimary, errorBox } from "@/components/ui";
-import { formatoFecha, formatoFechaHora } from "@/utils/fechas";
+import { errorBox } from "@/components/ui";
+import { formatoFechaHora } from "@/utils/fechas";
 import {
   formatoFechaProgramacion,
   resumenProgramacion,
 } from "@/utils/programacion-visita";
-import type { ConfigImpulsador } from "@/types/impulsador-config";
-import type { Local } from "@/types/local";
 import type { RespuestaPaginada } from "@/types/paginacion";
-import type { Visita, VisitaEquipoLocal, VisitaResumen } from "@/types/visita";
+import type { VisitaEquipoLocal, VisitaResumen } from "@/types/visita";
 
 type Tab = "locales" | "historial";
 
 const badgeBase =
   "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium";
 const badgeZinc = `${badgeBase} bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400`;
-
-function Spinner() {
-  return (
-    <svg
-      className="h-4 w-4 animate-spin"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-    >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      />
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-      />
-    </svg>
-  );
-}
 
 function IconoEditar() {
   return (
@@ -142,32 +113,19 @@ function BotonFoto({
 }
 
 export function VisitasView() {
-  const [config, setConfig] = useState<ConfigImpulsador | null>(null);
-  const [errorConfig, setErrorConfig] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("locales");
   // se incrementa al finalizar una visita para refrescar ambos listados
   const [refresco, setRefresco] = useState(0);
 
-  // Tab "Mis locales"
+  // Tab de programación del equipo
   const [pageLocales, setPageLocales] = useState(1);
   const [limitLocales, setLimitLocales] = useState(7);
-  const [locales, setLocales] = useState<RespuestaPaginada<Local> | null>(null);
-  const [cargandoLocales, setCargandoLocales] = useState(true);
-  const [errorLocales, setErrorLocales] = useState<string | null>(null);
   const [equipo, setEquipo] =
     useState<RespuestaPaginada<VisitaEquipoLocal> | null>(null);
   const [cargandoEquipo, setCargandoEquipo] = useState(true);
   const [errorEquipo, setErrorEquipo] = useState<string | null>(null);
   const [editandoProgramacion, setEditandoProgramacion] =
     useState<VisitaEquipoLocal | null>(null);
-
-  // Inicio de visita (geolocalización + POST /visitas)
-  const [iniciando, setIniciando] = useState<number | null>(null);
-  const [errorInicio, setErrorInicio] = useState<{
-    localId: number;
-    mensaje: string;
-  } | null>(null);
-  const [visitaActiva, setVisitaActiva] = useState<Visita | null>(null);
 
   // Tab "Historial"
   const [pageHistorial, setPageHistorial] = useState(1);
@@ -180,56 +138,6 @@ export function VisitasView() {
   const [fotoAmpliada, setFotoAmpliada] = useState<string | null>(null);
 
   useEffect(() => {
-    let vigente = true;
-    apiFetch<ConfigImpulsador>("/operaciones-campo/config")
-      .then((c) => {
-        if (vigente) setConfig(c);
-      })
-      .catch((err) => {
-        if (vigente) {
-          setErrorConfig(
-            err instanceof ApiError
-              ? err.message
-              : "No se pudo cargar la configuración del módulo",
-          );
-        }
-      });
-    return () => {
-      vigente = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!config || config.esGestor) return;
-    let vigente = true;
-    apiFetch<RespuestaPaginada<Local>>(
-      `/locales?page=${pageLocales}&limit=${limitLocales}`,
-    )
-      .then((data) => {
-        if (vigente) {
-          setLocales(data);
-          setErrorLocales(null);
-        }
-      })
-      .catch((err) => {
-        if (vigente) {
-          setErrorLocales(
-            err instanceof ApiError
-              ? err.message
-              : "No se pudieron cargar los locales",
-          );
-        }
-      })
-      .finally(() => {
-        if (vigente) setCargandoLocales(false);
-      });
-    return () => {
-      vigente = false;
-    };
-  }, [config, pageLocales, limitLocales, refresco]);
-
-  useEffect(() => {
-    if (!config?.esGestor) return;
     let vigente = true;
     apiFetch<RespuestaPaginada<VisitaEquipoLocal>>(
       `/visitas/equipo?page=${pageLocales}&limit=${limitLocales}`,
@@ -255,7 +163,7 @@ export function VisitasView() {
     return () => {
       vigente = false;
     };
-  }, [config, pageLocales, limitLocales, refresco]);
+  }, [pageLocales, limitLocales, refresco]);
 
   useEffect(() => {
     if (tab !== "historial") return;
@@ -286,45 +194,6 @@ export function VisitasView() {
     };
   }, [tab, pageHistorial, limitHistorial, refresco]);
 
-  async function iniciarVisita(local: Local) {
-    if (iniciando !== null) return;
-    setErrorInicio(null);
-    setIniciando(local.id);
-    try {
-      const ubicacion = await obtenerUbicacion();
-      // Si ya había una visita abierta en este local, el back la devuelve
-      // y el flujo continúa donde quedó
-      const visita = await apiFetch<Visita>("/visitas", {
-        method: "POST",
-        body: JSON.stringify({
-          localId: local.id,
-          latitud: ubicacion.latitud,
-          longitud: ubicacion.longitud,
-        }),
-      });
-      setVisitaActiva(visita);
-    } catch (err) {
-      // los errores de geolocalización ya vienen en español
-      setErrorInicio({
-        localId: local.id,
-        mensaje:
-          err instanceof Error ? err.message : "No se pudo iniciar la visita",
-      });
-    } finally {
-      setIniciando(null);
-    }
-  }
-
-  if (!config) {
-    return errorConfig ? (
-      <p className={errorBox}>{errorConfig}</p>
-    ) : (
-      <p className="text-sm text-zinc-400">Cargando visitas...</p>
-    );
-  }
-
-  const puedeIniciarVisitas = config.esOperativo && !config.esGestor;
-  const itemsLocales = locales?.items ?? [];
   const itemsEquipo = equipo?.items ?? [];
   const itemsHistorial = historial?.items ?? [];
 
@@ -343,7 +212,7 @@ export function VisitasView() {
           onClick={() => setTab("locales")}
           className={tabClase("locales")}
         >
-          {config.esGestor ? "Programación" : "Mis locales"}
+          Programación
         </button>
         <button
           type="button"
@@ -356,301 +225,178 @@ export function VisitasView() {
 
       {tab === "locales" && (
         <div className="mt-6">
-          {config.esGestor ? (
-            cargandoEquipo && !equipo ? (
-              <p className="text-sm text-zinc-400">Cargando equipo...</p>
-            ) : errorEquipo && !equipo ? (
-              <p className={errorBox}>{errorEquipo}</p>
-            ) : (
-              <>
-                {errorEquipo && (
-                  <p className={`${errorBox} mb-4`}>{errorEquipo}</p>
-                )}
-
-                <div className="mb-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-                  <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
-                    Agenda de visitas
-                  </h2>
-                  <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                    Definí visitas únicas, semanales o mensuales. Cada local
-                    puede tener varios días y varios horarios por día.
-                  </p>
-                </div>
-
-                {itemsEquipo.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-10 text-center dark:border-zinc-700 dark:bg-zinc-900">
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                      Todavia no hay locales para supervisar.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-                    <table className="w-full min-w-[1080px] text-left text-sm">
-                      <thead>
-                        <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                          <th scope="col" className="px-4 py-3 font-medium">
-                            Local
-                          </th>
-                          <th scope="col" className="px-4 py-3 font-medium">
-                            Asignación
-                          </th>
-                          <th scope="col" className="px-4 py-3 font-medium">
-                            Programación
-                          </th>
-                          <th scope="col" className="px-4 py-3 font-medium">
-                            Próxima visita
-                          </th>
-                          <th scope="col" className="px-4 py-3 font-medium">
-                            Última visita
-                          </th>
-                          <th scope="col" className="px-4 py-3 font-medium">
-                            Estado
-                          </th>
-                          <th
-                            scope="col"
-                            className="px-4 py-3 text-right font-medium"
-                          >
-                            Acción
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {itemsEquipo.map((l) => {
-                          const ultima = l.ultimaVisita;
-                          return (
-                            <tr
-                              key={l.localId}
-                              className="border-b border-zinc-100 align-middle transition last:border-0 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
-                            >
-                              <td className="px-4 py-3">
-                                <span className="block font-semibold text-zinc-900 dark:text-zinc-100">
-                                  {l.localNombre}
-                                </span>
-                                <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
-                                  {l.clienteNombre}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3">
-                                <span className="block font-medium text-zinc-700 dark:text-zinc-200">
-                                  {l.asignadoA?.nombre ?? "Sin asignar"}
-                                </span>
-                                <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
-                                  {l.zona?.nombre ?? "Sin zona"}
-                                </span>
-                              </td>
-                              <td className="max-w-72 px-4 py-3">
-                                <span className="block text-sm text-zinc-700 dark:text-zinc-200">
-                                  {resumenProgramacion(l.programacion)}
-                                </span>
-                                {l.programacion?.fechaFin && (
-                                  <span className="mt-1 block text-xs text-zinc-500 dark:text-zinc-400">
-                                    Hasta{" "}
-                                    {formatoFechaProgramacion(
-                                      l.programacion.fechaFin,
-                                    )}
-                                  </span>
-                                )}
-                              </td>
-                              <td className="whitespace-nowrap px-4 py-3">
-                                <span
-                                  className={claseProximaVisita(l.fechaVisita)}
-                                >
-                                  {formatoFechaHora(l.fechaVisita)}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3">
-                                {ultima ? (
-                                  <div className="flex flex-col items-start gap-1">
-                                    <span className="whitespace-nowrap text-xs text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-                                      {formatoFechaHora(ultima.iniciadaEn)}
-                                    </span>
-                                    <span
-                                      className={`${badgeBase} ${
-                                        ultima.completadaEn
-                                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                                          : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
-                                      }`}
-                                    >
-                                      {ultima.completadaEn
-                                        ? "Completada"
-                                        : "En curso"}
-                                    </span>
-                                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                                      {ultima.tareasCompletadas}/
-                                      {ultima.tareasTotal} tareas
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <span className="text-zinc-400 dark:text-zinc-500">
-                                    Sin visitas
-                                  </span>
-                                )}
-                              </td>
-                              <td className="px-4 py-3">
-                                <span
-                                  className={`${badgeBase} ${
-                                    !l.activo ||
-                                    l.programacion?.activo === false
-                                      ? "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
-                                      : l.programacion
-                                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                                        : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
-                                  }`}
-                                >
-                                  {!l.activo
-                                    ? "Local inactivo"
-                                    : l.programacion?.activo === false
-                                      ? "Pausada"
-                                      : l.programacion
-                                        ? "Programada"
-                                        : "Sin programar"}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3 text-right">
-                                <button
-                                  type="button"
-                                  onClick={() => setEditandoProgramacion(l)}
-                                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-700 transition hover:border-brand-400 hover:bg-brand-50 hover:text-brand-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-brand-700 dark:hover:bg-brand-950 dark:hover:text-brand-200"
-                                >
-                                  <IconoEditar />
-                                  {l.programacion ? "Editar" : "Programar"}
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-
-                {equipo && equipo.total > 0 && (
-                  <Paginacion
-                    page={equipo.page}
-                    totalPages={equipo.totalPages}
-                    total={equipo.total}
-                    limit={equipo.limit}
-                    onPageChange={setPageLocales}
-                    onLimitChange={(l) => {
-                      setLimitLocales(l);
-                      setPageLocales(1);
-                    }}
-                  />
-                )}
-              </>
-            )
-          ) : cargandoLocales && !locales ? (
-            <p className="text-sm text-zinc-400">Cargando locales...</p>
-          ) : errorLocales && !locales ? (
-            <p className={errorBox}>{errorLocales}</p>
+          {cargandoEquipo && !equipo ? (
+            <p className="text-sm text-zinc-400">Cargando equipo...</p>
+          ) : errorEquipo && !equipo ? (
+            <p className={errorBox}>{errorEquipo}</p>
           ) : (
             <>
-              {errorLocales && (
-                <p className={`${errorBox} mb-4`}>{errorLocales}</p>
-              )}
-              {errorInicio && (
-                <p className={`${errorBox} mb-4`}>{errorInicio.mensaje}</p>
+              {errorEquipo && (
+                <p className={`${errorBox} mb-4`}>{errorEquipo}</p>
               )}
 
-              {itemsLocales.length === 0 ? (
+              <div className="mb-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+                <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
+                  Agenda de visitas
+                </h2>
+                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                  Definí visitas únicas, semanales o mensuales. Cada local puede
+                  tener varios días y varios horarios por día.
+                </p>
+              </div>
+
+              {itemsEquipo.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-10 text-center dark:border-zinc-700 dark:bg-zinc-900">
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    Todavía no tenés locales asignados para visitar.
+                    Todavia no hay locales para supervisar.
                   </p>
                 </div>
               ) : (
                 <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-                  <table className="w-full min-w-[820px] text-left text-sm">
+                  <table className="w-full min-w-[1080px] text-left text-sm">
                     <thead>
                       <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
                         <th scope="col" className="px-4 py-3 font-medium">
                           Local
                         </th>
                         <th scope="col" className="px-4 py-3 font-medium">
-                          Zona
+                          Asignación
+                        </th>
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Programación
                         </th>
                         <th scope="col" className="px-4 py-3 font-medium">
                           Próxima visita
                         </th>
                         <th scope="col" className="px-4 py-3 font-medium">
-                          Tareas
+                          Última visita
                         </th>
                         <th scope="col" className="px-4 py-3 font-medium">
-                          Presencia
+                          Estado
                         </th>
-                        {puedeIniciarVisitas && (
-                          <th
-                            scope="col"
-                            className="px-4 py-3 text-right font-medium"
-                          >
-                            Acción
-                          </th>
-                        )}
+                        <th
+                          scope="col"
+                          className="px-4 py-3 text-right font-medium"
+                        >
+                          Acción
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {itemsLocales.map((l) => (
-                        <tr
-                          key={l.id}
-                          className="border-b border-zinc-100 align-middle transition last:border-0 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
-                        >
-                          <td className="px-4 py-3">
-                            <span className="block font-semibold text-zinc-900 dark:text-zinc-100">
-                              {l.nombre}
-                            </span>
-                            <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
-                              {l.cliente.nombre}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
-                            {l.zona?.nombre ?? "Sin zona"}
-                          </td>
-                          <td className="px-4 py-3">
-                            <span className={claseProximaVisita(l.fechaVisita)}>
-                              {formatoFecha(l.fechaVisita)}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3 text-zinc-600 [font-variant-numeric:tabular-nums] dark:text-zinc-300">
-                            {l.tareasCount}{" "}
-                            {l.tareasCount === 1 ? "tarea" : "tareas"}
-                          </td>
-                          <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
-                            {l.requiereFotoPresencia
-                              ? "Foto requerida"
-                              : "Opcional"}
-                          </td>
-                          {puedeIniciarVisitas && (
+                      {itemsEquipo.map((l) => {
+                        const ultima = l.ultimaVisita;
+                        return (
+                          <tr
+                            key={l.localId}
+                            className="border-b border-zinc-100 align-middle transition last:border-0 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
+                          >
+                            <td className="px-4 py-3">
+                              <span className="block font-semibold text-zinc-900 dark:text-zinc-100">
+                                {l.localNombre}
+                              </span>
+                              <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                                {l.clienteNombre}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className="block font-medium text-zinc-700 dark:text-zinc-200">
+                                {l.asignadoA?.nombre ?? "Sin asignar"}
+                              </span>
+                              <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                                {l.zona?.nombre ?? "Sin zona"}
+                              </span>
+                            </td>
+                            <td className="max-w-72 px-4 py-3">
+                              <span className="block text-sm text-zinc-700 dark:text-zinc-200">
+                                {resumenProgramacion(l.programacion)}
+                              </span>
+                              {l.programacion?.fechaFin && (
+                                <span className="mt-1 block text-xs text-zinc-500 dark:text-zinc-400">
+                                  Hasta{" "}
+                                  {formatoFechaProgramacion(
+                                    l.programacion.fechaFin,
+                                  )}
+                                </span>
+                              )}
+                            </td>
+                            <td className="whitespace-nowrap px-4 py-3">
+                              <span
+                                className={claseProximaVisita(l.fechaVisita)}
+                              >
+                                {formatoFechaHora(l.fechaVisita)}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3">
+                              {ultima ? (
+                                <div className="flex flex-col items-start gap-1">
+                                  <span className="whitespace-nowrap text-xs text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                                    {formatoFechaHora(ultima.iniciadaEn)}
+                                  </span>
+                                  <span
+                                    className={`${badgeBase} ${
+                                      ultima.completadaEn
+                                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                                        : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                                    }`}
+                                  >
+                                    {ultima.completadaEn
+                                      ? "Completada"
+                                      : "En curso"}
+                                  </span>
+                                  <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                                    {ultima.tareasCompletadas}/
+                                    {ultima.tareasTotal} tareas
+                                  </span>
+                                </div>
+                              ) : (
+                                <span className="text-zinc-400 dark:text-zinc-500">
+                                  Sin visitas
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-4 py-3">
+                              <span
+                                className={`${badgeBase} ${
+                                  !l.activo || l.programacion?.activo === false
+                                    ? "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                                    : l.programacion
+                                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                                      : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                                }`}
+                              >
+                                {!l.activo
+                                  ? "Local inactivo"
+                                  : l.programacion?.activo === false
+                                    ? "Pausada"
+                                    : l.programacion
+                                      ? "Programada"
+                                      : "Sin programar"}
+                              </span>
+                            </td>
                             <td className="px-4 py-3 text-right">
                               <button
                                 type="button"
-                                onClick={() => iniciarVisita(l)}
-                                disabled={iniciando !== null}
-                                className={`${btnPrimary} h-11 whitespace-nowrap gap-2`}
+                                onClick={() => setEditandoProgramacion(l)}
+                                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-700 transition hover:border-brand-400 hover:bg-brand-50 hover:text-brand-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-brand-700 dark:hover:bg-brand-950 dark:hover:text-brand-200"
                               >
-                                {iniciando === l.id ? (
-                                  <>
-                                    <Spinner />
-                                    Obteniendo ubicación…
-                                  </>
-                                ) : (
-                                  "Iniciar visita"
-                                )}
+                                <IconoEditar />
+                                {l.programacion ? "Editar" : "Programar"}
                               </button>
                             </td>
-                          )}
-                        </tr>
-                      ))}
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
               )}
 
-              {locales && locales.total > 0 && (
+              {equipo && equipo.total > 0 && (
                 <Paginacion
-                  page={locales.page}
-                  totalPages={locales.totalPages}
-                  total={locales.total}
-                  limit={locales.limit}
+                  page={equipo.page}
+                  totalPages={equipo.totalPages}
+                  total={equipo.total}
+                  limit={equipo.limit}
                   onPageChange={setPageLocales}
                   onLimitChange={(l) => {
                     setLimitLocales(l);
@@ -689,11 +435,9 @@ export function VisitasView() {
                         <th scope="col" className="px-4 py-3 font-medium">
                           Local
                         </th>
-                        {config.esGestor && (
-                          <th scope="col" className="px-4 py-3 font-medium">
-                            Usuario
-                          </th>
-                        )}
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Usuario
+                        </th>
                         <th scope="col" className="px-4 py-3 font-medium">
                           Iniciada
                         </th>
@@ -720,9 +464,7 @@ export function VisitasView() {
                           <td className="px-4 py-3 font-medium">
                             {v.localNombre}
                           </td>
-                          {config.esGestor && (
-                            <td className="px-4 py-3">{v.usuarioNombre}</td>
-                          )}
+                          <td className="px-4 py-3">{v.usuarioNombre}</td>
                           <td className="whitespace-nowrap px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
                             {formatoFechaHora(v.iniciadaEn)}
                           </td>
@@ -769,17 +511,6 @@ export function VisitasView() {
           local={editandoProgramacion}
           onCerrar={() => setEditandoProgramacion(null)}
           onGuardada={() => setRefresco((actual) => actual + 1)}
-        />
-      )}
-
-      {visitaActiva && (
-        <VisitaActiva
-          visita={visitaActiva}
-          onCerrar={() => setVisitaActiva(null)}
-          onFinalizada={() => {
-            setVisitaActiva(null);
-            setRefresco((n) => n + 1);
-          }}
         />
       )}
 

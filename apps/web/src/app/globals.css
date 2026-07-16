@@ -83,3 +83,144 @@ body {
     Arial,
     sans-serif;
 }
+
+@keyframes ruta-flujo {
+  to { stroke-dashoffset: -50; }
+}
+
+@keyframes ruta-pulso {
+  0%, 100% { transform: scale(1); opacity: 0.55; }
+  50% { transform: scale(1.45); opacity: 0; }
+}
+
+@keyframes ruta-flotar {
+  0%, 100% { transform: translateY(0) rotate(5deg); }
+  50% { transform: translateY(-5px) rotate(-5deg); }
+}
+
+@keyframes ruta-orbitar {
+  to { transform: rotate(360deg); }
+}
+
+.ruta-trazo-animado,
+.mapa-area-animada {
+  animation: ruta-flujo 1.35s linear infinite;
+}
+
+.ruta-pin-contenedor,
+.mapa-pin-contenedor,
+.ruta-vehiculo-contenedor {
+  background: transparent;
+  border: 0;
+}
+
+.ruta-pin {
+  position: relative;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 3px solid white;
+  border-radius: 50% 50% 50% 10%;
+  background: var(--ruta-pin-color);
+  color: white;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: 0 8px 22px rgb(15 23 42 / 35%);
+  transform: rotate(-45deg);
+}
+
+.ruta-pin span { transform: rotate(45deg); }
+
+.ruta-pin-activo::before,
+.ruta-origen::before,
+.mapa-pin::before {
+  position: absolute;
+  inset: -8px;
+  content: "";
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  animation: ruta-pulso 1.8s ease-out infinite;
+}
+
+.ruta-vehiculo {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 3px solid white;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  box-shadow: 0 10px 28px rgb(49 46 129 / 45%);
+  animation: ruta-flotar 2s ease-in-out infinite;
+}
+
+.ruta-vehiculo svg { width: 22px; height: 22px; }
+
+.ruta-origen {
+  position: relative;
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border: 4px solid white;
+  border-radius: 999px;
+  background: #0ea5e9;
+  color: #0ea5e9;
+  box-shadow: 0 5px 16px rgb(2 132 199 / 45%);
+}
+
+.mapa-pin {
+  position: relative;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 3px solid white;
+  border-radius: 50% 50% 50% 8px;
+  background: var(--mapa-pin-color);
+  color: var(--mapa-pin-color);
+  box-shadow: 0 7px 20px rgb(15 23 42 / 38%);
+  transform: rotate(-45deg);
+  transition: filter 180ms ease, transform 180ms ease;
+}
+
+.mapa-pin span {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: white;
+}
+
+.mapa-pin:hover {
+  filter: brightness(1.12);
+  transform: rotate(-45deg) scale(1.12);
+}
+
+.ruta-orbita,
+.mapa-radar {
+  animation: ruta-orbitar 24s linear infinite;
+}
+
+.ruta-orbita::before,
+.mapa-radar::before {
+  position: absolute;
+  inset: 20%;
+  content: "";
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ruta-trazo-animado,
+  .mapa-area-animada,
+  .ruta-pin-activo::before,
+  .ruta-origen::before,
+  .mapa-pin::before,
+  .ruta-vehiculo,
+  .ruta-orbita,
+  .mapa-radar {
+    animation: none !important;
+  }
+}

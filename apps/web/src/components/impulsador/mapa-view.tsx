@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { motion } from "motion/react";
 import { apiFetch, ApiError } from "@/lib/api";
 import { Modal } from "@/components/modal";
 import { IconoMas } from "@/components/icono-mas";
@@ -1025,15 +1026,52 @@ export function MapaView() {
 
   return (
     <div>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        {esGestor
-          ? "Organizá territorios y zonas, buscá responsables y seleccioná un área para centrarla, moverla o editar sus límites."
-          : "Consultá los territorios, las zonas y los locales de tu empresa sobre el mapa."}
-      </p>
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-emerald-950 to-brand-700 p-5 text-white shadow-xl shadow-emerald-950/15 sm:p-6">
+        <div className="mapa-radar absolute -right-12 -top-20 h-60 w-60 rounded-full border border-emerald-200/15" />
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative"
+        >
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-200">
+            Centro de operaciones
+          </p>
+          <h2 className="mt-2 text-2xl font-bold tracking-tight sm:text-3xl">
+            Cobertura del equipo en un solo mapa
+          </h2>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-emerald-50/80">
+            {esGestor
+              ? "Organizá territorios y zonas, ubicá responsables y ajustá visualmente la cobertura de cada repositor."
+              : "Consultá los territorios, las zonas y los locales habilitados para tu empresa."}
+          </p>
+          <div className="mt-5 grid grid-cols-3 gap-2 sm:max-w-lg sm:gap-3">
+            {[
+              [datos.territorios.length, "Territorios"],
+              [datos.zonas.length, "Zonas"],
+              [datos.locales.length, "Locales"],
+            ].map(([cantidad, etiqueta], indice) => (
+              <motion.div
+                key={etiqueta}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 + indice * 0.07 }}
+                className="rounded-2xl border border-white/15 bg-white/10 px-3 py-3 backdrop-blur"
+              >
+                <span className="block text-xl font-black sm:text-2xl">
+                  {cantidad}
+                </span>
+                <span className="block truncate text-[11px] text-emerald-100/80 sm:text-xs">
+                  {etiqueta}
+                </span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </section>
 
       {errorCarga && <p className={`${errorBox} mt-4`}>{errorCarga}</p>}
 
-      <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-start">
+      <div className="mt-5 flex flex-col gap-4 rounded-3xl bg-gradient-to-br from-emerald-50/60 via-transparent to-sky-50/60 p-1 lg:flex-row lg:items-start dark:from-emerald-950/15 dark:to-sky-950/15">
         {/* Panel lateral (acordeón en mobile) */}
         <div className="lg:w-[23rem] lg:shrink-0">
           <button

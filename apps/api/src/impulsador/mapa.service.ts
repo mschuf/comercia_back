@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ConfigImpulsadorService } from './config-impulsador.service';
+import { AccesoOperacionesCampoService } from './acceso-operaciones-campo.service';
 import { PAGINA_MAPA } from './impulsador.constants';
 import { aTerritorioDto, SELECT_TERRITORIO } from './territorios.service';
 import { aZonaDto, SELECT_ZONA } from './zonas.service';
@@ -62,15 +62,13 @@ function aLocalMapaDto(l: LocalParaMapa): LocalMapaDto {
 export class MapaService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configImpulsador: ConfigImpulsadorService,
+    private readonly accesoCampo: AccesoOperacionesCampoService,
   ) {}
 
   // Todo lo que la vista de mapa necesita en una sola llamada. Sirve también a
   // la vista de locales, por eso alcanza con acceso a alguna de las dos páginas.
   async datos(usuarioId: number): Promise<MapaDatosDto> {
-    const usuario = await this.configImpulsador.usuarioImpulsador(usuarioId, [
-      PAGINA_MAPA,
-    ]);
+    const usuario = await this.accesoCampo.usuario(usuarioId, [PAGINA_MAPA]);
 
     // Gestor: todos los locales de su empresa; operativo: solo los suyos
     const whereLocales = usuario.esGestor

@@ -7,13 +7,11 @@ import {
 } from '@nestjs/common';
 import { AuthService } from '../auth/auth.service';
 import { hashPassword } from '../auth/utils/password';
-import { esRolAdminUsuarios } from '../common/utils/roles-impulsador';
 import {
   rangoPaginacion,
   respuestaPaginada,
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
-import { ConfigImpulsadorService } from '../impulsador/config-impulsador.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   ActualizarUsuarioDto,
@@ -24,6 +22,7 @@ import type {
   MetaUsuariosDto,
   UsuarioAdminDto,
 } from './interfaces/usuario-admin.interface';
+import { esRolAdminUsuarios } from './utils/rol-admin-usuarios';
 
 const SELECT_USUARIO_ADMIN = {
   id: true,
@@ -58,7 +57,6 @@ type UsuarioFila = {
 interface ContextoAdmin {
   id: number;
   empresaId: number;
-  rolId: number | null;
   esSuperadmin: boolean;
 }
 
@@ -90,7 +88,6 @@ export class UsuariosService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly auth: AuthService,
-    private readonly config: ConfigImpulsadorService,
   ) {}
 
   private async contexto(usuarioId: number): Promise<ContextoAdmin> {
@@ -99,7 +96,6 @@ export class UsuariosService {
       select: {
         id: true,
         empresaId: true,
-        rolId: true,
         esSuperadmin: true,
         isActive: true,
         rol: { select: { descripcion: true } },
@@ -107,12 +103,7 @@ export class UsuariosService {
     });
     if (!actual || !actual.isActive) throw new UnauthorizedException();
     if (!actual.esSuperadmin) {
-      const config = await this.config.deEmpresa(actual.empresaId);
-      const permitido = esRolAdminUsuarios(
-        actual.rolId,
-        actual.rol?.descripcion ?? null,
-        config.rolAdminUsuarioIds,
-      );
+      const permitido = esRolAdminUsuarios(actual.rol?.descripcion ?? null);
       if (!permitido) {
         throw new ForbiddenException(
           'No tenés permiso para administrar usuarios',
@@ -122,7 +113,6 @@ export class UsuariosService {
     return {
       id: actual.id,
       empresaId: actual.empresaId,
-      rolId: actual.rolId,
       esSuperadmin: actual.esSuperadmin,
     };
   }

@@ -19,4 +19,8 @@ export default () => ({
   uploads: {
     dir: process.env.UPLOADS_DIR ?? './uploads',
   },
+  routing: {
+    osrmBaseUrl: process.env.OSRM_BASE_URL,
+    osrmTimeoutMs: Number(process.env.OSRM_TIMEOUT_MS),
+  },
 });

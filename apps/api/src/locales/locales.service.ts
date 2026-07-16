@@ -4,9 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ConfigImpulsadorService } from '../impulsador/config-impulsador.service';
-import { PAGINAS_OPERACION_CAMPO } from '../impulsador/impulsador.constants';
-import type { UsuarioImpulsador } from '../impulsador/interfaces/usuario-impulsador.interface';
+import { AccesoOperacionesCampoService } from '../impulsador/acceso-operaciones-campo.service';
+import {
+  PAGINA_CLIENTES,
+  RADIO_METROS_DEFECTO,
+} from '../impulsador/impulsador.constants';
+import type { UsuarioOperacionesCampo } from '../impulsador/interfaces/usuario-operaciones-campo.interface';
 import {
   respuestaPaginada,
   rangoPaginacion,
@@ -104,17 +107,11 @@ function aLocalDto(local: LocalConRelaciones): LocalDto {
 export class LocalesService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configImpulsador: ConfigImpulsadorService,
+    private readonly accesoCampo: AccesoOperacionesCampoService,
   ) {}
 
-  private usuarioActual(usuarioId: number): Promise<UsuarioImpulsador> {
-    // El acceso por página y el permiso gestor/operativo salen de la config
-    // de operaciones de campo. Alcanza con ver alguna de sus páginas.
-    // porque las vistas de mapa y de visitas también listan locales.
-    return this.configImpulsador.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+  private usuarioActual(usuarioId: number): Promise<UsuarioOperacionesCampo> {
+    return this.accesoCampo.usuario(usuarioId, [PAGINA_CLIENTES]);
   }
 
   // Team Leader: todos los locales de su empresa. Repositor: solo los suyos.
@@ -151,33 +148,7 @@ export class LocalesService {
     if (!actual.esGestor) {
       throw new ForbiddenException('Solo un gestor puede asignar locales');
     }
-    const config = await this.configImpulsador.deEmpresa(actual.empresaId);
-    const usuarios = await this.prisma.usuario.findMany({
-      where: {
-        empresaId: actual.empresaId,
-        isActive: true,
-        // Si la empresa configuró roles operativos, el select solo ofrece
-        // usuarios de esos roles; lista vacía = cualquier usuario activo
-        ...(config.rolOperativoIds.length > 0
-          ? { rolId: { in: config.rolOperativoIds } }
-          : {}),
-      },
-      select: {
-        id: true,
-        nombre: true,
-        apellido: true,
-        nombreLogin: true,
-        rol: { select: { descripcion: true } },
-      },
-      orderBy: [{ nombre: 'asc' }, { apellido: 'asc' }],
-      take: 200,
-    });
-    return usuarios.map((u) => ({
-      id: u.id,
-      nombre: `${u.nombre} ${u.apellido}`.trim(),
-      nombreLogin: u.nombreLogin,
-      rol: u.rol?.descripcion ?? null,
-    }));
+    return this.accesoCampo.repositoresAsignables(actual.empresaId);
   }
 
   // El usuario asignado debe existir, estar activo y ser de la misma empresa
@@ -382,7 +353,7 @@ export class LocalesService {
       tareas: local.cliente.tareas.map(aTareaLocalDto),
       descripcionTareas: local.cliente.descripcionTareas,
       imagenReferencia: local.cliente.imagenReferencia,
-      radioMetrosEfectivo: local.radioMetros ?? actual.radioMetrosDefecto,
+      radioMetrosEfectivo: local.radioMetros ?? RADIO_METROS_DEFECTO,
     };
   }
 

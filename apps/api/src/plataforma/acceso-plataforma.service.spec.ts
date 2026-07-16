@@ -9,8 +9,9 @@ jest.mock('../prisma/prisma.service', () => ({
 describe('AccesoPlataformaService', () => {
   const prisma = {
     usuario: { findUnique: jest.fn() },
-    empresaModulo: { findMany: jest.fn() },
-    empresaPagina: { findMany: jest.fn() },
+    modulo: { findUnique: jest.fn() },
+    empresaModulo: { findMany: jest.fn(), findUnique: jest.fn() },
+    empresaPagina: { findMany: jest.fn(), findUnique: jest.fn() },
   };
   const service = new AccesoPlataformaService(
     prisma as unknown as PrismaService,
@@ -32,7 +33,7 @@ describe('AccesoPlataformaService', () => {
       {
         todasLasPaginas: true,
         rolIds: [5],
-        modulo: { paginas: [{ id: 100 }] },
+        modulo: { ruta: 'team-leader', paginas: [{ id: 100 }] },
       },
     ]);
 
@@ -45,12 +46,25 @@ describe('AccesoPlataformaService', () => {
     ).resolves.toEqual({ id: 10, empresaId: 20, rolId: 5 });
   });
 
+  it('rechaza una página apagada aunque la empresa tenga todo el módulo', async () => {
+    prisma.modulo.findUnique.mockResolvedValue({
+      id: 8,
+      activo: true,
+      paginas: [{ id: 15, activo: false }],
+    });
+
+    await expect(
+      service.exigirAccesoPagina(10, 'repositor', 'clientes'),
+    ).rejects.toBeInstanceOf(ForbiddenException);
+    expect(prisma.empresaModulo.findUnique).not.toHaveBeenCalled();
+  });
+
   it('autoriza una página específica del módulo Repositor', async () => {
     prisma.empresaModulo.findMany.mockResolvedValue([
       {
         todasLasPaginas: false,
         rolIds: [5],
-        modulo: { paginas: [{ id: 200 }] },
+        modulo: { ruta: 'repositor', paginas: [{ id: 200 }] },
       },
     ]);
     prisma.empresaPagina.findMany.mockResolvedValue([
@@ -71,7 +85,7 @@ describe('AccesoPlataformaService', () => {
       {
         todasLasPaginas: true,
         rolIds: [6],
-        modulo: { paginas: [{ id: 200 }] },
+        modulo: { ruta: 'repositor', paginas: [{ id: 200 }] },
       },
     ]);
 
@@ -100,5 +114,34 @@ describe('AccesoPlataformaService', () => {
       ),
     ).rejects.toBeInstanceOf(UnauthorizedException);
     expect(prisma.empresaModulo.findMany).not.toHaveBeenCalled();
+  });
+
+  it('informa cada módulo que autoriza la funcionalidad compartida', async () => {
+    prisma.empresaModulo.findMany.mockResolvedValue([
+      {
+        todasLasPaginas: true,
+        rolIds: [5],
+        modulo: { ruta: 'team-leader', paginas: [{ id: 100 }] },
+      },
+      {
+        todasLasPaginas: false,
+        rolIds: [5],
+        modulo: { ruta: 'repositor', paginas: [{ id: 200 }] },
+      },
+    ]);
+    prisma.empresaPagina.findMany.mockResolvedValue([
+      { paginaId: 200, rolIds: [5] },
+    ]);
+
+    await expect(
+      service.exigirAccesosPaginasEnModulos(
+        10,
+        ['team-leader', 'repositor'],
+        ['clientes'],
+      ),
+    ).resolves.toEqual({
+      usuario: { id: 10, empresaId: 20, rolId: 5 },
+      modulosRutas: ['team-leader', 'repositor'],
+    });
   });
 });

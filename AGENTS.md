@@ -29,6 +29,20 @@
 - Prisma generate: `npm run prisma:generate`
 - Prisma migrate: `npm run prisma:migrate`
 
+## Servidores locales: apagado obligatorio para agentes
+
+- El backend y el frontend pueden levantarse temporalmente para pruebas manuales
+  o de integración (`npm run dev`, `npm run dev:api`, `npm run dev:web`).
+- **Antes de entregar la respuesta final, detener siempre cualquier instancia
+  local del backend o frontend de este repositorio**, incluso si ya estaba
+  encendida al comenzar la tarea, salvo que el usuario pida explícitamente
+  mantenerla activa.
+- Verificar al final que no haya listeners de Comercia en los puertos `3000`
+  (Next.js) ni `3001` (NestJS). Un build o una prueba no justifica dejar un
+  servidor ejecutándose en segundo plano.
+- No detener procesos ajenos: antes de apagar un PID, comprobar que corresponde
+  a este workspace o a sus puertos locales `3000`/`3001`.
+
 ## Frontend Rules
 
 - Read `apps/web/AGENTS.md` before changing Next.js code.

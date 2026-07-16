@@ -25,6 +25,8 @@ const rawEnvSchema = z.object({
   COOKIE_SECRET: z.string().min(32).optional(),
   // Carpeta donde se guardan los archivos subidos (fotos de visitas)
   UPLOADS_DIR: z.string().min(1).default('./uploads'),
+  OSRM_BASE_URL: z.string().url().default('https://router.project-osrm.org'),
+  OSRM_TIMEOUT_MS: z.coerce.number().int().min(1000).max(30000).default(8000),
 });
 
 export type Env = z.infer<typeof rawEnvSchema> & {

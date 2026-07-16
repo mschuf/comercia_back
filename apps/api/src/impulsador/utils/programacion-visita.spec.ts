@@ -1,5 +1,8 @@
 import type { ProgramacionVisitaCalculo } from '../interfaces/programacion-visita.interface';
-import { proximaOcurrenciaVisita } from './programacion-visita';
+import {
+  ocurrenciasVisitaEnDia,
+  proximaOcurrenciaVisita,
+} from './programacion-visita';
 
 function base(
   cambios: Partial<ProgramacionVisitaCalculo> = {},
@@ -65,5 +68,35 @@ describe('proximaOcurrenciaVisita', () => {
       new Date('2026-07-15T10:00:00.000Z'),
     );
     expect(resultado).toBeNull();
+  });
+});
+
+describe('ocurrenciasVisitaEnDia', () => {
+  it('devuelve todos los horarios del día en la zona configurada', () => {
+    const resultado = ocurrenciasVisitaEnDia(
+      base({
+        zonaHoraria: 'America/Asuncion',
+        fechaInicio: new Date('2026-07-15T00:00:00.000Z'),
+      }),
+      new Date('2026-07-15T12:00:00.000Z'),
+    );
+
+    expect(resultado.map((fecha) => fecha.toISOString())).toEqual([
+      '2026-07-15T12:00:00.000Z',
+      '2026-07-15T18:00:00.000Z',
+    ]);
+  });
+
+  it('no inventa una ocurrencia en un día fuera de la frecuencia', () => {
+    const resultado = ocurrenciasVisitaEnDia(
+      base({
+        frecuencia: 'SEMANAL',
+        fechaInicio: new Date('2026-07-13T00:00:00.000Z'),
+        diasSemana: [1],
+      }),
+      new Date('2026-07-15T12:00:00.000Z'),
+    );
+
+    expect(resultado).toEqual([]);
   });
 });

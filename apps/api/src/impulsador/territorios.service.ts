@@ -12,8 +12,8 @@ import {
   respuestaPaginada,
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
-import { ConfigImpulsadorService } from './config-impulsador.service';
-import { PAGINAS_OPERACION_CAMPO } from './impulsador.constants';
+import { AccesoOperacionesCampoService } from './acceso-operaciones-campo.service';
+import { PAGINA_MAPA } from './impulsador.constants';
 import {
   ActualizarTerritorioDto,
   CrearTerritorioDto,
@@ -89,7 +89,7 @@ export function poligonoParaGuardar(
 export class TerritoriosService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configImpulsador: ConfigImpulsadorService,
+    private readonly accesoCampo: AccesoOperacionesCampoService,
   ) {}
 
   // Lectura para cualquier usuario con acceso al módulo (gestor u operativo)
@@ -97,10 +97,7 @@ export class TerritoriosService {
     usuarioId: number,
     paginacion: PaginacionDto,
   ): Promise<RespuestaPaginada<TerritorioDto>> {
-    const usuario = await this.configImpulsador.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+    const usuario = await this.accesoCampo.usuario(usuarioId, [PAGINA_MAPA]);
     const where = usuario.esGestor
       ? { empresaId: usuario.empresaId }
       : {
@@ -132,10 +129,7 @@ export class TerritoriosService {
   // a la paginación estándar: el front los necesita todos juntos; el take fijo
   // acota el peor caso sin cambiar el uso real (decenas por empresa).
   async todos(usuarioId: number): Promise<TerritorioDto[]> {
-    const usuario = await this.configImpulsador.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+    const usuario = await this.accesoCampo.usuario(usuarioId, [PAGINA_MAPA]);
     const territorios = await this.prisma.territorio.findMany({
       where: usuario.esGestor
         ? { empresaId: usuario.empresaId, activo: true }
@@ -157,15 +151,12 @@ export class TerritoriosService {
     usuarioId: number,
     dto: CrearTerritorioDto,
   ): Promise<TerritorioDto> {
-    const usuario = await this.configImpulsador.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+    const usuario = await this.accesoCampo.usuario(usuarioId, [PAGINA_MAPA]);
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede crear territorios');
     }
     if (dto.responsableId != null) {
-      await this.configImpulsador.validarResponsableTerritorio(
+      await this.accesoCampo.validarResponsableTerritorio(
         usuario.empresaId,
         dto.responsableId,
       );
@@ -205,16 +196,13 @@ export class TerritoriosService {
     id: number,
     dto: ActualizarTerritorioDto,
   ): Promise<TerritorioDto> {
-    const usuario = await this.configImpulsador.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+    const usuario = await this.accesoCampo.usuario(usuarioId, [PAGINA_MAPA]);
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede editar territorios');
     }
     await this.territorioDeEmpresa(id, usuario.empresaId);
     if (dto.responsableId != null) {
-      await this.configImpulsador.validarResponsableTerritorio(
+      await this.accesoCampo.validarResponsableTerritorio(
         usuario.empresaId,
         dto.responsableId,
       );
@@ -234,10 +222,7 @@ export class TerritoriosService {
   }
 
   async eliminar(usuarioId: number, id: number): Promise<{ ok: true }> {
-    const usuario = await this.configImpulsador.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+    const usuario = await this.accesoCampo.usuario(usuarioId, [PAGINA_MAPA]);
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede eliminar territorios');
     }

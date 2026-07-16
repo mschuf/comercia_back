@@ -5,12 +5,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ConfigImpulsadorService } from '../impulsador/config-impulsador.service';
+import { AccesoOperacionesCampoService } from '../impulsador/acceso-operaciones-campo.service';
 import {
   MAX_TAREAS_POR_LOCAL,
-  PAGINAS_OPERACION_CAMPO,
+  PAGINA_TAREAS,
 } from '../impulsador/impulsador.constants';
-import type { UsuarioImpulsador } from '../impulsador/interfaces/usuario-impulsador.interface';
+import type { UsuarioOperacionesCampo } from '../impulsador/interfaces/usuario-operaciones-campo.interface';
 import {
   ActualizarTareaLocalDto,
   CrearTareaLocalDto,
@@ -50,14 +50,11 @@ export function aTareaLocalDto(tarea: TareaLocalFila): TareaLocalDto {
 export class TareasLocalService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configImpulsador: ConfigImpulsadorService,
+    private readonly accesoCampo: AccesoOperacionesCampoService,
   ) {}
 
-  private usuarioActual(usuarioId: number): Promise<UsuarioImpulsador> {
-    return this.configImpulsador.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+  private usuarioActual(usuarioId: number): Promise<UsuarioOperacionesCampo> {
+    return this.accesoCampo.usuario(usuarioId, [PAGINA_TAREAS]);
   }
 
   private async clienteDeEmpresa(

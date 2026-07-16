@@ -18,7 +18,6 @@ import { formatoFechaHora } from "@/utils/fechas";
 import type { RespuestaPaginada } from "@/types/paginacion";
 import type { Local, UsuarioAsignable } from "@/types/local";
 import type { Zona } from "@/types/territorio";
-import type { ConfigImpulsador } from "@/types/impulsador-config";
 import type { Cliente } from "@/types/cliente";
 
 // Leaflet solo existe en el navegador: import dinámico sin SSR
@@ -39,7 +38,7 @@ interface FormLocal {
   longitud: string;
   usuarioId: number | "";
   zonaId: number | "";
-  // Texto libre del input numérico; "" = usa el radio por defecto de la config
+  // Texto libre del input numérico; "" = usa el radio general de 200 metros
   radioMetros: string;
   requiereFotoPresencia: boolean;
   activo: boolean;
@@ -85,11 +84,6 @@ export function LocalesView({
   clienteInicial,
   onLimpiarCliente,
 }: LocalesViewProps) {
-  // La regla de qué roles gestionan vive en el backend: mientras la config
-  // carga nos comportamos como no-gestor (sin botones de gestión).
-  const [config, setConfig] = useState<ConfigImpulsador | null>(null);
-  const esGestor = config?.esGestor ?? false;
-
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(7);
   const [clienteIdFiltro, setClienteIdFiltro] = useState<number | "">(
@@ -168,18 +162,6 @@ export function LocalesView({
 
   useEffect(() => {
     let vigente = true;
-    apiFetch<ConfigImpulsador>("/operaciones-campo/config")
-      .then((data) => {
-        if (vigente) setConfig(data);
-      })
-      .catch(() => undefined);
-    return () => {
-      vigente = false;
-    };
-  }, []);
-
-  useEffect(() => {
-    let vigente = true;
     apiFetch<RespuestaPaginada<Cliente>>("/clientes?page=1&limit=50")
       .then((data) => {
         if (vigente) setClientes(data.items.filter((c) => c.activo));
@@ -191,7 +173,6 @@ export function LocalesView({
   }, []);
 
   useEffect(() => {
-    if (!esGestor) return;
     let vigente = true;
     Promise.all([
       apiFetch<UsuarioAsignable[]>("/locales/usuarios-asignables"),
@@ -207,7 +188,7 @@ export function LocalesView({
     return () => {
       vigente = false;
     };
-  }, [esGestor]);
+  }, []);
 
   function abrirNuevo() {
     setForm({
@@ -373,22 +354,18 @@ export function LocalesView({
         <div>
           <h2 className="text-xl font-bold">Locales</h2>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            {esGestor
-              ? "Filtrá por cliente o repositor y administrá los puntos de visita."
-              : "Estos son los locales que te asignó tu líder."}
+            Filtrá por cliente o repositor y administrá los puntos de visita.
           </p>
         </div>
-        {esGestor && (
-          <button
-            type="button"
-            onClick={abrirNuevo}
-            aria-label="Crear local"
-            title="Crear local"
-            className={`${btnPrimary} h-11 w-11 shrink-0 p-0`}
-          >
-            <IconoMas className="h-5 w-5" />
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={abrirNuevo}
+          aria-label="Crear local"
+          title="Crear local"
+          className={`${btnPrimary} h-11 w-11 shrink-0 p-0`}
+        >
+          <IconoMas className="h-5 w-5" />
+        </button>
       </div>
 
       <div className="mt-4 flex flex-col gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3 sm:flex-row sm:items-end dark:border-zinc-800 dark:bg-zinc-950/60">
@@ -420,29 +397,27 @@ export function LocalesView({
             ))}
           </select>
         </label>
-        {esGestor && (
-          <label className={`${labelBase} min-w-0 sm:w-64`}>
-            Repositor
-            <select
-              value={usuarioIdFiltro}
-              onChange={(e) => {
-                setUsuarioIdFiltro(
-                  e.target.value === "" ? "" : Number(e.target.value),
-                );
-                setPage(1);
-              }}
-              className={inputBase}
-            >
-              <option value="">Todos los repositores</option>
-              {asignables.map((usuario) => (
-                <option key={usuario.id} value={usuario.id}>
-                  {usuario.nombre}
-                  {usuario.rol ? ` — ${usuario.rol}` : ""}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
+        <label className={`${labelBase} min-w-0 sm:w-64`}>
+          Repositor
+          <select
+            value={usuarioIdFiltro}
+            onChange={(e) => {
+              setUsuarioIdFiltro(
+                e.target.value === "" ? "" : Number(e.target.value),
+              );
+              setPage(1);
+            }}
+            className={inputBase}
+          >
+            <option value="">Todos los repositores</option>
+            {asignables.map((usuario) => (
+              <option key={usuario.id} value={usuario.id}>
+                {usuario.nombre}
+                {usuario.rol ? ` — ${usuario.rol}` : ""}
+              </option>
+            ))}
+          </select>
+        </label>
         {(clienteIdFiltro !== "" || usuarioIdFiltro !== "") && (
           <button
             type="button"
@@ -466,9 +441,7 @@ export function LocalesView({
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
             {clienteIdFiltro !== "" || usuarioIdFiltro !== ""
               ? "No hay locales que coincidan con los filtros seleccionados."
-              : esGestor
-                ? "Todavía no hay locales cargados. Creá el primero con el botón «+»."
-                : "Todavía no tenés locales asignados."}
+              : "Todavía no hay locales cargados. Creá el primero con el botón «+»."}
           </p>
         </div>
       ) : (
@@ -542,47 +515,45 @@ export function LocalesView({
                     </div>
                   </dl>
 
-                  {esGestor && (
-                    <div className="mt-4 grid grid-cols-2 gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
-                      <button
-                        type="button"
-                        onClick={() => abrirEdicion(l)}
-                        className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-zinc-300 px-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                  <div className="mt-4 grid grid-cols-2 gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+                    <button
+                      type="button"
+                      onClick={() => abrirEdicion(l)}
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-zinc-300 px-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    >
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="h-4 w-4"
+                        aria-hidden
                       >
-                        <svg
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="h-4 w-4"
-                          aria-hidden
-                        >
-                          <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                        </svg>
-                        Editar
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setErrorEliminar(null);
-                          setEliminando(l);
-                        }}
-                        className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-red-200 px-3 text-sm font-medium text-red-600 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setErrorEliminar(null);
+                        setEliminando(l);
+                      }}
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-red-200 px-3 text-sm font-medium text-red-600 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+                    >
+                      <svg
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="h-4 w-4"
+                        aria-hidden
                       >
-                        <svg
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="h-4 w-4"
-                          aria-hidden
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        Eliminar
-                      </button>
-                    </div>
-                  )}
+                        <path
+                          fillRule="evenodd"
+                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Eliminar
+                    </button>
+                  </div>
                 </article>
               ))}
             </div>
@@ -600,11 +571,7 @@ export function LocalesView({
                   <th className="px-4 py-3 font-medium">Próx. visita</th>
                   <th className="px-4 py-3 font-medium">Actualizado</th>
                   <th className="px-4 py-3 font-medium">Estado</th>
-                  {esGestor && (
-                    <th className="px-4 py-3 text-right font-medium">
-                      Acciones
-                    </th>
-                  )}
+                  <th className="px-4 py-3 text-right font-medium">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -644,49 +611,47 @@ export function LocalesView({
                     <td className="px-4 py-3">
                       <EstadoLocal activo={l.activo} />
                     </td>
-                    {esGestor && (
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => abrirEdicion(l)}
-                            aria-label={`Editar ${l.nombre}`}
-                            className="grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => abrirEdicion(l)}
+                          aria-label={`Editar ${l.nombre}`}
+                          className="grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                        >
+                          <svg
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="h-4.5 w-4.5"
+                            aria-hidden
                           >
-                            <svg
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                              className="h-4.5 w-4.5"
-                              aria-hidden
-                            >
-                              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                            </svg>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setErrorEliminar(null);
-                              setEliminando(l);
-                            }}
-                            aria-label={`Eliminar ${l.nombre}`}
-                            className="grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:text-zinc-400 dark:hover:bg-red-950 dark:hover:text-red-400"
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                          </svg>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setErrorEliminar(null);
+                            setEliminando(l);
+                          }}
+                          aria-label={`Eliminar ${l.nombre}`}
+                          className="grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:text-zinc-400 dark:hover:bg-red-950 dark:hover:text-red-400"
+                        >
+                          <svg
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="h-4.5 w-4.5"
+                            aria-hidden
                           >
-                            <svg
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                              className="h-4.5 w-4.5"
-                              aria-hidden
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          </button>
-                        </div>
-                      </td>
-                    )}
+                            <path
+                              fillRule="evenodd"
+                              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -865,7 +830,7 @@ export function LocalesView({
                 onChange={(e) =>
                   setForm((f) => ({ ...f, radioMetros: e.target.value }))
                 }
-                placeholder="Por defecto (config)"
+                placeholder="Por defecto (200 m)"
                 className={inputBase}
               />
             </label>

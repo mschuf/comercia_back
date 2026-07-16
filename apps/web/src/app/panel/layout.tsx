@@ -13,6 +13,7 @@ import { Modal } from "@/components/modal";
 import { PanelProvider } from "@/components/panel/contexto";
 import { IconoModulo } from "@/components/panel/iconos";
 import { btnGhost } from "@/components/ui";
+import { EVENTO_PLATAFORMA_ACTUALIZADA } from "@/lib/eventos-plataforma";
 
 export default function PanelLayout({
   children,
@@ -49,6 +50,28 @@ export default function PanelLayout({
       .catch(() => router.replace("/login"))
       .finally(() => setCargando(false));
   }, [router]);
+
+  useEffect(() => {
+    let vigente = true;
+    const actualizarMenu = () => {
+      void apiFetch<{ modulos: ModuloMenu[] }>("/mi-plataforma")
+        .then((menu) => {
+          if (vigente) setModulos(menu.modulos);
+        })
+        .catch(() => undefined);
+    };
+    window.addEventListener(
+      EVENTO_PLATAFORMA_ACTUALIZADA,
+      actualizarMenu,
+    );
+    return () => {
+      vigente = false;
+      window.removeEventListener(
+        EVENTO_PLATAFORMA_ACTUALIZADA,
+        actualizarMenu,
+      );
+    };
+  }, []);
 
   useEffect(() => {
     if (!menuAbierto) return;

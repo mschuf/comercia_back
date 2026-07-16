@@ -12,6 +12,7 @@ import type {
 } from "@/types/plataforma";
 import { errorBox } from "@/components/ui";
 import type { RespuestaPaginada } from "@/types/paginacion";
+import { notificarPlataformaActualizada } from "@/lib/eventos-plataforma";
 
 const BASE = "/admin/plataforma";
 
@@ -93,6 +94,7 @@ export function EmpresasPanel() {
         ),
       });
       await cargarAsignacion(empresaId);
+      notificarPlataformaActualizada();
     } catch (err) {
       setErrorAccion(
         err instanceof ApiError ? err.message : "No se pudo guardar el cambio",
@@ -115,6 +117,7 @@ export function EmpresasPanel() {
         method: "DELETE",
       });
       await cargarAsignacion(empresaId);
+      notificarPlataformaActualizada();
     } catch (err) {
       setErrorAccion(
         err instanceof ApiError ? err.message : "No se pudo guardar el cambio",

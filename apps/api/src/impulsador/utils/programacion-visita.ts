@@ -172,6 +172,34 @@ export function proximaOcurrenciaVisita(
   return null;
 }
 
+export function fechaEnZonaIso(fecha: Date, zonaHoraria: string): string {
+  const partes = partesEnZona(fecha, zonaHoraria);
+  return `${String(partes.anio).padStart(4, '0')}-${String(partes.mes).padStart(2, '0')}-${String(partes.dia).padStart(2, '0')}`;
+}
+
+export function ocurrenciasVisitaEnDia(
+  programacion: ProgramacionVisitaCalculo,
+  referencia: Date,
+): Date[] {
+  if (!programacion.activo || programacion.horarios.length === 0) return [];
+
+  const fecha: PartesFecha = partesEnZona(referencia, programacion.zonaHoraria);
+  const inicio = fechaSolo(programacion.fechaInicio);
+  const fin = programacion.fechaFin ? fechaSolo(programacion.fechaFin) : null;
+  if (
+    compararFecha(fecha, inicio) < 0 ||
+    (fin !== null && compararFecha(fecha, fin) > 0) ||
+    !coincideFrecuencia(programacion, fecha, inicio)
+  ) {
+    return [];
+  }
+
+  return programacion.horarios.map((horario) => {
+    const [hora, minuto] = horario.split(':').map(Number);
+    return fechaLocalAUtc(fecha, hora, minuto, programacion.zonaHoraria);
+  });
+}
+
 export function fechaSoloIso(fecha: Date): string {
   return fecha.toISOString().slice(0, 10);
 }

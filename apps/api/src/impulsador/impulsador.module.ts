@@ -2,11 +2,7 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { PlataformaModule } from '../plataforma/plataforma.module';
 import { PrismaModule } from '../prisma/prisma.module';
-import {
-  AdminConfigImpulsadorController,
-  ConfigImpulsadorController,
-} from './config-impulsador.controller';
-import { ConfigImpulsadorService } from './config-impulsador.service';
+import { AccesoOperacionesCampoService } from './acceso-operaciones-campo.service';
 import { FotosService } from './fotos.service';
 import { MapaController } from './mapa.controller';
 import { MapaService } from './mapa.service';
@@ -23,19 +19,16 @@ import { ZonasService } from './zonas.service';
     TerritoriosController,
     ZonasController,
     MapaController,
-    ConfigImpulsadorController,
-    AdminConfigImpulsadorController,
     VisitasController,
   ],
   providers: [
     TerritoriosService,
     ZonasService,
     MapaService,
-    ConfigImpulsadorService,
+    AccesoOperacionesCampoService,
     VisitasService,
     FotosService,
   ],
-  // LocalesModule usa la config para decidir gestor/operativo y el radio
-  exports: [ConfigImpulsadorService],
+  exports: [AccesoOperacionesCampoService],
 })
 export class ImpulsadorModule {}

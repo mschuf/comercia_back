@@ -16,6 +16,7 @@ import { PlataformaModule } from './plataforma/plataforma.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { TareasModule } from './tareas/tareas.module';
+import { RepositorModule } from './repositor/repositor.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { TareasModule } from './tareas/tareas.module';
     ClientesModule,
     UsuariosModule,
     TareasModule,
+    RepositorModule,
   ],
   controllers: [AppController],
   providers: [

@@ -11,8 +11,8 @@ import {
   respuestaPaginada,
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
-import { ConfigImpulsadorService } from './config-impulsador.service';
-import { PAGINAS_OPERACION_CAMPO } from './impulsador.constants';
+import { AccesoOperacionesCampoService } from './acceso-operaciones-campo.service';
+import { PAGINA_CLIENTES, PAGINA_MAPA } from './impulsador.constants';
 import { poligonoParaGuardar } from './territorios.service';
 import {
   ActualizarZonaDto,
@@ -79,7 +79,7 @@ export function aZonaDto(z: ZonaConRelaciones): ZonaDto {
 export class ZonasService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly configImpulsador: ConfigImpulsadorService,
+    private readonly accesoCampo: AccesoOperacionesCampoService,
   ) {}
 
   // Lectura para cualquier usuario con acceso al módulo (gestor u operativo)
@@ -87,10 +87,7 @@ export class ZonasService {
     usuarioId: number,
     filtros: ListarZonasDto,
   ): Promise<RespuestaPaginada<ZonaDto>> {
-    const usuario = await this.configImpulsador.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+    const usuario = await this.accesoCampo.usuario(usuarioId, [PAGINA_MAPA]);
     const where = {
       empresaId: usuario.empresaId,
       ...(filtros.territorioId && { territorioId: filtros.territorioId }),
@@ -116,10 +113,10 @@ export class ZonasService {
   // estándar: el front las necesita todas juntas; el take fijo acota el peor
   // caso sin cambiar el uso real (decenas por empresa).
   async todas(usuarioId: number): Promise<ZonaDto[]> {
-    const usuario = await this.configImpulsador.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+    const usuario = await this.accesoCampo.usuario(usuarioId, [
+      PAGINA_CLIENTES,
+      PAGINA_MAPA,
+    ]);
     const zonas = await this.prisma.zona.findMany({
       where: {
         empresaId: usuario.empresaId,
@@ -150,15 +147,12 @@ export class ZonasService {
   }
 
   async crear(usuarioId: number, dto: CrearZonaDto): Promise<ZonaDto> {
-    const usuario = await this.configImpulsador.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+    const usuario = await this.accesoCampo.usuario(usuarioId, [PAGINA_MAPA]);
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede crear zonas');
     }
     await this.territorioDeEmpresa(dto.territorioId, usuario.empresaId);
-    const usuarioIds = await this.configImpulsador.validarRepositores(
+    const usuarioIds = await this.accesoCampo.validarRepositores(
       usuario.empresaId,
       dto.usuarioIds ?? [],
     );
@@ -203,10 +197,7 @@ export class ZonasService {
     id: number,
     dto: ActualizarZonaDto,
   ): Promise<ZonaDto> {
-    const usuario = await this.configImpulsador.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+    const usuario = await this.accesoCampo.usuario(usuarioId, [PAGINA_MAPA]);
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede editar zonas');
     }
@@ -217,7 +208,7 @@ export class ZonasService {
     const usuarioIds =
       dto.usuarioIds === undefined
         ? undefined
-        : await this.configImpulsador.validarRepositores(
+        : await this.accesoCampo.validarRepositores(
             usuario.empresaId,
             dto.usuarioIds,
           );
@@ -259,10 +250,7 @@ export class ZonasService {
   }
 
   async eliminar(usuarioId: number, id: number): Promise<{ ok: true }> {
-    const usuario = await this.configImpulsador.usuarioImpulsador(
-      usuarioId,
-      PAGINAS_OPERACION_CAMPO,
-    );
+    const usuario = await this.accesoCampo.usuario(usuarioId, [PAGINA_MAPA]);
     if (!usuario.esGestor) {
       throw new ForbiddenException('Solo un gestor puede eliminar zonas');
     }
