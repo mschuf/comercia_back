@@ -10,6 +10,7 @@ import type { ModuloMenu } from "@/types/plataforma";
 import { BrandMark } from "@/components/auth-shell";
 import { BotonTema } from "@/components/boton-tema";
 import { Modal } from "@/components/modal";
+import { PantallaCarga } from "@/components/pantalla-carga";
 import { PanelProvider } from "@/components/panel/contexto";
 import { IconoModulo } from "@/components/panel/iconos";
 import { btnGhost } from "@/components/ui";
@@ -30,6 +31,7 @@ export default function PanelLayout({
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [datosAbierto, setDatosAbierto] = useState(false);
   const [sidebarVisible, setSidebarVisible] = useState(true);
+  const [cerrandoSesion, setCerrandoSesion] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -60,16 +62,10 @@ export default function PanelLayout({
         })
         .catch(() => undefined);
     };
-    window.addEventListener(
-      EVENTO_PLATAFORMA_ACTUALIZADA,
-      actualizarMenu,
-    );
+    window.addEventListener(EVENTO_PLATAFORMA_ACTUALIZADA, actualizarMenu);
     return () => {
       vigente = false;
-      window.removeEventListener(
-        EVENTO_PLATAFORMA_ACTUALIZADA,
-        actualizarMenu,
-      );
+      window.removeEventListener(EVENTO_PLATAFORMA_ACTUALIZADA, actualizarMenu);
     };
   }, []);
 
@@ -87,8 +83,14 @@ export default function PanelLayout({
   }, [menuAbierto]);
 
   async function cerrarSesion() {
-    await apiFetch("/auth/logout", { method: "POST" }).catch(() => undefined);
-    router.replace("/login");
+    if (cerrandoSesion) return;
+    setCerrandoSesion(true);
+    try {
+      await apiFetch("/auth/logout", { method: "POST" }).catch(() => undefined);
+      router.replace("/login");
+    } finally {
+      setCerrandoSesion(false);
+    }
   }
 
   // Value estable del contexto: solo cambia cuando cambian usuario o módulos
@@ -98,11 +100,7 @@ export default function PanelLayout({
   );
 
   if (cargando || !usuario || !valorPanel) {
-    return (
-      <main className="grid min-h-screen place-items-center">
-        <p className="text-sm text-zinc-400">Cargando tu panel...</p>
-      </main>
-    );
+    return <PantallaCarga visible mensaje="Cargando tu panel" />;
   }
 
   const iniciales =
@@ -126,16 +124,16 @@ export default function PanelLayout({
 
   return (
     <PanelProvider value={valorPanel}>
-      <div className="flex min-h-screen flex-col">
+      <div className="flex min-h-dvh w-full max-w-full flex-col overflow-x-clip">
         {/* Barra superior */}
-        <header className="flex items-center justify-between gap-2 border-b border-zinc-200 bg-white px-3 py-3 sm:px-6 dark:border-zinc-800 dark:bg-zinc-900">
-          <div className="flex items-center gap-2">
+        <header className="sticky top-0 z-40 flex w-full min-w-0 items-center justify-between gap-2 border-b border-zinc-200 bg-white/95 px-3 py-2 shadow-sm backdrop-blur-xl sm:px-5 lg:px-6 dark:border-zinc-800 dark:bg-zinc-900/95">
+          <div className="flex min-w-0 items-center gap-2">
             <button
               type="button"
               onClick={() => setSidebarVisible((v) => !v)}
               aria-label={sidebarVisible ? "Ocultar menú" : "Mostrar menú"}
               aria-expanded={sidebarVisible}
-              className="hidden h-9 w-9 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-700 focus-visible:ring-2 focus-visible:ring-brand-600/40 md:grid dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+              className="hidden h-9 w-9 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-700 focus-visible:ring-2 focus-visible:ring-brand-600/40 lg:grid dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
             >
               <svg
                 viewBox="0 0 20 20"
@@ -150,12 +148,12 @@ export default function PanelLayout({
                 />
               </svg>
             </button>
-            <Link href="/panel" aria-label="Inicio">
+            <Link href="/panel" aria-label="Inicio" className="shrink-0">
               <BrandMark />
             </Link>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
             <BotonTema />
             <div ref={menuRef} className="relative">
               <button
@@ -163,13 +161,13 @@ export default function PanelLayout({
                 onClick={() => setMenuAbierto((v) => !v)}
                 aria-haspopup="menu"
                 aria-expanded={menuAbierto}
-                className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:hover:bg-zinc-800"
+                className="flex items-center gap-1 rounded-lg px-1 py-1 transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 sm:gap-2.5 sm:px-2 sm:py-1.5 dark:hover:bg-zinc-800"
               >
                 <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-100 text-sm font-bold text-brand-800 dark:bg-brand-900 dark:text-brand-100">
                   {iniciales}
                 </span>
-                <span className="hidden text-left sm:block">
-                  <span className="block text-sm font-semibold leading-tight">
+                <span className="hidden min-w-0 max-w-44 text-left sm:block">
+                  <span className="block truncate text-sm font-semibold leading-tight">
                     {usuario.nombre} {usuario.apellido}
                   </span>
                   <span className="block text-xs text-zinc-500 dark:text-zinc-400">
@@ -250,7 +248,7 @@ export default function PanelLayout({
           </div>
         </header>
 
-        <div className="flex flex-1">
+        <div className="flex min-w-0 flex-1">
           {/* Menú lateral (escritorio) */}
           <AnimatePresence initial={false}>
             {sidebarVisible && (
@@ -259,7 +257,7 @@ export default function PanelLayout({
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -24, opacity: 0 }}
                 transition={{ duration: 0.18, ease: "easeOut" }}
-                className="hidden w-56 shrink-0 border-r border-zinc-200 bg-white p-3 md:block dark:border-zinc-800 dark:bg-zinc-900"
+                className="hidden w-56 shrink-0 border-r border-zinc-200 bg-white p-3 lg:block dark:border-zinc-800 dark:bg-zinc-900"
               >
                 <nav className="flex flex-col gap-1">
                   {enlaces.map((e) => (
@@ -282,13 +280,15 @@ export default function PanelLayout({
           </AnimatePresence>
 
           {/* Contenido */}
-          <main className="flex-1 p-4 pb-24 sm:p-8 md:pb-8">{children}</main>
+          <main className="min-w-0 w-full flex-1 px-3 py-4 pb-24 sm:px-5 sm:py-6 lg:p-8 lg:pb-8">
+            {children}
+          </main>
         </div>
 
         {/* Bottom navbar (mobile) — máximo 5 accesos */}
         <nav
           aria-label="Módulos"
-          className="fixed inset-x-0 bottom-0 z-30 border-t border-zinc-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden dark:border-zinc-800 dark:bg-zinc-900"
+          className="fixed inset-x-0 bottom-0 z-40 w-full max-w-[100vw] border-t border-zinc-200 bg-white/95 pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] shadow-[0_-8px_30px_rgba(15,23,42,0.10)] backdrop-blur-xl lg:hidden dark:border-zinc-800 dark:bg-zinc-900/95 dark:shadow-[0_-8px_30px_rgba(0,0,0,0.35)]"
         >
           <div
             className="grid"
@@ -296,22 +296,38 @@ export default function PanelLayout({
               gridTemplateColumns: `repeat(${Math.min(enlaces.length, 5)}, minmax(0, 1fr))`,
             }}
           >
-            {enlaces.slice(0, 5).map((e) => (
-              <Link
-                key={e.href}
-                href={e.href}
-                className={`flex min-h-[52px] flex-col items-center justify-center gap-0.5 py-1.5 transition ${
-                  activo(e.href)
-                    ? "text-brand-700 dark:text-brand-400"
-                    : "text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
-                }`}
-              >
-                <IconoModulo nombre={e.icono} />
-                <span className="text-[10px] font-semibold leading-tight">
-                  {e.nombre}
-                </span>
-              </Link>
-            ))}
+            {enlaces.slice(0, 5).map((e) => {
+              const esActivo = activo(e.href);
+              return (
+                <Link
+                  key={e.href}
+                  href={e.href}
+                  title={e.nombre}
+                  aria-current={esActivo ? "page" : undefined}
+                  className={`relative flex min-h-[60px] min-w-0 flex-col items-center justify-center gap-0.5 px-1 py-1.5 transition focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-600/40 ${
+                    esActivo
+                      ? "text-brand-700 dark:text-brand-400"
+                      : "text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                  }`}
+                >
+                  {esActivo ? (
+                    <span className="absolute inset-x-1/2 top-0 h-0.5 w-8 -translate-x-1/2 rounded-b-full bg-brand-600 dark:bg-brand-400" />
+                  ) : null}
+                  <span
+                    className={`grid h-8 w-10 place-items-center rounded-xl transition ${
+                      esActivo
+                        ? "bg-brand-100 dark:bg-brand-950"
+                        : "bg-transparent"
+                    }`}
+                  >
+                    <IconoModulo nombre={e.icono} />
+                  </span>
+                  <span className="w-full truncate px-0.5 text-center text-[10px] font-semibold leading-tight">
+                    {e.nombre}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </nav>
 
@@ -362,6 +378,11 @@ export default function PanelLayout({
             </button>
           </div>
         </Modal>
+        <PantallaCarga
+          visible={cerrandoSesion}
+          mensaje="Cerrando sesión"
+          detalle="Finalizamos tu sesión de forma segura."
+        />
       </div>
     </PanelProvider>
   );

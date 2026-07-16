@@ -28,6 +28,10 @@ This version has breaking changes. APIs, conventions, and file structure may dif
 
 # Tablas y paginación (OBLIGATORIO en toda tabla/listado)
 
+- Cuando una pantalla muestre varios registros o pueda crecer a muchos
+  registros, usar una **tabla** como representación principal, nunca una grilla
+  de cards. Las cards quedan reservadas para KPIs, resúmenes, estados destacados
+  o conjuntos pequeños que no representan filas homogéneas.
 - **Toda tabla se pagina, siempre** — en el back Y en el front. Nada de traer
   listas completas.
 - **7 registros por página por defecto**, con selector para ver más (7 / 15 / 30).
@@ -87,6 +91,9 @@ This version has breaking changes. APIs, conventions, and file structure may dif
 
 - **Mobile-first**: diseñar primero para ~360px de ancho y expandir con
   `sm:`/`md:`/`lg:`. Los pares de campos van `grid-cols-1 sm:grid-cols-2`.
+- En layouts `flex`/`grid`, el contenedor principal debe usar `min-w-0 w-full`
+  para que tablas, mapas o contenido ancho no agranden el viewport. Los navbars
+  móviles ocupan siempre `w-full` y respetan los `safe-area-inset` del equipo.
 - **Prohibido el scroll horizontal** de página; contenido ancho (tablas, listas
   largas) va dentro de su propio `overflow-x-auto`.
 - Objetivos táctiles cómodos: mínimo ~44px de alto en móvil para botones y filas.

@@ -33,6 +33,25 @@ function formatoDistancia(metros: number) {
     : `${(metros / 1000).toFixed(1)} km`;
 }
 
+function IconoAbrirRuta() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-5 w-5 shrink-0"
+      aria-hidden
+    >
+      <path d="m3.5 6 5-2.5 7 3 5-2.5v14l-5 2.5-7-3-5 2.5z" />
+      <path d="M8.5 3.5v14M15.5 6.5v14" />
+      <path d="M5.5 14c2-2.5 4.5 1 7-1.5 1.7-1 2.8-3 5.5-2.5" />
+    </svg>
+  );
+}
+
 function formatoHora(iso: string) {
   return new Date(iso).toLocaleTimeString("es-PY", {
     hour: "2-digit",
@@ -331,7 +350,7 @@ export function RutaDiariaView() {
               calculada={ruta !== null}
             />
             <section className="min-w-0">
-              <div className="mb-3 flex items-center justify-between gap-2">
+              <div className="mb-3 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h2 className="text-lg font-bold">
                     {ruta ? "Orden recomendado" : "Horario programado"}
@@ -348,9 +367,10 @@ export function RutaDiariaView() {
                     target="_blank"
                     rel="noreferrer"
                     onClick={() => indicarNavegacion("Abriendo ruta completa")}
-                    className="shrink-0 text-sm font-semibold text-indigo-700 hover:underline focus-visible:ring-2 focus-visible:ring-indigo-500/40 dark:text-indigo-300"
+                    className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 text-sm font-bold text-white shadow-md shadow-indigo-950/20 transition hover:-translate-y-0.5 hover:bg-indigo-700 focus-visible:ring-2 focus-visible:ring-indigo-500/50 focus-visible:ring-offset-2 sm:w-auto dark:bg-indigo-500 dark:hover:bg-indigo-400 dark:focus-visible:ring-offset-zinc-950"
                   >
-                    Abrir ruta
+                    <IconoAbrirRuta />
+                    Abrir ruta en Maps
                   </a>
                 ) : null}
               </div>
