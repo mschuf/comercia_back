@@ -2,8 +2,9 @@
 
 import dynamic from "next/dynamic";
 import { motion } from "motion/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { VisitaActiva } from "@/components/impulsador/visita-activa";
+import { PantallaCarga } from "@/components/pantalla-carga";
 import { Paginacion } from "@/components/paginacion";
 import { ApiError, apiFetch } from "@/lib/api";
 import { obtenerUbicacion } from "@/lib/geolocalizacion";
@@ -61,7 +62,9 @@ export function RutaDiariaView() {
   const [cargandoAgenda, setCargandoAgenda] = useState(true);
   const [calculando, setCalculando] = useState(false);
   const [iniciando, setIniciando] = useState<string | null>(null);
+  const [navegando, setNavegando] = useState<string | null>(null);
   const [visita, setVisita] = useState<Visita | null>(null);
+  const temporizadorNavegacion = useRef<number | null>(null);
 
   const cargarAgenda = useCallback(async () => {
     setCargandoAgenda(true);
@@ -87,6 +90,26 @@ export function RutaDiariaView() {
     const inicio = window.setTimeout(() => void cargarAgenda(), 0);
     return () => window.clearTimeout(inicio);
   }, [cargarAgenda]);
+
+  useEffect(
+    () => () => {
+      if (temporizadorNavegacion.current !== null) {
+        window.clearTimeout(temporizadorNavegacion.current);
+      }
+    },
+    [],
+  );
+
+  function indicarNavegacion(mensaje: string) {
+    setNavegando(mensaje);
+    if (temporizadorNavegacion.current !== null) {
+      window.clearTimeout(temporizadorNavegacion.current);
+    }
+    temporizadorNavegacion.current = window.setTimeout(() => {
+      setNavegando(null);
+      temporizadorNavegacion.current = null;
+    }, 1200);
+  }
 
   async function calcularRuta() {
     if (calculando) return;
@@ -156,9 +179,31 @@ export function RutaDiariaView() {
     ruta?.paradas ?? agenda?.items ?? [];
   const urlCompleta = ruta ? urlRutaCompleta(ruta.paradas, ubicacion) : null;
   const siguiente = ruta?.paradas[0] ?? null;
+  const cargaActiva = calculando
+    ? {
+        mensaje: "Calculando mejor ruta",
+        detalle: "Combinamos horarios, calles y distancias entre los locales.",
+      }
+    : iniciando !== null
+      ? {
+          mensaje: "Preparando la visita",
+          detalle: "Verificamos tu ubicación y cargamos las tareas del local.",
+        }
+      : cargandoAgenda
+        ? {
+            mensaje: "Cargando visitas",
+            detalle: "Actualizamos los locales programados para hoy.",
+          }
+        : navegando !== null
+          ? {
+              mensaje: navegando,
+              detalle:
+                "Estamos abriendo Google Maps con el destino seleccionado.",
+            }
+          : null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" aria-busy={cargaActiva !== null}>
       <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-indigo-950 to-indigo-700 p-5 text-white shadow-xl shadow-indigo-950/20 sm:p-7">
         <div className="ruta-orbita absolute -right-10 -top-16 h-52 w-52 rounded-full border border-indigo-300/20" />
         <motion.div
@@ -196,6 +241,7 @@ export function RutaDiariaView() {
                 href={urlNavegarA(siguiente)}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() => indicarNavegacion("Iniciando navegación")}
                 className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/25 bg-white/10 px-4 text-sm font-semibold backdrop-blur transition hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white/70"
               >
                 Iniciar navegación
@@ -301,6 +347,7 @@ export function RutaDiariaView() {
                     href={urlCompleta}
                     target="_blank"
                     rel="noreferrer"
+                    onClick={() => indicarNavegacion("Abriendo ruta completa")}
                     className="shrink-0 text-sm font-semibold text-indigo-700 hover:underline focus-visible:ring-2 focus-visible:ring-indigo-500/40 dark:text-indigo-300"
                   >
                     Abrir ruta
@@ -354,6 +401,9 @@ export function RutaDiariaView() {
                         href={urlNavegarA(parada)}
                         target="_blank"
                         rel="noreferrer"
+                        onClick={() =>
+                          indicarNavegacion(`Abriendo ${parada.local.nombre}`)
+                        }
                         className="inline-flex min-h-11 items-center justify-center rounded-xl border border-indigo-200 px-3 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-indigo-500/40 dark:border-indigo-900 dark:text-indigo-300 dark:hover:bg-indigo-950"
                       >
                         Navegar
@@ -408,6 +458,12 @@ export function RutaDiariaView() {
           }}
         />
       ) : null}
+
+      <PantallaCarga
+        visible={cargaActiva !== null}
+        mensaje={cargaActiva?.mensaje ?? "Procesando"}
+        detalle={cargaActiva?.detalle}
+      />
     </div>
   );
 }

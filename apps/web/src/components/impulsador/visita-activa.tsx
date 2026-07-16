@@ -5,6 +5,7 @@ import { apiFetch, ApiError } from "@/lib/api";
 import { apiSubirFoto, urlFotoVisita } from "@/lib/api-archivos";
 import { obtenerUbicacion } from "@/lib/geolocalizacion";
 import { Modal } from "@/components/modal";
+import { PantallaCarga } from "@/components/pantalla-carga";
 import { btnPrimary, errorBox, inputBase } from "@/components/ui";
 import { formatoFechaHora } from "@/utils/fechas";
 import { formatoDuracionMinutos } from "@/utils/duracion";
@@ -139,6 +140,7 @@ export function VisitaActiva({
     Record<number, string>
   >({});
   const guardadosDescripcion = useRef(new Map<number, Promise<boolean>>());
+  const [guardadosEnCurso, setGuardadosEnCurso] = useState(0);
   const [tareaOcupada, setTareaOcupada] = useState<number | null>(null);
   const [fotoEnProceso, setFotoEnProceso] = useState<{
     clave: number | "presencia";
@@ -215,6 +217,7 @@ export function VisitaActiva({
     const texto = borrador.trim();
     if (texto === (t.comentario ?? "")) return Promise.resolve(true);
     setError(null);
+    setGuardadosEnCurso((cantidad) => cantidad + 1);
 
     const guardado = apiFetch<VisitaTarea>(
       `/visitas/${visita.id}/tareas/${t.id}`,
@@ -242,6 +245,7 @@ export function VisitaActiva({
         return false;
       })
       .finally(() => {
+        setGuardadosEnCurso((cantidad) => Math.max(0, cantidad - 1));
         if (guardadosDescripcion.current.get(t.id) === guardado) {
           guardadosDescripcion.current.delete(t.id);
         }
@@ -359,206 +363,238 @@ export function VisitaActiva({
     }
   }
 
+  const cargaActiva = finalizando
+    ? {
+        mensaje: "Terminando visita",
+        detalle: "Guardamos la hora final, la ubicación y el checklist.",
+      }
+    : fotoEnProceso !== null
+      ? {
+          mensaje:
+            fotoEnProceso.accion === "subiendo"
+              ? "Subiendo foto"
+              : "Quitando foto",
+          detalle: "Actualizamos la evidencia de esta visita.",
+        }
+      : tareaOcupada !== null
+        ? {
+            mensaje: "Actualizando tarea",
+            detalle: "Guardamos el nuevo estado del checklist.",
+          }
+        : guardadosEnCurso > 0
+          ? {
+              mensaje: "Guardando descripción",
+              detalle: "Registramos el trabajo realizado en la tarea.",
+            }
+          : null;
+
   return (
-    <Modal
-      titulo={`Visita: ${visita.localNombre}`}
-      abierto
-      onCerrar={exito ? onFinalizada : onCerrar}
-      ancho="xl"
-    >
-      {exito ? (
-        <div className="flex flex-col items-center gap-2 px-4 py-8 text-center">
-          <div className="grid h-16 w-16 place-items-center rounded-full bg-emerald-100 dark:bg-emerald-950">
-            <svg
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="h-9 w-9 text-emerald-600 dark:text-emerald-400"
-              aria-hidden
-            >
-              <path
-                fillRule="evenodd"
-                d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-          <h3 className="mt-2 text-xl font-bold tracking-tight">
-            Visita registrada
-          </h3>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            {formatoFechaHora(visita.completadaEn)}
-          </p>
-          <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
-            Duración: {formatoDuracionMinutos(visita.duracionMinutos)}
-          </p>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            a {Math.round(visita.distanciaMetros)} m del local
-          </p>
-          <button
-            type="button"
-            onClick={onFinalizada}
-            className={`${btnPrimary} mt-4 h-11 w-full sm:w-auto sm:min-w-40`}
-          >
-            Listo
-          </button>
-        </div>
-      ) : (
-        <div>
-          {/* Cabecera: datos del inicio y progreso del checklist */}
-          <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-800/40">
-            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-              <span>Iniciada {formatoFechaHora(visita.iniciadaEn)}</span>
-              <span>a {Math.round(visita.distanciaMetros)} m del local</span>
+    <>
+      <Modal
+        titulo={`Visita: ${visita.localNombre}`}
+        abierto
+        onCerrar={exito ? onFinalizada : onCerrar}
+        ancho="xl"
+      >
+        {exito ? (
+          <div className="flex flex-col items-center gap-2 px-4 py-8 text-center">
+            <div className="grid h-16 w-16 place-items-center rounded-full bg-emerald-100 dark:bg-emerald-950">
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="h-9 w-9 text-emerald-600 dark:text-emerald-400"
+                aria-hidden
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+                  clipRule="evenodd"
+                />
+              </svg>
             </div>
-            <div className="mt-3">
-              <div className="flex items-center justify-between text-xs font-medium text-zinc-600 dark:text-zinc-300">
-                <span>Checklist</span>
-                <span className="[font-variant-numeric:tabular-nums]">
-                  {completadas}/{tareas.length}
-                </span>
+            <h3 className="mt-2 text-xl font-bold tracking-tight">
+              Visita registrada
+            </h3>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              {formatoFechaHora(visita.completadaEn)}
+            </p>
+            <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+              Duración: {formatoDuracionMinutos(visita.duracionMinutos)}
+            </p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              a {Math.round(visita.distanciaMetros)} m del local
+            </p>
+            <button
+              type="button"
+              onClick={onFinalizada}
+              className={`${btnPrimary} mt-4 h-11 w-full sm:w-auto sm:min-w-40`}
+            >
+              Listo
+            </button>
+          </div>
+        ) : (
+          <div>
+            {/* Cabecera: datos del inicio y progreso del checklist */}
+            <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-800/40">
+              <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                <span>Iniciada {formatoFechaHora(visita.iniciadaEn)}</span>
+                <span>a {Math.round(visita.distanciaMetros)} m del local</span>
               </div>
-              <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
-                <div
-                  className="h-full rounded-full bg-brand-600 transition-all"
-                  style={{ width: `${progreso}%` }}
+              <div className="mt-3">
+                <div className="flex items-center justify-between text-xs font-medium text-zinc-600 dark:text-zinc-300">
+                  <span>Checklist</span>
+                  <span className="[font-variant-numeric:tabular-nums]">
+                    {completadas}/{tareas.length}
+                  </span>
+                </div>
+                <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
+                  <div
+                    className="h-full rounded-full bg-brand-600 transition-all"
+                    style={{ width: `${progreso}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Checklist de tareas */}
+            {tareas.length > 0 && (
+              <ul className="mt-4 flex flex-col gap-3">
+                {tareas.map((t) => (
+                  <li
+                    key={t.id}
+                    className="rounded-xl border border-zinc-200 p-3 dark:border-zinc-800"
+                  >
+                    <label className="flex min-h-11 cursor-pointer items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={t.completada}
+                        disabled={tareaOcupada === t.id}
+                        onChange={() => alternarTarea(t)}
+                        className="h-5 w-5 shrink-0 cursor-pointer accent-brand-700 disabled:cursor-not-allowed"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span
+                          className={`block text-sm font-semibold ${
+                            t.completada
+                              ? "text-zinc-400 line-through dark:text-zinc-500"
+                              : "text-zinc-800 dark:text-zinc-100"
+                          }`}
+                        >
+                          {t.titulo}
+                        </span>
+                        <span className="mt-1 block text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+                          {t.descripcion}
+                        </span>
+                      </span>
+                    </label>
+
+                    <label
+                      htmlFor={`descripcion-realizada-${t.id}`}
+                      className="mt-3 block text-xs font-medium text-zinc-700 dark:text-zinc-300"
+                    >
+                      Descripción de lo realizado{" "}
+                      <span className="font-normal text-zinc-400 dark:text-zinc-500">
+                        (opcional)
+                      </span>
+                      <textarea
+                        id={`descripcion-realizada-${t.id}`}
+                        value={
+                          descripcionesRealizadas[t.id] ?? t.comentario ?? ""
+                        }
+                        onChange={(e) =>
+                          setDescripcionesRealizadas((actuales) => ({
+                            ...actuales,
+                            [t.id]: e.target.value,
+                          }))
+                        }
+                        onBlur={() => {
+                          void guardarDescripcionRealizada(t);
+                        }}
+                        rows={2}
+                        maxLength={500}
+                        placeholder="Contá brevemente qué hiciste en esta tarea…"
+                        className={`${inputBase} mt-2 resize-y`}
+                      />
+                      <span className="mt-1 block font-normal text-zinc-400 dark:text-zinc-500">
+                        Se guarda al salir del campo.
+                      </span>
+                    </label>
+
+                    {t.requiereFoto && (
+                      <div className="mt-3 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+                        <WidgetFoto
+                          foto={t.foto}
+                          estado={estadoFoto(t.id)}
+                          faltaRequerida={!t.foto}
+                          onSeleccion={(archivo) => subirFotoTarea(t, archivo)}
+                          onQuitar={() => quitarFotoTarea(t)}
+                        />
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* Foto de presencia: siempre visible (opcional si no es requerida) */}
+            <div className="mt-4 rounded-xl border border-zinc-200 p-3 dark:border-zinc-800">
+              <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+                Foto de presencia{" "}
+                <span className="font-normal text-zinc-400 dark:text-zinc-500">
+                  {visita.requiereFotoPresencia ? "(requerida)" : "(opcional)"}
+                </span>
+              </h3>
+              <div className="mt-3">
+                <WidgetFoto
+                  foto={visita.fotoPresencia}
+                  estado={estadoFoto("presencia")}
+                  faltaRequerida={
+                    visita.requiereFotoPresencia && !visita.fotoPresencia
+                  }
+                  onSeleccion={subirFotoPresencia}
+                  onQuitar={quitarFotoPresencia}
                 />
               </div>
             </div>
+
+            {pendientes.length > 0 && (
+              <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
+                <p className="font-medium">Te falta:</p>
+                <ul className="mt-1 list-inside list-disc">
+                  {pendientes.map((p, i) => (
+                    <li key={i}>{p}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {error && <p className={`${errorBox} mt-4`}>{error}</p>}
+
+            {pendientes.length === 0 ? (
+              <button
+                type="button"
+                onClick={finalizar}
+                disabled={finalizando || fotoEnProceso !== null}
+                className={`${btnPrimary} mt-5 h-12 w-full gap-2 text-base`}
+              >
+                {finalizando ? (
+                  <>
+                    <Spinner />
+                    Guardando hora de finalización…
+                  </>
+                ) : (
+                  "Terminar visita"
+                )}
+              </button>
+            ) : null}
           </div>
-
-          {/* Checklist de tareas */}
-          {tareas.length > 0 && (
-            <ul className="mt-4 flex flex-col gap-3">
-              {tareas.map((t) => (
-                <li
-                  key={t.id}
-                  className="rounded-xl border border-zinc-200 p-3 dark:border-zinc-800"
-                >
-                  <label className="flex min-h-11 cursor-pointer items-center gap-3">
-                    <input
-                      type="checkbox"
-                      checked={t.completada}
-                      disabled={tareaOcupada === t.id}
-                      onChange={() => alternarTarea(t)}
-                      className="h-5 w-5 shrink-0 cursor-pointer accent-brand-700 disabled:cursor-not-allowed"
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span
-                        className={`block text-sm font-semibold ${
-                          t.completada
-                            ? "text-zinc-400 line-through dark:text-zinc-500"
-                            : "text-zinc-800 dark:text-zinc-100"
-                        }`}
-                      >
-                        {t.titulo}
-                      </span>
-                      <span className="mt-1 block text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-                        {t.descripcion}
-                      </span>
-                    </span>
-                  </label>
-
-                  <label
-                    htmlFor={`descripcion-realizada-${t.id}`}
-                    className="mt-3 block text-xs font-medium text-zinc-700 dark:text-zinc-300"
-                  >
-                    Descripción de lo realizado{" "}
-                    <span className="font-normal text-zinc-400 dark:text-zinc-500">
-                      (opcional)
-                    </span>
-                    <textarea
-                      id={`descripcion-realizada-${t.id}`}
-                      value={
-                        descripcionesRealizadas[t.id] ?? t.comentario ?? ""
-                      }
-                      onChange={(e) =>
-                        setDescripcionesRealizadas((actuales) => ({
-                          ...actuales,
-                          [t.id]: e.target.value,
-                        }))
-                      }
-                      onBlur={() => {
-                        void guardarDescripcionRealizada(t);
-                      }}
-                      rows={2}
-                      maxLength={500}
-                      placeholder="Contá brevemente qué hiciste en esta tarea…"
-                      className={`${inputBase} mt-2 resize-y`}
-                    />
-                    <span className="mt-1 block font-normal text-zinc-400 dark:text-zinc-500">
-                      Se guarda al salir del campo.
-                    </span>
-                  </label>
-
-                  {t.requiereFoto && (
-                    <div className="mt-3 border-t border-zinc-100 pt-3 dark:border-zinc-800">
-                      <WidgetFoto
-                        foto={t.foto}
-                        estado={estadoFoto(t.id)}
-                        faltaRequerida={!t.foto}
-                        onSeleccion={(archivo) => subirFotoTarea(t, archivo)}
-                        onQuitar={() => quitarFotoTarea(t)}
-                      />
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {/* Foto de presencia: siempre visible (opcional si no es requerida) */}
-          <div className="mt-4 rounded-xl border border-zinc-200 p-3 dark:border-zinc-800">
-            <h3 className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
-              Foto de presencia{" "}
-              <span className="font-normal text-zinc-400 dark:text-zinc-500">
-                {visita.requiereFotoPresencia ? "(requerida)" : "(opcional)"}
-              </span>
-            </h3>
-            <div className="mt-3">
-              <WidgetFoto
-                foto={visita.fotoPresencia}
-                estado={estadoFoto("presencia")}
-                faltaRequerida={
-                  visita.requiereFotoPresencia && !visita.fotoPresencia
-                }
-                onSeleccion={subirFotoPresencia}
-                onQuitar={quitarFotoPresencia}
-              />
-            </div>
-          </div>
-
-          {pendientes.length > 0 && (
-            <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
-              <p className="font-medium">Te falta:</p>
-              <ul className="mt-1 list-inside list-disc">
-                {pendientes.map((p, i) => (
-                  <li key={i}>{p}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {error && <p className={`${errorBox} mt-4`}>{error}</p>}
-
-          {pendientes.length === 0 ? (
-            <button
-              type="button"
-              onClick={finalizar}
-              disabled={finalizando || fotoEnProceso !== null}
-              className={`${btnPrimary} mt-5 h-12 w-full gap-2 text-base`}
-            >
-              {finalizando ? (
-                <>
-                  <Spinner />
-                  Guardando hora de finalización…
-                </>
-              ) : (
-                "Terminar visita"
-              )}
-            </button>
-          ) : null}
-        </div>
-      )}
-    </Modal>
+        )}
+      </Modal>
+      <PantallaCarga
+        visible={cargaActiva !== null}
+        mensaje={cargaActiva?.mensaje ?? "Procesando visita"}
+        detalle={cargaActiva?.detalle}
+      />
+    </>
   );
 }

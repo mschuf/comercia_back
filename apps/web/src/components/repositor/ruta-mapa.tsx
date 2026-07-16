@@ -23,6 +23,7 @@ import type {
   ParadaRuta,
   VisitaHoy,
 } from "@/types/repositor";
+import { anguloVehiculoEnRuta } from "@/utils/direccion-ruta";
 
 function iconoParada(orden: number, estado: EstadoParadaRuta) {
   const color =
@@ -41,9 +42,23 @@ function iconoParada(orden: number, estado: EstadoParadaRuta) {
 
 const iconoVehiculo = divIcon({
   className: "ruta-vehiculo-contenedor",
-  html: '<div class="ruta-vehiculo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2l7 19-7-4-7 4 7-19z"/></svg></div>',
-  iconSize: [42, 42],
-  iconAnchor: [21, 21],
+  html: `<div class="ruta-vehiculo">
+    <div class="ruta-camion">
+      <svg viewBox="0 0 48 32" aria-hidden="true">
+        <path fill="#fbbf24" d="M3 6.5h23v16H3z"/>
+        <path fill="#f59e0b" d="M5.5 9h7v6h-7z"/>
+        <path fill="#fff" d="M26 11h8.5l7 7v4.5H26z"/>
+        <path fill="#bfdbfe" d="M29 13.5h4.5l4 4H29z"/>
+        <path fill="#4338ca" d="M3 21h39v4H3z"/>
+        <circle fill="#1e1b4b" cx="12" cy="25" r="4"/>
+        <circle fill="#e0e7ff" cx="12" cy="25" r="1.7"/>
+        <circle fill="#1e1b4b" cx="35" cy="25" r="4"/>
+        <circle fill="#e0e7ff" cx="35" cy="25" r="1.7"/>
+      </svg>
+    </div>
+  </div>`,
+  iconSize: [50, 50],
+  iconAnchor: [25, 25],
 });
 
 function AjustarRuta({ puntos }: { puntos: [number, number][] }) {
@@ -67,34 +82,61 @@ function VehiculoAnimado({ geometria }: { geometria: [number, number][] }) {
   const marcador = useRef<MarkerLeaflet | null>(null);
   const segmentos = useMemo(() => {
     if (geometria.length < 2) return [];
-    return geometria.slice(1).map((punto, indice) => {
-      const anterior = geometria[indice];
-      const distancia = Math.hypot(
-        punto[0] - anterior[0],
-        punto[1] - anterior[1],
-      );
-      return { anterior, punto, distancia };
-    });
+    return geometria
+      .slice(1)
+      .map((punto, indice) => {
+        const anterior = geometria[indice];
+        const distancia = Math.hypot(
+          punto[0] - anterior[0],
+          punto[1] - anterior[1],
+        );
+        return {
+          anterior,
+          punto,
+          distancia,
+          angulo: anguloVehiculoEnRuta(anterior, punto),
+        };
+      })
+      .filter(({ distancia }) => distancia > 0);
   }, [geometria]);
 
   useEffect(() => {
     if (segmentos.length === 0 || marcador.current === null) return;
+    marcador.current
+      .getElement()
+      ?.style.setProperty(
+        "--ruta-vehiculo-angulo",
+        `${segmentos[0].angulo}deg`,
+      );
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const total = segmentos.reduce(
       (suma, segmento) => suma + segmento.distancia,
       0,
     );
     let frame = 0;
+    let indiceAnterior = -1;
     const inicio = performance.now();
     const duracion = Math.min(26000, Math.max(9000, geometria.length * 75));
     const animar = (ahora: number) => {
       const progreso = ((ahora - inicio) % duracion) / duracion;
       let objetivo = progreso * total;
       let segmento = segmentos[0];
-      for (const actual of segmentos) {
+      let indiceSegmento = 0;
+      for (let indice = 0; indice < segmentos.length; indice += 1) {
+        const actual = segmentos[indice];
         segmento = actual;
+        indiceSegmento = indice;
         if (objetivo <= actual.distancia) break;
         objetivo -= actual.distancia;
+      }
+      if (indiceSegmento !== indiceAnterior) {
+        marcador.current
+          ?.getElement()
+          ?.style.setProperty(
+            "--ruta-vehiculo-angulo",
+            `${segmento.angulo}deg`,
+          );
+        indiceAnterior = indiceSegmento;
       }
       const fraccion =
         segmento.distancia === 0 ? 0 : objetivo / segmento.distancia;

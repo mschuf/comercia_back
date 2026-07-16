@@ -85,21 +85,37 @@ body {
 }
 
 @keyframes ruta-flujo {
-  to { stroke-dashoffset: -50; }
+  to {
+    stroke-dashoffset: -50;
+  }
 }
 
 @keyframes ruta-pulso {
-  0%, 100% { transform: scale(1); opacity: 0.55; }
-  50% { transform: scale(1.45); opacity: 0; }
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
 }
 
-@keyframes ruta-flotar {
-  0%, 100% { transform: translateY(0) rotate(5deg); }
-  50% { transform: translateY(-5px) rotate(-5deg); }
+@keyframes ruta-camion-flotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 @keyframes ruta-orbitar {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .ruta-trazo-animado,
@@ -130,7 +146,9 @@ body {
   transform: rotate(-45deg);
 }
 
-.ruta-pin span { transform: rotate(45deg); }
+.ruta-pin span {
+  transform: rotate(45deg);
+}
 
 .ruta-pin-activo::before,
 .ruta-origen::before,
@@ -145,18 +163,46 @@ body {
 
 .ruta-vehiculo {
   display: grid;
-  width: 42px;
-  height: 42px;
+  width: 50px;
+  height: 50px;
   place-items: center;
   border: 3px solid white;
-  border-radius: 16px;
+  border-radius: 999px;
   background: linear-gradient(135deg, #4f46e5, #7c3aed);
   color: white;
   box-shadow: 0 10px 28px rgb(49 46 129 / 45%);
-  animation: ruta-flotar 2s ease-in-out infinite;
+  transform: rotate(var(--ruta-vehiculo-angulo, 0deg));
+  transform-origin: center;
+  will-change: transform;
 }
 
-.ruta-vehiculo svg { width: 22px; height: 22px; }
+.ruta-camion {
+  display: grid;
+  place-items: center;
+  animation: ruta-camion-flotar 1.15s ease-in-out infinite;
+}
+
+.ruta-camion svg {
+  width: 37px;
+  height: 25px;
+}
+
+@keyframes pantalla-carga-avance {
+  0% {
+    transform: translateX(-140%);
+  }
+  55% {
+    transform: translateX(105%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+.pantalla-carga-indeterminada {
+  animation: pantalla-carga-avance 1.25s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+}
 
 .ruta-origen {
   position: relative;
@@ -183,7 +229,9 @@ body {
   color: var(--mapa-pin-color);
   box-shadow: 0 7px 20px rgb(15 23 42 / 38%);
   transform: rotate(-45deg);
-  transition: filter 180ms ease, transform 180ms ease;
+  transition:
+    filter 180ms ease,
+    transform 180ms ease;
 }
 
 .mapa-pin span {
@@ -218,7 +266,8 @@ body {
   .ruta-pin-activo::before,
   .ruta-origen::before,
   .mapa-pin::before,
-  .ruta-vehiculo,
+  .ruta-camion,
+  .pantalla-carga-indeterminada,
   .ruta-orbita,
   .mapa-radar {
     animation: none !important;

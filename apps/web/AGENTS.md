@@ -50,6 +50,17 @@ This version has breaking changes. APIs, conventions, and file structure may dif
 - Además del hover, incluir `focus-visible` (anillo de foco) para uso con teclado.
 - Deshabilitados: `disabled:opacity-50 disabled:cursor-not-allowed`.
 
+## Feedback global de procedimientos
+
+- Toda operación que espere geolocalización, red, archivos, cálculo o una
+  navegación externa debe mostrar `src/components/pantalla-carga.tsx` cubriendo
+  la pantalla mientras se procesa. El mensaje debe describir la acción concreta
+  (por ejemplo, “Calculando mejor ruta” o “Subiendo foto”), bloquear clics
+  duplicados y limpiarse también cuando la operación falla (`finally`).
+- Las acciones instantáneas puramente locales no llevan backdrop. Mantener los
+  indicadores inline cuando aporten contexto, pero no usarlos como único
+  feedback durante un procedimiento bloqueante.
+
 ## Botones de alta en ABM
 
 - Todo botón que abra el alta de una entidad debe mostrar exclusivamente el
