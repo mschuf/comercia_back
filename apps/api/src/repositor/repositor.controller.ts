@@ -5,6 +5,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ListarClientesRepositorDto } from './dto/listar-clientes-repositor.dto';
 import { ListarLocalesRepositorDto } from './dto/listar-locales-repositor.dto';
 import { ListarTareasRepositorDto } from './dto/listar-tareas-repositor.dto';
+import { ListarVisitasHoyDto } from './dto/listar-visitas-hoy.dto';
 import { RutaHoyDto } from './dto/ruta-hoy.dto';
 import { RepositorService } from './repositor.service';
 
@@ -41,5 +42,13 @@ export class RepositorController {
   @Get('ruta-hoy')
   rutaHoy(@Req() req: RequestConUsuario, @Query() query: RutaHoyDto) {
     return this.repositor.rutaHoy(req.usuarioId, query);
+  }
+
+  @Get('visitas-hoy')
+  visitasHoy(
+    @Req() req: RequestConUsuario,
+    @Query() query: ListarVisitasHoyDto,
+  ) {
+    return this.repositor.visitasHoy(req.usuarioId, query);
   }
 }

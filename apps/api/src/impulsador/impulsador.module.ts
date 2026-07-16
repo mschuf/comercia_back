@@ -6,6 +6,7 @@ import { AccesoOperacionesCampoService } from './acceso-operaciones-campo.servic
 import { FotosService } from './fotos.service';
 import { MapaController } from './mapa.controller';
 import { MapaService } from './mapa.service';
+import { KpisVisitasService } from './kpis-visitas.service';
 import { TerritoriosController } from './territorios.controller';
 import { TerritoriosService } from './territorios.service';
 import { VisitasController } from './visitas.controller';
@@ -25,6 +26,7 @@ import { ZonasService } from './zonas.service';
     TerritoriosService,
     ZonasService,
     MapaService,
+    KpisVisitasService,
     AccesoOperacionesCampoService,
     VisitasService,
     FotosService,

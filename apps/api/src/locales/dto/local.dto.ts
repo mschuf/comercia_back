@@ -61,7 +61,7 @@ export class CrearLocalDto {
   @Max(MAX_INT4)
   zonaId!: number;
 
-  // Radio en metros para verificar presencia; null = default de la config
+  // Radio en metros para verificar presencia; null = 200 metros
   @IsOptional()
   @IsInt()
   @Min(RADIO_MIN)
@@ -117,7 +117,7 @@ export class ActualizarLocalDto {
   @Max(MAX_INT4)
   zonaId?: number | null;
 
-  // undefined = no tocar; null = volver al default de la config
+  // undefined = no tocar; null = volver al predeterminado general
   @IsOptional()
   @IsInt()
   @Min(RADIO_MIN)

@@ -7,6 +7,7 @@ export interface VisitaTarea {
   descripcion: string;
   requiereFoto: boolean;
   orden: number;
+  activa: boolean;
   completada: boolean;
   comentario: string | null;
   // Nombre de archivo; se muestra vía urlFotoVisita() de @/lib/api-archivos
@@ -24,6 +25,7 @@ export interface Visita {
   usuarioNombre: string;
   iniciadaEn: string;
   completadaEn: string | null;
+  duracionMinutos: number | null;
   distanciaMetros: number;
   fotoPresencia: string | null;
   requiereFotoPresencia: boolean;
@@ -42,6 +44,7 @@ export interface VisitaResumen {
   usuarioNombre: string;
   iniciadaEn: string;
   completadaEn: string | null;
+  duracionMinutos: number | null;
   distanciaMetros: number;
   fotoPresencia: string | null;
   tareasTotal: number;
@@ -54,6 +57,7 @@ export interface VisitaEquipoUltimaVisita {
   usuarioNombre: string;
   iniciadaEn: string;
   completadaEn: string | null;
+  duracionMinutos: number | null;
   tareasTotal: number;
   tareasCompletadas: number;
 }
@@ -82,4 +86,30 @@ export interface VisitaEquipoLocal {
   activo: boolean;
   asignadoA: { id: number; nombre: string } | null;
   ultimaVisita: VisitaEquipoUltimaVisita | null;
+}
+
+export type AgrupacionKpiVisita = "USUARIO" | "LOCAL";
+
+export interface KpiVisitasResumen {
+  desde: string;
+  hasta: string;
+  visitasCompletadas: number;
+  visitasEnCurso: number;
+  usuariosActivos: number;
+  localesVisitados: number;
+  duracionPromedioMinutos: number;
+  duracionMedianaMinutos: number;
+  tiempoTotalMinutos: number;
+  cumplimientoPorcentaje: number;
+}
+
+export interface KpiVisitasDetalle {
+  agrupadoPor: AgrupacionKpiVisita;
+  entidadId: number;
+  nombre: string;
+  detalle: string | null;
+  visitas: number;
+  duracionPromedioMinutos: number;
+  cumplimientoPorcentaje: number;
+  entidadesRelacionadas: number;
 }

@@ -6,6 +6,7 @@ export interface VisitaTareaDto {
   descripcion: string;
   requiereFoto: boolean;
   orden: number;
+  activa: boolean;
   completada: boolean;
   comentario: string | null;
   // Nombre de archivo; se sirve autenticado por GET /visitas/fotos/:nombre
@@ -23,10 +24,11 @@ export interface VisitaDto {
   usuarioNombre: string;
   iniciadaEn: string;
   completadaEn: string | null;
+  duracionMinutos: number | null;
   distanciaMetros: number;
   fotoPresencia: string | null;
   requiereFotoPresencia: boolean;
-  // Radio efectivo usado para la verificación (local o default de la config)
+  // Radio efectivo usado para la verificación (local o predeterminado general)
   radioMetros: number;
   tareas: VisitaTareaDto[];
 }
@@ -41,6 +43,7 @@ export interface VisitaResumenDto {
   usuarioNombre: string;
   iniciadaEn: string;
   completadaEn: string | null;
+  duracionMinutos: number | null;
   distanciaMetros: number;
   fotoPresencia: string | null;
   tareasTotal: number;
@@ -53,6 +56,7 @@ export interface VisitaEquipoUltimaVisitaDto {
   usuarioNombre: string;
   iniciadaEn: string;
   completadaEn: string | null;
+  duracionMinutos: number | null;
   tareasTotal: number;
   tareasCompletadas: number;
 }

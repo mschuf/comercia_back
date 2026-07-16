@@ -4,7 +4,7 @@ function coordenada(latitud: number, longitud: number): string {
   return `${latitud},${longitud}`;
 }
 
-export function urlNavegarA(parada: ParadaRuta): string {
+export function urlNavegarA(parada: Pick<ParadaRuta, "local">): string {
   const destino = coordenada(parada.local.latitud, parada.local.longitud);
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destino)}&travelmode=driving&dir_action=navigate`;
 }
@@ -18,10 +18,7 @@ export function urlRutaCompleta(
   const intermedias = paradas.slice(0, -1).slice(0, 3);
   const parametros = new URLSearchParams({
     api: "1",
-    destination: coordenada(
-      destino.local.latitud,
-      destino.local.longitud,
-    ),
+    destination: coordenada(destino.local.latitud, destino.local.longitud),
     travelmode: "driving",
     dir_action: "navigate",
   });

@@ -20,7 +20,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ListarClientesRepositorDto } from './dto/listar-clientes-repositor.dto';
 import { ListarLocalesRepositorDto } from './dto/listar-locales-repositor.dto';
 import { ListarTareasRepositorDto } from './dto/listar-tareas-repositor.dto';
+import { ListarVisitasHoyDto } from './dto/listar-visitas-hoy.dto';
 import { RutaHoyDto } from './dto/ruta-hoy.dto';
+import type { AgendaDiaria } from './interfaces/agenda-diaria.interface';
 import type { ClienteRepositorDto } from './interfaces/cliente-repositor.interface';
 import type { CoordenadaRuta } from './interfaces/osrm.interface';
 import type { LocalRepositorDto } from './interfaces/local-repositor.interface';
@@ -29,7 +31,9 @@ import type {
   RutaDiariaDto,
 } from './interfaces/ruta-diaria.interface';
 import type { TareasLocalRepositorDto } from './interfaces/tareas-repositor.interface';
+import type { VisitaHoyDto } from './interfaces/visita-hoy.interface';
 import { OsrmService } from './osrm.service';
+import { estadoVisitaProgramada } from './utils/estado-visita-programada';
 import {
   completarMatriz,
   distanciaDeOrden,
@@ -257,22 +261,55 @@ export class RepositorService {
     );
   }
 
-  async rutaHoy(usuarioId: number, query: RutaHoyDto): Promise<RutaDiariaDto> {
+  async visitasHoy(
+    usuarioId: number,
+    query: ListarVisitasHoyDto,
+  ): Promise<RespuestaPaginada<VisitaHoyDto>> {
     const usuario = await this.accesoCampo.usuarioRepositor(
       usuarioId,
       PAGINA_VISITAS,
     );
-    const tieneLatitud = query.latitud !== undefined;
-    const tieneLongitud = query.longitud !== undefined;
-    if (tieneLatitud !== tieneLongitud) {
-      throw new BadRequestException('Latitud y longitud deben enviarse juntas');
-    }
-
     const ahora = new Date();
+    const agenda = await this.obtenerAgendaDiaria(
+      usuario.id,
+      usuario.empresaId,
+      ahora,
+    );
+    const { skip, take, page, limit } = rangoPaginacion(query);
+    const items = agenda.candidatas
+      .slice(skip, skip + take)
+      .map((candidata, indice) => ({
+        clave: candidata.clave,
+        orden: skip + indice + 1,
+        local: {
+          id: candidata.local.id,
+          nombre: candidata.local.nombre,
+          cliente: candidata.local.cliente,
+          zona: candidata.local.zona,
+          latitud: candidata.local.latitud,
+          longitud: candidata.local.longitud,
+        },
+        programadaEn: candidata.programadaEn.toISOString(),
+        tareasActivas: candidata.local.tareasActivas,
+        estado: estadoVisitaProgramada(
+          candidata.programadaEn,
+          candidata.visitaAbiertaId,
+          ahora,
+        ),
+        visitaAbiertaId: candidata.visitaAbiertaId,
+      }));
+    return respuestaPaginada(items, agenda.candidatas.length, page, limit);
+  }
+
+  private async obtenerAgendaDiaria(
+    usuarioId: number,
+    empresaId: number,
+    ahora: Date,
+  ): Promise<AgendaDiaria> {
     const locales = await this.prisma.local.findMany({
       where: {
-        empresaId: usuario.empresaId,
-        usuarioId: usuario.id,
+        empresaId,
+        usuarioId,
         activo: true,
         cliente: { activo: true },
       },
@@ -300,7 +337,7 @@ export class RepositorService {
         ? []
         : await this.prisma.visita.findMany({
             where: {
-              usuarioId: usuario.id,
+              usuarioId,
               localId: { in: locales.map(({ id }) => id) },
               iniciadaEn: {
                 gte: new Date(ahora.getTime() - VENTANA_VISITAS_MS),
@@ -318,13 +355,7 @@ export class RepositorService {
 
     let totalProgramadas = 0;
     let totalCompletadas = 0;
-    const candidatas: Array<{
-      clave: string;
-      local: (typeof locales)[number];
-      programadaEn: Date;
-      visitaAbiertaId: number | null;
-    }> = [];
-
+    const candidatas: AgendaDiaria['candidatas'] = [];
     for (const local of locales) {
       const zona =
         local.programacionVisita?.zonaHoraria ?? ZONA_HORARIA_DEFECTO;
@@ -352,12 +383,52 @@ export class RepositorService {
       ocurrencias.slice(completadas).forEach((programadaEn, indice) => {
         candidatas.push({
           clave: `${local.id}-${programadaEn.toISOString()}`,
-          local,
+          local: {
+            id: local.id,
+            nombre: local.nombre,
+            cliente: {
+              id: local.cliente.id,
+              nombre: local.cliente.nombre,
+            },
+            zona: local.zona?.nombre ?? null,
+            latitud: local.latitud,
+            longitud: local.longitud,
+            tareasActivas: local.cliente._count.tareas,
+          },
           programadaEn,
           visitaAbiertaId: indice === 0 ? (abierta?.id ?? null) : null,
         });
       });
     }
+    candidatas.sort(
+      (a, b) => a.programadaEn.getTime() - b.programadaEn.getTime(),
+    );
+    return {
+      fecha: fechaEnZonaIso(ahora, ZONA_HORARIA_DEFECTO),
+      totalProgramadas,
+      totalCompletadas,
+      candidatas,
+    };
+  }
+
+  async rutaHoy(usuarioId: number, query: RutaHoyDto): Promise<RutaDiariaDto> {
+    const usuario = await this.accesoCampo.usuarioRepositor(
+      usuarioId,
+      PAGINA_VISITAS,
+    );
+    const tieneLatitud = query.latitud !== undefined;
+    const tieneLongitud = query.longitud !== undefined;
+    if (tieneLatitud !== tieneLongitud) {
+      throw new BadRequestException('Latitud y longitud deben enviarse juntas');
+    }
+
+    const ahora = new Date();
+    const agenda = await this.obtenerAgendaDiaria(
+      usuario.id,
+      usuario.empresaId,
+      ahora,
+    );
+    const { candidatas, totalProgramadas, totalCompletadas } = agenda;
 
     const origen =
       query.latitud !== undefined && query.longitud !== undefined
@@ -429,7 +500,7 @@ export class RepositorService {
     );
 
     return {
-      fecha: fechaEnZonaIso(ahora, ZONA_HORARIA_DEFECTO),
+      fecha: agenda.fecha,
       generadaEn: ahora.toISOString(),
       fuente,
       usaUbicacionActual: origen !== null,
@@ -453,11 +524,8 @@ export class RepositorService {
           local: {
             id: candidata.local.id,
             nombre: candidata.local.nombre,
-            cliente: {
-              id: candidata.local.cliente.id,
-              nombre: candidata.local.cliente.nombre,
-            },
-            zona: candidata.local.zona?.nombre ?? null,
+            cliente: candidata.local.cliente,
+            zona: candidata.local.zona,
             latitud: candidata.local.latitud,
             longitud: candidata.local.longitud,
           },
@@ -465,13 +533,12 @@ export class RepositorService {
           llegadaEstimada: parada.llegadaEstimada.toISOString(),
           distanciaDesdeAnteriorMetros: parada.distanciaDesdeAnteriorMetros,
           viajeDesdeAnteriorSegundos: parada.viajeDesdeAnteriorSegundos,
-          tareasActivas: candidata.local.cliente._count.tareas,
-          estado:
-            candidata.visitaAbiertaId !== null
-              ? 'EN_CURSO'
-              : ahora.getTime() > candidata.programadaEn.getTime()
-                ? 'ATRASADA'
-                : 'PENDIENTE',
+          tareasActivas: candidata.local.tareasActivas,
+          estado: estadoVisitaProgramada(
+            candidata.programadaEn,
+            candidata.visitaAbiertaId,
+            ahora,
+          ),
           visitaAbiertaId: candidata.visitaAbiertaId,
         };
       }),

@@ -7,30 +7,33 @@ import { obtenerUbicacion } from "@/lib/geolocalizacion";
 import { Modal } from "@/components/modal";
 import { btnPrimary, errorBox, inputBase } from "@/components/ui";
 import { formatoFechaHora } from "@/utils/fechas";
+import { formatoDuracionMinutos } from "@/utils/duracion";
 import type { Visita, VisitaTarea } from "@/types/visita";
 
 function Spinner() {
   return (
-    <svg
-      className="h-4 w-4 animate-spin"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden
-    >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="4"
-      />
-      <path
-        className="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-      />
-    </svg>
+    <div className="h-4 w-4 animate-spin">
+      <svg
+        className="h-full w-full"
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        />
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        />
+      </svg>
+    </div>
   );
 }
 
@@ -145,7 +148,9 @@ export function VisitaActiva({
   const [finalizando, setFinalizando] = useState(false);
   const [exito, setExito] = useState(false);
 
-  const tareas = [...visita.tareas].sort((a, b) => a.orden - b.orden);
+  const tareas = visita.tareas
+    .filter((tarea) => tarea.activa)
+    .sort((a, b) => a.orden - b.orden);
   const completadas = tareas.filter((t) => t.completada).length;
   const progreso =
     tareas.length === 0 ? 100 : Math.round((completadas / tareas.length) * 100);
@@ -383,6 +388,9 @@ export function VisitaActiva({
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
             {formatoFechaHora(visita.completadaEn)}
           </p>
+          <p className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+            Duración: {formatoDuracionMinutos(visita.duracionMinutos)}
+          </p>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
             a {Math.round(visita.distanciaMetros)} m del local
           </p>
@@ -532,22 +540,23 @@ export function VisitaActiva({
 
           {error && <p className={`${errorBox} mt-4`}>{error}</p>}
 
-          {/* Siempre habilitado: la validación final la hace el backend */}
-          <button
-            type="button"
-            onClick={finalizar}
-            disabled={finalizando}
-            className={`${btnPrimary} mt-5 h-12 w-full gap-2 text-base`}
-          >
-            {finalizando ? (
-              <>
-                <Spinner />
-                Verificando ubicación…
-              </>
-            ) : (
-              "Registrar visita ✓"
-            )}
-          </button>
+          {pendientes.length === 0 ? (
+            <button
+              type="button"
+              onClick={finalizar}
+              disabled={finalizando || fotoEnProceso !== null}
+              className={`${btnPrimary} mt-5 h-12 w-full gap-2 text-base`}
+            >
+              {finalizando ? (
+                <>
+                  <Spinner />
+                  Guardando hora de finalización…
+                </>
+              ) : (
+                "Terminar visita"
+              )}
+            </button>
+          ) : null}
         </div>
       )}
     </Modal>

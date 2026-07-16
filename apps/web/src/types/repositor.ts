@@ -42,6 +42,23 @@ export interface TareasLocalRepositor {
 
 export type EstadoParadaRuta = "PENDIENTE" | "ATRASADA" | "EN_CURSO";
 
+export interface VisitaHoy {
+  clave: string;
+  orden: number;
+  local: {
+    id: number;
+    nombre: string;
+    cliente: { id: number; nombre: string };
+    zona: string | null;
+    latitud: number;
+    longitud: number;
+  };
+  programadaEn: string;
+  tareasActivas: number;
+  estado: EstadoParadaRuta;
+  visitaAbiertaId: number | null;
+}
+
 export interface ParadaRuta {
   clave: string;
   orden: number;

@@ -29,7 +29,12 @@ import {
   ListarVisitasEquipoDto,
   ListarVisitasDto,
 } from './dto/visita.dto';
+import {
+  FiltroKpisVisitasDto,
+  ListarKpisVisitasDto,
+} from './dto/kpis-visitas.dto';
 import { FOTO_MAX_BYTES } from './impulsador.constants';
+import { KpisVisitasService } from './kpis-visitas.service';
 import { VisitasService } from './visitas.service';
 
 // Content-Type según la extensión, ya validada por FotosService.rutaAbsoluta
@@ -44,7 +49,10 @@ const MIME_POR_EXTENSION: Record<string, string> = {
 @Controller('visitas')
 @UseGuards(JwtAuthGuard)
 export class VisitasController {
-  constructor(private readonly visitas: VisitasService) {}
+  constructor(
+    private readonly visitas: VisitasService,
+    private readonly kpis: KpisVisitasService,
+  ) {}
 
   // Declarada ANTES que las rutas ':id' para que 'fotos' no se parsee como id
   @Get('fotos/:nombre')
@@ -97,6 +105,22 @@ export class VisitasController {
   ) {
     await this.visitas.quitarProgramacion(req.usuarioId, localId);
     return { ok: true };
+  }
+
+  @Get('kpis/resumen')
+  resumenKpis(
+    @Req() req: RequestConUsuario,
+    @Query() query: FiltroKpisVisitasDto,
+  ) {
+    return this.kpis.resumen(req.usuarioId, query);
+  }
+
+  @Get('kpis/detalle')
+  detalleKpis(
+    @Req() req: RequestConUsuario,
+    @Query() query: ListarKpisVisitasDto,
+  ) {
+    return this.kpis.detalle(req.usuarioId, query);
   }
 
   @Get(':id')

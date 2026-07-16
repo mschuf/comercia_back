@@ -7,7 +7,7 @@ export interface Local {
   latitud: number;
   longitud: number;
   zona: { id: number; nombre: string } | null;
-  // Radio de verificación de presencia; null = usa el default de la config
+  // Radio de verificación de presencia; null = usa 200 metros
   radioMetros: number | null;
   // Próxima visita programada por el gestor (ISO 8601)
   fechaVisita: string | null;
@@ -35,7 +35,7 @@ export interface LocalDetalle extends Local {
   tareas: TareaLocal[];
   descripcionTareas: string;
   imagenReferencia: string | null;
-  // Radio efectivo: el del local o el default de la config de la empresa
+  // Radio efectivo: el del local o el predeterminado general
   radioMetrosEfectivo: number;
 }
 

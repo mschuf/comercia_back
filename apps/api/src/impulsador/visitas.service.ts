@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import type { Prisma } from '../../generated/prisma/client';
 import { distanciaMetros } from '../common/utils/geo';
+import { redondear1Decimal } from '../common/utils/numeros';
 import {
   rangoPaginacion,
   respuestaPaginada,
@@ -39,6 +40,7 @@ import {
   proximaOcurrenciaVisita,
   validarZonaHoraria,
 } from './utils/programacion-visita';
+import { duracionVisitaMinutos } from './utils/duracion-visita';
 
 type VisitaTareaConTarea = {
   id: number;
@@ -111,7 +113,7 @@ type LocalEquipo = {
   }[];
 };
 
-// `activo` no viaja al front: se usa para decidir qué tareas exige finalizar()
+// El estado activo viaja al front y también decide qué tareas exige finalizar().
 const SELECT_VISITA_TAREA = {
   id: true,
   tareaId: true,
@@ -232,6 +234,7 @@ function aVisitaTareaDto(tarea: VisitaTareaConTarea): VisitaTareaDto {
     descripcion: tarea.tarea.descripcion,
     requiereFoto: tarea.tarea.requiereFoto,
     orden: tarea.tarea.orden,
+    activa: tarea.tarea.activo,
     completada: tarea.completada,
     comentario: tarea.comentario,
     foto: tarea.foto,
@@ -252,6 +255,10 @@ function aVisitaDto(
     usuarioNombre: nombreCompleto(visita.usuario),
     iniciadaEn: visita.iniciadaEn.toISOString(),
     completadaEn: visita.completadaEn?.toISOString() ?? null,
+    duracionMinutos: duracionVisitaMinutos(
+      visita.iniciadaEn,
+      visita.completadaEn,
+    ),
     distanciaMetros: visita.distanciaMetros,
     fotoPresencia: visita.fotoPresencia,
     requiereFotoPresencia: visita.local.requiereFotoPresencia,
@@ -273,6 +280,10 @@ function aVisitaResumenDto(visita: VisitaResumen): VisitaResumenDto {
     usuarioNombre: nombreCompleto(visita.usuario),
     iniciadaEn: visita.iniciadaEn.toISOString(),
     completadaEn: visita.completadaEn?.toISOString() ?? null,
+    duracionMinutos: duracionVisitaMinutos(
+      visita.iniciadaEn,
+      visita.completadaEn,
+    ),
     distanciaMetros: visita.distanciaMetros,
     fotoPresencia: visita.fotoPresencia,
     tareasTotal: visita.tareas.length,
@@ -303,16 +314,16 @@ function aVisitaEquipoLocalDto(local: LocalEquipo): VisitaEquipoLocalDto {
           usuarioNombre: nombreCompleto(ultimaVisita.usuario),
           iniciadaEn: ultimaVisita.iniciadaEn.toISOString(),
           completadaEn: ultimaVisita.completadaEn?.toISOString() ?? null,
+          duracionMinutos: duracionVisitaMinutos(
+            ultimaVisita.iniciadaEn,
+            ultimaVisita.completadaEn,
+          ),
           tareasTotal: ultimaVisita.tareas.length,
           tareasCompletadas: ultimaVisita.tareas.filter((t) => t.completada)
             .length,
         }
       : null,
   };
-}
-
-function redondear1Decimal(valor: number): number {
-  return Math.round(valor * 10) / 10;
 }
 
 // Verifica la ubicación reportada contra el radio efectivo del local y
@@ -476,6 +487,8 @@ export class VisitasService {
       data: {
         localId: local.id,
         usuarioId: usuario.id,
+        // Se fija explícitamente para que inicio y fin sean la fuente de los KPIs.
+        iniciadaEn: new Date(),
         latitud: dto.latitud,
         longitud: dto.longitud,
         distanciaMetros: redondear1Decimal(distancia),

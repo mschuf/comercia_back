@@ -282,7 +282,7 @@ model Local {
   // Zona a la que pertenece (opcional hasta que el gestor la asigne)
   zonaId                Int?      @map("zona_id")
   zona                  Zona?     @relation(fields: [zonaId], references: [id], onDelete: SetNull)
-  // Radio en metros para verificar presencia; null = usa el de la config
+  // Radio en metros para verificar presencia; null = usa 200 metros
   radioMetros           Int?      @map("radio_metros")
   // Próxima visita programada por el gestor
   fechaVisita           DateTime? @map("fecha_visita")
@@ -378,6 +378,8 @@ model Visita {
   updatedAt          DateTime      @default(now()) @updatedAt @map("updated_at")
 
   @@index([localId, usuarioId])
+  @@index([iniciadaEn])
+  @@index([completadaEn])
   @@map("visitas")
 }
 

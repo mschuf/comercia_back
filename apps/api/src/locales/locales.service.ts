@@ -296,7 +296,7 @@ export class LocalesService {
         longitud: dto.longitud,
         // undefined = no tocar; null = quitar de la zona
         zonaId: dto.zonaId,
-        // undefined = no tocar; null = volver al default de la config
+        // undefined = no tocar; null = volver al predeterminado general
         radioMetros: dto.radioMetros,
         // undefined = no tocar; null = sin visita programada
         fechaVisita:

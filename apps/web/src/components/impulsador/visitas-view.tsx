@@ -6,8 +6,10 @@ import { urlFotoVisita } from "@/lib/api-archivos";
 import { Modal } from "@/components/modal";
 import { Paginacion } from "@/components/paginacion";
 import { EditorProgramacionVisita } from "@/components/impulsador/editor-programacion-visita";
+import { KpisVisitas } from "@/components/impulsador/kpis-visitas";
 import { errorBox } from "@/components/ui";
 import { formatoFechaHora } from "@/utils/fechas";
+import { formatoDuracionMinutos } from "@/utils/duracion";
 import {
   formatoFechaProgramacion,
   resumenProgramacion,
@@ -15,7 +17,7 @@ import {
 import type { RespuestaPaginada } from "@/types/paginacion";
 import type { VisitaEquipoLocal, VisitaResumen } from "@/types/visita";
 
-type Tab = "locales" | "historial";
+type Tab = "kpis" | "locales" | "historial";
 
 const badgeBase =
   "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium";
@@ -113,7 +115,7 @@ function BotonFoto({
 }
 
 export function VisitasView() {
-  const [tab, setTab] = useState<Tab>("locales");
+  const [tab, setTab] = useState<Tab>("kpis");
   // se incrementa al finalizar una visita para refrescar ambos listados
   const [refresco, setRefresco] = useState(0);
 
@@ -138,6 +140,7 @@ export function VisitasView() {
   const [fotoAmpliada, setFotoAmpliada] = useState<string | null>(null);
 
   useEffect(() => {
+    if (tab !== "locales") return;
     let vigente = true;
     apiFetch<RespuestaPaginada<VisitaEquipoLocal>>(
       `/visitas/equipo?page=${pageLocales}&limit=${limitLocales}`,
@@ -163,7 +166,7 @@ export function VisitasView() {
     return () => {
       vigente = false;
     };
-  }, [pageLocales, limitLocales, refresco]);
+  }, [tab, pageLocales, limitLocales, refresco]);
 
   useEffect(() => {
     if (tab !== "historial") return;
@@ -209,6 +212,13 @@ export function VisitasView() {
       <div className="flex gap-1 border-b border-zinc-200 dark:border-zinc-800">
         <button
           type="button"
+          onClick={() => setTab("kpis")}
+          className={tabClase("kpis")}
+        >
+          Indicadores
+        </button>
+        <button
+          type="button"
           onClick={() => setTab("locales")}
           className={tabClase("locales")}
         >
@@ -222,6 +232,12 @@ export function VisitasView() {
           Historial
         </button>
       </div>
+
+      {tab === "kpis" ? (
+        <div className="mt-6">
+          <KpisVisitas />
+        </div>
+      ) : null}
 
       {tab === "locales" && (
         <div className="mt-6">
@@ -273,6 +289,9 @@ export function VisitasView() {
                         </th>
                         <th scope="col" className="px-4 py-3 font-medium">
                           Estado
+                        </th>
+                        <th scope="col" className="px-4 py-3 font-medium">
+                          Duración
                         </th>
                         <th
                           scope="col"
@@ -429,7 +448,7 @@ export function VisitasView() {
                 </div>
               ) : (
                 <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-                  <table className="w-full min-w-[760px] text-left text-sm">
+                  <table className="w-full min-w-[860px] text-left text-sm">
                     <thead>
                       <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
                         <th scope="col" className="px-4 py-3 font-medium">
@@ -470,6 +489,9 @@ export function VisitasView() {
                           </td>
                           <td className="px-4 py-3">
                             <EstadoVisita visita={v} />
+                          </td>
+                          <td className="whitespace-nowrap px-4 py-3 text-zinc-500 dark:text-zinc-400">
+                            {formatoDuracionMinutos(v.duracionMinutos)}
                           </td>
                           <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
                             {Math.round(v.distanciaMetros)} m
