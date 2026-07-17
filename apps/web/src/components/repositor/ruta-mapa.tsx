@@ -262,7 +262,7 @@ export function RutaMapa({
         <VehiculoAnimado geometria={geometria} />
         <AjustarRuta puntos={puntos} />
       </MapContainer>
-      <div className="pointer-events-none absolute left-3 top-3 z-[1000] rounded-full border border-white/60 bg-white/90 px-3 py-1.5 text-xs font-semibold text-indigo-950 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-950/90 dark:text-indigo-200">
+      <div className="pointer-events-none absolute left-3 top-3 z-[1000] rounded-full border border-control-line bg-surface-raised px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg">
         {calculada ? "Ruta calculada" : "Locales programados"} ·{" "}
         {paradas.length} paradas
       </div>

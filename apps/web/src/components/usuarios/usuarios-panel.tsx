@@ -196,9 +196,9 @@ export function UsuariosPanel() {
 
       {error && !editando && <p className={`${errorBox} mt-4`}>{error}</p>}
 
-      <div className="mt-5 overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-800">
+      <div className="mt-5 overflow-x-auto rounded-xl border border-line bg-surface-raised">
         <table className="min-w-full divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
-          <thead className="bg-zinc-50 text-left text-xs uppercase text-zinc-500 dark:bg-zinc-900 dark:text-zinc-400">
+          <thead className="bg-surface-soft text-left text-xs font-semibold uppercase text-foreground">
             <tr>
               <th className="px-4 py-3">Usuario</th>
               <th className="px-4 py-3">Rol</th>
@@ -207,7 +207,7 @@ export function UsuariosPanel() {
               <th className="px-4 py-3 text-right">Acción</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-100 bg-white dark:divide-zinc-800 dark:bg-zinc-950">
+          <tbody className="divide-y divide-line bg-surface-raised">
             {usuarios.map((usuario) => (
               <tr key={usuario.id}>
                 <td className="px-4 py-3">

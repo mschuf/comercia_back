@@ -63,7 +63,7 @@ export function Modal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.16 }}
-            className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
+            className="absolute inset-0 bg-[#0d1f19]/78"
           />
           <motion.div
             ref={panelRef}
@@ -75,15 +75,15 @@ export function Modal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.97, y: 6 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className={`relative w-full ${anchoClase} max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-2xl border border-zinc-200 bg-white p-4 shadow-2xl outline-none dark:border-zinc-800 dark:bg-zinc-900 sm:p-6`}
+            className={`relative w-full ${anchoClase} max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-[1.4rem] border border-line bg-surface-raised p-4 shadow-[0_28px_80px_rgba(0,0,0,0.3)] outline-none sm:p-6`}
           >
             <header className="flex items-start justify-between gap-4">
-              <h2 className="text-lg font-bold tracking-tight">{titulo}</h2>
+              <h2 className="text-lg font-extrabold tracking-[-0.025em]">{titulo}</h2>
               <button
                 type="button"
                 onClick={onCerrar}
                 aria-label="Cerrar"
-                className="grid h-8 w-8 place-items-center rounded-lg text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+                className="grid h-9 w-9 place-items-center rounded-xl text-muted transition hover:bg-surface-soft hover:text-foreground focus-visible:ring-2 focus-visible:ring-brand-600/40"
               >
                 <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5" aria-hidden>
                   <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />

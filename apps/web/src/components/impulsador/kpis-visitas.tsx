@@ -115,7 +115,7 @@ export function KpisVisitas() {
 
   return (
     <div className="space-y-5">
-      <section className="rounded-2xl border border-zinc-200 bg-gradient-to-br from-white to-indigo-50/70 p-4 shadow-sm dark:border-zinc-800 dark:from-zinc-900 dark:to-indigo-950/30 sm:p-5">
+      <section className="rounded-2xl border border-line bg-gradient-to-br from-surface-raised to-brand-50 p-4 shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)] dark:to-brand-950 sm:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-indigo-600 sm:text-[11px] dark:text-indigo-300">
@@ -135,7 +135,7 @@ export function KpisVisitas() {
                 type="date"
                 value={desde}
                 onChange={(evento) => setDesde(evento.target.value)}
-                className="mt-1 block min-h-11 w-full rounded-xl border border-zinc-300 bg-white px-3 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+                className="mt-1 block min-h-11 w-full rounded-xl border border-control-line bg-surface-raised px-3 text-sm text-foreground"
               />
             </label>
             <label className="text-xs font-medium text-zinc-600 dark:text-zinc-300">
@@ -144,7 +144,7 @@ export function KpisVisitas() {
                 type="date"
                 value={hasta}
                 onChange={(evento) => setHasta(evento.target.value)}
-                className="mt-1 block min-h-11 w-full rounded-xl border border-zinc-300 bg-white px-3 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+                className="mt-1 block min-h-11 w-full rounded-xl border border-control-line bg-surface-raised px-3 text-sm text-foreground"
               />
             </label>
             <button
@@ -182,7 +182,7 @@ export function KpisVisitas() {
           {tarjetas.map(([etiqueta, valor]) => (
             <article
               key={etiqueta}
-              className="rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+              className="rounded-2xl border border-line bg-surface-raised p-4 shadow-[0_8px_24px_rgba(var(--warm-shadow),0.05)]"
             >
               <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
                 {etiqueta}
@@ -214,7 +214,7 @@ export function KpisVisitas() {
                 }}
                 className={`min-h-11 rounded-lg px-4 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-indigo-500/40 ${
                   agrupadoPor === opcion
-                    ? "bg-white text-indigo-700 shadow-sm dark:bg-zinc-950 dark:text-indigo-300"
+                    ? "bg-surface-raised text-indigo-700 dark:text-indigo-300"
                     : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
                 }`}
               >
@@ -228,10 +228,10 @@ export function KpisVisitas() {
           <div className="h-56 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
         ) : detalle && detalle.items.length > 0 ? (
           <>
-            <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="overflow-x-auto rounded-2xl border border-line bg-surface-raised">
               <table className="w-full min-w-[720px] text-left text-sm">
-                <thead className="bg-zinc-50 dark:bg-zinc-950/60">
-                  <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                <thead className="bg-surface-soft">
+                  <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
                     <th className="px-4 py-3 font-medium">
                       {agrupadoPor === "USUARIO" ? "Repositor" : "Local"}
                     </th>
@@ -245,7 +245,7 @@ export function KpisVisitas() {
                   {detalle.items.map((item) => (
                     <tr
                       key={`${item.agrupadoPor}-${item.entidadId}`}
-                      className="border-b border-zinc-100 last:border-0 dark:border-zinc-800/70"
+                      className="border-b border-line bg-surface-raised last:border-0 hover:bg-surface-soft"
                     >
                       <td className="px-4 py-3">
                         <span className="block font-semibold">
@@ -294,7 +294,7 @@ export function KpisVisitas() {
             />
           </>
         ) : (
-          <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+          <div className="rounded-2xl border border-dashed border-line bg-surface-raised p-8 text-center text-sm text-muted">
             No hay visitas terminadas en este período.
           </div>
         )}

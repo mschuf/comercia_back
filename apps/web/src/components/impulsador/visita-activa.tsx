@@ -73,7 +73,7 @@ function WidgetFoto({
   if (!foto) {
     return (
       <div className="flex flex-wrap items-center gap-2">
-        <label className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 focus-within:ring-2 focus-within:ring-brand-600/40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">
+        <label className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-control-line bg-surface-raised px-4 text-sm font-medium text-foreground transition hover:bg-surface-soft focus-within:ring-2 focus-within:ring-focus">
           <input
             type="file"
             accept="image/*"
@@ -103,7 +103,7 @@ function WidgetFoto({
         className="h-20 w-20 rounded-lg border border-zinc-200 object-cover dark:border-zinc-800"
       />
       <div className="flex gap-2">
-        <label className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg border border-zinc-300 px-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 focus-within:ring-2 focus-within:ring-brand-600/40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">
+        <label className="inline-flex h-11 cursor-pointer items-center justify-center rounded-lg border border-control-line bg-surface-raised px-3 text-sm font-medium text-foreground transition hover:bg-surface-soft focus-within:ring-2 focus-within:ring-focus">
           <input
             type="file"
             accept="image/*"
@@ -116,7 +116,7 @@ function WidgetFoto({
         <button
           type="button"
           onClick={onQuitar}
-          className="inline-flex h-11 items-center justify-center rounded-lg border border-red-200 px-3 text-sm font-medium text-red-600 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+          className="inline-flex h-11 items-center justify-center rounded-lg border border-red-300 bg-surface-raised px-3 text-sm font-medium text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950"
         >
           Quitar
         </button>
@@ -435,7 +435,7 @@ export function VisitaActiva({
         ) : (
           <div>
             {/* Cabecera: datos del inicio y progreso del checklist */}
-            <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-800/40">
+            <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-800">
               <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-xs text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
                 <span>Iniciada {formatoFechaHora(visita.iniciadaEn)}</span>
                 <span>a {Math.round(visita.distanciaMetros)} m del local</span>

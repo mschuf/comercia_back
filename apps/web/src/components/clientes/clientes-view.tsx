@@ -158,16 +158,16 @@ export function ClientesView({ onVerLocales }: ClientesViewProps) {
       {errorLista && <p className={`${errorBox} mt-4`}>{errorLista}</p>}
 
       {clientes.length === 0 ? (
-        <div className="mt-5 rounded-xl border border-dashed border-zinc-300 bg-white p-10 text-center dark:border-zinc-700 dark:bg-zinc-900">
+        <div className="mt-5 rounded-xl border border-dashed border-line bg-surface-raised p-10 text-center">
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
             Todavía no hay clientes para mostrar.
           </p>
         </div>
       ) : (
-        <div className="mt-5 overflow-x-auto rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="mt-5 overflow-x-auto rounded-xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)]">
           <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="bg-zinc-50 dark:bg-zinc-950/60">
-              <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+            <thead className="bg-surface-soft">
+              <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
                 <th className="px-4 py-3 font-medium">Cliente</th>
                 <th className="px-4 py-3 text-center font-medium">Locales</th>
                 <th className="px-4 py-3 font-medium">Actualizado</th>
@@ -179,7 +179,7 @@ export function ClientesView({ onVerLocales }: ClientesViewProps) {
               {clientes.map((cliente) => (
                 <tr
                   key={cliente.id}
-                  className="border-b border-zinc-100 transition last:border-0 hover:bg-zinc-50/80 dark:border-zinc-800/70 dark:hover:bg-zinc-800/40"
+                  className="border-b border-line bg-surface-raised transition last:border-0 hover:bg-surface-soft"
                 >
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
@@ -213,7 +213,7 @@ export function ClientesView({ onVerLocales }: ClientesViewProps) {
                         type="button"
                         onClick={() => abrir(cliente)}
                         aria-label={`Editar ${cliente.nombre}`}
-                        className="grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                        className="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface-raised text-muted transition hover:bg-surface-soft hover:text-foreground focus-visible:ring-2 focus-visible:ring-focus"
                       >
                         <IconoEditar />
                       </button>
@@ -224,7 +224,7 @@ export function ClientesView({ onVerLocales }: ClientesViewProps) {
                           setEliminando(cliente);
                         }}
                         aria-label={`Eliminar ${cliente.nombre}`}
-                        className="grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:text-zinc-400 dark:hover:bg-red-950 dark:hover:text-red-400"
+                        className="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface-raised text-muted transition hover:border-red-300 hover:bg-red-50 hover:text-red-700 focus-visible:ring-2 focus-visible:ring-red-600 dark:hover:border-red-800 dark:hover:bg-red-950 dark:hover:text-red-300"
                       >
                         <IconoEliminar />
                       </button>

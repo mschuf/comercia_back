@@ -25,21 +25,21 @@ export function Paginacion({
   const hasta = Math.min(page * limit, total);
 
   const botonBase =
-    "grid h-9 min-w-9 place-items-center rounded-lg border border-zinc-300 px-2 text-sm transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent dark:border-zinc-700 dark:hover:bg-zinc-800";
+    "grid h-10 min-w-10 place-items-center rounded-xl border border-control-line bg-surface-raised px-2 text-sm shadow-sm transition hover:border-brand-500 hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 disabled:cursor-not-allowed disabled:bg-surface-soft disabled:text-muted";
 
   return (
     <div className="flex flex-col items-center justify-between gap-3 pt-4 sm:flex-row">
-      <p className="text-xs text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+      <p className="text-xs text-muted [font-variant-numeric:tabular-nums]">
         {desde}–{hasta} de {total} registros
       </p>
 
       <div className="flex items-center gap-2">
-        <label className="flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+        <label className="flex items-center gap-1.5 text-xs text-muted">
           Por página
           <select
             value={limit}
             onChange={(e) => onLimitChange(Number(e.target.value))}
-            className="rounded-lg border border-zinc-300 bg-transparent px-2 py-1.5 text-sm outline-none focus:border-brand-600 dark:border-zinc-700 dark:bg-zinc-900"
+            className="min-h-10 rounded-xl border border-control-line bg-surface-raised px-2 py-1.5 text-sm outline-none focus:border-brand-600 focus:ring-2 focus:ring-brand-600/55"
           >
             {OPCIONES_POR_PAGINA.map((n) => (
               <option key={n} value={n}>

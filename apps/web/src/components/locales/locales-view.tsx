@@ -368,7 +368,7 @@ export function LocalesView({
         </button>
       </div>
 
-      <div className="mt-4 flex flex-col gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3 sm:flex-row sm:items-end dark:border-zinc-800 dark:bg-zinc-950/60">
+      <div className="mt-4 flex flex-col gap-3 rounded-xl border border-zinc-200 bg-zinc-50 p-3 sm:flex-row sm:items-end dark:border-zinc-800 dark:bg-zinc-950">
         <label className={`${labelBase} min-w-0 sm:w-64`}>
           Cliente
           <select
@@ -437,7 +437,7 @@ export function LocalesView({
       {errorCarga && <p className={`${errorBox} mt-4`}>{errorCarga}</p>}
 
       {locales.length === 0 ? (
-        <div className="mt-6 rounded-xl border border-dashed border-zinc-300 bg-white p-10 text-center dark:border-zinc-700 dark:bg-zinc-900">
+        <div className="mt-6 rounded-xl border border-dashed border-line bg-surface-raised p-10 text-center">
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
             {clienteIdFiltro !== "" || usuarioIdFiltro !== ""
               ? "No hay locales que coincidan con los filtros seleccionados."
@@ -451,7 +451,7 @@ export function LocalesView({
               {locales.map((l) => (
                 <article
                   key={l.id}
-                  className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+                  className="rounded-xl border border-line bg-surface-raised p-4 shadow-[0_8px_24px_rgba(var(--warm-shadow),0.05)]"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -519,7 +519,7 @@ export function LocalesView({
                     <button
                       type="button"
                       onClick={() => abrirEdicion(l)}
-                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-zinc-300 px-3 text-sm font-medium text-zinc-700 transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-control-line bg-surface-raised px-3 text-sm font-medium text-foreground transition hover:bg-surface-soft focus-visible:ring-2 focus-visible:ring-focus"
                     >
                       <svg
                         viewBox="0 0 20 20"
@@ -537,7 +537,7 @@ export function LocalesView({
                         setErrorEliminar(null);
                         setEliminando(l);
                       }}
-                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-red-200 px-3 text-sm font-medium text-red-600 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
+                      className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-red-300 bg-surface-raised px-3 text-sm font-medium text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950"
                     >
                       <svg
                         viewBox="0 0 20 20"
@@ -559,10 +559,10 @@ export function LocalesView({
             </div>
           )}
 
-          <div className="mt-4 overflow-x-auto rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="mt-4 overflow-x-auto rounded-xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)]">
             <table className="w-full min-w-[1040px] text-left text-sm">
-              <thead className="bg-zinc-50 dark:bg-zinc-950/60">
-                <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+              <thead className="bg-surface-soft">
+                <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
                   <th className="px-4 py-3 font-medium">Local</th>
                   <th className="px-4 py-3 font-medium">Cliente</th>
                   <th className="px-4 py-3 font-medium">Coordenadas</th>
@@ -578,7 +578,7 @@ export function LocalesView({
                 {locales.map((l) => (
                   <tr
                     key={l.id}
-                    className="border-b border-zinc-100 transition last:border-0 hover:bg-zinc-50/80 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
+                    className="border-b border-line bg-surface-raised transition last:border-0 hover:bg-surface-soft"
                   >
                     <td className="px-4 py-3 font-medium">{l.nombre}</td>
                     <td className="px-4 py-3 font-medium text-brand-700 dark:text-brand-300">
@@ -617,7 +617,7 @@ export function LocalesView({
                           type="button"
                           onClick={() => abrirEdicion(l)}
                           aria-label={`Editar ${l.nombre}`}
-                          className="grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                          className="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface-raised text-muted transition hover:bg-surface-soft hover:text-foreground focus-visible:ring-2 focus-visible:ring-focus"
                         >
                           <svg
                             viewBox="0 0 20 20"
@@ -635,7 +635,7 @@ export function LocalesView({
                             setEliminando(l);
                           }}
                           aria-label={`Eliminar ${l.nombre}`}
-                          className="grid h-11 w-11 place-items-center rounded-lg text-zinc-500 transition hover:bg-red-50 hover:text-red-600 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:text-zinc-400 dark:hover:bg-red-950 dark:hover:text-red-400"
+                          className="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface-raised text-muted transition hover:border-red-300 hover:bg-red-50 hover:text-red-700 focus-visible:ring-2 focus-visible:ring-red-600 dark:hover:border-red-800 dark:hover:bg-red-950 dark:hover:text-red-300"
                         >
                           <svg
                             viewBox="0 0 20 20"
@@ -850,7 +850,7 @@ export function LocalesView({
             </label>
           </div>
 
-          <p className="rounded-lg bg-zinc-50 p-3 text-xs text-zinc-500 dark:bg-zinc-800/60 dark:text-zinc-400">
+          <p className="rounded-lg bg-zinc-50 p-3 text-xs text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
             Los días y horarios se administran desde la pantalla Visitas.
           </p>
 

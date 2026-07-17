@@ -341,7 +341,7 @@ export function RutaDiariaView() {
             <h1 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
               Mis visitas
             </h1>
-            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-indigo-100/85 sm:text-sm">
+            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-indigo-100 sm:text-sm">
               Revisá tus locales mientras calculamos automáticamente el mejor
               recorrido para hoy.
             </p>
@@ -353,7 +353,7 @@ export function RutaDiariaView() {
                 onClick={() => void iniciarNavegacionCompleta()}
                 disabled={navegando !== null || calculando}
                 title="Actualizar ubicación e iniciar la ruta en Google Maps"
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 text-sm font-semibold backdrop-blur transition hover:bg-white/20 focus-visible:ring-2 focus-visible:ring-white/70 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#efbd92] bg-[#d9955d] px-4 text-sm font-extrabold text-[#10231d] shadow-sm transition hover:bg-[#e5aa78] focus-visible:ring-2 focus-visible:ring-white disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <IconoAbrirRuta />
                 Iniciar navegación
@@ -377,7 +377,7 @@ export function RutaDiariaView() {
       {cargandoAgenda && agenda === null ? (
         <div className="h-[54dvh] min-h-[390px] animate-pulse rounded-3xl bg-zinc-200 dark:bg-zinc-800" />
       ) : visitasMapa.length === 0 ? (
-        <section className="rounded-3xl border border-dashed border-zinc-300 bg-white p-10 text-center dark:border-zinc-700 dark:bg-zinc-900">
+        <section className="rounded-3xl border border-dashed border-line bg-surface-raised p-10 text-center">
           <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-100 text-2xl dark:bg-emerald-950">
             ✓
           </div>
@@ -410,9 +410,9 @@ export function RutaDiariaView() {
                   </p>
                 </div>
               </div>
-              <div className="max-h-[430px] w-full overflow-auto rounded-xl border border-zinc-200 bg-white shadow-sm xl:min-h-0 xl:max-h-none xl:flex-1 dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="max-h-[430px] w-full overflow-auto rounded-xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)] xl:min-h-0 xl:max-h-none xl:flex-1">
                 <table className="w-full min-w-[680px] text-left">
-                  <thead className="sticky top-0 z-10 bg-zinc-50 text-[10px] uppercase tracking-wide text-zinc-500 dark:bg-zinc-950 dark:text-zinc-400">
+                  <thead className="sticky top-0 z-10 bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
                     <tr>
                       <th scope="col" className="w-12 px-2 py-2.5 text-center">
                         Orden
@@ -444,7 +444,7 @@ export function RutaDiariaView() {
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: indice * 0.035 }}
-                        className="transition-colors hover:bg-indigo-50/60 dark:hover:bg-indigo-950/20"
+                        className="border-b border-line bg-surface-raised transition-colors last:border-0 hover:bg-surface-soft"
                       >
                         <td className="px-2 py-2.5 text-center align-top">
                           <span
@@ -566,7 +566,7 @@ export function RutaDiariaView() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: indice * 0.05 }}
-                  className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm dark:border-zinc-800 dark:bg-zinc-900"
+                  className="rounded-xl border border-line bg-surface-raised p-3 shadow-[0_8px_24px_rgba(var(--warm-shadow),0.05)]"
                 >
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
                     {etiqueta}

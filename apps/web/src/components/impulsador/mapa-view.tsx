@@ -164,7 +164,7 @@ function BotonHerramienta({
       className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border px-3 text-xs font-medium transition focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-40 ${
         peligro
           ? "border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
-          : "border-zinc-200 bg-white text-zinc-700 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-800 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-brand-800 dark:hover:bg-brand-950 dark:hover:text-brand-200"
+          : "border-control-line bg-surface-raised text-foreground hover:border-brand-500 hover:bg-surface-soft"
       }`}
     >
       {children}
@@ -760,7 +760,7 @@ export function MapaView() {
           ].map(([cantidad, etiqueta]) => (
             <div
               key={etiqueta}
-              className="rounded-lg bg-zinc-50 px-2 py-2 text-center dark:bg-zinc-800/70"
+              className="rounded-lg bg-zinc-50 px-2 py-2 text-center dark:bg-zinc-800"
             >
               <p className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
                 {cantidad}
@@ -807,7 +807,7 @@ export function MapaView() {
       )}
 
       {elementoSeleccionado && seleccion && (
-        <section className="rounded-xl border border-brand-200 bg-brand-50/70 p-3 dark:border-brand-900 dark:bg-brand-950/40">
+        <section className="rounded-xl border border-brand-200 bg-brand-50 p-3 dark:border-brand-900 dark:bg-brand-950">
           <div className="flex items-start gap-2">
             <PuntoColor color={elementoSeleccionado.color} />
             <div className="min-w-0 flex-1">
@@ -937,7 +937,7 @@ export function MapaView() {
             </p>
           </div>
         ) : gruposPanel.length === 0 ? (
-          <p className="rounded-lg bg-zinc-50 p-4 text-center text-sm text-zinc-500 dark:bg-zinc-800/60 dark:text-zinc-400">
+          <p className="rounded-lg bg-zinc-50 p-4 text-center text-sm text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
             No hay resultados para “{busquedaPanel}”.
           </p>
         ) : (
@@ -1039,7 +1039,7 @@ export function MapaView() {
           <h2 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
             Cobertura del equipo en un solo mapa
           </h2>
-          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-emerald-50/80 sm:text-sm">
+          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-emerald-50 sm:text-sm">
             {esGestor
               ? "Organizá territorios y zonas, ubicá responsables y ajustá visualmente la cobertura de cada repositor."
               : "Consultá los territorios, las zonas y los locales habilitados para tu empresa."}
@@ -1055,12 +1055,12 @@ export function MapaView() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1 + indice * 0.07 }}
-                className="rounded-xl border border-white/15 bg-white/10 px-2.5 py-2 backdrop-blur"
+                className="rounded-xl border border-[#557267] bg-[#25483d] px-2.5 py-2"
               >
                 <span className="block text-lg font-black sm:text-xl">
                   {cantidad}
                 </span>
-                <span className="block truncate text-[11px] text-emerald-100/80 sm:text-xs">
+                <span className="block truncate text-xs text-emerald-100">
                   {etiqueta}
                 </span>
               </motion.div>
@@ -1071,14 +1071,14 @@ export function MapaView() {
 
       {errorCarga && <p className={`${errorBox} mt-4`}>{errorCarga}</p>}
 
-      <div className="mt-5 flex flex-col gap-4 rounded-3xl bg-gradient-to-br from-emerald-50/60 via-transparent to-sky-50/60 p-1 lg:flex-row lg:items-start dark:from-emerald-950/15 dark:to-sky-950/15">
+      <div className="mt-5 flex flex-col gap-4 rounded-3xl bg-background p-1 lg:flex-row lg:items-start">
         {/* Panel lateral (acordeón en mobile) */}
         <div className="lg:w-[23rem] lg:shrink-0">
           <button
             type="button"
             onClick={() => setPanelAbierto((a) => !a)}
             aria-expanded={panelAbierto}
-            className="flex h-11 w-full cursor-pointer items-center justify-between rounded-xl border border-zinc-200 bg-white px-3 text-sm font-semibold text-zinc-800 transition hover:bg-zinc-50 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 lg:hidden"
+            className="flex h-11 w-full cursor-pointer items-center justify-between rounded-xl border border-line bg-surface-raised px-3 text-sm font-semibold text-foreground transition hover:bg-surface-soft focus-visible:ring-2 focus-visible:ring-brand-600/40 lg:hidden"
           >
             <span>
               Territorios y zonas
@@ -1100,7 +1100,7 @@ export function MapaView() {
             </svg>
           </button>
           <aside
-            className={`${panelAbierto ? "block" : "hidden"} mt-2 rounded-xl border border-zinc-200 bg-white p-3 dark:border-zinc-800 dark:bg-zinc-900 lg:mt-0 lg:block lg:max-h-[70dvh] lg:overflow-y-auto`}
+            className={`${panelAbierto ? "block" : "hidden"} mt-2 rounded-xl border border-line bg-surface-raised p-3 lg:mt-0 lg:block lg:max-h-[70dvh] lg:overflow-y-auto`}
           >
             {panel}
           </aside>
@@ -1109,7 +1109,7 @@ export function MapaView() {
         {/* Mapa + toolbar de dibujo */}
         <div className="min-w-0 flex-1">
           {modoDibujo && (
-            <div className="sticky top-2 z-20 mb-3 flex flex-col gap-2 rounded-xl border border-brand-200 bg-brand-50/95 p-3 shadow-sm backdrop-blur dark:border-brand-800 dark:bg-brand-950/90">
+            <div className="sticky top-2 z-20 mb-3 flex flex-col gap-2 rounded-xl border border-brand-300 bg-brand-50 p-3 shadow-sm dark:border-brand-800 dark:bg-brand-950">
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
                 <p className="text-sm font-semibold text-brand-900 dark:text-brand-100">
                   Delimitando: {elementoSeleccionado?.nombre ?? "—"}
@@ -1161,7 +1161,7 @@ export function MapaView() {
           )}
 
           {modoMover && (
-            <div className="sticky top-2 z-20 mb-3 flex flex-col gap-2 rounded-xl border border-violet-200 bg-violet-50/95 p-3 shadow-sm backdrop-blur dark:border-violet-900 dark:bg-violet-950/90">
+            <div className="sticky top-2 z-20 mb-3 flex flex-col gap-2 rounded-xl border border-violet-300 bg-violet-50 p-3 shadow-sm dark:border-violet-800 dark:bg-violet-950">
               <div>
                 <p className="text-sm font-semibold text-violet-900 dark:text-violet-100">
                   Moviendo: {elementoSeleccionado?.nombre ?? "—"}
@@ -1250,7 +1250,7 @@ export function MapaView() {
               onChange={(e) =>
                 setFormTerritorio((f) => ({ ...f, color: e.target.value }))
               }
-              className="h-11 w-full cursor-pointer rounded-lg border border-zinc-300 bg-white p-1 dark:border-zinc-700 dark:bg-zinc-900"
+              className="h-11 w-full cursor-pointer rounded-lg border border-control-line bg-surface-raised p-1"
             />
           </label>
           <label className={labelBase}>
@@ -1361,7 +1361,7 @@ export function MapaView() {
               onChange={(e) =>
                 setFormZona((f) => ({ ...f, color: e.target.value }))
               }
-              className="h-11 w-full cursor-pointer rounded-lg border border-zinc-300 bg-white p-1 dark:border-zinc-700 dark:bg-zinc-900"
+              className="h-11 w-full cursor-pointer rounded-lg border border-control-line bg-surface-raised p-1"
             />
           </label>
           <div>

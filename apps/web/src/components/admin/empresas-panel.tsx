@@ -136,7 +136,7 @@ export function EmpresasPanel() {
   }
 
   const inputBase =
-    "rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm outline-none focus:border-brand-600 dark:border-zinc-700 dark:bg-zinc-900";
+    "rounded-lg border border-control-line bg-surface-raised px-3 py-2 text-sm text-foreground outline-none focus:border-brand-600 focus:ring-2 focus:ring-focus";
 
   return (
     <div>
@@ -164,7 +164,7 @@ export function EmpresasPanel() {
           return (
             <div
               key={m.id}
-              className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+              className="rounded-xl border border-line bg-surface-raised p-4"
             >
               <div className="flex items-center justify-between gap-3">
                 <div>

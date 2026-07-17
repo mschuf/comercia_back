@@ -105,7 +105,7 @@ export function SelectorPais({
         onClick={() => (abierto ? setAbierto(false) : abrir())}
         aria-haspopup="listbox"
         aria-expanded={abierto}
-        className="flex w-full items-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-left text-[15px] text-zinc-900 shadow-sm outline-none transition hover:border-zinc-400 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-zinc-500"
+        className="flex w-full items-center gap-2 rounded-lg border border-control-line bg-surface-raised px-3 py-2.5 text-left text-[15px] text-foreground shadow-sm outline-none transition hover:border-brand-500 focus:border-brand-600 focus:ring-2 focus:ring-brand-600/55"
       >
         {seleccionado && (
           <>
@@ -134,7 +134,7 @@ export function SelectorPais({
       </button>
 
       {abierto && (
-        <div className="absolute z-30 mt-1.5 w-full overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-xl dark:border-zinc-700 dark:bg-zinc-900">
+        <div className="absolute z-30 mt-1.5 w-full overflow-hidden rounded-xl border border-line bg-surface-raised shadow-[0_18px_50px_rgba(var(--warm-shadow),0.16)]">
           <input
             type="text"
             value={busqueda}
@@ -145,7 +145,7 @@ export function SelectorPais({
             onKeyDown={alTeclear}
             placeholder="Buscar país o prefijo..."
             autoFocus
-            className="w-full border-b border-zinc-200 bg-transparent px-3 py-2.5 text-sm outline-none placeholder:text-zinc-400 dark:border-zinc-700"
+            className="w-full border-b border-control-line bg-surface-raised px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted"
           />
           <ul ref={listaRef} role="listbox" className="max-h-56 overflow-y-auto py-1">
             {filtrados.map((p, i) => (
@@ -184,4 +184,3 @@ export function SelectorPais({
     </div>
   );
 }
-

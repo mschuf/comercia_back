@@ -109,7 +109,7 @@ export function MapaPicker({
   return (
     // isolate: los panes de Leaflet usan z-index altos; sin esto se dibujan
     // por encima del contenido del modal
-    <div className="isolate h-[52dvh] min-h-[340px] w-full overflow-hidden rounded-lg border border-zinc-300 bg-zinc-100 shadow-sm dark:border-zinc-700 dark:bg-zinc-950 sm:h-[58dvh] sm:min-h-[430px] lg:h-[560px] lg:min-h-0 [&_.leaflet-control-attribution]:!bg-white/90 [&_.leaflet-control-attribution]:!text-zinc-600 dark:[&_.leaflet-control-attribution]:!bg-zinc-950/85 dark:[&_.leaflet-control-attribution]:!text-zinc-300 dark:[&_.leaflet-control-zoom_a]:!border-zinc-700 dark:[&_.leaflet-control-zoom_a]:!bg-zinc-900 dark:[&_.leaflet-control-zoom_a]:!text-zinc-100 dark:[&_.mapa-etiquetas-oscuras]:brightness-150 dark:[&_.mapa-etiquetas-oscuras]:contrast-125">
+    <div className="isolate h-[52dvh] min-h-[340px] w-full overflow-hidden rounded-lg border border-zinc-300 bg-zinc-100 shadow-sm dark:border-zinc-700 dark:bg-zinc-950 sm:h-[58dvh] sm:min-h-[430px] lg:h-[560px] lg:min-h-0 [&_.leaflet-control-attribution]:!bg-white [&_.leaflet-control-attribution]:!text-zinc-700 dark:[&_.leaflet-control-attribution]:!bg-zinc-950 dark:[&_.leaflet-control-attribution]:!text-zinc-200 dark:[&_.leaflet-control-zoom_a]:!border-zinc-700 dark:[&_.leaflet-control-zoom_a]:!bg-zinc-900 dark:[&_.leaflet-control-zoom_a]:!text-zinc-100 dark:[&_.mapa-etiquetas-oscuras]:brightness-150 dark:[&_.mapa-etiquetas-oscuras]:contrast-125">
       <MapContainer
         center={centro}
         zoom={ZOOM_DEFECTO}

@@ -1,10 +1,29 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
 
+const manrope = localFont({
+  src: "./fonts/Manrope-Variable.ttf",
+  variable: "--font-manrope",
+  display: "swap",
+  weight: "200 800",
+});
+
 export const metadata: Metadata = {
-  title: "comercIA",
+  title: {
+    default: "comercIA",
+    template: "%s · comercIA",
+  },
   description:
-    "comercIA — la herramienta del equipo comercial de Frigorífico Guaraní",
+    "La plataforma de trabajo para equipos comerciales en calle y oficina.",
+};
+
+export const viewport: Viewport = {
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4efe7" },
+    { media: "(prefers-color-scheme: dark)", color: "#15120f" },
+  ],
 };
 
 // Aplica el tema ANTES del primer pintado (sin destello): usa la elección
@@ -17,7 +36,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className="h-full antialiased" suppressHydrationWarning>
+    <html
+      lang="es"
+      className={`${manrope.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
       {/* suppressHydrationWarning: las extensiones del navegador (ColorZilla,
           Grammarly, etc.) inyectan atributos en el body antes de que React
           hidrate; eso no es un error nuestro y no debe ensuciar la consola */}

@@ -135,7 +135,7 @@ export function ModulosPanel() {
         {modulos.map((m) => (
           <div
             key={m.id}
-            className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900"
+            className="overflow-hidden rounded-xl border border-line bg-surface-raised"
           >
             <div className="flex items-center gap-2 p-3">
               <button
@@ -183,7 +183,7 @@ export function ModulosPanel() {
             </div>
 
             {expandido.has(m.id) && (
-              <div className="border-t border-zinc-100 bg-zinc-50/50 p-3 dark:border-zinc-800 dark:bg-zinc-950/30">
+              <div className="border-t border-zinc-100 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-950">
                 <div className="mb-2 flex items-center justify-between">
                   <p className="text-xs font-medium uppercase tracking-wide text-zinc-400">
                     Páginas
@@ -209,7 +209,7 @@ export function ModulosPanel() {
                   {(m.paginas ?? []).map((p) => (
                     <div
                       key={p.id}
-                      className="rounded-lg border border-zinc-200 bg-white p-2.5 dark:border-zinc-800 dark:bg-zinc-900"
+                      className="rounded-lg border border-line bg-surface-raised p-2.5"
                     >
                       <div className="flex items-center gap-2">
                         <div className="flex-1">

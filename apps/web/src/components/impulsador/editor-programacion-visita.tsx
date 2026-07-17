@@ -203,7 +203,7 @@ export function EditorProgramacionVisita({
       ancho="lg"
     >
       <form onSubmit={guardar} className="flex flex-col gap-5">
-        <div className="rounded-xl border border-brand-200 bg-brand-50 p-3 dark:border-brand-900 dark:bg-brand-950/50">
+        <div className="rounded-xl border border-brand-200 bg-brand-50 p-3 dark:border-brand-900 dark:bg-brand-950">
           <p className="text-xs font-semibold uppercase tracking-wide text-brand-700 dark:text-brand-300">
             Resumen
           </p>
@@ -306,7 +306,7 @@ export function EditorProgramacionVisita({
                     className={`min-h-11 rounded-lg border text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-brand-600/40 ${
                       activo
                         ? "border-brand-600 bg-brand-700 text-white dark:border-brand-500 dark:bg-brand-600"
-                        : "border-zinc-300 bg-white text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                        : "border-control-line bg-surface-raised text-foreground hover:bg-surface-soft"
                     }`}
                   >
                     {etiqueta}
@@ -335,7 +335,7 @@ export function EditorProgramacionVisita({
                       className={`min-h-11 rounded-lg border text-sm font-medium transition focus-visible:ring-2 focus-visible:ring-brand-600/40 ${
                         activo
                           ? "border-brand-600 bg-brand-700 text-white dark:border-brand-500 dark:bg-brand-600"
-                          : "border-zinc-300 bg-white text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                          : "border-control-line bg-surface-raised text-foreground hover:bg-surface-soft"
                       }`}
                     >
                       {dia}
@@ -426,7 +426,7 @@ export function EditorProgramacionVisita({
         {error && <p className={errorBox}>{error}</p>}
 
         {confirmandoQuitar ? (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950/50">
+          <div className="rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950">
             <p className="text-sm text-red-700 dark:text-red-300">
               Se quitará solamente la agenda futura de este local. El historial
               se conserva.

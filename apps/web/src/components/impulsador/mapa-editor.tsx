@@ -208,7 +208,7 @@ export function MapaEditor({
     <div
       className={`relative isolate h-[52dvh] min-h-[320px] w-full overflow-hidden rounded-xl border border-zinc-300 bg-zinc-100 shadow-sm dark:border-zinc-700 dark:bg-zinc-950 lg:h-[70dvh] lg:min-h-[420px] ${
         modoDibujo || modoMover ? "[&_.leaflet-container]:cursor-crosshair" : ""
-      } [&_.leaflet-control-attribution]:!bg-white/90 [&_.leaflet-control-attribution]:!text-zinc-600 dark:[&_.leaflet-control-attribution]:!bg-zinc-950/85 dark:[&_.leaflet-control-attribution]:!text-zinc-300 dark:[&_.leaflet-control-zoom_a]:!border-zinc-700 dark:[&_.leaflet-control-zoom_a]:!bg-zinc-900 dark:[&_.leaflet-control-zoom_a]:!text-zinc-100 dark:[&_.mapa-etiquetas-oscuras]:brightness-150 dark:[&_.mapa-etiquetas-oscuras]:contrast-125`}
+      } [&_.leaflet-control-attribution]:!bg-white [&_.leaflet-control-attribution]:!text-zinc-700 dark:[&_.leaflet-control-attribution]:!bg-zinc-950 dark:[&_.leaflet-control-attribution]:!text-zinc-200 dark:[&_.leaflet-control-zoom_a]:!border-zinc-700 dark:[&_.leaflet-control-zoom_a]:!bg-zinc-900 dark:[&_.leaflet-control-zoom_a]:!text-zinc-100 dark:[&_.mapa-etiquetas-oscuras]:brightness-150 dark:[&_.mapa-etiquetas-oscuras]:contrast-125`}
     >
       <MapContainer
         center={CENTRO_DEFECTO}
@@ -402,7 +402,7 @@ export function MapaEditor({
         type="button"
         onClick={() => setTriggerCentrar((n) => n + 1)}
         disabled={puntosTodos.length === 0}
-        className="absolute bottom-8 right-3 z-[1100] inline-flex h-11 cursor-pointer items-center gap-1.5 rounded-lg border border-zinc-300 bg-white/95 px-3 text-sm font-medium text-zinc-700 shadow-md backdrop-blur transition hover:bg-white focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-900/95 dark:text-zinc-200 dark:hover:bg-zinc-800 lg:h-9"
+        className="absolute bottom-8 right-3 z-[1100] inline-flex h-11 cursor-pointer items-center gap-1.5 rounded-lg border border-control-line bg-surface-raised px-3 text-sm font-semibold text-foreground shadow-md transition hover:bg-surface-soft focus-visible:ring-2 focus-visible:ring-brand-600 disabled:cursor-not-allowed disabled:opacity-50 lg:h-9"
       >
         <svg
           viewBox="0 0 24 24"

@@ -36,7 +36,7 @@ export default function PaginaModulo({
 
   if (!mod || !pag) {
     return (
-      <div className="rounded-xl border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="rounded-xl border border-line bg-surface-raised p-8 text-center">
         <p className="text-sm text-zinc-500 dark:text-zinc-400">
           Esta página no está disponible para tu empresa.
         </p>
@@ -70,7 +70,7 @@ export default function PaginaModulo({
           <Vista />
         </div>
       ) : (
-        <div className="mt-8 grid place-items-center rounded-xl border border-dashed border-zinc-300 bg-white p-12 text-center dark:border-zinc-700 dark:bg-zinc-900">
+        <div className="mt-8 grid place-items-center rounded-xl border border-dashed border-line bg-surface-raised p-12 text-center">
           <div className="max-w-sm">
             <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300">
               <svg

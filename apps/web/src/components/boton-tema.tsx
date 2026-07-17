@@ -2,7 +2,7 @@
 
 // Botón sol/luna del navbar. El ícono visible lo decide el CSS (dark:) — cero
 // problemas de hidratación — y el clic alterna la clase .dark y la persiste.
-export function BotonTema() {
+export function BotonTema({ sobreOscuro = false }: { sobreOscuro?: boolean }) {
   function alternar() {
     const oscuro = !document.documentElement.classList.contains("dark");
     document.documentElement.classList.toggle("dark", oscuro);
@@ -20,7 +20,11 @@ export function BotonTema() {
       onClick={alternar}
       aria-label="Cambiar entre modo claro y oscuro"
       title="Cambiar tema"
-      className="grid h-9 w-9 place-items-center rounded-lg text-zinc-500 transition hover:bg-zinc-100 hover:text-zinc-700 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
+      className={`grid h-10 w-10 place-items-center rounded-xl border transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 ${
+        sobreOscuro
+          ? "border-[#587268] bg-commercial-ink text-white hover:bg-commercial-ink-soft"
+          : "border-control-line bg-surface text-muted shadow-sm hover:border-brand-500 hover:bg-surface-soft hover:text-foreground"
+      }`}
     >
       {/* Luna: visible en modo claro (invita a pasar a oscuro) */}
       <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5 dark:hidden" aria-hidden>

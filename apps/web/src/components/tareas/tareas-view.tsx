@@ -137,10 +137,10 @@ export function TareasView() {
       )}
 
       {datos && datos.items.length > 0 && (
-        <div className="mt-5 overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="mt-5 overflow-x-auto rounded-xl border border-line bg-surface-raised">
           <table className="w-full min-w-[860px] text-left text-sm">
             <thead>
-              <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+              <tr className="border-b border-line bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
                 <th
                   scope="col"
                   className="w-20 px-4 py-3 text-center font-medium"
@@ -171,7 +171,7 @@ export function TareasView() {
                 return (
                   <tr
                     key={tarea.id}
-                    className="border-b border-zinc-100 align-top transition last:border-0 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
+                    className="border-b border-line bg-surface-raised align-top transition last:border-0 hover:bg-surface-soft"
                   >
                     <td className="px-4 py-3 text-center font-semibold text-brand-700 [font-variant-numeric:tabular-nums] dark:text-brand-300">
                       {tarea.orden}
@@ -237,7 +237,7 @@ export function TareasView() {
       )}
 
       {datos && datos.items.length === 0 && (
-        <p className="mt-5 rounded-xl border border-dashed border-zinc-300 bg-white px-4 py-10 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+        <p className="mt-5 rounded-xl border border-dashed border-line bg-surface-raised px-4 py-10 text-center text-sm text-muted">
           Todavía no hay tareas.
         </p>
       )}

@@ -36,16 +36,16 @@ export function RepositorTareasView() {
         <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="relative">
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-200 sm:text-[11px]">Checklist operativo</p>
           <h1 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">Mis tareas</h1>
-          <p className="mt-1 max-w-xl text-xs text-violet-100/90 sm:text-sm">Cada checklist está agrupado por cliente y local. Al iniciar una visita vas a poder completarlo y adjuntar fotos.</p>
+          <p className="mt-1 max-w-xl text-xs text-violet-100 sm:text-sm">Cada checklist está agrupado por cliente y local. Al iniciar una visita vas a poder completarlo y adjuntar fotos.</p>
         </motion.div>
       </section>
 
       {error ? (
         <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">{error}</p>
       ) : respuesta === null ? (
-        <div className="space-y-3">{[1, 2, 3].map((item) => <div key={item} className="h-24 animate-pulse rounded-2xl bg-zinc-200/70 dark:bg-zinc-800" />)}</div>
+        <div className="space-y-3">{[1, 2, 3].map((item) => <div key={item} className="h-24 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800" />)}</div>
       ) : respuesta.items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-zinc-300 p-10 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:text-zinc-400">No hay tareas porque todavía no tenés locales asignados.</div>
+        <div className="rounded-2xl border border-dashed border-line bg-surface-raised p-10 text-center text-sm text-muted">No hay tareas porque todavía no tenés locales asignados.</div>
       ) : (
         <>
           <div className="space-y-3">
@@ -54,7 +54,7 @@ export function RepositorTareasView() {
               const total = grupo.tareas.length;
               const progreso = total === 0 ? 100 : Math.round(grupo.completadasEnVisita / total * 100);
               return (
-                <motion.article key={grupo.local.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: indice * 0.05 }} className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+                <motion.article key={grupo.local.id} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: indice * 0.05 }} className="overflow-hidden rounded-2xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)]">
                   <button type="button" onClick={() => setAbierto(expandido ? null : grupo.local.id)} aria-expanded={expandido} className="flex min-h-24 w-full items-center gap-4 p-4 text-left sm:p-5">
                     <div className="relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-violet-100 font-bold text-violet-800 dark:bg-violet-950 dark:text-violet-300">
                       {total}
@@ -72,7 +72,7 @@ export function RepositorTareasView() {
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
                         <ul className="space-y-2 border-t border-zinc-100 p-4 dark:border-zinc-800 sm:p-5">
                           {grupo.tareas.length === 0 ? <li className="text-sm text-zinc-500">Este cliente no tiene tareas activas.</li> : grupo.tareas.map((tarea, posicion) => (
-                            <motion.li key={tarea.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: posicion * 0.035 }} className="flex gap-3 rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800/60">
+                            <motion.li key={tarea.id} initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: posicion * 0.035 }} className="flex gap-3 rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800">
                               <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 border-violet-300 text-xs font-bold text-violet-700 dark:border-violet-700 dark:text-violet-300">{posicion + 1}</span>
                               <div><p className="text-sm font-semibold">{tarea.titulo}</p><p className="mt-0.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">{tarea.descripcion || "Sin instrucciones adicionales"}{tarea.requiereFoto ? " · Requiere foto" : ""}</p></div>
                             </motion.li>

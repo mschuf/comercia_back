@@ -251,7 +251,7 @@ export function VisitasView() {
                 <p className={`${errorBox} mb-4`}>{errorEquipo}</p>
               )}
 
-              <div className="mb-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="mb-4 rounded-xl border border-line bg-surface-raised p-4">
                 <h2 className="font-semibold text-zinc-900 dark:text-zinc-100">
                   Agenda de visitas
                 </h2>
@@ -262,16 +262,16 @@ export function VisitasView() {
               </div>
 
               {itemsEquipo.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-10 text-center dark:border-zinc-700 dark:bg-zinc-900">
+                <div className="rounded-xl border border-dashed border-line bg-surface-raised p-10 text-center">
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">
                     Todavia no hay locales para supervisar.
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="overflow-x-auto rounded-xl border border-line bg-surface-raised">
                   <table className="w-full min-w-[1080px] text-left text-sm">
                     <thead>
-                      <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                      <tr className="border-b border-line bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
                         <th scope="col" className="px-4 py-3 font-medium">
                           Local
                         </th>
@@ -307,7 +307,7 @@ export function VisitasView() {
                         return (
                           <tr
                             key={l.localId}
-                            className="border-b border-zinc-100 align-middle transition last:border-0 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
+                            className="border-b border-line bg-surface-raised align-middle transition last:border-0 hover:bg-surface-soft"
                           >
                             <td className="px-4 py-3">
                               <span className="block font-semibold text-zinc-900 dark:text-zinc-100">
@@ -396,7 +396,7 @@ export function VisitasView() {
                               <button
                                 type="button"
                                 onClick={() => setEditandoProgramacion(l)}
-                                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-zinc-300 bg-white px-3 text-sm font-medium text-zinc-700 transition hover:border-brand-400 hover:bg-brand-50 hover:text-brand-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-brand-700 dark:hover:bg-brand-950 dark:hover:text-brand-200"
+                                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-control-line bg-surface-raised px-3 text-sm font-medium text-foreground transition hover:border-brand-500 hover:bg-surface-soft focus-visible:ring-2 focus-visible:ring-focus"
                               >
                                 <IconoEditar />
                                 {l.programacion ? "Editar" : "Programar"}
@@ -441,16 +441,16 @@ export function VisitasView() {
               )}
 
               {itemsHistorial.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-zinc-300 bg-white p-10 text-center dark:border-zinc-700 dark:bg-zinc-900">
+                <div className="rounded-xl border border-dashed border-line bg-surface-raised p-10 text-center">
                   <p className="text-sm text-zinc-500 dark:text-zinc-400">
                     Todavía no hay visitas registradas.
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+                <div className="overflow-x-auto rounded-xl border border-line bg-surface-raised">
                   <table className="w-full min-w-[860px] text-left text-sm">
                     <thead>
-                      <tr className="border-b border-zinc-200 text-xs uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                      <tr className="border-b border-line bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
                         <th scope="col" className="px-4 py-3 font-medium">
                           Local
                         </th>
@@ -478,7 +478,7 @@ export function VisitasView() {
                       {itemsHistorial.map((v) => (
                         <tr
                           key={v.id}
-                          className="border-b border-zinc-100 align-middle transition last:border-0 hover:bg-zinc-50 dark:border-zinc-800/60 dark:hover:bg-zinc-800/40"
+                          className="border-b border-line bg-surface-raised align-middle transition last:border-0 hover:bg-surface-soft"
                         >
                           <td className="px-4 py-3 font-medium">
                             {v.localNombre}

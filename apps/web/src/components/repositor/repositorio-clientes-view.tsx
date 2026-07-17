@@ -155,7 +155,7 @@ export function RepositorClientesView() {
   return (
     <div className="space-y-4 sm:space-y-6" aria-busy={cargaActiva !== null}>
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-950 via-brand-800 to-emerald-600 p-4 text-white shadow-lg shadow-emerald-950/15 sm:p-5">
-        <div className="absolute -right-14 -top-16 h-44 w-44 rounded-full border border-white/15 bg-white/5" />
+        <div className="absolute -right-14 -top-16 h-44 w-44 rounded-full border border-[#58746a] bg-[#315247]" />
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
@@ -168,11 +168,11 @@ export function RepositorClientesView() {
           <h1 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
             Mis clientes
           </h1>
-          <p className="mt-1 max-w-xl text-xs leading-relaxed text-emerald-50/85 sm:text-sm">
+          <p className="mt-1 max-w-xl text-xs leading-relaxed text-emerald-50 sm:text-sm">
             Consultá por separado los clientes y locales asignados a tu
             recorrido.
           </p>
-          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/15 px-2.5 py-1 text-xs backdrop-blur">
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-[#557267] bg-[#203d34] px-2.5 py-1 text-xs text-white">
             <IconoUbicacion /> {totalLocalesAsignados}{" "}
             {totalLocalesAsignados === 1
               ? "local asignado"
@@ -182,7 +182,7 @@ export function RepositorClientesView() {
       </section>
 
       <div
-        className="flex w-fit max-w-full items-center gap-1 rounded-xl border border-zinc-200 bg-zinc-100 p-1 dark:border-zinc-800 dark:bg-zinc-900"
+        className="flex w-fit max-w-full items-center gap-1 rounded-xl border border-line bg-surface-soft p-1"
         role="tablist"
         aria-label="Contenido de mi cartera"
       >
@@ -203,8 +203,8 @@ export function RepositorClientesView() {
               onClick={() => setPestana(opcion)}
               className={`min-h-11 rounded-lg px-2.5 text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-brand-600/40 sm:min-h-9 sm:px-3 sm:text-sm ${
                 activa
-                  ? "bg-white text-brand-800 shadow-sm dark:bg-zinc-800 dark:text-brand-300"
-                  : "text-zinc-500 hover:bg-white/70 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-white"
+                  ? "bg-surface-raised text-brand-800 dark:text-brand-200"
+                  : "text-muted hover:bg-surface-raised hover:text-foreground"
               }`}
             >
               {opcion === "CLIENTES" ? "Clientes" : "Locales"}
@@ -236,20 +236,20 @@ export function RepositorClientesView() {
               {errorClientes}
             </p>
           ) : clientes === null ? (
-            <div className="h-44 animate-pulse rounded-2xl bg-zinc-200/70 dark:bg-zinc-800" />
+            <div className="h-44 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
           ) : clientes.items.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+            <div className="rounded-2xl border border-dashed border-line bg-surface-raised p-8 text-center text-sm text-muted">
               Todavía no tenés clientes asignados.
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="overflow-x-auto rounded-2xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)]">
                 <table
                   className="w-full min-w-[760px] text-left text-sm"
                   aria-label="Clientes asignados"
                 >
-                  <thead className="bg-zinc-50 text-xs uppercase tracking-wide text-zinc-500 dark:bg-zinc-950/60 dark:text-zinc-400">
-                    <tr className="border-b border-zinc-200 dark:border-zinc-800">
+                  <thead className="bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
+                    <tr className="border-b border-line">
                       <th scope="col" className="px-4 py-3 font-medium">
                         Cliente
                       </th>
@@ -274,7 +274,7 @@ export function RepositorClientesView() {
                     {clientes.items.map((cliente) => (
                       <tr
                         key={cliente.id}
-                        className="border-b border-zinc-100 transition hover:bg-brand-50/60 dark:border-zinc-800/70 dark:hover:bg-brand-950/20"
+                        className="border-b border-line bg-surface-raised transition hover:bg-surface-soft"
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
@@ -299,7 +299,7 @@ export function RepositorClientesView() {
                           <button
                             type="button"
                             onClick={() => verLocalesDe(cliente)}
-                            className="min-h-11 rounded-xl border border-brand-200 px-3 text-sm font-semibold text-brand-700 transition hover:bg-brand-50 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-brand-900 dark:text-brand-300 dark:hover:bg-brand-950"
+                            className="min-h-11 rounded-xl border border-brand-300 bg-surface-raised px-3 text-sm font-semibold text-brand-700 transition hover:bg-brand-50 focus-visible:ring-2 focus-visible:ring-focus dark:border-brand-800 dark:text-brand-200 dark:hover:bg-brand-950"
                           >
                             Ver locales
                           </button>
@@ -343,7 +343,7 @@ export function RepositorClientesView() {
                 <button
                   type="button"
                   onClick={verTodosLosLocales}
-                  className="min-h-11 rounded-xl border border-zinc-300 px-3 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                  className="min-h-11 rounded-xl border border-control-line bg-surface-raised px-3 text-sm font-semibold text-foreground transition hover:bg-surface-soft focus-visible:ring-2 focus-visible:ring-focus"
                 >
                   Ver todos
                 </button>
@@ -356,20 +356,20 @@ export function RepositorClientesView() {
               {errorLocales}
             </p>
           ) : locales === null ? (
-            <div className="h-44 animate-pulse rounded-2xl bg-zinc-200/70 dark:bg-zinc-800" />
+            <div className="h-44 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
           ) : locales.items.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-zinc-300 bg-white p-8 text-center text-sm text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
+            <div className="rounded-2xl border border-dashed border-line bg-surface-raised p-8 text-center text-sm text-muted">
               No hay locales para el filtro seleccionado.
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
+              <div className="overflow-x-auto rounded-2xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)]">
                 <table
                   className="w-full min-w-[820px] text-left text-sm"
                   aria-label="Locales asignados"
                 >
-                  <thead className="bg-zinc-50 text-xs uppercase tracking-wide text-zinc-500 dark:bg-zinc-950/60 dark:text-zinc-400">
-                    <tr className="border-b border-zinc-200 dark:border-zinc-800">
+                  <thead className="bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
+                    <tr className="border-b border-line">
                       <th scope="col" className="px-4 py-3 font-medium">
                         Local
                       </th>
@@ -391,7 +391,7 @@ export function RepositorClientesView() {
                     {locales.items.map((local) => (
                       <tr
                         key={local.id}
-                        className="border-b border-zinc-100 transition hover:bg-sky-50/60 dark:border-zinc-800/70 dark:hover:bg-sky-950/20"
+                        className="border-b border-line bg-surface-raised transition hover:bg-surface-soft"
                       >
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
