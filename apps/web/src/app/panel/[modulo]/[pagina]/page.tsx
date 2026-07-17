@@ -14,7 +14,7 @@ import { RutaDiariaView } from "@/components/repositor/ruta-diaria-view";
 // Las páginas que no estén acá muestran el placeholder de "configurada" (su
 // ejecución de datos por ejecutables llega en la próxima etapa).
 const VISTAS: Record<string, ComponentType> = {
-  "team-leader/mapa": MapaView,
+  "supervisor/mapa": MapaView,
   "repositor/clientes": RepositorClientesView,
   "repositor/tareas": RepositorTareasView,
   "repositor/visitas": RutaDiariaView,
@@ -46,10 +46,10 @@ export default function PaginaModulo({
 
   const claveVista = `${modulo}/${pagina}`;
   const Vista = VISTAS[claveVista];
-  const esOperacionCampo = modulo === "team-leader" || modulo === "repositor";
+  const esOperacionCampo = modulo === "supervisor" || modulo === "repositor";
   const usaCabeceraPropia =
     (esOperacionCampo && pagina === "tareas") ||
-    claveVista === "team-leader/equipo" ||
+    claveVista === "supervisor/equipo" ||
     modulo === "repositor";
   const ocultaNombreModulo = esOperacionCampo && pagina === "visitas";
 
@@ -68,9 +68,9 @@ export default function PaginaModulo({
         </>
       )}
 
-      {claveVista === "team-leader/equipo" ? (
+      {claveVista === "supervisor/equipo" ? (
         <EquipoView />
-      ) : claveVista === "team-leader/clientes" ? (
+      ) : claveVista === "supervisor/clientes" ? (
         <div className="mt-6">
           <ClientesLocalesView
             vistaInicial={
@@ -81,7 +81,7 @@ export default function PaginaModulo({
             repositorInicial={filtroRepositor(consulta)}
           />
         </div>
-      ) : claveVista === "team-leader/tareas" ? (
+      ) : claveVista === "supervisor/tareas" ? (
         <TareasView filtrosIniciales={filtrosTareas(consulta)} />
       ) : Vista ? (
         <div className={usaCabeceraPropia ? undefined : "mt-6"}>

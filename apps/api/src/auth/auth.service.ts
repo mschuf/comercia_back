@@ -11,6 +11,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { hashPassword, verifyPassword } from './utils/password';
 import { normalizarCelular, normalizarRucUsuario } from './utils/datos-usuario';
+import { puedeAdministrarUsuarios } from '../common/utils/permisos-usuario';
 import type { UsuarioSesion } from './interfaces/usuario-sesion.interface';
 import type { TokenPayload } from './interfaces/token-payload.interface';
 
@@ -163,6 +164,10 @@ export class AuthService {
       ruc: usuario.ruc,
       celular: usuario.celular,
       esSuperadmin: usuario.esSuperadmin,
+      puedeAdministrarUsuarios: puedeAdministrarUsuarios(
+        usuario.esSuperadmin,
+        usuario.rol?.descripcion ?? null,
+      ),
       empresa: { id: usuario.empresa.id, nombre: usuario.empresa.nombre },
       rol: usuario.rol
         ? { id: usuario.rol.id, descripcion: usuario.rol.descripcion }

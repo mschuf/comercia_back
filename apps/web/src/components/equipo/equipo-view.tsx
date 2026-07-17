@@ -73,7 +73,7 @@ export function EquipoView() {
       usuarioId: String(repositor.id),
       repositor: repositor.nombreCompleto,
     });
-    router.push(`/panel/team-leader/clientes?${parametros.toString()}`);
+    router.push(`/panel/supervisor/clientes?${parametros.toString()}`);
   }
 
   const filas = datos?.items ?? [];

@@ -1,8 +1,8 @@
-// Rutas de plataforma para las operaciones de campo. Team Leader y Repositor
+// Rutas de plataforma para las operaciones de campo. Supervisor y Repositor
 // comparten servicios, pero tienen módulos y menús independientes.
-export const MODULO_TEAM_LEADER = 'team-leader';
+export const MODULO_SUPERVISOR = 'supervisor';
 export const MODULO_REPOSITOR = 'repositor';
-export const MODULOS_OPERACION_CAMPO = [MODULO_TEAM_LEADER, MODULO_REPOSITOR];
+export const MODULOS_OPERACION_CAMPO = [MODULO_SUPERVISOR, MODULO_REPOSITOR];
 
 export const PAGINA_CLIENTES = 'clientes';
 export const PAGINA_EQUIPO = 'equipo';

@@ -34,7 +34,7 @@ export default function PanelInicioPage() {
 
   const mensaje = textoRol.includes("repositor")
     ? "Tus clientes, tareas y recorridos del día, siempre a mano."
-    : textoRol.includes("team") || textoRol.includes("líder") || textoRol.includes("lider")
+    : textoRol.includes("supervisor")
       ? "Acompañá al equipo en campo y convertí cada visita en decisiones."
       : usuario.esSuperadmin
         ? "Configurá la plataforma y mantené cada equipo listo para trabajar."

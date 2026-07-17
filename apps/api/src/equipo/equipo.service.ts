@@ -33,12 +33,12 @@ export class EquipoService {
     usuarioId: number,
     query: ListarRepositoresEquipoDto,
   ): Promise<RespuestaPaginada<RepositorEquipoDto>> {
-    const actual = await this.accesoCampo.usuarioTeamLeader(
+    const actual = await this.accesoCampo.usuarioSupervisor(
       usuarioId,
       PAGINA_EQUIPO,
     );
     const alcance =
-      await this.accesoCampo.filtroRepositoresDelTeamLeader(actual);
+      await this.accesoCampo.filtroRepositoresDelSupervisor(actual);
     const where = {
       AND: [alcance, ...filtrosBusquedaUsuario(query.buscar)],
     };
@@ -128,12 +128,12 @@ export class EquipoService {
     usuarioId: number,
     query: ListarTareasEquipoDto,
   ): Promise<RespuestaTareasEquipoDto> {
-    const actual = await this.accesoCampo.usuarioTeamLeader(
+    const actual = await this.accesoCampo.usuarioSupervisor(
       usuarioId,
       PAGINA_TAREAS,
     );
     const alcance =
-      await this.accesoCampo.filtroRepositoresDelTeamLeader(actual);
+      await this.accesoCampo.filtroRepositoresDelSupervisor(actual);
     if (query.localId !== undefined) {
       return this.tareasDelLocal(actual.empresaId, alcance, query);
     }
@@ -144,7 +144,7 @@ export class EquipoService {
     empresaId: number,
     alcance: Awaited<
       ReturnType<
-        AccesoOperacionesCampoService['filtroRepositoresDelTeamLeader']
+        AccesoOperacionesCampoService['filtroRepositoresDelSupervisor']
       >
     >,
     query: ListarTareasEquipoDto,
@@ -303,7 +303,7 @@ export class EquipoService {
     empresaId: number,
     alcance: Awaited<
       ReturnType<
-        AccesoOperacionesCampoService['filtroRepositoresDelTeamLeader']
+        AccesoOperacionesCampoService['filtroRepositoresDelSupervisor']
       >
     >,
     query: ListarTareasEquipoDto,

@@ -61,7 +61,7 @@ export interface VisitaEquipoUltimaVisitaDto {
   tareasCompletadas: number;
 }
 
-// Resumen por local para seguimiento del gestor/teamleader.
+// Resumen por local para seguimiento del supervisor.
 export interface VisitaEquipoLocalDto {
   localId: number;
   localNombre: string;

@@ -155,7 +155,7 @@ export function SeguimientoTareasView({
     if (filtros.repositorNombre) {
       parametros.set("repositor", filtros.repositorNombre);
     }
-    router.push(`/panel/team-leader/clientes?${parametros.toString()}`);
+    router.push(`/panel/supervisor/clientes?${parametros.toString()}`);
   }
 
   const filas = datos?.items ?? [];

@@ -9,6 +9,7 @@ export interface UsuarioSesion {
   ruc: string;
   celular: string;
   esSuperadmin: boolean;
+  puedeAdministrarUsuarios: boolean;
   empresa: { id: number; nombre: string };
   rol: { id: number; descripcion: string } | null;
 }

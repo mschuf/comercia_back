@@ -385,7 +385,7 @@ export function RutaDiariaView() {
             No tenés visitas pendientes hoy
           </h2>
           <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-            Cuando el Team Leader programe una visita para hoy, aparecerá acá.
+            Cuando el Supervisor programe una visita para hoy, aparecerá acá.
           </p>
         </section>
       ) : (

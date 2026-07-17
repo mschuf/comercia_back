@@ -12,6 +12,7 @@ import {
   respuestaPaginada,
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
+import { puedeAdministrarUsuarios } from '../common/utils/permisos-usuario';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   ActualizarUsuarioDto,
@@ -22,7 +23,6 @@ import type {
   MetaUsuariosDto,
   UsuarioAdminDto,
 } from './interfaces/usuario-admin.interface';
-import { esRolAdminUsuarios } from './utils/rol-admin-usuarios';
 
 const SELECT_USUARIO_ADMIN = {
   id: true,
@@ -103,7 +103,10 @@ export class UsuariosService {
     });
     if (!actual || !actual.isActive) throw new UnauthorizedException();
     if (!actual.esSuperadmin) {
-      const permitido = esRolAdminUsuarios(actual.rol?.descripcion ?? null);
+      const permitido = puedeAdministrarUsuarios(
+        actual.esSuperadmin,
+        actual.rol?.descripcion ?? null,
+      );
       if (!permitido) {
         throw new ForbiddenException(
           'No tenés permiso para administrar usuarios',

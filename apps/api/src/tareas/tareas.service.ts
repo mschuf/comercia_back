@@ -87,7 +87,7 @@ export class TareasService {
     const usuario = await this.usuarioActual(usuarioId);
     if (!usuario.esGestor) {
       throw new ForbiddenException(
-        'Solo un Team Leader o gestor puede administrar tareas',
+        'Solo un Supervisor o gestor puede administrar tareas',
       );
     }
     return usuario;

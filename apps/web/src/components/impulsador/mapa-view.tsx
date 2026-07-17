@@ -1561,7 +1561,7 @@ export function MapaView() {
                 Cerrar
               </button>
               <Link
-                href="/panel/team-leader/tareas"
+                href="/panel/supervisor/tareas"
                 onClick={() => setLocalAbierto(null)}
                 className={`${btnPrimary} min-h-11`}
               >

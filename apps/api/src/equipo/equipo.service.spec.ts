@@ -19,13 +19,12 @@ describe('EquipoService', () => {
   const alcance = {
     empresaId: 20,
     isActive: true,
-    esSuperadmin: false,
     superiorId: 10,
     rolId: { in: [6] },
   };
   const acceso = {
-    usuarioTeamLeader: jest.fn(),
-    filtroRepositoresDelTeamLeader: jest.fn(),
+    usuarioSupervisor: jest.fn(),
+    filtroRepositoresDelSupervisor: jest.fn(),
   };
   const service = new EquipoService(
     prisma as unknown as PrismaService,
@@ -34,14 +33,14 @@ describe('EquipoService', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    acceso.usuarioTeamLeader.mockResolvedValue({
+    acceso.usuarioSupervisor.mockResolvedValue({
       id: 10,
       empresaId: 20,
       rolId: 5,
       esGestor: true,
       esOperativo: false,
     });
-    acceso.filtroRepositoresDelTeamLeader.mockResolvedValue(alcance);
+    acceso.filtroRepositoresDelSupervisor.mockResolvedValue(alcance);
   });
 
   it('pagina y busca repositores por términos dentro del alcance', async () => {
@@ -65,7 +64,7 @@ describe('EquipoService', () => {
       limit: 7,
     });
 
-    expect(acceso.usuarioTeamLeader).toHaveBeenCalledWith(10, 'equipo');
+    expect(acceso.usuarioSupervisor).toHaveBeenCalledWith(10, 'equipo');
     const llamadas = prisma.usuario.findMany.mock.calls as unknown as Array<
       [
         {
@@ -95,7 +94,7 @@ describe('EquipoService', () => {
     await expect(
       service.tareas(10, { localId: 99, repositorId: 40 }),
     ).rejects.toBeInstanceOf(NotFoundException);
-    expect(acceso.usuarioTeamLeader).toHaveBeenCalledWith(10, 'tareas');
+    expect(acceso.usuarioSupervisor).toHaveBeenCalledWith(10, 'tareas');
     const llamadas = prisma.local.findFirst.mock.calls as unknown as Array<
       [{ where: Record<string, unknown> }]
     >;

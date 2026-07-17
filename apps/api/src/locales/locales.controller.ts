@@ -22,7 +22,7 @@ import {
   ListarUsuariosAsignablesDto,
 } from './dto/local.dto';
 
-// La autorización fina (Team Leader vs Repositor, empresa propia) vive en el service
+// La autorización fina (Supervisor vs Repositor, empresa propia) vive en el service
 @ApiTags('locales')
 @Controller('locales')
 @UseGuards(JwtAuthGuard)

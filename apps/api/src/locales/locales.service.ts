@@ -117,7 +117,7 @@ export class LocalesService {
     return this.accesoCampo.usuario(usuarioId, [PAGINA_CLIENTES]);
   }
 
-  // Team Leader: todos los locales de su empresa. Repositor: solo los suyos.
+  // Supervisor: locales de su equipo. Repositor: solo los suyos.
   async listar(
     usuarioId: number,
     query: ListarLocalesDto,
@@ -130,7 +130,7 @@ export class LocalesService {
           usuario: {
             is: {
               AND: [
-                await this.accesoCampo.filtroRepositoresDelTeamLeader(actual),
+                await this.accesoCampo.filtroRepositoresDelSupervisor(actual),
                 ...(query.usuarioId !== undefined
                   ? [{ id: query.usuarioId }]
                   : []),
@@ -165,12 +165,12 @@ export class LocalesService {
     usuarioId: number,
     query: ListarUsuariosAsignablesDto,
   ): Promise<RespuestaPaginada<UsuarioAsignable>> {
-    const actual = await this.accesoCampo.usuarioTeamLeaderConAlgunaPagina(
+    const actual = await this.accesoCampo.usuarioSupervisorConAlgunaPagina(
       usuarioId,
       [PAGINA_CLIENTES, PAGINA_MAPA],
     );
     const alcance =
-      await this.accesoCampo.filtroRepositoresDelTeamLeader(actual);
+      await this.accesoCampo.filtroRepositoresDelSupervisor(actual);
     const where = {
       AND: [alcance, ...filtrosBusquedaUsuario(query.buscar)],
     };
@@ -206,11 +206,11 @@ export class LocalesService {
 
   // El usuario asignado debe existir, estar activo y ser de la misma empresa
   private async validarAsignado(
-    teamLeader: UsuarioOperacionesCampo,
+    supervisor: UsuarioOperacionesCampo,
     usuarioId: number,
   ): Promise<void> {
     const alcance =
-      await this.accesoCampo.filtroRepositoresDelTeamLeader(teamLeader);
+      await this.accesoCampo.filtroRepositoresDelSupervisor(supervisor);
     const asignado = await this.prisma.usuario.findFirst({
       where: { AND: [alcance, { id: usuarioId }] },
       select: { id: true },
@@ -289,7 +289,7 @@ export class LocalesService {
   // Busca el local verificando que pertenezca a la empresa del gestor
   private async localDelEquipo(
     id: number,
-    teamLeader: UsuarioOperacionesCampo,
+    supervisor: UsuarioOperacionesCampo,
   ): Promise<{
     id: number;
     clienteId: number;
@@ -297,14 +297,14 @@ export class LocalesService {
     usuarioId: number | null;
   }> {
     const alcance =
-      await this.accesoCampo.filtroRepositoresDelTeamLeader(teamLeader);
+      await this.accesoCampo.filtroRepositoresDelSupervisor(supervisor);
     const local = await this.prisma.local.findFirst({
       where: {
         id,
-        empresaId: teamLeader.empresaId,
+        empresaId: supervisor.empresaId,
         OR: [
           { usuario: { is: alcance } },
-          { usuarioId: null, creadoPorId: teamLeader.id },
+          { usuarioId: null, creadoPorId: supervisor.id },
         ],
       },
       select: {
@@ -383,7 +383,7 @@ export class LocalesService {
   async detalle(usuarioId: number, id: number): Promise<LocalDetalleDto> {
     const actual = await this.usuarioActual(usuarioId);
     const alcance = actual.esGestor
-      ? await this.accesoCampo.filtroRepositoresDelTeamLeader(actual)
+      ? await this.accesoCampo.filtroRepositoresDelSupervisor(actual)
       : null;
     const local = await this.prisma.local.findFirst({
       where: actual.esGestor

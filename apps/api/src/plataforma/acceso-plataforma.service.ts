@@ -113,7 +113,7 @@ export class AccesoPlataformaService {
   }
 
   // Variante para una misma funcionalidad expuesta desde más de un módulo
-  // de plataforma (Team Leader y Repositor comparten varias vistas).
+  // de plataforma (Supervisor y Repositor comparten varias vistas).
   async exigirAccesoAlgunaPaginaEnModulos(
     usuarioId: number,
     modulosRutas: string[],
@@ -128,7 +128,7 @@ export class AccesoPlataformaService {
   }
 
   // Resuelve en una sola consulta qué módulos concretos habilitan al usuario.
-  // Operaciones de campo lo usa para distinguir Team Leader de Repositor sin
+  // Operaciones de campo lo usa para distinguir Supervisor de Repositor sin
   // mantener otra tabla de roles paralela a Administración.
   async exigirAccesosPaginasEnModulos(
     usuarioId: number,

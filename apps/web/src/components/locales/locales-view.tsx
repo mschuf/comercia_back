@@ -252,7 +252,7 @@ export function LocalesView({
       parametros.set("repositorId", String(local.asignadoA.id));
       parametros.set("repositor", local.asignadoA.nombre);
     }
-    router.push(`/panel/team-leader/tareas?${parametros.toString()}`);
+    router.push(`/panel/supervisor/tareas?${parametros.toString()}`);
   }
 
   function alClickEnMapa(lat: number, lng: number) {

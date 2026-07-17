@@ -27,10 +27,10 @@ describe('AccesoOperacionesCampoService', () => {
     jest.clearAllMocks();
   });
 
-  it('deriva Team Leader y Repositor de los módulos realmente autorizados', async () => {
+  it('deriva Supervisor y Repositor de los módulos realmente autorizados', async () => {
     acceso.exigirAccesosPaginasEnModulos.mockResolvedValue({
       usuario: { id: 10, empresaId: 20, rolId: 5 },
-      modulosRutas: ['team-leader', 'repositor'],
+      modulosRutas: ['supervisor', 'repositor'],
     });
 
     await expect(service.usuario(10, ['clientes'])).resolves.toEqual({
@@ -63,14 +63,14 @@ describe('AccesoOperacionesCampoService', () => {
     );
   });
 
-  it('exige la página del Team Leader para sus endpoints dedicados', async () => {
+  it('exige la página del Supervisor para sus endpoints dedicados', async () => {
     acceso.exigirAccesoPagina.mockResolvedValue({
       id: 10,
       empresaId: 20,
       rolId: 5,
     });
 
-    await expect(service.usuarioTeamLeader(10, 'equipo')).resolves.toEqual({
+    await expect(service.usuarioSupervisor(10, 'equipo')).resolves.toEqual({
       id: 10,
       empresaId: 20,
       rolId: 5,
@@ -79,7 +79,7 @@ describe('AccesoOperacionesCampoService', () => {
     });
     expect(acceso.exigirAccesoPagina).toHaveBeenCalledWith(
       10,
-      'team-leader',
+      'supervisor',
       'equipo',
     );
   });
@@ -92,11 +92,11 @@ describe('AccesoOperacionesCampoService', () => {
     });
 
     await expect(
-      service.usuarioTeamLeaderConAlgunaPagina(10, ['clientes', 'mapa']),
+      service.usuarioSupervisorConAlgunaPagina(10, ['clientes', 'mapa']),
     ).resolves.toMatchObject({ id: 10, empresaId: 20, esGestor: true });
     expect(acceso.exigirAccesoAlgunaPagina).toHaveBeenCalledWith(
       10,
-      'team-leader',
+      'supervisor',
       ['clientes', 'mapa'],
     );
   });
@@ -117,7 +117,7 @@ describe('AccesoOperacionesCampoService', () => {
         apellido: 'Vera',
         nombreLogin: 'luis',
         rolId: 5,
-        rol: { descripcion: 'TEAM LEADER' },
+        rol: { descripcion: 'SUPERVISOR' },
       },
     ]);
     prisma.empresaModulo.findFirst.mockResolvedValue({
@@ -140,7 +140,7 @@ describe('AccesoOperacionesCampoService', () => {
     ]);
   });
 
-  it('oculta responsables que no tengan acceso a Team Leader', async () => {
+  it('oculta responsables que no tengan acceso a Supervisor', async () => {
     acceso.exigirAccesoAlgunaPagina.mockRejectedValue(new Error('sin acceso'));
 
     await expect(
@@ -148,7 +148,7 @@ describe('AccesoOperacionesCampoService', () => {
     ).rejects.toBeInstanceOf(NotFoundException);
   });
 
-  it('limita el alcance a subordinados directos de la misma empresa y rol', async () => {
+  it('limita el alcance a subordinados directos sin excluir su permiso administrativo', async () => {
     prisma.empresaModulo.findFirst.mockResolvedValue({
       todasLasPaginas: true,
       rolIds: [6],
@@ -156,7 +156,7 @@ describe('AccesoOperacionesCampoService', () => {
     });
 
     await expect(
-      service.filtroRepositoresDelTeamLeader({
+      service.filtroRepositoresDelSupervisor({
         id: 10,
         empresaId: 20,
         rolId: 5,
@@ -166,7 +166,6 @@ describe('AccesoOperacionesCampoService', () => {
     ).resolves.toEqual({
       empresaId: 20,
       isActive: true,
-      esSuperadmin: false,
       superiorId: 10,
       rolId: { in: [6] },
     });

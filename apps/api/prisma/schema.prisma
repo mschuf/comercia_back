@@ -268,7 +268,7 @@ model TareaGlobal {
   @@map("tareas_globales")
 }
 
-// Locales geolocalizados. Los carga un Team Leader y puede asignarlos a un
+// Locales geolocalizados. Los carga un Supervisor y puede asignarlos a un
 // Repositor de su misma empresa.
 model Local {
   id                    Int       @id @default(autoincrement())

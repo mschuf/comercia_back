@@ -28,19 +28,19 @@ describe('AccesoPlataformaService', () => {
     prisma.empresaPagina.findMany.mockResolvedValue([]);
   });
 
-  it('autoriza una página completa del módulo Team Leader', async () => {
+  it('autoriza una página completa del módulo Supervisor', async () => {
     prisma.empresaModulo.findMany.mockResolvedValue([
       {
         todasLasPaginas: true,
         rolIds: [5],
-        modulo: { ruta: 'team-leader', paginas: [{ id: 100 }] },
+        modulo: { ruta: 'supervisor', paginas: [{ id: 100 }] },
       },
     ]);
 
     await expect(
       service.exigirAccesoAlgunaPaginaEnModulos(
         10,
-        ['team-leader', 'repositor'],
+        ['supervisor', 'repositor'],
         ['mapa'],
       ),
     ).resolves.toEqual({ id: 10, empresaId: 20, rolId: 5 });
@@ -74,7 +74,7 @@ describe('AccesoPlataformaService', () => {
     await expect(
       service.exigirAccesoAlgunaPaginaEnModulos(
         10,
-        ['team-leader', 'repositor'],
+        ['supervisor', 'repositor'],
         ['clientes'],
       ),
     ).resolves.toEqual({ id: 10, empresaId: 20, rolId: 5 });
@@ -92,7 +92,7 @@ describe('AccesoPlataformaService', () => {
     await expect(
       service.exigirAccesoAlgunaPaginaEnModulos(
         10,
-        ['team-leader', 'repositor'],
+        ['supervisor', 'repositor'],
         ['clientes'],
       ),
     ).rejects.toBeInstanceOf(ForbiddenException);
@@ -109,7 +109,7 @@ describe('AccesoPlataformaService', () => {
     await expect(
       service.exigirAccesoAlgunaPaginaEnModulos(
         10,
-        ['team-leader', 'repositor'],
+        ['supervisor', 'repositor'],
         ['clientes'],
       ),
     ).rejects.toBeInstanceOf(UnauthorizedException);
@@ -121,7 +121,7 @@ describe('AccesoPlataformaService', () => {
       {
         todasLasPaginas: true,
         rolIds: [5],
-        modulo: { ruta: 'team-leader', paginas: [{ id: 100 }] },
+        modulo: { ruta: 'supervisor', paginas: [{ id: 100 }] },
       },
       {
         todasLasPaginas: false,
@@ -136,12 +136,12 @@ describe('AccesoPlataformaService', () => {
     await expect(
       service.exigirAccesosPaginasEnModulos(
         10,
-        ['team-leader', 'repositor'],
+        ['supervisor', 'repositor'],
         ['clientes'],
       ),
     ).resolves.toEqual({
       usuario: { id: 10, empresaId: 20, rolId: 5 },
-      modulosRutas: ['team-leader', 'repositor'],
+      modulosRutas: ['supervisor', 'repositor'],
     });
   });
 });

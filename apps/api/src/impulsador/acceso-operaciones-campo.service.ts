@@ -3,7 +3,7 @@ import { AccesoPlataformaService } from '../plataforma/acceso-plataforma.service
 import { PrismaService } from '../prisma/prisma.service';
 import {
   MODULO_REPOSITOR,
-  MODULO_TEAM_LEADER,
+  MODULO_SUPERVISOR,
   MODULOS_OPERACION_CAMPO,
   PAGINA_MAPA,
   PAGINAS_REPOSITOR,
@@ -29,7 +29,7 @@ export class AccesoOperacionesCampoService {
     );
     return {
       ...acceso.usuario,
-      esGestor: acceso.modulosRutas.includes(MODULO_TEAM_LEADER),
+      esGestor: acceso.modulosRutas.includes(MODULO_SUPERVISOR),
       esOperativo: acceso.modulosRutas.includes(MODULO_REPOSITOR),
     };
   }
@@ -50,13 +50,13 @@ export class AccesoOperacionesCampoService {
     };
   }
 
-  async usuarioTeamLeader(
+  async usuarioSupervisor(
     usuarioId: number,
     paginaRuta: string,
   ): Promise<UsuarioOperacionesCampo> {
     const usuario = await this.acceso.exigirAccesoPagina(
       usuarioId,
-      MODULO_TEAM_LEADER,
+      MODULO_SUPERVISOR,
       paginaRuta,
     );
     return {
@@ -66,13 +66,13 @@ export class AccesoOperacionesCampoService {
     };
   }
 
-  async usuarioTeamLeaderConAlgunaPagina(
+  async usuarioSupervisorConAlgunaPagina(
     usuarioId: number,
     paginasRutas: string[],
   ): Promise<UsuarioOperacionesCampo> {
     const usuario = await this.acceso.exigirAccesoAlgunaPagina(
       usuarioId,
-      MODULO_TEAM_LEADER,
+      MODULO_SUPERVISOR,
       paginasRutas,
     );
     return {
@@ -89,7 +89,7 @@ export class AccesoOperacionesCampoService {
     try {
       const usuario = await this.acceso.exigirAccesoAlgunaPagina(
         usuarioId,
-        MODULO_TEAM_LEADER,
+        MODULO_SUPERVISOR,
         [PAGINA_MAPA],
       );
       if (usuario.empresaId !== empresaId) throw new Error();
@@ -129,7 +129,7 @@ export class AccesoOperacionesCampoService {
   ): Promise<UsuarioAsignableOperacionesDto[]> {
     const actual = await this.usuario(usuarioId, [PAGINA_MAPA]);
     if (!actual.esGestor) return [];
-    return this.usuariosAsignables(actual.empresaId, MODULO_TEAM_LEADER, [
+    return this.usuariosAsignables(actual.empresaId, MODULO_SUPERVISOR, [
       PAGINA_MAPA,
     ]);
   }
@@ -156,13 +156,12 @@ export class AccesoOperacionesCampoService {
     );
   }
 
-  async filtroRepositoresDelTeamLeader(teamLeader: UsuarioOperacionesCampo) {
-    const roles = await this.restriccionRolesRepositores(teamLeader.empresaId);
+  async filtroRepositoresDelSupervisor(supervisor: UsuarioOperacionesCampo) {
+    const roles = await this.restriccionRolesRepositores(supervisor.empresaId);
     return {
-      empresaId: teamLeader.empresaId,
+      empresaId: supervisor.empresaId,
       isActive: true,
-      esSuperadmin: false,
-      superiorId: teamLeader.id,
+      superiorId: supervisor.id,
       ...(roles === null ? {} : { rolId: { in: roles ?? [] } }),
     };
   }

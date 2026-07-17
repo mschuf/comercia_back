@@ -7,7 +7,7 @@ jest.mock('../prisma/prisma.service', () => ({
   PrismaService: class PrismaService {},
 }));
 
-describe('LocalesService - alcance de Team Leader', () => {
+describe('LocalesService - alcance de Supervisor', () => {
   const prisma = {
     local: {
       count: jest.fn(),
@@ -36,14 +36,13 @@ describe('LocalesService - alcance de Team Leader', () => {
   const alcance = {
     empresaId: 20,
     isActive: true,
-    esSuperadmin: false,
     superiorId: 10,
     rolId: { in: [6] },
   };
   const acceso = {
     usuario: jest.fn(),
-    usuarioTeamLeaderConAlgunaPagina: jest.fn(),
-    filtroRepositoresDelTeamLeader: jest.fn(),
+    usuarioSupervisorConAlgunaPagina: jest.fn(),
+    filtroRepositoresDelSupervisor: jest.fn(),
   };
   const service = new LocalesService(
     prisma as unknown as PrismaService,
@@ -53,8 +52,8 @@ describe('LocalesService - alcance de Team Leader', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     acceso.usuario.mockResolvedValue(actual);
-    acceso.usuarioTeamLeaderConAlgunaPagina.mockResolvedValue(actual);
-    acceso.filtroRepositoresDelTeamLeader.mockResolvedValue(alcance);
+    acceso.usuarioSupervisorConAlgunaPagina.mockResolvedValue(actual);
+    acceso.filtroRepositoresDelSupervisor.mockResolvedValue(alcance);
   });
 
   it('filtra usuarioId y nombre completo sin salir del equipo', async () => {
@@ -108,7 +107,7 @@ describe('LocalesService - alcance de Team Leader', () => {
       limit: 7,
     });
 
-    expect(acceso.usuarioTeamLeaderConAlgunaPagina).toHaveBeenCalledWith(10, [
+    expect(acceso.usuarioSupervisorConAlgunaPagina).toHaveBeenCalledWith(10, [
       'clientes',
       'mapa',
     ]);

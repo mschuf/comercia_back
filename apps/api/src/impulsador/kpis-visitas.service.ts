@@ -37,11 +37,11 @@ export class KpisVisitasService {
     private readonly accesoCampo: AccesoOperacionesCampoService,
   ) {}
 
-  private async empresaTeamLeader(usuarioId: number): Promise<number> {
+  private async empresaSupervisor(usuarioId: number): Promise<number> {
     const usuario = await this.accesoCampo.usuario(usuarioId, [PAGINA_VISITAS]);
     if (!usuario.esGestor) {
       throw new ForbiddenException(
-        'Solo un Team Leader puede ver los indicadores',
+        'Solo un Supervisor puede ver los indicadores',
       );
     }
     return usuario.empresaId;
@@ -112,7 +112,7 @@ export class KpisVisitasService {
     usuarioId: number,
     query: FiltroKpisVisitasDto,
   ): Promise<KpiVisitasResumenDto> {
-    const empresaId = await this.empresaTeamLeader(usuarioId);
+    const empresaId = await this.empresaSupervisor(usuarioId);
     const { desde, hasta } = this.rangoFechas(query);
     const base = this.baseSql(empresaId, desde, hasta);
     const [filas, visitasEnCurso] = await Promise.all([
@@ -160,7 +160,7 @@ export class KpisVisitasService {
     usuarioId: number,
     query: ListarKpisVisitasDto,
   ): Promise<RespuestaPaginada<KpiVisitasDetalleDto>> {
-    const empresaId = await this.empresaTeamLeader(usuarioId);
+    const empresaId = await this.empresaSupervisor(usuarioId);
     const { desde, hasta } = this.rangoFechas(query);
     const { skip, take, page, limit } = rangoPaginacion(query);
     const base = this.baseSql(empresaId, desde, hasta);
