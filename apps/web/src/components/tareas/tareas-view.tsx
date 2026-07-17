@@ -14,6 +14,10 @@ import {
 } from "@/components/ui";
 import type { RespuestaPaginada } from "@/types/paginacion";
 import type { TareaGlobal } from "@/types/tarea";
+import {
+  SeguimientoTareasView,
+  type FiltrosSeguimientoTareas,
+} from "@/components/equipo/seguimiento-tareas-view";
 
 interface FormTarea {
   titulo: string;
@@ -31,7 +35,19 @@ const FORM_INICIAL: FormTarea = {
   activo: true,
 };
 
-export function TareasView() {
+export function TareasView({
+  filtrosIniciales,
+}: {
+  filtrosIniciales?: FiltrosSeguimientoTareas;
+}) {
+  return filtrosIniciales ? (
+    <SeguimientoTareasView filtros={filtrosIniciales} />
+  ) : (
+    <TareasAdministracionView />
+  );
+}
+
+function TareasAdministracionView() {
   const [datos, setDatos] = useState<RespuestaPaginada<TareaGlobal> | null>(
     null,
   );

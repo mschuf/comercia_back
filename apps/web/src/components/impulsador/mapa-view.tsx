@@ -239,7 +239,6 @@ export function MapaView() {
     usuarioId: "",
   });
   const [responsables, setResponsables] = useState<UsuarioAsignable[]>([]);
-  const [repositores, setRepositores] = useState<UsuarioAsignable[]>([]);
   const [guardandoForm, setGuardandoForm] = useState(false);
   const [errorForm, setErrorForm] = useState<string | null>(null);
 
@@ -292,16 +291,11 @@ export function MapaView() {
   useEffect(() => {
     if (!esGestor) return;
     let vigente = true;
-    Promise.all([
-      apiFetch<UsuarioAsignable[]>(
-        "/operaciones-campo/responsables-territorio",
-      ),
-      apiFetch<UsuarioAsignable[]>("/locales/usuarios-asignables"),
-    ])
-      .then(([lideres, operativos]) => {
-        if (!vigente) return;
-        setResponsables(lideres);
-        setRepositores(operativos);
+    apiFetch<UsuarioAsignable[]>(
+      "/operaciones-campo/responsables-territorio",
+    )
+      .then((lideres) => {
+        if (vigente) setResponsables(lideres);
       })
       .catch(() => undefined);
     return () => {
@@ -740,6 +734,13 @@ export function MapaView() {
   }
 
   if (!datos) return null;
+
+  const repositorInicialZona =
+    editZona !== null && editZona !== "nuevo"
+      ? editZona.repositores
+          .filter((usuario) => usuario.id === formZona.usuarioId)
+          .map((usuario) => ({ ...usuario, rol: null }))[0] ?? null
+      : null;
 
   const zonaDelDetalle =
     detalleLocal?.zona != null
@@ -1369,8 +1370,13 @@ export function MapaView() {
               Repositor de la zona
             </p>
             <SelectorUsuario
-              usuarios={repositores}
+              key={
+                editZona === "nuevo"
+                  ? "zona-nueva"
+                  : `zona-${editZona?.id ?? "cerrada"}`
+              }
               value={formZona.usuarioId}
+              seleccionadoInicial={repositorInicialZona}
               onChange={(usuarioId) =>
                 setFormZona((formulario) => ({
                   ...formulario,

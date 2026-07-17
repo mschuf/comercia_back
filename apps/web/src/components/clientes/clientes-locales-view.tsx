@@ -7,11 +7,18 @@ import type { Cliente } from "@/types/cliente";
 
 type Tab = "clientes" | "locales";
 
-export function ClientesLocalesView() {
-  const [tab, setTab] = useState<Tab>("clientes");
+export function ClientesLocalesView({
+  vistaInicial = "clientes",
+  repositorInicial,
+}: {
+  vistaInicial?: Tab;
+  repositorInicial?: { id?: number; nombre: string };
+}) {
+  const [tab, setTab] = useState<Tab>(vistaInicial);
   const [clienteFiltro, setClienteFiltro] = useState<
     Pick<Cliente, "id" | "nombre"> | undefined
   >(undefined);
+  const [repositorFiltro, setRepositorFiltro] = useState(repositorInicial);
   const clase = (actual: Tab) =>
     `min-h-11 border-b-2 px-4 py-2.5 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-brand-600/40 ${
       tab === actual
@@ -32,6 +39,7 @@ export function ClientesLocalesView() {
           type="button"
           onClick={() => {
             setClienteFiltro(undefined);
+            setRepositorFiltro(undefined);
             setTab("locales");
           }}
           className={clase("locales")}
@@ -43,14 +51,19 @@ export function ClientesLocalesView() {
         <ClientesView
           onVerLocales={(cliente) => {
             setClienteFiltro(cliente);
+            setRepositorFiltro(undefined);
             setTab("locales");
           }}
         />
       ) : (
         <LocalesView
-          key={clienteFiltro?.id ?? "todos"}
+          key={`${clienteFiltro?.id ?? "todos"}-${
+            repositorFiltro?.id ?? repositorFiltro?.nombre ?? "todos"
+          }`}
           clienteInicial={clienteFiltro}
+          repositorInicial={repositorFiltro}
           onLimpiarCliente={() => setClienteFiltro(undefined)}
+          onLimpiarRepositor={() => setRepositorFiltro(undefined)}
         />
       )}
     </div>

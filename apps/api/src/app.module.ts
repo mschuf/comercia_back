@@ -17,6 +17,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { TareasModule } from './tareas/tareas.module';
 import { RepositorModule } from './repositor/repositor.module';
+import { EquipoModule } from './equipo/equipo.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { RepositorModule } from './repositor/repositor.module';
     UsuariosModule,
     TareasModule,
     RepositorModule,
+    EquipoModule,
   ],
   controllers: [AppController],
   providers: [

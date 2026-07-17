@@ -3,8 +3,8 @@
 import { use, type ComponentType } from "react";
 import { usePanel } from "@/components/panel/contexto";
 import { ClientesLocalesView } from "@/components/clientes/clientes-locales-view";
+import { EquipoView } from "@/components/equipo/equipo-view";
 import { MapaView } from "@/components/impulsador/mapa-view";
-import { VisitasView } from "@/components/impulsador/visitas-view";
 import { TareasView } from "@/components/tareas/tareas-view";
 import { RepositorClientesView } from "@/components/repositor/repositorio-clientes-view";
 import { RepositorTareasView } from "@/components/repositor/repositorio-tareas-view";
@@ -15,9 +15,6 @@ import { RutaDiariaView } from "@/components/repositor/ruta-diaria-view";
 // ejecución de datos por ejecutables llega en la próxima etapa).
 const VISTAS: Record<string, ComponentType> = {
   "team-leader/mapa": MapaView,
-  "team-leader/clientes": ClientesLocalesView,
-  "team-leader/tareas": TareasView,
-  "team-leader/visitas": VisitasView,
   "repositor/clientes": RepositorClientesView,
   "repositor/tareas": RepositorTareasView,
   "repositor/visitas": RutaDiariaView,
@@ -25,10 +22,13 @@ const VISTAS: Record<string, ComponentType> = {
 
 export default function PaginaModulo({
   params,
+  searchParams,
 }: {
   params: Promise<{ modulo: string; pagina: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { modulo, pagina } = use(params);
+  const consulta = use(searchParams);
   const { modulos } = usePanel();
 
   const mod = modulos.find((m) => m.ruta === modulo);
@@ -44,10 +44,13 @@ export default function PaginaModulo({
     );
   }
 
-  const Vista = VISTAS[`${modulo}/${pagina}`];
+  const claveVista = `${modulo}/${pagina}`;
+  const Vista = VISTAS[claveVista];
   const esOperacionCampo = modulo === "team-leader" || modulo === "repositor";
   const usaCabeceraPropia =
-    (esOperacionCampo && pagina === "tareas") || modulo === "repositor";
+    (esOperacionCampo && pagina === "tareas") ||
+    claveVista === "team-leader/equipo" ||
+    modulo === "repositor";
   const ocultaNombreModulo = esOperacionCampo && pagina === "visitas";
 
   return (
@@ -65,7 +68,22 @@ export default function PaginaModulo({
         </>
       )}
 
-      {Vista ? (
+      {claveVista === "team-leader/equipo" ? (
+        <EquipoView />
+      ) : claveVista === "team-leader/clientes" ? (
+        <div className="mt-6">
+          <ClientesLocalesView
+            vistaInicial={
+              valorConsulta(consulta.vista) === "locales"
+                ? "locales"
+                : "clientes"
+            }
+            repositorInicial={filtroRepositor(consulta)}
+          />
+        </div>
+      ) : claveVista === "team-leader/tareas" ? (
+        <TareasView filtrosIniciales={filtrosTareas(consulta)} />
+      ) : Vista ? (
         <div className={usaCabeceraPropia ? undefined : "mt-6"}>
           <Vista />
         </div>
@@ -93,4 +111,61 @@ export default function PaginaModulo({
       )}
     </div>
   );
+}
+
+function valorConsulta(
+  valor: string | string[] | undefined,
+): string | undefined {
+  return typeof valor === "string" ? valor : undefined;
+}
+
+function textoConsulta(
+  valor: string | string[] | undefined,
+  maximo: number,
+): string | undefined {
+  const texto = valorConsulta(valor)?.trim();
+  if (
+    !texto ||
+    texto.length > maximo ||
+    /[\u0000-\u001f\u007f]/.test(texto)
+  ) {
+    return undefined;
+  }
+  return texto;
+}
+
+function enteroPositivo(
+  valor: string | string[] | undefined,
+): number | undefined {
+  const numero = Number(valorConsulta(valor));
+  return Number.isInteger(numero) && numero > 0 && numero <= 2_147_483_647
+    ? numero
+    : undefined;
+}
+
+function filtroRepositor(
+  consulta: Record<string, string | string[] | undefined>,
+): { id?: number; nombre: string } | undefined {
+  const id = enteroPositivo(consulta.usuarioId);
+  const nombre = textoConsulta(consulta.repositor, 100) ?? "";
+  return id || nombre ? { id, nombre } : undefined;
+}
+
+function filtrosTareas(
+  consulta: Record<string, string | string[] | undefined>,
+): {
+  repositorId?: number;
+  localId?: number;
+  repositorNombre?: string;
+  localNombre?: string;
+} | undefined {
+  const repositorId = enteroPositivo(consulta.repositorId);
+  const localId = enteroPositivo(consulta.localId);
+  if (!repositorId && !localId) return undefined;
+  return {
+    repositorId,
+    localId,
+    repositorNombre: textoConsulta(consulta.repositor, 100),
+    localNombre: textoConsulta(consulta.local, 120),
+  };
 }

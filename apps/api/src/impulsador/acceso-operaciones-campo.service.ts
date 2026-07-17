@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AccesoPlataformaService } from '../plataforma/acceso-plataforma.service';
-import { rolVe } from '../plataforma/utils/visibilidad';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   MODULO_REPOSITOR,
@@ -48,6 +47,38 @@ export class AccesoOperacionesCampoService {
       ...usuario,
       esGestor: false,
       esOperativo: true,
+    };
+  }
+
+  async usuarioTeamLeader(
+    usuarioId: number,
+    paginaRuta: string,
+  ): Promise<UsuarioOperacionesCampo> {
+    const usuario = await this.acceso.exigirAccesoPagina(
+      usuarioId,
+      MODULO_TEAM_LEADER,
+      paginaRuta,
+    );
+    return {
+      ...usuario,
+      esGestor: true,
+      esOperativo: false,
+    };
+  }
+
+  async usuarioTeamLeaderConAlgunaPagina(
+    usuarioId: number,
+    paginasRutas: string[],
+  ): Promise<UsuarioOperacionesCampo> {
+    const usuario = await this.acceso.exigirAccesoAlgunaPagina(
+      usuarioId,
+      MODULO_TEAM_LEADER,
+      paginasRutas,
+    );
+    return {
+      ...usuario,
+      esGestor: true,
+      esOperativo: false,
     };
   }
 
@@ -113,69 +144,116 @@ export class AccesoOperacionesCampoService {
     );
   }
 
+  // null = todos los roles; undefined = el módulo no está habilitado o no
+  // tiene ninguna de las páginas operativas asignada. Un array restringe por rol.
+  async restriccionRolesRepositores(
+    empresaId: number,
+  ): Promise<number[] | null | undefined> {
+    return this.restriccionRolesAsignables(
+      empresaId,
+      MODULO_REPOSITOR,
+      PAGINAS_REPOSITOR,
+    );
+  }
+
+  async filtroRepositoresDelTeamLeader(teamLeader: UsuarioOperacionesCampo) {
+    const roles = await this.restriccionRolesRepositores(teamLeader.empresaId);
+    return {
+      empresaId: teamLeader.empresaId,
+      isActive: true,
+      esSuperadmin: false,
+      superiorId: teamLeader.id,
+      ...(roles === null ? {} : { rolId: { in: roles ?? [] } }),
+    };
+  }
+
+  private async restriccionRolesAsignables(
+    empresaId: number,
+    moduloRuta: string,
+    paginasRutas: string[],
+  ): Promise<number[] | null | undefined> {
+    const empresaModulo = await this.prisma.empresaModulo.findFirst({
+      where: {
+        empresaId,
+        modulo: { activo: true, ruta: moduloRuta },
+      },
+      select: {
+        todasLasPaginas: true,
+        rolIds: true,
+        modulo: {
+          select: {
+            paginas: {
+              where: { activo: true, ruta: { in: paginasRutas } },
+              select: { id: true },
+            },
+          },
+        },
+      },
+    });
+    if (!empresaModulo || empresaModulo.modulo.paginas.length === 0) {
+      return undefined;
+    }
+
+    const rolesModulo = empresaModulo.rolIds;
+    if (empresaModulo.todasLasPaginas) {
+      return rolesModulo.length === 0 ? null : [...new Set(rolesModulo)];
+    }
+
+    const paginasIds = empresaModulo.modulo.paginas.map((pagina) => pagina.id);
+    const paginasAsignadas = await this.prisma.empresaPagina.findMany({
+      where: { empresaId, paginaId: { in: paginasIds } },
+      select: { paginaId: true, rolIds: true },
+      take: 100,
+    });
+    if (paginasAsignadas.length === 0) return undefined;
+
+    const roles = new Set<number>();
+    for (const pagina of paginasAsignadas) {
+      if (pagina.rolIds.length === 0) {
+        if (rolesModulo.length === 0) return null;
+        rolesModulo.forEach((rolId) => roles.add(rolId));
+        continue;
+      }
+      const rolesPagina =
+        rolesModulo.length === 0
+          ? pagina.rolIds
+          : pagina.rolIds.filter((rolId) => rolesModulo.includes(rolId));
+      rolesPagina.forEach((rolId) => roles.add(rolId));
+    }
+    return roles.size === 0 ? undefined : [...roles];
+  }
+
   private async usuariosAsignables(
     empresaId: number,
     moduloRuta: string,
     paginasRutas: string[],
   ): Promise<UsuarioAsignableOperacionesDto[]> {
-    const [usuarios, empresaModulo, paginasAsignadas] = await Promise.all([
-      this.prisma.usuario.findMany({
-        where: { empresaId, isActive: true },
-        select: {
-          id: true,
-          nombre: true,
-          apellido: true,
-          nombreLogin: true,
-          rolId: true,
-          rol: { select: { descripcion: true } },
-        },
-        orderBy: [{ nombre: 'asc' }, { apellido: 'asc' }],
-        take: 200,
-      }),
-      this.prisma.empresaModulo.findFirst({
-        where: {
-          empresaId,
-          modulo: { activo: true, ruta: moduloRuta },
-        },
-        select: {
-          todasLasPaginas: true,
-          rolIds: true,
-          modulo: {
-            select: {
-              paginas: {
-                where: { activo: true, ruta: { in: paginasRutas } },
-                select: { id: true },
-              },
-            },
-          },
-        },
-      }),
-      this.prisma.empresaPagina.findMany({
-        where: {
-          empresaId,
-          pagina: {
-            activo: true,
-            ruta: { in: paginasRutas },
-            modulo: { activo: true, ruta: moduloRuta },
-          },
-        },
-        select: { paginaId: true, rolIds: true },
-        take: 100,
-      }),
-    ]);
-    if (!empresaModulo || empresaModulo.modulo.paginas.length === 0) return [];
-
-    const rolesPorPagina = new Map(
-      paginasAsignadas.map((pagina) => [pagina.paginaId, pagina.rolIds]),
+    const restriccionRoles = await this.restriccionRolesAsignables(
+      empresaId,
+      moduloRuta,
+      paginasRutas,
     );
+    if (restriccionRoles === undefined) return [];
+
+    const usuarios = await this.prisma.usuario.findMany({
+      where: { empresaId, isActive: true },
+      select: {
+        id: true,
+        nombre: true,
+        apellido: true,
+        nombreLogin: true,
+        rolId: true,
+        rol: { select: { descripcion: true } },
+      },
+      orderBy: [{ nombre: 'asc' }, { apellido: 'asc' }],
+      take: 200,
+    });
     return usuarios
       .filter((usuario) => {
-        if (!rolVe(empresaModulo.rolIds, usuario.rolId)) return false;
-        if (empresaModulo.todasLasPaginas) return true;
-        return empresaModulo.modulo.paginas.some((pagina) => {
-          const rolIds = rolesPorPagina.get(pagina.id);
-          return rolIds !== undefined && rolVe(rolIds, usuario.rolId);
-        });
+        if (restriccionRoles === null) return true;
+        return (
+          usuario.rolId !== null && restriccionRoles.includes(usuario.rolId)
+        );
       })
       .map((usuario) => ({
         id: usuario.id,

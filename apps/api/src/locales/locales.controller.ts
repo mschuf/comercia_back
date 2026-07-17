@@ -19,6 +19,7 @@ import {
   ActualizarLocalDto,
   CrearLocalDto,
   ListarLocalesDto,
+  ListarUsuariosAsignablesDto,
 } from './dto/local.dto';
 
 // La autorización fina (Team Leader vs Repositor, empresa propia) vive en el service
@@ -34,8 +35,11 @@ export class LocalesController {
   }
 
   @Get('usuarios-asignables')
-  usuariosAsignables(@Req() req: RequestConUsuario) {
-    return this.locales.usuariosAsignables(req.usuarioId);
+  usuariosAsignables(
+    @Req() req: RequestConUsuario,
+    @Query() query: ListarUsuariosAsignablesDto,
+  ) {
+    return this.locales.usuariosAsignables(req.usuarioId, query);
   }
 
   // Declarada después de las rutas GET estáticas para no capturarlas

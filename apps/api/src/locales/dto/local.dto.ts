@@ -8,6 +8,7 @@ import {
   IsString,
   Length,
   Max,
+  MaxLength,
   Min,
 } from 'class-validator';
 import { MAX_INT4 } from '../../common/utils/numeros';
@@ -32,6 +33,20 @@ export class ListarLocalesDto extends PaginacionDto {
   @Min(1)
   @Max(MAX_INT4)
   usuarioId?: number;
+
+  @IsOptional()
+  @IsString()
+  @Transform(trimString)
+  @MaxLength(100)
+  repositor?: string;
+}
+
+export class ListarUsuariosAsignablesDto extends PaginacionDto {
+  @IsOptional()
+  @IsString()
+  @Transform(trimString)
+  @MaxLength(100)
+  buscar?: string;
 }
 
 export class CrearLocalDto {

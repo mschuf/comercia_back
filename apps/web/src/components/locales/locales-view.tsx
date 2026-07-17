@@ -2,10 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { apiFetch, ApiError } from "@/lib/api";
 import { IconoMas } from "@/components/icono-mas";
 import { Modal } from "@/components/modal";
 import { Paginacion } from "@/components/paginacion";
+import { PantallaCarga } from "@/components/pantalla-carga";
+import { SelectorUsuario } from "@/components/selector-usuario";
 import {
   btnGhost,
   btnPrimary,
@@ -46,8 +49,12 @@ interface FormLocal {
 
 interface LocalesViewProps {
   clienteInicial?: Pick<Cliente, "id" | "nombre">;
+  repositorInicial?: { id?: number; nombre: string };
   onLimpiarCliente?: () => void;
+  onLimpiarRepositor?: () => void;
 }
+
+const ESPERA_BUSQUEDA_MS = 350;
 
 const FORM_VACIO: FormLocal = {
   nombre: "",
@@ -82,19 +89,29 @@ function EstadoLocal({ activo }: { activo: boolean }) {
 
 export function LocalesView({
   clienteInicial,
+  repositorInicial,
   onLimpiarCliente,
+  onLimpiarRepositor,
 }: LocalesViewProps) {
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(7);
   const [clienteIdFiltro, setClienteIdFiltro] = useState<number | "">(
     clienteInicial?.id ?? "",
   );
-  const [usuarioIdFiltro, setUsuarioIdFiltro] = useState<number | "">("");
+  const [usuarioIdFiltro, setUsuarioIdFiltro] = useState<number | "">(
+    repositorInicial?.id ?? "",
+  );
+  const [repositorFiltro, setRepositorFiltro] = useState(
+    repositorInicial?.nombre ?? "",
+  );
+  const [repositorAplicado, setRepositorAplicado] = useState(
+    repositorInicial?.id ? "" : (repositorInicial?.nombre ?? ""),
+  );
   const [datos, setDatos] = useState<RespuestaPaginada<Local> | null>(null);
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState<string | null>(null);
 
-  const [asignables, setAsignables] = useState<UsuarioAsignable[]>([]);
   const [zonas, setZonas] = useState<Zona[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
 
@@ -107,6 +124,17 @@ export function LocalesView({
   const [eliminando, setEliminando] = useState<Local | null>(null);
   const [borrando, setBorrando] = useState(false);
   const [errorEliminar, setErrorEliminar] = useState<string | null>(null);
+  const [navegando, setNavegando] = useState<string | null>(null);
+
+  useEffect(() => {
+    const temporizador = window.setTimeout(() => {
+      setRepositorAplicado(
+        usuarioIdFiltro === "" ? repositorFiltro.trim() : "",
+      );
+      setPage(1);
+    }, ESPERA_BUSQUEDA_MS);
+    return () => window.clearTimeout(temporizador);
+  }, [repositorFiltro, usuarioIdFiltro]);
 
   const parametrosListado = new URLSearchParams({
     page: String(page),
@@ -117,6 +145,8 @@ export function LocalesView({
   }
   if (usuarioIdFiltro !== "") {
     parametrosListado.set("usuarioId", String(usuarioIdFiltro));
+  } else if (repositorAplicado) {
+    parametrosListado.set("repositor", repositorAplicado);
   }
   const rutaListado = `/locales?${parametrosListado.toString()}`;
 
@@ -174,15 +204,9 @@ export function LocalesView({
 
   useEffect(() => {
     let vigente = true;
-    Promise.all([
-      apiFetch<UsuarioAsignable[]>("/locales/usuarios-asignables"),
-      apiFetch<Zona[]>("/zonas/todas"),
-    ])
-      .then(([usuarios, zonasDisponibles]) => {
-        if (vigente) {
-          setAsignables(usuarios);
-          setZonas(zonasDisponibles);
-        }
+    apiFetch<Zona[]>("/zonas/todas")
+      .then((zonasDisponibles) => {
+        if (vigente) setZonas(zonasDisponibles);
       })
       .catch(() => undefined);
     return () => {
@@ -215,6 +239,20 @@ export function LocalesView({
     });
     setErrorForm(null);
     setEditando(local);
+  }
+
+  function verTareas(local: Local) {
+    if (local.tareasCount === 0 || navegando !== null) return;
+    setNavegando(`Abriendo las tareas de ${local.nombre}`);
+    const parametros = new URLSearchParams({
+      localId: String(local.id),
+      local: local.nombre,
+    });
+    if (local.asignadoA) {
+      parametros.set("repositorId", String(local.asignadoA.id));
+      parametros.set("repositor", local.asignadoA.nombre);
+    }
+    router.push(`/panel/team-leader/tareas?${parametros.toString()}`);
   }
 
   function alClickEnMapa(lat: number, lng: number) {
@@ -328,12 +366,23 @@ export function LocalesView({
   const latForm = parseCoordenada(form.latitud);
   const lngForm = parseCoordenada(form.longitud);
   const zonaSeleccionada = zonas.find((z) => z.id === form.zonaId);
-  const idsRepositoresZona = new Set(
-    zonaSeleccionada?.repositores.map((u) => u.id) ?? [],
-  );
-  const asignablesDeZona = asignables.filter((u) =>
-    idsRepositoresZona.has(u.id),
-  );
+  const asignablesDeZona: UsuarioAsignable[] = (
+    zonaSeleccionada?.repositores ?? []
+  ).map((usuario) => ({
+    ...usuario,
+    rol: null,
+  }));
+  const asignadoInicial =
+    asignablesDeZona.find((usuario) => usuario.id === form.usuarioId) ??
+    (editando !== null &&
+    editando !== "nuevo" &&
+    editando.asignadoA?.id === form.usuarioId
+      ? {
+          id: editando.asignadoA.id,
+          nombre: editando.asignadoA.nombre,
+          rol: null,
+        }
+      : null);
 
   if (cargando && !datos) {
     return <p className="text-sm text-zinc-400">Cargando locales...</p>;
@@ -397,35 +446,65 @@ export function LocalesView({
             ))}
           </select>
         </label>
-        <label className={`${labelBase} min-w-0 sm:w-64`}>
-          Repositor
-          <select
-            value={usuarioIdFiltro}
-            onChange={(e) => {
-              setUsuarioIdFiltro(
-                e.target.value === "" ? "" : Number(e.target.value),
-              );
-              setPage(1);
-            }}
-            className={inputBase}
-          >
-            <option value="">Todos los repositores</option>
-            {asignables.map((usuario) => (
-              <option key={usuario.id} value={usuario.id}>
-                {usuario.nombre}
-                {usuario.rol ? ` — ${usuario.rol}` : ""}
-              </option>
-            ))}
-          </select>
-        </label>
-        {(clienteIdFiltro !== "" || usuarioIdFiltro !== "") && (
+        <div className={`${labelBase} min-w-0 sm:w-72`}>
+          <label htmlFor="filtro-repositor-locales">Repositor</label>
+          <div className="relative">
+            <input
+              id="filtro-repositor-locales"
+              type="search"
+              value={repositorFiltro}
+              placeholder="Buscar por nombre"
+              onChange={(e) => {
+                setRepositorFiltro(e.target.value);
+                setUsuarioIdFiltro("");
+                setPage(1);
+              }}
+              className={`${inputBase} pr-11`}
+            />
+            {repositorFiltro ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setRepositorFiltro("");
+                  setRepositorAplicado("");
+                  setUsuarioIdFiltro("");
+                  setPage(1);
+                  onLimpiarRepositor?.();
+                }}
+                aria-label="Ver todos los repositores"
+                title="Ver todos los repositores"
+                className="absolute right-1 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-lg text-muted transition hover:bg-surface-soft hover:text-foreground focus-visible:ring-2 focus-visible:ring-focus"
+              >
+                <span aria-hidden>×</span>
+              </button>
+            ) : null}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setRepositorFiltro("");
+            setRepositorAplicado("");
+            setUsuarioIdFiltro("");
+            setPage(1);
+            onLimpiarRepositor?.();
+          }}
+          disabled={!repositorFiltro && usuarioIdFiltro === ""}
+          className={`${btnGhost} min-h-12 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-45`}
+        >
+          Todos los repositores
+        </button>
+        {(clienteIdFiltro !== "" || repositorFiltro !== "") && (
           <button
             type="button"
             onClick={() => {
               setClienteIdFiltro("");
               setUsuarioIdFiltro("");
+              setRepositorFiltro("");
+              setRepositorAplicado("");
               setPage(1);
               onLimpiarCliente?.();
+              onLimpiarRepositor?.();
             }}
             className={`${btnGhost} min-h-11`}
           >
@@ -439,7 +518,9 @@ export function LocalesView({
       {locales.length === 0 ? (
         <div className="mt-6 rounded-xl border border-dashed border-line bg-surface-raised p-10 text-center">
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            {clienteIdFiltro !== "" || usuarioIdFiltro !== ""
+            {clienteIdFiltro !== "" ||
+            repositorAplicado !== "" ||
+            usuarioIdFiltro !== ""
               ? "No hay locales que coincidan con los filtros seleccionados."
               : "Todavía no hay locales cargados. Creá el primero con el botón «+»."}
           </p>
@@ -560,10 +641,11 @@ export function LocalesView({
           )}
 
           <div className="mt-4 overflow-x-auto rounded-xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)]">
-            <table className="w-full min-w-[1040px] text-left text-sm">
+            <table className="w-full min-w-[1140px] text-left text-sm">
               <thead className="bg-surface-soft">
                 <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
                   <th className="px-4 py-3 font-medium">Local</th>
+                  <th className="px-4 py-3 font-medium">Tareas</th>
                   <th className="px-4 py-3 font-medium">Cliente</th>
                   <th className="px-4 py-3 font-medium">Coordenadas</th>
                   <th className="px-4 py-3 font-medium">Zona</th>
@@ -581,6 +663,18 @@ export function LocalesView({
                     className="border-b border-line bg-surface-raised transition last:border-0 hover:bg-surface-soft"
                   >
                     <td className="px-4 py-3 font-medium">{l.nombre}</td>
+                    <td className="px-4 py-3">
+                      <button
+                        type="button"
+                        onClick={() => verTareas(l)}
+                        disabled={l.tareasCount === 0}
+                        className={`${btnGhost} min-w-24 gap-2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-45`}
+                        aria-label={`Ver tareas de ${l.nombre}`}
+                      >
+                        <IconoTareas />
+                        {l.tareasCount}
+                      </button>
+                    </td>
                     <td className="px-4 py-3 font-medium text-brand-700 dark:text-brand-300">
                       {l.cliente.nombre}
                     </td>
@@ -768,31 +862,31 @@ export function LocalesView({
             </label>
           </div>
 
-          <label className={labelBase}>
-            Asignado a
-            <select
+          <div>
+            <p className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
+              Asignado a
+            </p>
+            <SelectorUsuario
+              key={`${editando === "nuevo" ? "nuevo" : (editando?.id ?? "cerrado")}-${form.zonaId}`}
               value={form.usuarioId}
-              onChange={(e) =>
+              seleccionadoInicial={asignadoInicial}
+              usuariosPermitidos={asignablesDeZona}
+              disabled={form.zonaId === ""}
+              onChange={(usuarioId) =>
                 setForm((f) => ({
                   ...f,
-                  usuarioId:
-                    e.target.value === "" ? "" : Number(e.target.value),
+                  usuarioId,
                 }))
               }
-              required
-              className={inputBase}
-            >
-              <option value="" disabled>
-                Elegí un repositor de la zona
-              </option>
-              {asignablesDeZona.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.nombre}
-                  {u.rol ? ` — ${u.rol}` : ""}
-                </option>
-              ))}
-            </select>
-          </label>
+            />
+            <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+              {form.zonaId === ""
+                ? "Elegí una zona para ver su repositor."
+                : asignablesDeZona.length === 0
+                  ? "La zona seleccionada todavía no tiene un repositor."
+                  : "La asignación se limita al repositor de la zona."}
+            </p>
+          </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label className={labelBase}>
@@ -919,6 +1013,29 @@ export function LocalesView({
           </button>
         </div>
       </Modal>
+
+      <PantallaCarga
+        visible={navegando !== null}
+        mensaje={navegando ?? "Abriendo tareas"}
+        detalle="Preparamos el seguimiento del repositor y el local seleccionados."
+      />
     </div>
+  );
+}
+
+function IconoTareas() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="h-4 w-4"
+      aria-hidden
+    >
+      <path
+        fillRule="evenodd"
+        d="M6.5 2A1.5 1.5 0 005 3.5V4H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1v-.5A1.5 1.5 0 0013.5 2h-7zM7 4v-.5h6V4H7zm7.03 4.47a.75.75 0 010 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-2-2a.75.75 0 011.06-1.06L9 12.44l3.97-3.97a.75.75 0 011.06 0z"
+        clipRule="evenodd"
+      />
+    </svg>
   );
 }

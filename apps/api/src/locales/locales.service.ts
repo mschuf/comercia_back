@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AccesoOperacionesCampoService } from '../impulsador/acceso-operaciones-campo.service';
 import {
   PAGINA_CLIENTES,
+  PAGINA_MAPA,
   RADIO_METROS_DEFECTO,
 } from '../impulsador/impulsador.constants';
 import type { UsuarioOperacionesCampo } from '../impulsador/interfaces/usuario-operaciones-campo.interface';
@@ -15,10 +16,12 @@ import {
   rangoPaginacion,
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
+import { filtrosBusquedaUsuario } from '../common/utils/busqueda-usuario';
 import {
   ActualizarLocalDto,
   CrearLocalDto,
   ListarLocalesDto,
+  ListarUsuariosAsignablesDto,
 } from './dto/local.dto';
 import type {
   LocalDetalleDto,
@@ -120,13 +123,28 @@ export class LocalesService {
     query: ListarLocalesDto,
   ): Promise<RespuestaPaginada<LocalDto>> {
     const actual = await this.usuarioActual(usuarioId);
-    const where = {
-      empresaId: actual.empresaId,
-      clienteId: query.clienteId,
-      ...(actual.esGestor
-        ? { usuarioId: query.usuarioId }
-        : { usuarioId: actual.id, activo: true }),
-    };
+    const where = actual.esGestor
+      ? {
+          empresaId: actual.empresaId,
+          clienteId: query.clienteId,
+          usuario: {
+            is: {
+              AND: [
+                await this.accesoCampo.filtroRepositoresDelTeamLeader(actual),
+                ...(query.usuarioId !== undefined
+                  ? [{ id: query.usuarioId }]
+                  : []),
+                ...filtrosBusquedaUsuario(query.repositor),
+              ],
+            },
+          },
+        }
+      : {
+          empresaId: actual.empresaId,
+          clienteId: query.clienteId,
+          usuarioId: actual.id,
+          activo: true,
+        };
 
     const { skip, take, page, limit } = rangoPaginacion(query);
     const [total, locales] = await Promise.all([
@@ -143,24 +161,61 @@ export class LocalesService {
   }
 
   // Usuarios activos de la empresa del gestor, para el select "asignar a"
-  async usuariosAsignables(usuarioId: number): Promise<UsuarioAsignable[]> {
-    const actual = await this.usuarioActual(usuarioId);
-    if (!actual.esGestor) {
-      throw new ForbiddenException('Solo un gestor puede asignar locales');
-    }
-    return this.accesoCampo.repositoresAsignables(actual.empresaId);
+  async usuariosAsignables(
+    usuarioId: number,
+    query: ListarUsuariosAsignablesDto,
+  ): Promise<RespuestaPaginada<UsuarioAsignable>> {
+    const actual = await this.accesoCampo.usuarioTeamLeaderConAlgunaPagina(
+      usuarioId,
+      [PAGINA_CLIENTES, PAGINA_MAPA],
+    );
+    const alcance =
+      await this.accesoCampo.filtroRepositoresDelTeamLeader(actual);
+    const where = {
+      AND: [alcance, ...filtrosBusquedaUsuario(query.buscar)],
+    };
+    const { skip, take, page, limit } = rangoPaginacion(query);
+    const [total, usuarios] = await Promise.all([
+      this.prisma.usuario.count({ where }),
+      this.prisma.usuario.findMany({
+        where,
+        select: {
+          id: true,
+          nombre: true,
+          apellido: true,
+          nombreLogin: true,
+          rol: { select: { descripcion: true } },
+        },
+        orderBy: [{ nombre: 'asc' }, { apellido: 'asc' }, { id: 'asc' }],
+        skip,
+        take,
+      }),
+    ]);
+    return respuestaPaginada(
+      usuarios.map((usuario) => ({
+        id: usuario.id,
+        nombre: `${usuario.nombre} ${usuario.apellido}`.trim(),
+        nombreLogin: usuario.nombreLogin,
+        rol: usuario.rol?.descripcion ?? null,
+      })),
+      total,
+      page,
+      limit,
+    );
   }
 
   // El usuario asignado debe existir, estar activo y ser de la misma empresa
   private async validarAsignado(
-    empresaId: number,
+    teamLeader: UsuarioOperacionesCampo,
     usuarioId: number,
   ): Promise<void> {
-    const asignado = await this.prisma.usuario.findUnique({
-      where: { id: usuarioId },
-      select: { empresaId: true, isActive: true },
+    const alcance =
+      await this.accesoCampo.filtroRepositoresDelTeamLeader(teamLeader);
+    const asignado = await this.prisma.usuario.findFirst({
+      where: { AND: [alcance, { id: usuarioId }] },
+      select: { id: true },
     });
-    if (!asignado || !asignado.isActive || asignado.empresaId !== empresaId) {
+    if (!asignado) {
       throw new NotFoundException('El usuario asignado no existe');
     }
   }
@@ -208,7 +263,7 @@ export class LocalesService {
     }
     await Promise.all([
       this.clienteDeEmpresa(dto.clienteId, actual.empresaId),
-      this.validarAsignado(actual.empresaId, dto.usuarioId),
+      this.validarAsignado(actual, dto.usuarioId),
       this.zonaDeEmpresa(dto.zonaId, actual.empresaId),
     ]);
     await this.validarRepositorDeZona(dto.zonaId, dto.usuarioId);
@@ -232,26 +287,34 @@ export class LocalesService {
   }
 
   // Busca el local verificando que pertenezca a la empresa del gestor
-  private async localDeEmpresa(
+  private async localDelEquipo(
     id: number,
-    empresaId: number,
+    teamLeader: UsuarioOperacionesCampo,
   ): Promise<{
     id: number;
     clienteId: number;
     zonaId: number | null;
     usuarioId: number | null;
   }> {
-    const local = await this.prisma.local.findUnique({
-      where: { id },
+    const alcance =
+      await this.accesoCampo.filtroRepositoresDelTeamLeader(teamLeader);
+    const local = await this.prisma.local.findFirst({
+      where: {
+        id,
+        empresaId: teamLeader.empresaId,
+        OR: [
+          { usuario: { is: alcance } },
+          { usuarioId: null, creadoPorId: teamLeader.id },
+        ],
+      },
       select: {
         id: true,
-        empresaId: true,
         clienteId: true,
         zonaId: true,
         usuarioId: true,
       },
     });
-    if (!local || local.empresaId !== empresaId) {
+    if (!local) {
       throw new NotFoundException('El local no existe');
     }
     return {
@@ -271,14 +334,14 @@ export class LocalesService {
     if (!actual.esGestor) {
       throw new ForbiddenException('Solo un gestor puede editar locales');
     }
-    const existente = await this.localDeEmpresa(id, actual.empresaId);
+    const existente = await this.localDelEquipo(id, actual);
     const clienteId = dto.clienteId ?? existente.clienteId;
     const zonaId = dto.zonaId === undefined ? existente.zonaId : dto.zonaId;
     const usuarioAsignadoId =
       dto.usuarioId === undefined ? existente.usuarioId : dto.usuarioId;
     await this.clienteDeEmpresa(clienteId, actual.empresaId);
     if (dto.usuarioId != null) {
-      await this.validarAsignado(actual.empresaId, dto.usuarioId);
+      await this.validarAsignado(actual, dto.usuarioId);
     }
     if (dto.zonaId != null) {
       await this.zonaDeEmpresa(dto.zonaId, actual.empresaId);
@@ -319,8 +382,20 @@ export class LocalesService {
   // incluidas las inactivas); el operativo solo su local asignado y activas.
   async detalle(usuarioId: number, id: number): Promise<LocalDetalleDto> {
     const actual = await this.usuarioActual(usuarioId);
-    const local = await this.prisma.local.findUnique({
-      where: { id },
+    const alcance = actual.esGestor
+      ? await this.accesoCampo.filtroRepositoresDelTeamLeader(actual)
+      : null;
+    const local = await this.prisma.local.findFirst({
+      where: actual.esGestor
+        ? {
+            id,
+            empresaId: actual.empresaId,
+            OR: [
+              { usuario: { is: alcance ?? undefined } },
+              { usuarioId: null, creadoPorId: actual.id },
+            ],
+          }
+        : { id, empresaId: actual.empresaId, usuarioId: actual.id },
       select: {
         ...SELECT_LOCAL,
         empresaId: true,
@@ -342,10 +417,7 @@ export class LocalesService {
       },
     });
     // Mensaje neutro: no revela si el local existe pero es ajeno
-    if (!local || local.empresaId !== actual.empresaId) {
-      throw new NotFoundException('El local no existe');
-    }
-    if (!actual.esGestor && local.usuarioId !== actual.id) {
+    if (!local) {
       throw new NotFoundException('El local no existe');
     }
     return {
@@ -362,7 +434,7 @@ export class LocalesService {
     if (!actual.esGestor) {
       throw new ForbiddenException('Solo un gestor puede eliminar locales');
     }
-    await this.localDeEmpresa(id, actual.empresaId);
+    await this.localDelEquipo(id, actual);
     await this.prisma.local.delete({ where: { id } });
     return { ok: true };
   }

@@ -5,6 +5,7 @@ export const MODULO_REPOSITOR = 'repositor';
 export const MODULOS_OPERACION_CAMPO = [MODULO_TEAM_LEADER, MODULO_REPOSITOR];
 
 export const PAGINA_CLIENTES = 'clientes';
+export const PAGINA_EQUIPO = 'equipo';
 export const PAGINA_MAPA = 'mapa';
 export const PAGINA_TAREAS = 'tareas';
 export const PAGINA_VISITAS = 'visitas';

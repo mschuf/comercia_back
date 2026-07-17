@@ -63,6 +63,44 @@ describe('AccesoOperacionesCampoService', () => {
     );
   });
 
+  it('exige la página del Team Leader para sus endpoints dedicados', async () => {
+    acceso.exigirAccesoPagina.mockResolvedValue({
+      id: 10,
+      empresaId: 20,
+      rolId: 5,
+    });
+
+    await expect(service.usuarioTeamLeader(10, 'equipo')).resolves.toEqual({
+      id: 10,
+      empresaId: 20,
+      rolId: 5,
+      esGestor: true,
+      esOperativo: false,
+    });
+    expect(acceso.exigirAccesoPagina).toHaveBeenCalledWith(
+      10,
+      'team-leader',
+      'equipo',
+    );
+  });
+
+  it('acepta alguna de las páginas habilitadas para un recurso compartido', async () => {
+    acceso.exigirAccesoAlgunaPagina.mockResolvedValue({
+      id: 10,
+      empresaId: 20,
+      rolId: 5,
+    });
+
+    await expect(
+      service.usuarioTeamLeaderConAlgunaPagina(10, ['clientes', 'mapa']),
+    ).resolves.toMatchObject({ id: 10, empresaId: 20, esGestor: true });
+    expect(acceso.exigirAccesoAlgunaPagina).toHaveBeenCalledWith(
+      10,
+      'team-leader',
+      ['clientes', 'mapa'],
+    );
+  });
+
   it('solo lista usuarios habilitados para las páginas de Repositor', async () => {
     prisma.usuario.findMany.mockResolvedValue([
       {
@@ -108,5 +146,29 @@ describe('AccesoOperacionesCampoService', () => {
     await expect(
       service.validarResponsableTerritorio(20, 12),
     ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('limita el alcance a subordinados directos de la misma empresa y rol', async () => {
+    prisma.empresaModulo.findFirst.mockResolvedValue({
+      todasLasPaginas: true,
+      rolIds: [6],
+      modulo: { paginas: [{ id: 101 }] },
+    });
+
+    await expect(
+      service.filtroRepositoresDelTeamLeader({
+        id: 10,
+        empresaId: 20,
+        rolId: 5,
+        esGestor: true,
+        esOperativo: false,
+      }),
+    ).resolves.toEqual({
+      empresaId: 20,
+      isActive: true,
+      esSuperadmin: false,
+      superiorId: 10,
+      rolId: { in: [6] },
+    });
   });
 });
