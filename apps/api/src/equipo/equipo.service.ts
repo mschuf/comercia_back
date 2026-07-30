@@ -70,7 +70,11 @@ export class EquipoService {
                 },
               },
               tareas: {
-                select: { completada: true, completadaEn: true },
+                select: {
+                  completada: true,
+                  completadaEn: true,
+                  novedad: { select: { reportadaEn: true } },
+                },
               },
             },
             orderBy: [{ iniciadaEn: 'desc' }, { id: 'desc' }],
@@ -92,6 +96,7 @@ export class EquipoService {
             visita.iniciadaEn,
             visita.completadaEn,
             ...visita.tareas.map((tarea) => tarea.completadaEn),
+            ...visita.tareas.map((tarea) => tarea.novedad?.reportadaEn ?? null),
           ].filter((fecha): fecha is Date => fecha !== null)
         : [];
       const ultimaActividad =
@@ -134,10 +139,15 @@ export class EquipoService {
     );
     const alcance =
       await this.accesoCampo.filtroRepositoresDelSupervisor(actual);
-    if (query.localId !== undefined) {
+    if (query.localId !== undefined && query.novedadId === undefined) {
       return this.tareasDelLocal(actual.empresaId, alcance, query);
     }
-    return this.tareasMaterializadas(actual.empresaId, alcance, query);
+    return this.tareasMaterializadas(
+      actual.empresaId,
+      actual.id,
+      alcance,
+      query,
+    );
   }
 
   private async tareasDelLocal(
@@ -197,17 +207,39 @@ export class EquipoService {
     const filtroEstado =
       query.estado === EstadoTareaEquipoDto.COMPLETADA
         ? visita
-          ? { respuestas: { some: { visitaId: visita.id, completada: true } } }
-          : { id: { in: [] as number[] } }
-        : query.estado === EstadoTareaEquipoDto.PENDIENTE && visita
           ? {
-              NOT: {
-                respuestas: {
-                  some: { visitaId: visita.id, completada: true },
+              respuestas: {
+                some: {
+                  visitaId: visita.id,
+                  completada: true,
+                  novedad: null,
                 },
               },
             }
-          : {};
+          : { id: { in: [] as number[] } }
+        : query.estado === EstadoTareaEquipoDto.NOVEDAD
+          ? visita
+            ? {
+                respuestas: {
+                  some: {
+                    visitaId: visita.id,
+                    novedad: { isNot: null },
+                  },
+                },
+              }
+            : { id: { in: [] as number[] } }
+          : query.estado === EstadoTareaEquipoDto.PENDIENTE && visita
+            ? {
+                NOT: {
+                  respuestas: {
+                    some: {
+                      visitaId: visita.id,
+                      OR: [{ completada: true }, { novedad: { isNot: null } }],
+                    },
+                  },
+                },
+              }
+            : {};
     const whereBase = {
       clienteId: local.cliente.id,
       activo: true,
@@ -217,14 +249,31 @@ export class EquipoService {
       ...filtroEstado,
     };
     const { skip, take, page, limit } = rangoPaginacion(query);
-    const [totalChecklist, completadas, tareas] = await Promise.all([
+    const [totalChecklist, completadas, novedades, tareas] = await Promise.all([
       this.prisma.tareaCliente.count({ where: whereBase }),
       visita
         ? this.prisma.tareaCliente.count({
             where: {
               ...whereBase,
               respuestas: {
-                some: { visitaId: visita.id, completada: true },
+                some: {
+                  visitaId: visita.id,
+                  completada: true,
+                  novedad: null,
+                },
+              },
+            },
+          })
+        : Promise.resolve(0),
+      visita
+        ? this.prisma.tareaCliente.count({
+            where: {
+              ...whereBase,
+              respuestas: {
+                some: {
+                  visitaId: visita.id,
+                  novedad: { isNot: null },
+                },
               },
             },
           })
@@ -257,6 +306,14 @@ export class EquipoService {
               completadaEn: true,
               comentario: true,
               foto: true,
+              novedad: {
+                select: {
+                  id: true,
+                  comentario: true,
+                  reportadaEn: true,
+                  leidaEn: true,
+                },
+              },
             },
             take: tareas.length,
           })
@@ -274,10 +331,22 @@ export class EquipoService {
         descripcion: tarea.descripcion,
         requiereFoto: tarea.requiereFoto,
         orden: tarea.orden,
-        estado: respuesta?.completada ? 'COMPLETADA' : 'PENDIENTE',
+        estado: respuesta?.novedad
+          ? 'NOVEDAD'
+          : respuesta?.completada
+            ? 'COMPLETADA'
+            : 'PENDIENTE',
         completadaEn: respuesta?.completadaEn?.toISOString() ?? null,
         comentario: respuesta?.comentario ?? null,
         tieneFoto: respuesta?.foto !== null && respuesta?.foto !== undefined,
+        novedad: respuesta?.novedad
+          ? {
+              id: respuesta.novedad.id,
+              comentario: respuesta.novedad.comentario,
+              reportadaEn: respuesta.novedad.reportadaEn.toISOString(),
+              leidaEn: respuesta.novedad.leidaEn?.toISOString() ?? null,
+            }
+          : null,
         local: { id: local.id, nombre: local.nombre },
         cliente: local.cliente,
         repositor: { id: repositor.id, nombre: repositorNombre },
@@ -286,21 +355,25 @@ export class EquipoService {
     const totalFiltrado =
       query.estado === EstadoTareaEquipoDto.COMPLETADA
         ? completadas
-        : query.estado === EstadoTareaEquipoDto.PENDIENTE
-          ? totalChecklist - completadas
-          : totalChecklist;
+        : query.estado === EstadoTareaEquipoDto.NOVEDAD
+          ? novedades
+          : query.estado === EstadoTareaEquipoDto.PENDIENTE
+            ? totalChecklist - completadas - novedades
+            : totalChecklist;
     return {
       ...respuestaPaginada(items, totalFiltrado, page, limit),
       resumen: {
         total: totalChecklist,
-        pendientes: totalChecklist - completadas,
+        pendientes: totalChecklist - completadas - novedades,
         completadas,
+        novedades,
       },
     };
   }
 
   private async tareasMaterializadas(
     empresaId: number,
+    supervisorId: number,
     alcance: Awaited<
       ReturnType<
         AccesoOperacionesCampoService['filtroRepositoresDelSupervisor']
@@ -311,30 +384,46 @@ export class EquipoService {
     const whereBase = {
       visita: {
         local: { empresaId },
-        usuario: {
-          is: {
-            AND: [
-              alcance,
-              ...(query.repositorId !== undefined
-                ? [{ id: query.repositorId }]
-                : []),
-            ],
-          },
-        },
+        ...(query.novedadId === undefined
+          ? {
+              usuario: {
+                is: {
+                  AND: [
+                    alcance,
+                    ...(query.repositorId !== undefined
+                      ? [{ id: query.repositorId }]
+                      : []),
+                  ],
+                },
+              },
+            }
+          : {}),
       },
+      ...(query.novedadId !== undefined
+        ? {
+            novedad: {
+              is: { id: query.novedadId, supervisorId },
+            },
+          }
+        : {}),
     };
-    const where = {
-      ...whereBase,
-      completada:
-        query.estado === undefined
-          ? undefined
-          : query.estado === EstadoTareaEquipoDto.COMPLETADA,
-    };
+    const filtroEstado =
+      query.estado === EstadoTareaEquipoDto.COMPLETADA
+        ? { completada: true, novedad: null }
+        : query.estado === EstadoTareaEquipoDto.NOVEDAD
+          ? { novedad: { isNot: null } }
+          : query.estado === EstadoTareaEquipoDto.PENDIENTE
+            ? { completada: false, novedad: null }
+            : {};
+    const where = { ...whereBase, ...filtroEstado };
     const { skip, take, page, limit } = rangoPaginacion(query);
-    const [totalGeneral, completadas, tareas] = await Promise.all([
+    const [totalGeneral, completadas, novedades, tareas] = await Promise.all([
       this.prisma.visitaTarea.count({ where: whereBase }),
       this.prisma.visitaTarea.count({
-        where: { ...whereBase, completada: true },
+        where: { ...whereBase, completada: true, novedad: null },
+      }),
+      this.prisma.visitaTarea.count({
+        where: { ...whereBase, novedad: { isNot: null } },
       }),
       this.prisma.visitaTarea.findMany({
         where,
@@ -344,6 +433,14 @@ export class EquipoService {
           completadaEn: true,
           comentario: true,
           foto: true,
+          novedad: {
+            select: {
+              id: true,
+              comentario: true,
+              reportadaEn: true,
+              leidaEn: true,
+            },
+          },
           tarea: {
             select: {
               id: true,
@@ -384,10 +481,22 @@ export class EquipoService {
       descripcion: fila.tarea.descripcion,
       requiereFoto: fila.tarea.requiereFoto,
       orden: fila.tarea.orden,
-      estado: fila.completada ? 'COMPLETADA' : 'PENDIENTE',
+      estado: fila.novedad
+        ? 'NOVEDAD'
+        : fila.completada
+          ? 'COMPLETADA'
+          : 'PENDIENTE',
       completadaEn: fila.completadaEn?.toISOString() ?? null,
       comentario: fila.comentario,
       tieneFoto: fila.foto !== null,
+      novedad: fila.novedad
+        ? {
+            id: fila.novedad.id,
+            comentario: fila.novedad.comentario,
+            reportadaEn: fila.novedad.reportadaEn.toISOString(),
+            leidaEn: fila.novedad.leidaEn?.toISOString() ?? null,
+          }
+        : null,
       local: { id: fila.visita.local.id, nombre: fila.visita.local.nombre },
       cliente: fila.visita.local.cliente,
       repositor: {
@@ -399,15 +508,18 @@ export class EquipoService {
     const totalFiltrado =
       query.estado === EstadoTareaEquipoDto.COMPLETADA
         ? completadas
-        : query.estado === EstadoTareaEquipoDto.PENDIENTE
-          ? totalGeneral - completadas
-          : totalGeneral;
+        : query.estado === EstadoTareaEquipoDto.NOVEDAD
+          ? novedades
+          : query.estado === EstadoTareaEquipoDto.PENDIENTE
+            ? totalGeneral - completadas - novedades
+            : totalGeneral;
     return {
       ...respuestaPaginada(items, totalFiltrado, page, limit),
       resumen: {
         total: totalGeneral,
-        pendientes: totalGeneral - completadas,
+        pendientes: totalGeneral - completadas - novedades,
         completadas,
+        novedades,
       },
     };
   }

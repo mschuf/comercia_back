@@ -291,9 +291,7 @@ export function MapaView() {
   useEffect(() => {
     if (!esGestor) return;
     let vigente = true;
-    apiFetch<UsuarioAsignable[]>(
-      "/operaciones-campo/responsables-territorio",
-    )
+    apiFetch<UsuarioAsignable[]>("/operaciones-campo/responsables-territorio")
       .then((lideres) => {
         if (vigente) setResponsables(lideres);
       })
@@ -737,9 +735,9 @@ export function MapaView() {
 
   const repositorInicialZona =
     editZona !== null && editZona !== "nuevo"
-      ? editZona.repositores
+      ? (editZona.repositores
           .filter((usuario) => usuario.id === formZona.usuarioId)
-          .map((usuario) => ({ ...usuario, rol: null }))[0] ?? null
+          .map((usuario) => ({ ...usuario, rol: null }))[0] ?? null)
       : null;
 
   const zonaDelDetalle =
@@ -1027,49 +1025,6 @@ export function MapaView() {
 
   return (
     <div>
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-emerald-950 to-brand-700 p-4 text-white shadow-lg shadow-emerald-950/15 sm:p-5">
-        <div className="mapa-radar absolute -right-10 -top-16 h-44 w-44 rounded-full border border-emerald-200/15" />
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative"
-        >
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-200 sm:text-[11px]">
-            Centro de operaciones
-          </p>
-          <h2 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
-            Cobertura del equipo en un solo mapa
-          </h2>
-          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-emerald-50 sm:text-sm">
-            {esGestor
-              ? "Organizá territorios y zonas, ubicá responsables y ajustá visualmente la cobertura de cada repositor."
-              : "Consultá los territorios, las zonas y los locales habilitados para tu empresa."}
-          </p>
-          <div className="mt-3 grid grid-cols-3 gap-2 sm:max-w-lg">
-            {[
-              [datos.territorios.length, "Territorios"],
-              [datos.zonas.length, "Zonas"],
-              [datos.locales.length, "Locales"],
-            ].map(([cantidad, etiqueta], indice) => (
-              <motion.div
-                key={etiqueta}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 + indice * 0.07 }}
-                className="rounded-xl border border-[#557267] bg-[#25483d] px-2.5 py-2"
-              >
-                <span className="block text-lg font-black sm:text-xl">
-                  {cantidad}
-                </span>
-                <span className="block truncate text-xs text-emerald-100">
-                  {etiqueta}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      </section>
-
       {errorCarga && <p className={`${errorBox} mt-4`}>{errorCarga}</p>}
 
       <div className="mt-5 flex flex-col gap-4 rounded-3xl bg-background p-1 lg:flex-row lg:items-start">

@@ -12,15 +12,10 @@ function extraerMensaje(data: unknown, fallback: string): string {
   return fallback;
 }
 
-// Sube un archivo por multipart y devuelve la respuesta JSON tipada.
-export async function apiSubirFoto<T>(
+async function enviarFormulario<T>(
   path: string,
-  archivo: File | Blob,
-  campo = "foto",
+  formData: FormData,
 ): Promise<T> {
-  const formData = new FormData();
-  formData.append(campo, archivo);
-
   let res: Response;
   try {
     res = await fetch(`${API_URL}${path}`, {
@@ -39,8 +34,37 @@ export async function apiSubirFoto<T>(
   return data as T;
 }
 
+// Sube un archivo por multipart y devuelve la respuesta JSON tipada.
+export async function apiSubirFoto<T>(
+  path: string,
+  archivo: File | Blob,
+  campo = "foto",
+): Promise<T> {
+  const formData = new FormData();
+  formData.append(campo, archivo);
+  return enviarFormulario<T>(path, formData);
+}
+
+// Reporta una novedad con el comentario y la evidencia exigidos por el endpoint.
+export async function apiReportarNovedad<T>(
+  path: string,
+  comentario: string,
+  foto: File | Blob,
+): Promise<T> {
+  const formData = new FormData();
+  formData.append("comentario", comentario);
+  formData.append("foto", foto);
+  return enviarFormulario<T>(path, formData);
+}
+
 // URL absoluta de una foto de visita. El <img> que la muestre debe llevar
 // crossOrigin="use-credentials" para que viaje la cookie de sesión.
 export function urlFotoVisita(nombre: string): string {
   return `${API_URL}/visitas/fotos/${encodeURIComponent(nombre)}`;
+}
+
+// La evidencia de una novedad se sirve por id, con autorización del destinatario
+// o del repositor que la reportó.
+export function urlFotoNovedad(id: number): string {
+  return `${API_URL}/notificaciones/${encodeURIComponent(String(id))}/foto`;
 }

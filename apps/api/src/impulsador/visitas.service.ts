@@ -3,7 +3,9 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import type { Prisma } from '../../generated/prisma/client';
 import { distanciaMetros } from '../common/utils/geo';
 import { redondear1Decimal } from '../common/utils/numeros';
@@ -25,8 +27,13 @@ import {
   ListarVisitasEquipoDto,
   ListarVisitasDto,
 } from './dto/visita.dto';
+import { ReportarNovedadTareaDto } from './dto/novedad.dto';
 import { FotosService } from './fotos.service';
-import { PAGINA_VISITAS, RADIO_METROS_DEFECTO } from './impulsador.constants';
+import {
+  PAGINA_TAREAS,
+  PAGINA_VISITAS,
+  RADIO_METROS_DEFECTO,
+} from './impulsador.constants';
 import type { UsuarioOperacionesCampo } from './interfaces/usuario-operaciones-campo.interface';
 import type { ProgramacionVisitaCalculo } from './interfaces/programacion-visita.interface';
 import type {
@@ -49,6 +56,12 @@ type VisitaTareaConTarea = {
   comentario: string | null;
   foto: string | null;
   completadaEn: Date | null;
+  novedad: {
+    id: number;
+    comentario: string;
+    reportadaEn: Date;
+    leidaEn: Date | null;
+  } | null;
   tarea: {
     titulo: string;
     descripcion: string;
@@ -121,6 +134,14 @@ const SELECT_VISITA_TAREA = {
   comentario: true,
   foto: true,
   completadaEn: true,
+  novedad: {
+    select: {
+      id: true,
+      comentario: true,
+      reportadaEn: true,
+      leidaEn: true,
+    },
+  },
   tarea: {
     select: {
       titulo: true,
@@ -239,6 +260,14 @@ function aVisitaTareaDto(tarea: VisitaTareaConTarea): VisitaTareaDto {
     comentario: tarea.comentario,
     foto: tarea.foto,
     completadaEn: tarea.completadaEn?.toISOString() ?? null,
+    novedad: tarea.novedad
+      ? {
+          id: tarea.novedad.id,
+          comentario: tarea.novedad.comentario,
+          reportadaEn: tarea.novedad.reportadaEn.toISOString(),
+          leidaEn: tarea.novedad.leidaEn?.toISOString() ?? null,
+        }
+      : null,
   };
 }
 
@@ -689,6 +718,18 @@ export class VisitasService {
     return aVisitaDto(visita, RADIO_METROS_DEFECTO);
   }
 
+  private async tareaTrasConflicto(visitaTareaId: number) {
+    return this.prisma.visitaTarea
+      .findUnique({
+        where: { id: visitaTareaId },
+        select: {
+          ...SELECT_VISITA_TAREA,
+          visita: { select: { completadaEn: true } },
+        },
+      })
+      .catch(() => null);
+  }
+
   async actualizarTarea(
     usuarioId: number,
     visitaId: number,
@@ -698,6 +739,9 @@ export class VisitasService {
     const usuario = await this.usuarioActual(usuarioId);
     const visita = await this.visitaAbiertaPropia(usuario, visitaId);
     const tarea = tareaDeVisita(visita, visitaTareaId);
+    if (tarea.novedad) {
+      throw new BadRequestException('La tarea ya tiene una novedad reportada');
+    }
 
     const data: {
       completada?: boolean;
@@ -713,12 +757,18 @@ export class VisitasService {
       data.comentario = dto.comentario || null;
     }
 
-    const actualizada = await this.prisma.visitaTarea.update({
-      where: { id: tarea.id },
-      data,
-      select: SELECT_VISITA_TAREA,
-    });
-    return aVisitaTareaDto(actualizada);
+    try {
+      const actualizada = await this.prisma.visitaTarea.update({
+        where: { id: tarea.id, novedad: null },
+        data,
+        select: SELECT_VISITA_TAREA,
+      });
+      return aVisitaTareaDto(actualizada);
+    } catch (error) {
+      const concurrente = await this.tareaTrasConflicto(tarea.id);
+      if (concurrente?.novedad) return aVisitaTareaDto(concurrente);
+      throw error;
+    }
   }
 
   async subirFotoTarea(
@@ -733,13 +783,24 @@ export class VisitasService {
     const usuario = await this.usuarioActual(usuarioId);
     const visita = await this.visitaAbiertaPropia(usuario, visitaId);
     const tarea = tareaDeVisita(visita, visitaTareaId);
+    if (tarea.novedad) {
+      throw new BadRequestException('La tarea ya tiene una novedad reportada');
+    }
 
     const nombre = await this.fotos.guardar(archivo);
-    const actualizada = await this.prisma.visitaTarea.update({
-      where: { id: tarea.id },
-      data: { foto: nombre },
-      select: SELECT_VISITA_TAREA,
-    });
+    let actualizada: VisitaTareaConTarea;
+    try {
+      actualizada = await this.prisma.visitaTarea.update({
+        where: { id: tarea.id, novedad: null },
+        data: { foto: nombre },
+        select: SELECT_VISITA_TAREA,
+      });
+    } catch (error) {
+      await this.fotos.borrar(nombre);
+      const concurrente = await this.tareaTrasConflicto(tarea.id);
+      if (concurrente?.novedad) return aVisitaTareaDto(concurrente);
+      throw error;
+    }
     // La foto anterior se descarta recién después de persistir la nueva
     await this.fotos.borrar(tarea.foto);
     return aVisitaTareaDto(actualizada);
@@ -753,14 +814,133 @@ export class VisitasService {
     const usuario = await this.usuarioActual(usuarioId);
     const visita = await this.visitaAbiertaPropia(usuario, visitaId);
     const tarea = tareaDeVisita(visita, visitaTareaId);
+    if (tarea.novedad) {
+      throw new BadRequestException('La tarea ya tiene una novedad reportada');
+    }
 
-    const actualizada = await this.prisma.visitaTarea.update({
-      where: { id: tarea.id },
-      data: { foto: null },
-      select: SELECT_VISITA_TAREA,
-    });
+    let actualizada: VisitaTareaConTarea;
+    try {
+      actualizada = await this.prisma.visitaTarea.update({
+        where: { id: tarea.id, novedad: null },
+        data: { foto: null },
+        select: SELECT_VISITA_TAREA,
+      });
+    } catch (error) {
+      const concurrente = await this.tareaTrasConflicto(tarea.id);
+      if (concurrente?.novedad) return aVisitaTareaDto(concurrente);
+      throw error;
+    }
     await this.fotos.borrar(tarea.foto);
     return aVisitaTareaDto(actualizada);
+  }
+
+  async reportarNovedad(
+    usuarioId: number,
+    visitaId: number,
+    visitaTareaId: number,
+    dto: ReportarNovedadTareaDto,
+    archivo: Express.Multer.File | undefined,
+  ): Promise<VisitaTareaDto> {
+    if (!archivo) {
+      throw new BadRequestException('La foto de la novedad es obligatoria');
+    }
+
+    const usuario = await this.usuarioActual(usuarioId);
+    const visita = await this.visitaAbiertaPropia(usuario, visitaId);
+    const tarea = tareaDeVisita(visita, visitaTareaId);
+    if (tarea.novedad) {
+      return aVisitaTareaDto(tarea);
+    }
+    if (!tarea.tarea.activo) {
+      throw new BadRequestException('La tarea ya no está activa');
+    }
+    if (tarea.completada) {
+      throw new BadRequestException('La tarea ya fue completada');
+    }
+
+    const asignacion = await this.prisma.usuario.findUnique({
+      where: { id: usuario.id },
+      select: { superiorId: true },
+    });
+    if (!asignacion?.superiorId) {
+      throw new BadRequestException(
+        'No tenés un supervisor asignado para recibir la novedad',
+      );
+    }
+
+    let supervisor: UsuarioOperacionesCampo;
+    try {
+      supervisor = await this.accesoCampo.usuarioSupervisor(
+        asignacion.superiorId,
+        PAGINA_TAREAS,
+      );
+    } catch (error) {
+      if (
+        error instanceof ForbiddenException ||
+        error instanceof UnauthorizedException
+      ) {
+        throw new BadRequestException(
+          'Tu supervisor no está habilitado para recibir novedades',
+        );
+      }
+      throw error;
+    }
+    if (supervisor.empresaId !== usuario.empresaId) {
+      throw new BadRequestException(
+        'Tu supervisor no está habilitado para recibir novedades',
+      );
+    }
+
+    const nombre = await this.fotos.guardar(archivo);
+    try {
+      const actualizada = await this.prisma.visitaTarea.update({
+        where: {
+          id: tarea.id,
+          completada: false,
+          novedad: null,
+          visita: { completadaEn: null },
+          tarea: { activo: true },
+        },
+        data: {
+          completada: false,
+          completadaEn: null,
+          novedad: {
+            create: {
+              reportadoPorId: usuario.id,
+              supervisorId: supervisor.id,
+              comentario: dto.comentario,
+              foto: nombre,
+            },
+          },
+        },
+        select: SELECT_VISITA_TAREA,
+      });
+      return aVisitaTareaDto(actualizada);
+    } catch (error) {
+      await this.fotos.borrar(nombre);
+      const existente = await this.tareaTrasConflicto(tarea.id);
+      if (existente?.novedad) {
+        return aVisitaTareaDto(existente);
+      }
+      if (existente?.completada) {
+        throw new BadRequestException('La tarea ya fue completada');
+      }
+      if (existente && !existente.tarea.activo) {
+        throw new BadRequestException('La tarea ya no está activa');
+      }
+      if (existente?.visita.completadaEn) {
+        throw new BadRequestException('La visita ya fue finalizada');
+      }
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new BadRequestException(
+          'El estado de la tarea cambió; actualizá la visita e intentá nuevamente',
+        );
+      }
+      throw error;
+    }
   }
 
   async subirFotoPresencia(
@@ -802,12 +982,16 @@ export class VisitasService {
 
     // Solo exigen completitud las tareas cuyo ítem del checklist sigue activo
     const activas = visita.tareas.filter((t) => t.tarea.activo);
-    if (activas.some((t) => !t.completada)) {
+    if (activas.some((t) => !t.completada && !t.novedad)) {
       throw new BadRequestException(
         'Faltan tareas del checklist por completar',
       );
     }
-    if (activas.some((t) => t.tarea.requiereFoto && t.foto === null)) {
+    if (
+      activas.some(
+        (t) => t.completada && t.tarea.requiereFoto && t.foto === null,
+      )
+    ) {
       throw new BadRequestException('Faltan fotos en tareas que las requieren');
     }
     if (visita.local.requiereFotoPresencia && visita.fotoPresencia === null) {

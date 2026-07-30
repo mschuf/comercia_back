@@ -88,6 +88,48 @@ describe('EquipoService', () => {
     });
   });
 
+  it('considera una novedad como la ultima actividad del repositor', async () => {
+    prisma.usuario.count.mockResolvedValue(1);
+    prisma.usuario.findMany.mockResolvedValue([
+      {
+        id: 11,
+        nombre: 'Ana',
+        apellido: 'Rojas',
+        nombreLogin: 'arojas',
+        correo: null,
+        celular: null,
+        _count: { localesAsignados: 1 },
+        visitas: [
+          {
+            id: 50,
+            localId: 30,
+            iniciadaEn: new Date('2026-07-17T12:00:00.000Z'),
+            completadaEn: null,
+            local: {
+              nombre: 'Centro',
+              cliente: { nombre: 'Cliente SA' },
+            },
+            tareas: [
+              {
+                completada: false,
+                completadaEn: null,
+                novedad: {
+                  reportadaEn: new Date('2026-07-17T14:00:00.000Z'),
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ]);
+
+    const respuesta = await service.repositores(10, { page: 1, limit: 7 });
+
+    expect(respuesta.items[0]?.ultimaActividad).toBe(
+      '2026-07-17T14:00:00.000Z',
+    );
+  });
+
   it('rechaza con 404 un local de otro líder o empresa', async () => {
     prisma.local.findFirst.mockResolvedValue(null);
 
@@ -145,6 +187,7 @@ describe('EquipoService', () => {
       total: 2,
       pendientes: 2,
       completadas: 0,
+      novedades: 0,
     });
     expect(respuesta.items).toHaveLength(2);
     expect(respuesta.items[0]).toMatchObject({
@@ -156,7 +199,10 @@ describe('EquipoService', () => {
   });
 
   it('calcula el resumen general antes de aplicar estado y paginación', async () => {
-    prisma.visitaTarea.count.mockResolvedValueOnce(5).mockResolvedValueOnce(3);
+    prisma.visitaTarea.count
+      .mockResolvedValueOnce(5)
+      .mockResolvedValueOnce(3)
+      .mockResolvedValueOnce(1);
     prisma.visitaTarea.findMany.mockResolvedValue([]);
 
     const respuesta = await service.tareas(10, {
@@ -166,11 +212,12 @@ describe('EquipoService', () => {
       limit: 7,
     });
 
-    expect(respuesta.total).toBe(2);
+    expect(respuesta.total).toBe(1);
     expect(respuesta.resumen).toEqual({
       total: 5,
-      pendientes: 2,
+      pendientes: 1,
       completadas: 3,
+      novedades: 1,
     });
     const llamadas = prisma.visitaTarea.findMany.mock.calls as unknown as Array<
       [
@@ -183,7 +230,69 @@ describe('EquipoService', () => {
     >;
     const llamada = llamadas[0]?.[0];
     if (!llamada) throw new Error('Falta la consulta de tareas');
-    expect(llamada.where).toMatchObject({ completada: false });
+    expect(llamada.where).toMatchObject({
+      completada: false,
+      novedad: null,
+    });
     expect(llamada).toMatchObject({ skip: 0, take: 7 });
+  });
+
+  it('resuelve una novedad exacta dentro del alcance del supervisor', async () => {
+    prisma.visitaTarea.count
+      .mockResolvedValueOnce(1)
+      .mockResolvedValueOnce(0)
+      .mockResolvedValueOnce(1);
+    prisma.visitaTarea.findMany.mockResolvedValue([
+      {
+        id: 70,
+        completada: false,
+        completadaEn: null,
+        comentario: null,
+        foto: null,
+        novedad: {
+          id: 90,
+          comentario: 'El local estaba cerrado',
+          reportadaEn: new Date('2026-07-17T14:00:00.000Z'),
+          leidaEn: null,
+        },
+        tarea: {
+          id: 8,
+          titulo: 'Reponer',
+          descripcion: 'Completar góndola',
+          requiereFoto: true,
+          orden: 1,
+        },
+        visita: {
+          usuario: { id: 11, nombre: 'Ana', apellido: 'Rojas' },
+          local: {
+            id: 30,
+            nombre: 'Centro',
+            cliente: { id: 50, nombre: 'Cliente' },
+          },
+        },
+      },
+    ]);
+
+    const respuesta = await service.tareas(10, { novedadId: 90 });
+
+    const llamadas = prisma.visitaTarea.findMany.mock.calls as unknown as Array<
+      [{ where: Record<string, unknown> }]
+    >;
+    const llamada = llamadas.at(-1)?.[0];
+    expect(llamada?.where).toMatchObject({
+      novedad: { is: { id: 90, supervisorId: 10 } },
+      visita: { local: { empresaId: 20 } },
+    });
+    expect(respuesta.items[0]).toMatchObject({
+      visitaTareaId: 70,
+      estado: 'NOVEDAD',
+      novedad: { id: 90, comentario: 'El local estaba cerrado' },
+    });
+    expect(respuesta.resumen).toEqual({
+      total: 1,
+      pendientes: 0,
+      completadas: 0,
+      novedades: 1,
+    });
   });
 });

@@ -15,7 +15,7 @@ export interface RepositorEquipo {
   ultimaActividad: string | null;
 }
 
-export type EstadoSeguimientoTarea = "PENDIENTE" | "COMPLETADA";
+export type EstadoSeguimientoTarea = "PENDIENTE" | "COMPLETADA" | "NOVEDAD";
 
 export interface TareaSeguimiento {
   tareaId: number;
@@ -28,6 +28,12 @@ export interface TareaSeguimiento {
   tieneFoto: boolean;
   completadaEn: string | null;
   comentario: string | null;
+  novedad: {
+    id: number;
+    comentario: string;
+    reportadaEn: string;
+    leidaEn: string | null;
+  } | null;
   local: { id: number; nombre: string };
   cliente: { id: number; nombre: string };
   repositor: { id: number; nombre: string };
@@ -37,4 +43,5 @@ export interface ResumenSeguimientoTareas {
   total: number;
   pendientes: number;
   completadas: number;
+  novedades: number;
 }

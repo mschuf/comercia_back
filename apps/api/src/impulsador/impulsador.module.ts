@@ -31,6 +31,6 @@ import { ZonasService } from './zonas.service';
     VisitasService,
     FotosService,
   ],
-  exports: [AccesoOperacionesCampoService],
+  exports: [AccesoOperacionesCampoService, FotosService],
 })
 export class ImpulsadorModule {}

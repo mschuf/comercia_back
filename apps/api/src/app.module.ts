@@ -18,6 +18,7 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { TareasModule } from './tareas/tareas.module';
 import { RepositorModule } from './repositor/repositor.module';
 import { EquipoModule } from './equipo/equipo.module';
+import { NotificacionesModule } from './notificaciones/notificaciones.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { EquipoModule } from './equipo/equipo.module';
     TareasModule,
     RepositorModule,
     EquipoModule,
+    NotificacionesModule,
   ],
   controllers: [AppController],
   providers: [

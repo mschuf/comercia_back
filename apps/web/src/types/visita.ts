@@ -1,5 +1,12 @@
 // Visitas a locales de operaciones de campo (respuestas de /visitas)
 
+export interface NovedadVisitaTarea {
+  id: number;
+  comentario: string;
+  reportadaEn: string;
+  leidaEn: string | null;
+}
+
 export interface VisitaTarea {
   id: number;
   tareaId: number;
@@ -13,6 +20,7 @@ export interface VisitaTarea {
   // Nombre de archivo; se muestra vía urlFotoVisita() de @/lib/api-archivos
   foto: string | null;
   completadaEn: string | null;
+  novedad: NovedadVisitaTarea | null;
 }
 
 // Visita completa (flujo del repositor y detalle)

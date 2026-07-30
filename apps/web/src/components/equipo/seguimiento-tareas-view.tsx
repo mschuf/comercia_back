@@ -5,7 +5,10 @@ import { useRouter } from "next/navigation";
 import { apiFetch, ApiError } from "@/lib/api";
 import { PantallaCarga } from "@/components/pantalla-carga";
 import { Paginacion } from "@/components/paginacion";
+import { Modal } from "@/components/modal";
 import { btnGhost, errorBox } from "@/components/ui";
+import { urlFotoNovedad } from "@/lib/api-archivos";
+import { notificarNotificacionesActualizadas } from "@/lib/eventos-notificaciones";
 import { formatoFechaHora } from "@/utils/fechas";
 import type {
   EstadoSeguimientoTarea,
@@ -20,6 +23,7 @@ type FiltroEstado = "TODAS" | EstadoSeguimientoTarea;
 export interface FiltrosSeguimientoTareas {
   repositorId?: number;
   localId?: number;
+  novedadId?: number;
   repositorNombre?: string;
   localNombre?: string;
 }
@@ -45,9 +49,11 @@ export function SeguimientoTareasView({
     null,
   );
   const [navegando, setNavegando] = useState(false);
+  const [fotoAbierta, setFotoAbierta] = useState<TareaSeguimiento | null>(null);
   const secuenciaSolicitud = useRef(0);
   const montado = useRef(true);
   const actualizacionManualEnCurso = useRef(false);
+  const novedadMarcadaRef = useRef<number | null>(null);
 
   const cargar = useCallback(
     async (modo: "INICIAL" | "SILENCIOSO" | "MANUAL") => {
@@ -65,13 +71,21 @@ export function SeguimientoTareasView({
         parametros.set("repositorId", String(filtros.repositorId));
       }
       if (filtros.localId) parametros.set("localId", String(filtros.localId));
-      if (estado !== "TODAS") parametros.set("estado", estado);
+      if (filtros.novedadId) {
+        parametros.set("novedadId", String(filtros.novedadId));
+      }
+      if (estado !== "TODAS" && !filtros.novedadId) {
+        parametros.set("estado", estado);
+      }
 
       try {
         const respuesta = await apiFetch<RespuestaSeguimiento>(
           `/equipo/tareas?${parametros.toString()}`,
         );
-        if (solicitudActual !== secuenciaSolicitud.current || !montado.current) {
+        if (
+          solicitudActual !== secuenciaSolicitud.current ||
+          !montado.current
+        ) {
           return;
         }
         const ultimaPaginaValida = Math.max(1, respuesta.totalPages);
@@ -82,8 +96,52 @@ export function SeguimientoTareasView({
         setDatos(respuesta);
         setError(null);
         setUltimaActualizacion(new Date());
+
+        const novedadId = filtros.novedadId;
+        const contieneNovedad = respuesta.items.some(
+          (tarea) => tarea.novedad?.id === novedadId,
+        );
+        if (
+          novedadId &&
+          contieneNovedad &&
+          novedadMarcadaRef.current !== novedadId
+        ) {
+          novedadMarcadaRef.current = novedadId;
+          void apiFetch<{ id: number; leidaEn: string }>(
+            `/notificaciones/${novedadId}/leida`,
+            { method: "PATCH" },
+          )
+            .then((leida) => {
+              if (!montado.current) return;
+              setDatos((actual) =>
+                actual
+                  ? {
+                      ...actual,
+                      items: actual.items.map((tarea) =>
+                        tarea.novedad?.id === novedadId
+                          ? {
+                              ...tarea,
+                              novedad: {
+                                ...tarea.novedad,
+                                leidaEn: leida.leidaEn,
+                              },
+                            }
+                          : tarea,
+                      ),
+                    }
+                  : actual,
+              );
+              notificarNotificacionesActualizadas();
+            })
+            .catch(() => {
+              novedadMarcadaRef.current = null;
+            });
+        }
       } catch (err) {
-        if (solicitudActual !== secuenciaSolicitud.current || !montado.current) {
+        if (
+          solicitudActual !== secuenciaSolicitud.current ||
+          !montado.current
+        ) {
           return;
         }
         setError(
@@ -92,10 +150,7 @@ export function SeguimientoTareasView({
             : "No se pudo actualizar el seguimiento",
         );
       } finally {
-        if (
-          solicitudActual === secuenciaSolicitud.current &&
-          montado.current
-        ) {
+        if (solicitudActual === secuenciaSolicitud.current && montado.current) {
           setCargandoInicial(false);
         }
         if (modo === "MANUAL") {
@@ -104,7 +159,14 @@ export function SeguimientoTareasView({
         }
       }
     },
-    [estado, filtros.localId, filtros.repositorId, limit, page],
+    [
+      estado,
+      filtros.localId,
+      filtros.novedadId,
+      filtros.repositorId,
+      limit,
+      page,
+    ],
   );
 
   useEffect(() => {
@@ -148,6 +210,10 @@ export function SeguimientoTareasView({
   function volverALocales() {
     if (navegando) return;
     setNavegando(true);
+    if (filtros.novedadId) {
+      router.push("/panel/supervisor/tareas");
+      return;
+    }
     const parametros = new URLSearchParams({ vista: "locales" });
     if (filtros.repositorId) {
       parametros.set("usuarioId", String(filtros.repositorId));
@@ -160,8 +226,9 @@ export function SeguimientoTareasView({
 
   const filas = datos?.items ?? [];
   const resumen = datos?.resumen;
+  const gestionadas = resumen ? resumen.completadas + resumen.novedades : 0;
   const porcentaje = resumen?.total
-    ? Math.round((resumen.completadas / resumen.total) * 100)
+    ? Math.round((gestionadas / resumen.total) * 100)
     : 0;
 
   return (
@@ -169,7 +236,9 @@ export function SeguimientoTareasView({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-brand-700 dark:text-brand-300">
-            Seguimiento del equipo
+            {filtros.novedadId
+              ? "Novedad del equipo"
+              : "Seguimiento del equipo"}
           </p>
           <h1 className="mt-1 text-lg font-bold tracking-tight sm:text-xl">
             Tareas {filtros.localNombre ? `· ${filtros.localNombre}` : ""}
@@ -181,12 +250,8 @@ export function SeguimientoTareasView({
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={volverALocales}
-            className={btnGhost}
-          >
-            Volver a locales
+          <button type="button" onClick={volverALocales} className={btnGhost}>
+            {filtros.novedadId ? "Volver a tareas" : "Volver a locales"}
           </button>
           <button
             type="button"
@@ -202,17 +267,19 @@ export function SeguimientoTareasView({
       <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
         <div className="rounded-xl border border-line bg-surface-raised p-4">
           <div className="flex items-center justify-between gap-3 text-sm">
-            <span className="font-semibold text-foreground">Progreso</span>
+            <span className="font-semibold text-foreground">
+              Tareas gestionadas
+            </span>
             <span className="text-muted [font-variant-numeric:tabular-nums]">
               {resumen
-                ? `${resumen.completadas}/${resumen.total} · ${porcentaje}%`
+                ? `${gestionadas}/${resumen.total} · ${porcentaje}%`
                 : "Calculando…"}
             </span>
           </div>
           <div
             className="mt-3 h-2.5 overflow-hidden rounded-full bg-surface-soft"
             role="progressbar"
-            aria-label="Progreso de tareas"
+            aria-label="Progreso de tareas gestionadas"
             aria-valuemin={0}
             aria-valuemax={100}
             aria-valuenow={porcentaje}
@@ -224,25 +291,38 @@ export function SeguimientoTareasView({
           </div>
           {resumen ? (
             <p className="mt-2 text-xs text-muted">
-              {resumen.pendientes} pendientes · {resumen.completadas} completadas
+              {resumen.pendientes} pendientes · {resumen.completadas}{" "}
+              completadas
+              {resumen.novedades > 0
+                ? ` · ${resumen.novedades} con novedad`
+                : ""}
             </p>
           ) : null}
         </div>
         <p className="text-xs text-muted sm:pb-1 sm:text-right">
           Actualización automática cada 12 s
           <span className="block [font-variant-numeric:tabular-nums]">
-            Última: {ultimaActualizacion ? ultimaActualizacion.toLocaleTimeString("es-PY", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "—"}
+            Última:{" "}
+            {ultimaActualizacion
+              ? ultimaActualizacion.toLocaleTimeString("es-PY", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  second: "2-digit",
+                })
+              : "—"}
           </span>
         </p>
       </div>
 
-      <div
-        className="mt-4 inline-flex max-w-full gap-1 overflow-x-auto rounded-xl border border-line bg-surface-raised p-1"
-        role="group"
-        aria-label="Filtrar tareas por estado"
-      >
-        {(["TODAS", "PENDIENTE", "COMPLETADA"] as FiltroEstado[]).map(
-          (opcion) => (
+      {!filtros.novedadId ? (
+        <div
+          className="mt-4 inline-flex max-w-full gap-1 overflow-x-auto rounded-xl border border-line bg-surface-raised p-1"
+          role="group"
+          aria-label="Filtrar tareas por estado"
+        >
+          {(
+            ["TODAS", "PENDIENTE", "COMPLETADA", "NOVEDAD"] as FiltroEstado[]
+          ).map((opcion) => (
             <button
               key={opcion}
               type="button"
@@ -260,11 +340,13 @@ export function SeguimientoTareasView({
                 ? "Todas"
                 : opcion === "PENDIENTE"
                   ? "Pendientes"
-                  : "Completadas"}
+                  : opcion === "COMPLETADA"
+                    ? "Completadas"
+                    : "Con novedad"}
             </button>
-          ),
-        )}
-      </div>
+          ))}
+        </div>
+      ) : null}
 
       {error ? <p className={`${errorBox} mt-4`}>{error}</p> : null}
 
@@ -278,14 +360,18 @@ export function SeguimientoTareasView({
                 <th className="px-4 py-3 font-medium">Local / cliente</th>
                 <th className="px-4 py-3 font-medium">Repositor</th>
                 <th className="px-4 py-3 font-medium">Evidencia</th>
-                <th className="px-4 py-3 font-medium">Completada</th>
+                <th className="px-4 py-3 font-medium">Fecha</th>
               </tr>
             </thead>
             <tbody>
               {filas.map((tarea) => (
                 <tr
                   key={`${tarea.tareaId}-${tarea.visitaTareaId ?? "sin-visita"}`}
-                  className="border-b border-line bg-surface-raised align-top transition last:border-0 hover:bg-surface-soft"
+                  className={`border-b border-line align-top transition last:border-0 hover:bg-surface-soft ${
+                    filtros.novedadId === tarea.novedad?.id
+                      ? "bg-amber-50/80 dark:bg-amber-950/30"
+                      : "bg-surface-raised"
+                  }`}
                 >
                   <td className="px-4 py-3">
                     <EstadoTarea estado={tarea.estado} />
@@ -302,6 +388,14 @@ export function SeguimientoTareasView({
                         {tarea.comentario}
                       </p>
                     ) : null}
+                    {tarea.novedad ? (
+                      <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-xs text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
+                        <p className="font-bold">Novedad reportada</p>
+                        <p className="mt-1 whitespace-pre-wrap leading-relaxed">
+                          {tarea.novedad.comentario}
+                        </p>
+                      </div>
+                    ) : null}
                   </td>
                   <td className="px-4 py-3">
                     <p className="font-medium text-foreground">
@@ -315,14 +409,40 @@ export function SeguimientoTareasView({
                     {tarea.repositor.nombre}
                   </td>
                   <td className="px-4 py-3 text-muted">
-                    {tarea.requiereFoto
-                      ? tarea.tieneFoto
-                        ? "Foto recibida"
-                        : "Foto pendiente"
-                      : "No requerida"}
+                    {tarea.novedad ? (
+                      <button
+                        type="button"
+                        onClick={() => setFotoAbierta(tarea)}
+                        className="flex min-h-11 items-center gap-2 rounded-lg px-2 text-left text-xs font-semibold text-amber-800 transition hover:bg-amber-50 hover:text-amber-950 focus-visible:ring-2 focus-visible:ring-amber-600 dark:text-amber-300 dark:hover:bg-amber-950 dark:hover:text-amber-100"
+                      >
+                        <svg
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                          className="h-5 w-5 shrink-0"
+                          aria-hidden
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M1 8a2 2 0 012-2h1.172a2 2 0 001.414-.586l.828-.828A2 2 0 017.828 4h4.344a2 2 0 011.414.586l.828.828A2 2 0 0015.828 6H17a2 2 0 012 2v7a2 2 0 01-2 2H3a2 2 0 01-2-2V8zm9 7a4 4 0 100-8 4 4 0 000 8zm0-1.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Ver foto
+                      </button>
+                    ) : tarea.requiereFoto ? (
+                      tarea.tieneFoto ? (
+                        "Foto recibida"
+                      ) : (
+                        "Foto pendiente"
+                      )
+                    ) : (
+                      "No requerida"
+                    )}
                   </td>
                   <td className="whitespace-nowrap px-4 py-3 text-muted [font-variant-numeric:tabular-nums]">
-                    {formatoFechaHora(tarea.completadaEn)}
+                    {formatoFechaHora(
+                      tarea.novedad?.reportadaEn ?? tarea.completadaEn,
+                    )}
                   </td>
                 </tr>
               ))}
@@ -333,7 +453,15 @@ export function SeguimientoTareasView({
 
       {!cargandoInicial && filas.length === 0 ? (
         <div className="mt-4 rounded-xl border border-dashed border-line bg-surface-raised px-4 py-10 text-center text-sm text-muted">
-          No hay tareas {estado === "PENDIENTE" ? "pendientes" : estado === "COMPLETADA" ? "completadas" : ""} para este filtro.
+          No hay tareas{" "}
+          {estado === "PENDIENTE"
+            ? "pendientes"
+            : estado === "COMPLETADA"
+              ? "completadas"
+              : estado === "NOVEDAD"
+                ? "con novedad"
+                : ""}{" "}
+          para este filtro.
         </div>
       ) : null}
 
@@ -364,24 +492,55 @@ export function SeguimientoTareasView({
       />
       <PantallaCarga
         visible={navegando}
-        mensaje="Volviendo a locales"
-        detalle="Conservamos el filtro del repositor seleccionado."
+        mensaje={
+          filtros.novedadId ? "Volviendo a tareas" : "Volviendo a locales"
+        }
+        detalle="Conservamos el contexto del repositor seleccionado."
       />
+      <Modal
+        titulo="Evidencia de la novedad"
+        abierto={fotoAbierta !== null}
+        onCerrar={() => setFotoAbierta(null)}
+        ancho="lg"
+      >
+        {fotoAbierta?.novedad ? (
+          <div>
+            <p className="text-sm font-semibold text-foreground">
+              {fotoAbierta.titulo} · {fotoAbierta.local.nombre}
+            </p>
+            <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-muted">
+              {fotoAbierta.novedad.comentario}
+            </p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={urlFotoNovedad(fotoAbierta.novedad.id)}
+              crossOrigin="use-credentials"
+              alt="Evidencia ampliada de la novedad"
+              className="mt-4 max-h-[65dvh] w-full rounded-xl border border-line bg-surface-soft object-contain"
+            />
+          </div>
+        ) : null}
+      </Modal>
     </div>
   );
 }
 
 function EstadoTarea({ estado }: { estado: EstadoSeguimientoTarea }) {
-  const completada = estado === "COMPLETADA";
+  const estilos =
+    estado === "COMPLETADA"
+      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
+      : estado === "NOVEDAD"
+        ? "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200"
+        : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200";
   return (
     <span
-      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-        completada
-          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200"
-          : "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200"
-      }`}
+      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${estilos}`}
     >
-      {completada ? "Completada" : "Pendiente"}
+      {estado === "COMPLETADA"
+        ? "Completada"
+        : estado === "NOVEDAD"
+          ? "Con novedad"
+          : "Pendiente"}
     </span>
   );
 }

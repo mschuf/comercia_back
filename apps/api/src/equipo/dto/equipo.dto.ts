@@ -15,6 +15,7 @@ import { trimString } from '../../common/utils/transforms';
 export enum EstadoTareaEquipoDto {
   PENDIENTE = 'PENDIENTE',
   COMPLETADA = 'COMPLETADA',
+  NOVEDAD = 'NOVEDAD',
 }
 
 export class ListarRepositoresEquipoDto extends PaginacionDto {
@@ -39,6 +40,13 @@ export class ListarTareasEquipoDto extends PaginacionDto {
   @Min(1)
   @Max(MAX_INT4)
   localId?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  novedadId?: number;
 
   @IsOptional()
   @IsEnum(EstadoTareaEquipoDto)

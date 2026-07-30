@@ -18,9 +18,13 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
-import { extname } from 'node:path';
 import type { RequestConUsuario } from '../auth/interfaces/request-con-usuario.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { tipoContenidoImagen } from '../common/utils/tipo-contenido-imagen';
+import {
+  ParametrosNovedadTareaDto,
+  ReportarNovedadTareaDto,
+} from './dto/novedad.dto';
 import { GuardarProgramacionVisitaDto } from './dto/programacion-visita.dto';
 import {
   ActualizarVisitaTareaDto,
@@ -36,13 +40,6 @@ import {
 import { FOTO_MAX_BYTES } from './impulsador.constants';
 import { KpisVisitasService } from './kpis-visitas.service';
 import { VisitasService } from './visitas.service';
-
-// Content-Type según la extensión, ya validada por FotosService.rutaAbsoluta
-const MIME_POR_EXTENSION: Record<string, string> = {
-  '.jpg': 'image/jpeg',
-  '.png': 'image/png',
-  '.webp': 'image/webp',
-};
 
 // La autorización fina (empresa, dueño vs gestor, visita abierta) vive en el service
 @ApiTags('visitas')
@@ -62,10 +59,8 @@ export class VisitasController {
     @Res() res: Response,
   ) {
     const ruta = await this.visitas.autorizarFoto(req.usuarioId, nombre);
-    res.setHeader(
-      'Content-Type',
-      MIME_POR_EXTENSION[extname(nombre)] ?? 'application/octet-stream',
-    );
+    res.setHeader('Content-Type', tipoContenidoImagen(nombre));
+    res.setHeader('X-Content-Type-Options', 'nosniff');
     // Privada: la sirve autenticada, el navegador puede cachearla una hora
     res.setHeader('Cache-Control', 'private, max-age=3600');
     res.sendFile(ruta);
@@ -166,6 +161,25 @@ export class VisitasController {
     @Param('visitaTareaId', ParseIntPipe) visitaTareaId: number,
   ) {
     return this.visitas.borrarFotoTarea(req.usuarioId, id, visitaTareaId);
+  }
+
+  @Post(':id/tareas/:visitaTareaId/novedad')
+  @UseInterceptors(
+    FileInterceptor('foto', { limits: { fileSize: FOTO_MAX_BYTES } }),
+  )
+  reportarNovedad(
+    @Req() req: RequestConUsuario,
+    @Param() params: ParametrosNovedadTareaDto,
+    @Body() dto: ReportarNovedadTareaDto,
+    @UploadedFile() archivo?: Express.Multer.File,
+  ) {
+    return this.visitas.reportarNovedad(
+      req.usuarioId,
+      params.id,
+      params.visitaTareaId,
+      dto,
+      archivo,
+    );
   }
 
   @Post(':id/foto-presencia')

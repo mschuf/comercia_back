@@ -15,6 +15,7 @@ import { PanelProvider } from "@/components/panel/contexto";
 import { IconoModulo } from "@/components/panel/iconos";
 import { btnGhost } from "@/components/ui";
 import { EVENTO_PLATAFORMA_ACTUALIZADA } from "@/lib/eventos-plataforma";
+import { CampanaNotificaciones } from "@/components/notificaciones/campana-notificaciones";
 
 export default function PanelLayout({
   children,
@@ -112,6 +113,11 @@ export default function PanelLayout({
       })),
     ),
   ];
+  const puedeRecibirNovedades = modulos.some(
+    (modulo) =>
+      modulo.ruta === "supervisor" &&
+      modulo.paginas.some((pagina) => pagina.ruta === "tareas"),
+  );
 
   const activo = (href: string) =>
     href === "/panel" ? pathname === "/panel" : pathname === href;
@@ -152,6 +158,7 @@ export default function PanelLayout({
           </div>
 
           <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
+            <CampanaNotificaciones habilitada={puedeRecibirNovedades} />
             <BotonTema />
             <div ref={menuRef} className="relative">
               <button
@@ -343,9 +350,7 @@ export default function PanelLayout({
               <p className="font-semibold">
                 {usuario.nombre} {usuario.apellido}
               </p>
-              <p className="text-sm text-muted">
-                {usuario.empresa.nombre}
-              </p>
+              <p className="text-sm text-muted">{usuario.empresa.nombre}</p>
             </div>
           </div>
           <dl className="mt-5 grid grid-cols-[auto_1fr] gap-x-8 gap-y-2 text-sm">

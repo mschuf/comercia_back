@@ -124,11 +124,7 @@ function textoConsulta(
   maximo: number,
 ): string | undefined {
   const texto = valorConsulta(valor)?.trim();
-  if (
-    !texto ||
-    texto.length > maximo ||
-    /[\u0000-\u001f\u007f]/.test(texto)
-  ) {
+  if (!texto || texto.length > maximo || /[\u0000-\u001f\u007f]/.test(texto)) {
     return undefined;
   }
   return texto;
@@ -153,18 +149,23 @@ function filtroRepositor(
 
 function filtrosTareas(
   consulta: Record<string, string | string[] | undefined>,
-): {
-  repositorId?: number;
-  localId?: number;
-  repositorNombre?: string;
-  localNombre?: string;
-} | undefined {
+):
+  | {
+      repositorId?: number;
+      localId?: number;
+      novedadId?: number;
+      repositorNombre?: string;
+      localNombre?: string;
+    }
+  | undefined {
   const repositorId = enteroPositivo(consulta.repositorId);
   const localId = enteroPositivo(consulta.localId);
-  if (!repositorId && !localId) return undefined;
+  const novedadId = enteroPositivo(consulta.novedadId);
+  if (!repositorId && !localId && !novedadId) return undefined;
   return {
     repositorId,
     localId,
+    novedadId,
     repositorNombre: textoConsulta(consulta.repositor, 100),
     localNombre: textoConsulta(consulta.local, 120),
   };

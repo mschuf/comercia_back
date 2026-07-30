@@ -1,3 +1,5 @@
+import type { NovedadVisitaTareaDto } from './novedad.interface';
+
 // Estado de una tarea del checklist dentro de una visita
 export interface VisitaTareaDto {
   id: number;
@@ -12,6 +14,7 @@ export interface VisitaTareaDto {
   // Nombre de archivo; se sirve autenticado por GET /visitas/fotos/:nombre
   foto: string | null;
   completadaEn: string | null;
+  novedad: NovedadVisitaTareaDto | null;
 }
 
 // Visita completa (detalle y flujo del impulsador)

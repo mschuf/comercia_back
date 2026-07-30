@@ -26,15 +26,26 @@ export interface TareaEquipoDto {
   descripcion: string;
   requiereFoto: boolean;
   orden: number;
-  estado: 'PENDIENTE' | 'COMPLETADA';
+  estado: 'PENDIENTE' | 'COMPLETADA' | 'NOVEDAD';
   completadaEn: string | null;
   comentario: string | null;
   tieneFoto: boolean;
+  novedad: {
+    id: number;
+    comentario: string;
+    reportadaEn: string;
+    leidaEn: string | null;
+  } | null;
   local: { id: number; nombre: string };
   cliente: { id: number; nombre: string };
   repositor: { id: number; nombre: string };
 }
 
 export interface RespuestaTareasEquipoDto extends RespuestaPaginada<TareaEquipoDto> {
-  resumen: { total: number; pendientes: number; completadas: number };
+  resumen: {
+    total: number;
+    pendientes: number;
+    completadas: number;
+    novedades: number;
+  };
 }

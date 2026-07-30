@@ -41,7 +41,10 @@ export function TareasView({
   filtrosIniciales?: FiltrosSeguimientoTareas;
 }) {
   return filtrosIniciales ? (
-    <SeguimientoTareasView filtros={filtrosIniciales} />
+    <SeguimientoTareasView
+      key={`${filtrosIniciales.repositorId ?? 0}:${filtrosIniciales.localId ?? 0}:${filtrosIniciales.novedadId ?? 0}`}
+      filtros={filtrosIniciales}
+    />
   ) : (
     <TareasAdministracionView />
   );
