@@ -11,6 +11,7 @@ import {
 import { obtenerUbicacion } from "@/lib/geolocalizacion";
 import { Modal } from "@/components/modal";
 import { PantallaCarga } from "@/components/pantalla-carga";
+import { useToast } from "@/components/toast/toast-provider";
 import { btnPrimary, errorBox, inputBase } from "@/components/ui";
 import { formatoFechaHora } from "@/utils/fechas";
 import { formatoDuracionMinutos } from "@/utils/duracion";
@@ -332,6 +333,7 @@ export function VisitaActiva({
   onCerrar: () => void;
   onFinalizada: () => void;
 }) {
+  const { cerrarToastPorClave, mostrarToast } = useToast();
   // La visita se va actualizando con la respuesta de cada endpoint
   const [visita, setVisita] = useState<Visita>(visitaInicial);
   const [descripcionesRealizadas, setDescripcionesRealizadas] = useState<
@@ -578,6 +580,8 @@ export function VisitaActiva({
 
   async function finalizar() {
     if (finalizando) return;
+    const claveToast = `finalizar-visita-${visita.id}`;
+    cerrarToastPorClave(claveToast);
     setError(null);
     setFinalizando(true);
     try {
@@ -588,22 +592,29 @@ export function VisitaActiva({
       );
       if (descripcionesGuardadas.some((guardada) => !guardada)) return;
 
-      const ubicacion = await obtenerUbicacion();
+      const ubicacion = await obtenerUbicacion({ maximumAge: 0 });
       setVisita(
         await apiFetch<Visita>(`/visitas/${visita.id}/finalizar`, {
           method: "POST",
           body: JSON.stringify({
             latitud: ubicacion.latitud,
             longitud: ubicacion.longitud,
+            precisionMetros: ubicacion.precision,
           }),
         }),
       );
       setExito(true);
     } catch (err) {
       // los errores de geolocalización ya vienen en español
-      setError(
-        err instanceof Error ? err.message : "No se pudo registrar la visita",
-      );
+      mostrarToast({
+        tipo: "error",
+        clave: claveToast,
+        titulo: "No se pudo terminar la visita",
+        mensaje:
+          err instanceof Error
+            ? err.message
+            : "No se pudo registrar la visita",
+      });
     } finally {
       setFinalizando(false);
     }

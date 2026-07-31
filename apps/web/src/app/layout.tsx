@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { ToastProvider } from "@/components/toast/toast-provider";
 import "./globals.css";
 
 const manrope = localFont({
@@ -46,7 +47,7 @@ export default function RootLayout({
           hidrate; eso no es un error nuestro y no debe ensuciar la consola */}
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: scriptTema }} />
-        {children}
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

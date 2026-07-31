@@ -29,6 +29,12 @@ export class IniciarVisitaDto {
   @Min(-180)
   @Max(180)
   longitud!: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100_000)
+  precisionMetros?: number;
 }
 
 export class ActualizarVisitaTareaDto {
@@ -54,6 +60,12 @@ export class FinalizarVisitaDto {
   @Min(-180)
   @Max(180)
   longitud!: number;
+
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  @Max(100_000)
+  precisionMetros?: number;
 }
 
 export class ListarVisitasDto extends PaginacionDto {

@@ -15,4 +15,5 @@ export interface TareasLocalRepositorDto {
   tareas: TareaRepositorDto[];
   completadasEnVisita: number;
   visitaAbiertaId: number | null;
+  visitaCompletadaHoy: boolean;
 }

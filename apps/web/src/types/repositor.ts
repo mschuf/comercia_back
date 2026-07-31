@@ -38,6 +38,7 @@ export interface TareasLocalRepositor {
   tareas: TareaRepositor[];
   completadasEnVisita: number;
   visitaAbiertaId: number | null;
+  visitaCompletadaHoy: boolean;
 }
 
 export type EstadoParadaRuta = "PENDIENTE" | "ATRASADA" | "EN_CURSO";
@@ -91,4 +92,22 @@ export interface RutaDiaria {
   ahorroEstimadoMetros: number;
   geometria: [number, number][];
   paradas: ParadaRuta[];
+}
+
+export interface UbicacionRuta {
+  latitud: number;
+  longitud: number;
+}
+
+export interface OpcionesCargaRuta {
+  ubicacion?: UbicacionRuta;
+  recalcular?: boolean;
+}
+
+export interface RutaDiariaContexto {
+  ruta: RutaDiaria | null;
+  cargando: boolean;
+  error: string | null;
+  cargarRuta: (opciones?: OpcionesCargaRuta) => Promise<RutaDiaria>;
+  invalidarRuta: () => void;
 }

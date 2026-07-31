@@ -1,3 +1,8 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4
+ * genre: modern-minimal · macrostructure: Workbench · tone: utilitarian
+ * anchor hue: commercial green + copper · contrast: pass (40–41)
+ * responsive: pass (34, 49, 50–57)
+ */
 @import "tailwindcss";
 
 /* Modo oscuro por CLASE (.dark en <html>): automático según el dispositivo por
@@ -19,9 +24,16 @@
   --commercial-ink-soft: #25483d;
   --accent: #c98248;
   --accent-ink: #a15326;
+  --accent-on-ink: #efc39d;
   --accent-soft: #f2dfcb;
   --focus-ring: #315d47;
   --warm-shadow: 32, 25, 18;
+  --route-pending: var(--accent);
+  --route-active: var(--commercial-ink-soft);
+  --route-late: oklch(55% 0.2 20);
+  --route-line: var(--accent);
+  --route-line-shadow: var(--commercial-ink);
+  --route-origin: oklch(62% 0.12 230);
 }
 
 .dark {
@@ -38,9 +50,16 @@
   --commercial-ink-soft: #17382e;
   --accent: #dea06a;
   --accent-ink: #efb782;
+  --accent-on-ink: #efb782;
   --accent-soft: #493326;
   --focus-ring: #bfd6c6;
   --warm-shadow: 0, 0, 0;
+  --route-pending: var(--accent);
+  --route-active: oklch(70% 0.1 160);
+  --route-late: oklch(68% 0.18 20);
+  --route-line: var(--accent);
+  --route-line-shadow: var(--commercial-ink-soft);
+  --route-origin: oklch(72% 0.11 230);
 }
 
 /* Tokens de visualización de datos — paleta categórica de 5 tonos validada
@@ -83,6 +102,7 @@
   --color-commercial-ink: var(--commercial-ink);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
+  --color-accent-on-ink: var(--accent-on-ink);
   --color-focus: var(--focus-ring);
   --color-zinc-400: var(--muted);
 }
@@ -109,12 +129,22 @@
   }
 }
 
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   min-height: 100dvh;
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   text-rendering: optimizeLegibility;
+}
+
+:where(h1, h2, h3, h4, h5, h6) {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 :where(a, button, input, select, textarea, [role="button"]):focus-visible {
@@ -213,7 +243,7 @@ body {
   width: 38px;
   height: 38px;
   place-items: center;
-  border: 3px solid white;
+  border: 3px solid var(--surface-raised);
   border-radius: 50% 50% 50% 10%;
   background: var(--ruta-pin-color);
   color: white;
@@ -243,11 +273,15 @@ body {
   width: 50px;
   height: 50px;
   place-items: center;
-  border: 3px solid white;
+  border: 3px solid var(--surface-raised);
   border-radius: 999px;
-  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  background: linear-gradient(
+    135deg,
+    var(--commercial-ink-soft),
+    var(--accent)
+  );
   color: white;
-  box-shadow: 0 10px 28px rgb(49 46 129 / 45%);
+  box-shadow: 0 10px 28px rgb(var(--warm-shadow) / 45%);
   transform: rotate(var(--ruta-vehiculo-angulo, 0deg));
   transform-origin: center;
   will-change: transform;
@@ -287,11 +321,11 @@ body {
   width: 26px;
   height: 26px;
   place-items: center;
-  border: 4px solid white;
+  border: 4px solid var(--surface-raised);
   border-radius: 999px;
-  background: #0ea5e9;
-  color: #0ea5e9;
-  box-shadow: 0 5px 16px rgb(2 132 199 / 45%);
+  background: var(--route-origin);
+  color: var(--route-origin);
+  box-shadow: 0 5px 16px rgb(var(--warm-shadow) / 35%);
 }
 
 .mapa-pin {

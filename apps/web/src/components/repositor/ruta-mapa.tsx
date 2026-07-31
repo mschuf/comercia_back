@@ -28,10 +28,10 @@ import { anguloVehiculoEnRuta } from "@/utils/direccion-ruta";
 function iconoParada(orden: number, estado: EstadoParadaRuta) {
   const color =
     estado === "EN_CURSO"
-      ? "#059669"
+      ? "var(--route-active)"
       : estado === "ATRASADA"
-        ? "#e11d48"
-        : "#4f46e5";
+        ? "var(--route-late)"
+        : "var(--route-pending)";
   return divIcon({
     className: "ruta-pin-contenedor",
     html: `<div class="ruta-pin ${estado === "EN_CURSO" ? "ruta-pin-activo" : ""}" style="--ruta-pin-color:${color}"><span>${orden}</span></div>`,
@@ -45,15 +45,15 @@ const iconoVehiculo = divIcon({
   html: `<div class="ruta-vehiculo">
     <div class="ruta-camion">
       <svg viewBox="0 0 48 32" aria-hidden="true">
-        <path fill="#fbbf24" d="M3 6.5h23v16H3z"/>
-        <path fill="#f59e0b" d="M5.5 9h7v6h-7z"/>
-        <path fill="#fff" d="M26 11h8.5l7 7v4.5H26z"/>
-        <path fill="#bfdbfe" d="M29 13.5h4.5l4 4H29z"/>
-        <path fill="#4338ca" d="M3 21h39v4H3z"/>
-        <circle fill="#1e1b4b" cx="12" cy="25" r="4"/>
-        <circle fill="#e0e7ff" cx="12" cy="25" r="1.7"/>
-        <circle fill="#1e1b4b" cx="35" cy="25" r="4"/>
-        <circle fill="#e0e7ff" cx="35" cy="25" r="1.7"/>
+        <path fill="var(--accent)" d="M3 6.5h23v16H3z"/>
+        <path fill="var(--accent-ink)" d="M5.5 9h7v6h-7z"/>
+        <path fill="var(--surface-raised)" d="M26 11h8.5l7 7v4.5H26z"/>
+        <path fill="var(--accent-soft)" d="M29 13.5h4.5l4 4H29z"/>
+        <path fill="var(--commercial-ink-soft)" d="M3 21h39v4H3z"/>
+        <circle fill="var(--commercial-ink)" cx="12" cy="25" r="4"/>
+        <circle fill="var(--surface-raised)" cx="12" cy="25" r="1.7"/>
+        <circle fill="var(--commercial-ink)" cx="35" cy="25" r="4"/>
+        <circle fill="var(--surface-raised)" cx="35" cy="25" r="1.7"/>
       </svg>
     </div>
   </div>`,
@@ -183,7 +183,7 @@ export function RutaMapa({
   const centro: [number, number] = puntos[0] ?? CENTRO_DEFECTO;
 
   return (
-    <div className="ruta-mapa relative isolate h-[54dvh] min-h-[390px] overflow-hidden rounded-3xl border border-zinc-200 bg-zinc-100 shadow-2xl shadow-indigo-950/10 dark:border-zinc-800 dark:bg-zinc-950 lg:h-[68dvh]">
+    <div className="ruta-mapa relative isolate h-[54dvh] min-h-[390px] overflow-hidden rounded-3xl border border-line bg-surface-soft shadow-[0_18px_44px_rgba(var(--warm-shadow),0.12)] lg:h-[68dvh]">
       <MapContainer
         center={centro}
         zoom={ZOOM_DEFECTO}
@@ -212,7 +212,7 @@ export function RutaMapa({
             <Polyline
               positions={geometria}
               pathOptions={{
-                color: "#312e81",
+                color: "var(--route-line-shadow)",
                 weight: 11,
                 opacity: 0.2,
                 lineCap: "round",
@@ -223,7 +223,7 @@ export function RutaMapa({
               className="ruta-trazo-animado"
               positions={geometria}
               pathOptions={{
-                color: "#6366f1",
+                color: "var(--route-line)",
                 weight: 6,
                 opacity: 0.95,
                 dashArray: "12 13",

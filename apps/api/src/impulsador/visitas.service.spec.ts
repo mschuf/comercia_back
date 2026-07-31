@@ -315,7 +315,11 @@ describe('VisitasService - novedades', () => {
       completadaEn: new Date('2026-07-17T12:30:00.000Z'),
     });
     prisma.visita.findUnique.mockResolvedValue(visitaAbierta);
-    prisma.visita.update.mockResolvedValue(visitaRegistrada);
+    let actualizacion: unknown;
+    prisma.visita.update.mockImplementation((argumento: unknown) => {
+      actualizacion = argumento;
+      return Promise.resolve(visitaRegistrada);
+    });
     prisma.local.update.mockResolvedValue({ id: 30 });
     prisma.$transaction.mockImplementation(
       async (operaciones: Array<Promise<unknown>>) => Promise.all(operaciones),
@@ -324,13 +328,15 @@ describe('VisitasService - novedades', () => {
     const resultado = await service.finalizar(11, 50, {
       latitud: -25.3,
       longitud: -57.6,
+      precisionMetros: 14.26,
     });
 
     expect(resultado.completadaEn).toBe('2026-07-17T12:30:00.000Z');
     expect(prisma.$transaction).toHaveBeenCalledTimes(1);
-    expect(prisma.visita.update).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { id: 50 } }),
-    );
+    expect(actualizacion).toMatchObject({
+      where: { id: 50 },
+      data: { precisionFinMetros: 14.3 },
+    });
   });
 
   it('sigue rechazando finalizar cuando queda una tarea activa pendiente', async () => {

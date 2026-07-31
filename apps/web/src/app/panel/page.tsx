@@ -5,6 +5,7 @@ import Link from "next/link";
 import imagenComercial from "@/assets/comercial-repositor-v2.webp";
 import { IconoModulo } from "@/components/panel/iconos";
 import { usePanel } from "@/components/panel/contexto";
+import { ResumenJornadaRepositor } from "@/components/repositor/resumen-jornada-view";
 
 export default function PanelInicioPage() {
   const { usuario, modulos } = usePanel();
@@ -12,6 +13,7 @@ export default function PanelInicioPage() {
     ? "Superadmin"
     : (usuario.rol?.descripcion ?? "Sin rol asignado");
   const textoRol = descripcionRol.toLocaleLowerCase("es");
+  const esRepositor = textoRol.includes("repositor");
   const paginas = modulos.flatMap((modulo) =>
     modulo.paginas.map((pagina) => ({
       href: `/panel/${modulo.ruta}/${pagina.ruta}`,
@@ -32,7 +34,7 @@ export default function PanelInicioPage() {
       ]
     : paginas;
 
-  const mensaje = textoRol.includes("repositor")
+  const mensaje = esRepositor
     ? "Tus clientes, tareas y recorridos del día, siempre a mano."
     : textoRol.includes("supervisor")
       ? "Acompañá al equipo en campo y convertí cada visita en decisiones."
@@ -45,22 +47,24 @@ export default function PanelInicioPage() {
       <section className="overflow-hidden rounded-[1.5rem] border border-[#315247] bg-commercial-ink text-white">
         <div className="grid min-h-[13rem] grid-cols-[minmax(0,1fr)_6.5rem] sm:min-h-[15rem] sm:grid-cols-[minmax(0,1.1fr)_minmax(14rem,0.9fr)]">
           <div className="flex min-w-0 flex-col justify-end p-4 sm:p-7 lg:p-8">
-          <div className="mb-auto flex flex-wrap items-center gap-2">
-            <span className="rounded-full border border-[#557267] bg-[#25483d] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-white">
-              {descripcionRol}
-            </span>
-            <span className="rounded-full border border-[#76523a] bg-[#4a3427] px-3 py-1 text-[10px] font-bold text-[#f2ceb0]">
-              {usuario.empresa.nombre}
-            </span>
-          </div>
+            <div className="mb-auto flex flex-wrap items-center gap-2">
+              <span className="rounded-full border border-[#557267] bg-[#25483d] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-white">
+                {descripcionRol}
+              </span>
+              <span className="rounded-full border border-[#76523a] bg-[#4a3427] px-3 py-1 text-[10px] font-bold text-[#f2ceb0]">
+                {usuario.empresa.nombre}
+              </span>
+            </div>
 
-          <p className="text-sm font-semibold text-[#efc39d]">Hola, {usuario.nombre}</p>
-          <h1 className="mt-1 text-2xl font-extrabold leading-tight tracking-[-0.04em] sm:text-3xl">
-            Tu jornada empieza acá.
-          </h1>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#d7e1dd] sm:text-base">
-            {mensaje}
-          </p>
+            <p className="text-sm font-semibold text-[#efc39d]">
+              Hola, {usuario.nombre}
+            </p>
+            <h1 className="mt-1 text-2xl font-extrabold leading-tight tracking-[-0.04em] sm:text-3xl">
+              Tu jornada empieza acá.
+            </h1>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#d7e1dd] sm:text-base">
+              {mensaje}
+            </p>
           </div>
 
           <div className="relative min-h-full border-l-[5px] border-[#d9955d] bg-[#1b2f28]">
@@ -79,24 +83,32 @@ export default function PanelInicioPage() {
 
       {!usuario.rol && !usuario.esSuperadmin && (
         <div className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 shadow-sm dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
-          <span className="font-bold">Tu cuenta está pendiente de rol.</span>{" "}
-          Un superior debe asignártelo para habilitar tus módulos de trabajo.
+          <span className="font-bold">Tu cuenta está pendiente de rol.</span> Un
+          superior debe asignártelo para habilitar tus módulos de trabajo.
         </div>
       )}
 
-      <section aria-labelledby="accesos-titulo" className="rounded-[1.4rem] border border-line bg-surface p-4 shadow-[0_14px_38px_rgba(var(--warm-shadow),0.06)] sm:p-5">
+      {esRepositor ? <ResumenJornadaRepositor /> : null}
+
+      <section
+        aria-labelledby="accesos-titulo"
+        className="rounded-[1.4rem] border border-line bg-surface p-4 shadow-[0_14px_38px_rgba(var(--warm-shadow),0.06)] sm:p-5"
+      >
         <header className="flex flex-wrap items-end justify-between gap-2">
           <div>
             <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-brand-700 dark:text-brand-200">
               Espacio de trabajo
             </p>
-            <h2 id="accesos-titulo" className="mt-1 text-lg font-extrabold tracking-[-0.025em] sm:text-xl">
+            <h2
+              id="accesos-titulo"
+              className="mt-1 text-lg font-extrabold tracking-[-0.025em] sm:text-xl"
+            >
               Accesos habilitados
             </h2>
           </div>
           <p className="text-xs font-semibold text-muted">
-            {modulos.length} {modulos.length === 1 ? "módulo" : "módulos"} · {paginas.length}{" "}
-            {paginas.length === 1 ? "página" : "páginas"}
+            {modulos.length} {modulos.length === 1 ? "módulo" : "módulos"} ·{" "}
+            {paginas.length} {paginas.length === 1 ? "página" : "páginas"}
           </p>
         </header>
 

@@ -16,6 +16,7 @@ import { IconoModulo } from "@/components/panel/iconos";
 import { btnGhost } from "@/components/ui";
 import { EVENTO_PLATAFORMA_ACTUALIZADA } from "@/lib/eventos-plataforma";
 import { CampanaNotificaciones } from "@/components/notificaciones/campana-notificaciones";
+import { RutaDiariaProvider } from "@/components/repositor/ruta-diaria-contexto";
 
 export default function PanelLayout({
   children,
@@ -124,7 +125,8 @@ export default function PanelLayout({
 
   return (
     <PanelProvider value={valorPanel}>
-      <div className="relative isolate flex min-h-dvh w-full max-w-full flex-col overflow-x-clip bg-background">
+      <RutaDiariaProvider>
+        <div className="relative isolate flex min-h-dvh w-full max-w-full flex-col overflow-x-clip bg-background">
         <div
           aria-hidden
           className="pointer-events-none fixed inset-0 -z-10 bg-[radial-gradient(circle_at_94%_4%,color-mix(in_srgb,var(--accent)_10%,transparent),transparent_27rem)]"
@@ -386,7 +388,8 @@ export default function PanelLayout({
           mensaje="Cerrando sesión"
           detalle="Finalizamos tu sesión de forma segura."
         />
-      </div>
+        </div>
+      </RutaDiariaProvider>
     </PanelProvider>
   );
 }

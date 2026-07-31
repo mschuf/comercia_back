@@ -1,4 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import type { Prisma } from '../../generated/prisma/client';
 import {
   respuestaPaginada,
   rangoPaginacion,
@@ -33,6 +34,11 @@ import type {
 import type { TareasLocalRepositorDto } from './interfaces/tareas-repositor.interface';
 import type { VisitaHoyDto } from './interfaces/visita-hoy.interface';
 import { OsrmService } from './osrm.service';
+import {
+  actualizarRutaGuardada,
+  esRutaDiariaGuardada,
+  firmaAgendaRuta,
+} from './utils/cache-ruta-diaria';
 import { estadoVisitaProgramada } from './utils/estado-visita-programada';
 import {
   completarMatriz,
@@ -44,9 +50,12 @@ import {
 const ZONA_HORARIA_DEFECTO = 'America/Asuncion';
 const MAX_PARADAS_DIARIAS = 50;
 const VENTANA_VISITAS_MS = 36 * 60 * 60 * 1000;
+const CACHE_RESPALDO_MS = 5 * 60 * 1000;
 
 @Injectable()
 export class RepositorService {
+  private readonly logger = new Logger(RepositorService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly accesoCampo: AccesoOperacionesCampoService,
@@ -199,6 +208,7 @@ export class RepositorService {
       cliente: { activo: true },
     };
     const { skip, take, page, limit } = rangoPaginacion(query);
+    const fechaHoy = fechaEnZonaIso(new Date(), ZONA_HORARIA_DEFECTO);
     const [total, locales] = await Promise.all([
       this.prisma.local.count({ where }),
       this.prisma.local.findMany({
@@ -225,16 +235,17 @@ export class RepositorService {
             },
           },
           visitas: {
-            where: { usuarioId: usuario.id, completadaEn: null },
+            where: { usuarioId: usuario.id },
             select: {
               id: true,
+              completadaEn: true,
               tareas: {
                 select: { completada: true },
                 take: MAX_TAREAS_POR_LOCAL,
               },
             },
             orderBy: { iniciadaEn: 'desc' },
-            take: 1,
+            take: 2,
           },
         },
         orderBy: [{ cliente: { nombre: 'asc' } }, { nombre: 'asc' }],
@@ -243,18 +254,30 @@ export class RepositorService {
       }),
     ]);
     return respuestaPaginada(
-      locales.map((local) => ({
-        local: {
-          id: local.id,
-          nombre: local.nombre,
-          cliente: { id: local.cliente.id, nombre: local.cliente.nombre },
-        },
-        tareas: local.cliente.tareas,
-        completadasEnVisita:
-          local.visitas[0]?.tareas.filter(({ completada }) => completada)
-            .length ?? 0,
-        visitaAbiertaId: local.visitas[0]?.id ?? null,
-      })),
+      locales.map((local) => {
+        const visitaAbierta = local.visitas.find(
+          ({ completadaEn }) => completadaEn === null,
+        );
+        return {
+          local: {
+            id: local.id,
+            nombre: local.nombre,
+            cliente: { id: local.cliente.id, nombre: local.cliente.nombre },
+          },
+          tareas: local.cliente.tareas,
+          completadasEnVisita:
+            visitaAbierta?.tareas.filter(({ completada }) => completada)
+              .length ?? 0,
+          visitaAbiertaId: visitaAbierta?.id ?? null,
+          visitaCompletadaHoy:
+            visitaAbierta === undefined &&
+            local.visitas.some(
+              ({ completadaEn }) =>
+                completadaEn !== null &&
+                fechaEnZonaIso(completadaEn, ZONA_HORARIA_DEFECTO) === fechaHoy,
+            ),
+        };
+      }),
       total,
       page,
       limit,
@@ -434,6 +457,37 @@ export class RepositorService {
       query.latitud !== undefined && query.longitud !== undefined
         ? { latitud: query.latitud, longitud: query.longitud }
         : null;
+    const firmaAgenda = firmaAgendaRuta(agenda);
+    const guardada = await this.prisma.rutaDiariaRepositor.findUnique({
+      where: {
+        usuarioId_fecha: {
+          usuarioId: usuario.id,
+          fecha: agenda.fecha,
+        },
+      },
+      select: {
+        firmaAgenda: true,
+        datos: true,
+        updatedAt: true,
+      },
+    });
+    if (
+      query.recalcular !== 'true' &&
+      guardada?.firmaAgenda === firmaAgenda &&
+      esRutaDiariaGuardada(guardada.datos)
+    ) {
+      const necesitaOrigen =
+        origen !== null &&
+        candidatas.length > 0 &&
+        !guardada.datos.usaUbicacionActual;
+      const respaldoVigente =
+        guardada.datos.fuente === 'OSRM' ||
+        ahora.getTime() - guardada.updatedAt.getTime() < CACHE_RESPALDO_MS;
+      if (!necesitaOrigen && respaldoVigente) {
+        return actualizarRutaGuardada(guardada.datos, agenda, ahora);
+      }
+    }
+
     const coordenadas: CoordenadaRuta[] = [
       ...(origen ? [origen] : []),
       ...candidatas.map(({ local }) => ({
@@ -499,7 +553,7 @@ export class RepositorService {
       0,
     );
 
-    return {
+    const resultado: RutaDiariaDto = {
       fecha: agenda.fecha,
       generadaEn: ahora.toISOString(),
       fuente,
@@ -543,5 +597,39 @@ export class RepositorService {
         };
       }),
     };
+    try {
+      await this.prisma.rutaDiariaRepositor.upsert({
+        where: {
+          usuarioId_fecha: {
+            usuarioId: usuario.id,
+            fecha: agenda.fecha,
+          },
+        },
+        create: {
+          usuarioId: usuario.id,
+          fecha: agenda.fecha,
+          firmaAgenda,
+          datos: resultado as unknown as Prisma.InputJsonValue,
+        },
+        update: {
+          firmaAgenda,
+          datos: resultado as unknown as Prisma.InputJsonValue,
+        },
+        select: { id: true },
+      });
+      await this.prisma.rutaDiariaRepositor.deleteMany({
+        where: {
+          usuarioId: usuario.id,
+          fecha: { lt: agenda.fecha },
+        },
+      });
+    } catch (problema) {
+      this.logger.warn(
+        `No se pudo guardar la ruta diaria del usuario ${usuario.id}: ${
+          problema instanceof Error ? problema.message : 'error desconocido'
+        }`,
+      );
+    }
+    return resultado;
   }
 }

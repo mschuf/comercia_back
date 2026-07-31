@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, Max, Min } from 'class-validator';
+import { IsIn, IsNumber, IsOptional, Max, Min } from 'class-validator';
 
 export class RutaHoyDto {
   @IsOptional()
@@ -15,4 +15,9 @@ export class RutaHoyDto {
   @Min(-180)
   @Max(180)
   longitud?: number;
+
+  @IsOptional()
+  @Type(() => String)
+  @IsIn(['true'])
+  recalcular?: 'true';
 }

@@ -521,6 +521,10 @@ export class VisitasService {
         latitud: dto.latitud,
         longitud: dto.longitud,
         distanciaMetros: redondear1Decimal(distancia),
+        precisionMetros:
+          dto.precisionMetros === undefined
+            ? undefined
+            : redondear1Decimal(dto.precisionMetros),
         tareas: {
           createMany: { data: tareasActivas.map((t) => ({ tareaId: t.id })) },
         },
@@ -1018,6 +1022,10 @@ export class VisitasService {
           latitudFin: dto.latitud,
           longitudFin: dto.longitud,
           distanciaFinMetros: redondear1Decimal(distancia),
+          precisionFinMetros:
+            dto.precisionMetros === undefined
+              ? undefined
+              : redondear1Decimal(dto.precisionMetros),
         },
         select: SELECT_VISITA,
       }),

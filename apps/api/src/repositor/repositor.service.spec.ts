@@ -9,8 +9,13 @@ jest.mock('../prisma/prisma.service', () => ({
 
 describe('RepositorService', () => {
   const prisma = {
-    local: { findMany: jest.fn() },
+    local: { count: jest.fn(), findMany: jest.fn() },
     visita: { findMany: jest.fn() },
+    rutaDiariaRepositor: {
+      findUnique: jest.fn(),
+      upsert: jest.fn(),
+      deleteMany: jest.fn(),
+    },
   };
   const acceso = { usuarioRepositor: jest.fn() };
   const osrm = { tabla: jest.fn(), ruta: jest.fn() };
@@ -29,6 +34,9 @@ describe('RepositorService', () => {
       esGestor: false,
       esOperativo: true,
     });
+    prisma.rutaDiariaRepositor.findUnique.mockResolvedValue(null);
+    prisma.rutaDiariaRepositor.upsert.mockResolvedValue({ id: 1 });
+    prisma.rutaDiariaRepositor.deleteMany.mockResolvedValue({ count: 0 });
   });
 
   it('lista las visitas del mapa sin calcular distancias ni consultar OSRM', async () => {
@@ -59,6 +67,49 @@ describe('RepositorService', () => {
     });
     expect(osrm.tabla).not.toHaveBeenCalled();
     expect(osrm.ruta).not.toHaveBeenCalled();
+  });
+
+  it('marca como completadas las tareas del local visitado hoy', async () => {
+    jest.useFakeTimers().setSystemTime(new Date('2026-07-30T15:00:00.000Z'));
+    prisma.local.count.mockResolvedValue(1);
+    prisma.local.findMany.mockResolvedValue([
+      {
+        id: 10,
+        nombre: 'Local Centro',
+        cliente: {
+          id: 20,
+          nombre: 'Cliente Uno',
+          tareas: [
+            {
+              id: 30,
+              titulo: 'Revisar exhibiciÃ³n',
+              descripcion: '',
+              requiereFoto: false,
+              orden: 1,
+            },
+          ],
+        },
+        visitas: [
+          {
+            id: 40,
+            completadaEn: new Date('2026-07-30T14:30:00.000Z'),
+            tareas: [{ completada: true }],
+          },
+        ],
+      },
+    ]);
+
+    try {
+      const respuesta = await service.tareas(1, { page: 1, limit: 7 });
+
+      expect(respuesta.items[0]).toMatchObject({
+        visitaAbiertaId: null,
+        visitaCompletadaHoy: true,
+        completadasEnVisita: 0,
+      });
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('usa la ubicación actual como origen y comienza por el local vencido más cercano', async () => {
@@ -115,6 +166,22 @@ describe('RepositorService', () => {
         [-25.286348, -57.639226],
       ],
     });
+    let guardada:
+      | {
+          firmaAgenda: string;
+          datos: unknown;
+        }
+      | undefined;
+    prisma.rutaDiariaRepositor.upsert.mockImplementation(
+      (argumento: unknown) => {
+        guardada = (
+          argumento as {
+            create: { firmaAgenda: string; datos: unknown };
+          }
+        ).create;
+        return Promise.resolve({ id: 1 });
+      },
+    );
 
     try {
       const respuesta = await service.rutaHoy(1, {
@@ -133,6 +200,34 @@ describe('RepositorService', () => {
         distanciaDesdeAnteriorMetros: 80,
         viajeDesdeAnteriorSegundos: 30,
       });
+      expect(prisma.rutaDiariaRepositor.upsert).toHaveBeenCalledTimes(1);
+
+      if (!guardada) throw new Error('La ruta no se guardó');
+      prisma.rutaDiariaRepositor.findUnique.mockResolvedValue({
+        firmaAgenda: guardada.firmaAgenda,
+        datos: guardada.datos,
+        updatedAt: new Date(),
+      });
+      osrm.tabla.mockClear();
+      osrm.ruta.mockClear();
+
+      const reutilizada = await service.rutaHoy(1, {
+        latitud: -25.3,
+        longitud: -57.7,
+      });
+
+      expect(reutilizada.generadaEn).toBe(respuesta.generadaEn);
+      expect(osrm.tabla).not.toHaveBeenCalled();
+      expect(osrm.ruta).not.toHaveBeenCalled();
+
+      await service.rutaHoy(1, {
+        latitud: -25.3,
+        longitud: -57.7,
+        recalcular: 'true',
+      });
+
+      expect(osrm.tabla).toHaveBeenCalledTimes(1);
+      expect(osrm.ruta).toHaveBeenCalledTimes(1);
     } finally {
       jest.useRealTimers();
     }

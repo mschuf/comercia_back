@@ -34,3 +34,18 @@ export function formatoFechaHora(iso: string | null): string {
     minute: "2-digit",
   })}`;
 }
+
+export function fechaEnZonaIso(
+  fecha: Date,
+  zonaHoraria = "America/Asuncion",
+): string {
+  const partes = new Intl.DateTimeFormat("en-US", {
+    timeZone: zonaHoraria,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(fecha);
+  const valor = (tipo: Intl.DateTimeFormatPartTypes) =>
+    partes.find((parte) => parte.type === tipo)?.value ?? "";
+  return `${valor("year")}-${valor("month")}-${valor("day")}`;
+}

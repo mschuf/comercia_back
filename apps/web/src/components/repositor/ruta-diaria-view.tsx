@@ -3,15 +3,14 @@
 import dynamic from "next/dynamic";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { VisitaActiva } from "@/components/impulsador/visita-activa";
 import { PantallaCarga } from "@/components/pantalla-carga";
 import { Paginacion } from "@/components/paginacion";
-import { ApiError, apiFetch } from "@/lib/api";
+import { useRutaDiaria } from "@/components/repositor/ruta-diaria-contexto";
 import { obtenerUbicacion } from "@/lib/geolocalizacion";
-import type { RespuestaPaginada } from "@/types/paginacion";
-import type { ParadaRuta, RutaDiaria, VisitaHoy } from "@/types/repositor";
-import type { Visita } from "@/types/visita";
+import type { ParadaRuta } from "@/types/repositor";
 import { formatoDuracionSegundos } from "@/utils/duracion";
+import { formatoDistancia } from "@/utils/distancia";
+import { fechaEnZonaIso } from "@/utils/fechas";
 import { urlNavegarA, urlRutaCompleta } from "@/utils/google-maps";
 
 const RutaMapa = dynamic(
@@ -26,12 +25,6 @@ const RutaMapa = dynamic(
     ),
   },
 );
-
-function formatoDistancia(metros: number) {
-  return metros < 1000
-    ? `${Math.round(metros)} m`
-    : `${(metros / 1000).toFixed(1)} km`;
-}
 
 function IconoAbrirRuta() {
   return (
@@ -59,61 +52,34 @@ function formatoHora(iso: string) {
   });
 }
 
-function esParadaCalculada(
-  visita: VisitaHoy | ParadaRuta,
-): visita is ParadaRuta {
-  return "llegadaEstimada" in visita;
-}
-
 interface AccionesParadaProps {
-  parada: VisitaHoy | ParadaRuta;
-  iniciando: string | null;
+  parada: ParadaRuta;
   onNavegar: (mensaje: string) => void;
-  onIniciar: (parada: VisitaHoy | ParadaRuta) => Promise<void>;
 }
 
-function AccionesParada({
-  parada,
-  iniciando,
-  onNavegar,
-  onIniciar,
-}: AccionesParadaProps) {
+function AccionesParada({ parada, onNavegar }: AccionesParadaProps) {
   return (
-    <div className="flex gap-1.5">
-      <button
-        type="button"
-        onClick={() => void onIniciar(parada)}
-        disabled={iniciando !== null}
-        aria-label={`Iniciar visita en ${parada.local.nombre}`}
-        title={`Iniciar visita en ${parada.local.nombre}`}
-        className="min-h-11 whitespace-nowrap rounded-lg bg-brand-700 px-2.5 text-xs font-semibold text-white transition hover:bg-brand-800 focus-visible:ring-2 focus-visible:ring-brand-600/40 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {iniciando === parada.clave ? "Verificando GPS…" : "Visita"}
-      </button>
-      <a
-        href={urlNavegarA(parada)}
-        target="_blank"
-        rel="noreferrer"
-        onClick={() =>
-          onNavegar(`Iniciando navegación a ${parada.local.nombre}`)
-        }
-        aria-label={`Abrir mapa hacia ${parada.local.nombre}`}
-        title={`Abrir mapa hacia ${parada.local.nombre}`}
-        className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg border border-indigo-200 px-2.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-indigo-500/40 dark:border-indigo-900 dark:text-indigo-300 dark:hover:bg-indigo-950"
-      >
-        Mapa
-      </a>
-    </div>
+    <a
+      href={urlNavegarA(parada)}
+      target="_blank"
+      rel="noreferrer"
+      onClick={() => onNavegar(`Iniciando navegación a ${parada.local.nombre}`)}
+      aria-label={`Abrir mapa hacia ${parada.local.nombre}`}
+      title={`Abrir mapa hacia ${parada.local.nombre}`}
+      className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg border border-accent bg-surface-raised px-3 text-xs font-bold text-accent-ink transition hover:bg-surface-soft active:translate-y-px focus-visible:ring-2 focus-visible:ring-focus"
+    >
+      Abrir mapa
+    </a>
   );
 }
 
 export function RutaDiariaView() {
-  const [agenda, setAgenda] = useState<RespuestaPaginada<VisitaHoy> | null>(
-    null,
-  );
-  const [ruta, setRuta] = useState<RutaDiaria | null>(null);
-  const [pagina, setPagina] = useState(1);
-  const [limite, setLimite] = useState(7);
+  const {
+    ruta,
+    cargando: cargandoRuta,
+    error: errorRuta,
+    cargarRuta,
+  } = useRutaDiaria();
   const [paginaRuta, setPaginaRuta] = useState(1);
   const [limiteRuta, setLimiteRuta] = useState(7);
   const [ubicacion, setUbicacion] = useState<{
@@ -122,83 +88,60 @@ export function RutaDiariaView() {
   } | null>(null);
   const [avisoGps, setAvisoGps] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [cargandoAgenda, setCargandoAgenda] = useState(true);
-  const [calculando, setCalculando] = useState(false);
-  const [iniciando, setIniciando] = useState<string | null>(null);
+  const [preparandoRuta, setPreparandoRuta] = useState(false);
   const [navegando, setNavegando] = useState<string | null>(null);
-  const [visita, setVisita] = useState<Visita | null>(null);
   const temporizadorNavegacion = useRef<number | null>(null);
-  const calculoEnCurso = useRef(false);
+  const intentoAutomatico = useRef(false);
+  const fechaRuta = ruta?.fecha;
+  const usaUbicacionActual = ruta?.usaUbicacionActual ?? false;
+  const totalParadasRuta = ruta?.paradas.length;
 
-  const cargarAgenda = useCallback(async () => {
-    setCargandoAgenda(true);
-    setError(null);
-    try {
-      setAgenda(
-        await apiFetch<RespuestaPaginada<VisitaHoy>>(
-          `/repositor/visitas-hoy?page=${pagina}&limit=${limite}`,
-        ),
-      );
-    } catch (problema) {
-      setError(
-        problema instanceof ApiError
-          ? problema.message
-          : "No pudimos cargar las visitas de hoy",
-      );
-    } finally {
-      setCargandoAgenda(false);
+  const prepararRuta = useCallback(async () => {
+    const rutaVigente = fechaRuta === fechaEnZonaIso(new Date());
+    if (rutaVigente && (usaUbicacionActual || totalParadasRuta === 0)) {
+      return;
     }
-  }, [pagina, limite]);
-
-  const calcularRuta = useCallback(async () => {
-    if (calculoEnCurso.current) return;
-    calculoEnCurso.current = true;
-    setCalculando(true);
-    setError(null);
+    setPreparandoRuta(true);
     let posicion: { latitud: number; longitud: number } | null = null;
     try {
-      posicion = await obtenerUbicacion();
+      posicion = await obtenerUbicacion({ maximumAge: 0 });
       setUbicacion(posicion);
       setAvisoGps(null);
     } catch (problema) {
       setUbicacion(null);
-      setRuta(null);
       setAvisoGps(
         problema instanceof Error
-          ? `${problema.message} Necesitamos tu ubicación para elegir correctamente el primer local.`
-          : "Necesitamos tu ubicación para elegir correctamente el primer local.",
+          ? `${problema.message} Mostramos el recorrido guardado sin usar tu posición como origen.`
+          : "Mostramos el recorrido guardado sin usar tu posición como origen.",
       );
-      calculoEnCurso.current = false;
-      setCalculando(false);
-      return;
     }
     try {
-      const consulta = posicion
-        ? `?latitud=${posicion.latitud}&longitud=${posicion.longitud}`
-        : "";
-      setRuta(await apiFetch<RutaDiaria>(`/repositor/ruta-hoy${consulta}`));
+      await cargarRuta({
+        ...(posicion ? { ubicacion: posicion } : {}),
+      });
       setPaginaRuta(1);
+      setError(null);
     } catch (problema) {
       setError(
-        problema instanceof ApiError
+        problema instanceof Error
           ? problema.message
-          : "No pudimos calcular la ruta de hoy",
+          : "No pudimos cargar la ruta de hoy",
       );
     } finally {
-      calculoEnCurso.current = false;
-      setCalculando(false);
+      setPreparandoRuta(false);
     }
-  }, []);
+  }, [
+    cargarRuta,
+    fechaRuta,
+    totalParadasRuta,
+    usaUbicacionActual,
+  ]);
 
   useEffect(() => {
-    const inicio = window.setTimeout(() => void cargarAgenda(), 0);
-    return () => window.clearTimeout(inicio);
-  }, [cargarAgenda]);
-
-  useEffect(() => {
-    const inicio = window.setTimeout(() => void calcularRuta(), 0);
-    return () => window.clearTimeout(inicio);
-  }, [calcularRuta]);
+    if (intentoAutomatico.current) return;
+    intentoAutomatico.current = true;
+    void prepararRuta();
+  }, [prepararRuta]);
 
   useEffect(
     () => () => {
@@ -221,7 +164,7 @@ export function RutaDiariaView() {
   }
 
   async function iniciarNavegacionCompleta() {
-    if (navegando !== null || calculoEnCurso.current) return;
+    if (navegando !== null || preparandoRuta || cargandoRuta) return;
     setNavegando("Actualizando tu ubicación");
     setError(null);
     let abriendoMaps = false;
@@ -230,10 +173,10 @@ export function RutaDiariaView() {
       setUbicacion(posicion);
       setAvisoGps(null);
       setNavegando("Recalculando la ruta desde tu ubicación");
-      const nuevaRuta = await apiFetch<RutaDiaria>(
-        `/repositor/ruta-hoy?latitud=${posicion.latitud}&longitud=${posicion.longitud}`,
-      );
-      setRuta(nuevaRuta);
+      const nuevaRuta = await cargarRuta({
+        ubicacion: posicion,
+        recalcular: true,
+      });
       setPaginaRuta(1);
       const url = urlRutaCompleta(nuevaRuta.paradas, posicion);
       if (url === null) {
@@ -253,97 +196,60 @@ export function RutaDiariaView() {
     }
   }
 
-  async function abrirVisita(parada: VisitaHoy | ParadaRuta) {
-    if (iniciando !== null) return;
-    setIniciando(parada.clave);
-    setError(null);
-    try {
-      if (parada.visitaAbiertaId !== null) {
-        setVisita(await apiFetch<Visita>(`/visitas/${parada.visitaAbiertaId}`));
-      } else {
-        const posicion = await obtenerUbicacion();
-        setVisita(
-          await apiFetch<Visita>("/visitas", {
-            method: "POST",
-            body: JSON.stringify({
-              localId: parada.local.id,
-              latitud: posicion.latitud,
-              longitud: posicion.longitud,
-            }),
-          }),
-        );
-      }
-    } catch (problema) {
-      setError(
-        problema instanceof Error
-          ? problema.message
-          : "No pudimos iniciar la visita",
-      );
-    } finally {
-      setIniciando(null);
-    }
-  }
-
-  const visitasMapa: Array<VisitaHoy | ParadaRuta> =
-    ruta?.paradas ?? agenda?.items ?? [];
-  const totalTabla = ruta ? visitasMapa.length : (agenda?.total ?? 0);
-  const paginaTabla = ruta ? paginaRuta : (agenda?.page ?? pagina);
-  const limiteTabla = ruta ? limiteRuta : (agenda?.limit ?? limite);
-  const totalPaginasTabla = ruta
-    ? Math.max(1, Math.ceil(totalTabla / limiteRuta))
-    : (agenda?.totalPages ?? 1);
-  const visitasTabla = ruta
-    ? visitasMapa.slice((paginaRuta - 1) * limiteRuta, paginaRuta * limiteRuta)
-    : visitasMapa;
-  const cargaActiva = calculando
-    ? {
-        mensaje: "Calculando mejor ruta",
-        detalle: "Combinamos horarios, calles y distancias entre los locales.",
-      }
-    : iniciando !== null
+  const visitasMapa = ruta?.paradas ?? [];
+  const totalTabla = visitasMapa.length;
+  const totalPaginasTabla = Math.max(
+    1,
+    Math.ceil(totalTabla / limiteRuta),
+  );
+  const visitasTabla = visitasMapa.slice(
+    (paginaRuta - 1) * limiteRuta,
+    paginaRuta * limiteRuta,
+  );
+  const calculando = preparandoRuta || cargandoRuta;
+  const mensajeError = error ?? errorRuta;
+  const cargaActiva =
+    navegando !== null
       ? {
-          mensaje: "Preparando la visita",
-          detalle: "Verificamos tu ubicación y cargamos las tareas del local.",
+          mensaje: navegando,
+          detalle:
+            navegando === "Actualizando tu ubicación"
+              ? "El GPS actual será el punto inicial del recorrido."
+              : navegando === "Recalculando la ruta desde tu ubicación"
+                ? "Ordenamos nuevamente los locales antes de abrir el mapa."
+                : "Estamos abriendo Google Maps con el destino seleccionado.",
         }
-      : cargandoAgenda
+      : calculando
         ? {
-            mensaje: "Cargando visitas",
-            detalle: "Actualizamos los locales programados para hoy.",
+            mensaje: ruta ? "Actualizando recorrido" : "Preparando recorrido",
+            detalle: ruta
+              ? "Usamos la ruta guardada y actualizamos el punto de partida."
+              : "Recuperamos la mejor ruta disponible para hoy.",
           }
-        : navegando !== null
-          ? {
-              mensaje: navegando,
-              detalle:
-                navegando === "Actualizando tu ubicación"
-                  ? "El GPS actual será el punto inicial del recorrido."
-                  : navegando === "Recalculando la ruta desde tu ubicación"
-                    ? "Ordenamos nuevamente los locales antes de abrir el mapa."
-                    : "Estamos abriendo Google Maps con el destino seleccionado.",
-            }
-          : null;
+        : null;
 
   return (
     <div
       className="min-w-0 space-y-4 sm:space-y-5"
       aria-busy={cargaActiva !== null}
     >
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-950 via-indigo-950 to-indigo-700 p-4 text-white shadow-lg shadow-indigo-950/20 sm:p-5">
-        <div className="ruta-orbita absolute -right-8 -top-16 h-40 w-40 rounded-full border border-indigo-300/20" />
+      <section className="relative overflow-hidden rounded-2xl border border-brand-800 bg-commercial-ink p-4 text-white shadow-[0_16px_40px_rgba(var(--warm-shadow),0.18)] sm:p-5">
+        <div className="ruta-orbita absolute -right-8 -top-16 h-40 w-40 rounded-full border border-accent/30" />
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
         >
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-indigo-200 sm:text-[11px]">
-              Visitas programadas de hoy
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-accent-on-ink sm:text-[11px]">
+              Recorrido programado de hoy
             </p>
             <h1 className="mt-1 text-xl font-bold tracking-tight sm:text-2xl">
               Mis visitas
             </h1>
-            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-indigo-100 sm:text-sm">
-              Revisá tus locales mientras calculamos automáticamente el mejor
-              recorrido para hoy.
+            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-white/80 sm:text-sm">
+              Consultá el mapa, el orden sugerido y los tiempos de traslado. Las
+              tareas se gestionan desde Mis tareas.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -353,7 +259,7 @@ export function RutaDiariaView() {
                 onClick={() => void iniciarNavegacionCompleta()}
                 disabled={navegando !== null || calculando}
                 title="Actualizar ubicación e iniciar la ruta en Google Maps"
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#efbd92] bg-[#d9955d] px-4 text-sm font-extrabold text-[#10231d] shadow-sm transition hover:bg-[#e5aa78] focus-visible:ring-2 focus-visible:ring-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-accent bg-accent px-4 text-sm font-extrabold text-brand-950 shadow-sm transition hover:brightness-105 active:translate-y-px focus-visible:ring-2 focus-visible:ring-white disabled:cursor-not-allowed disabled:opacity-50 disabled:active:translate-y-0"
               >
                 <IconoAbrirRuta />
                 Iniciar navegación
@@ -368,14 +274,16 @@ export function RutaDiariaView() {
           {avisoGps}
         </p>
       ) : null}
-      {error ? (
+      {mensajeError ? (
         <p className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
-          {error}
+          {mensajeError}
         </p>
       ) : null}
 
-      {cargandoAgenda && agenda === null ? (
-        <div className="h-[54dvh] min-h-[390px] animate-pulse rounded-3xl bg-zinc-200 dark:bg-zinc-800" />
+      {ruta === null ? (
+        mensajeError ? null : (
+          <div className="h-[54dvh] min-h-[390px] animate-pulse rounded-3xl bg-zinc-200 dark:bg-zinc-800" />
+        )
       ) : visitasMapa.length === 0 ? (
         <section className="rounded-3xl border border-dashed border-line bg-surface-raised p-10 text-center">
           <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-100 text-2xl dark:bg-emerald-950">
@@ -392,21 +300,19 @@ export function RutaDiariaView() {
         <>
           <div className="grid min-w-0 gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(420px,.9fr)] xl:items-stretch">
             <RutaMapa
-              geometria={ruta?.geometria ?? []}
+              geometria={ruta.geometria}
               paradas={visitasMapa}
               ubicacion={ubicacion}
-              calculada={ruta !== null}
+              calculada
             />
             <section className="min-w-0 w-full xl:flex xl:h-[68dvh] xl:min-h-[390px] xl:flex-col">
               <div className="mb-2">
                 <div>
                   <h2 className="text-base font-bold sm:text-lg">
-                    {ruta ? "Orden recomendado" : "Horario programado"}
+                    Orden recomendado
                   </h2>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 sm:text-sm">
-                    {ruta
-                      ? "Ordenado por horarios y tiempos de traslado."
-                      : "Podés abrir el orden programado mientras optimizamos el recorrido."}
+                    Ordenado por horarios y tiempos de traslado.
                   </p>
                 </div>
               </div>
@@ -418,7 +324,7 @@ export function RutaDiariaView() {
                         Orden
                       </th>
                       <th scope="col" className="px-2 py-2.5 xl:hidden">
-                        Acciones
+                        Mapa
                       </th>
                       <th scope="col" className="px-2 py-2.5">
                         Local
@@ -433,7 +339,7 @@ export function RutaDiariaView() {
                         scope="col"
                         className="hidden px-2 py-2.5 text-right xl:table-cell"
                       >
-                        Acciones
+                        Mapa
                       </th>
                     </tr>
                   </thead>
@@ -453,7 +359,7 @@ export function RutaDiariaView() {
                                 ? "bg-rose-600"
                                 : parada.estado === "EN_CURSO"
                                   ? "animate-pulse bg-emerald-600"
-                                  : "bg-indigo-600"
+                                  : "bg-brand-700"
                             }`}
                           >
                             {parada.orden}
@@ -462,13 +368,11 @@ export function RutaDiariaView() {
                         <td className="px-2 py-2.5 align-top xl:hidden">
                           <AccionesParada
                             parada={parada}
-                            iniciando={iniciando}
                             onNavegar={indicarNavegacion}
-                            onIniciar={abrirVisita}
                           />
                         </td>
                         <td className="max-w-44 px-2 py-2.5 align-top">
-                          <p className="truncate text-[10px] font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-300">
+                          <p className="truncate text-[10px] font-semibold uppercase tracking-wide text-accent-ink">
                             {parada.local.cliente.nombre}
                           </p>
                           <p className="truncate text-sm font-bold">
@@ -479,17 +383,13 @@ export function RutaDiariaView() {
                           <span className="block">
                             {formatoHora(parada.programadaEn)} programada
                           </span>
-                          {esParadaCalculada(parada) ? (
-                            <span className="mt-0.5 block text-zinc-500 dark:text-zinc-400">
-                              {formatoHora(parada.llegadaEstimada)} llegada
-                            </span>
-                          ) : null}
+                          <span className="mt-0.5 block text-zinc-500 dark:text-zinc-400">
+                            {formatoHora(parada.llegadaEstimada)} llegada
+                          </span>
                         </td>
                         <td className="whitespace-nowrap px-2 py-2.5 align-top text-[11px] text-zinc-600 dark:text-zinc-300">
                           <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-                            {esParadaCalculada(parada)
-                              ? `${formatoDistancia(parada.distanciaDesdeAnteriorMetros)} · ${formatoDuracionSegundos(parada.viajeDesdeAnteriorSegundos)}`
-                              : "Pendiente de cálculo"}
+                            {`${formatoDistancia(parada.distanciaDesdeAnteriorMetros)} · ${formatoDuracionSegundos(parada.viajeDesdeAnteriorSegundos)}`}
                           </p>
                           <span className="mt-0.5 block text-zinc-500 dark:text-zinc-400">
                             {parada.tareasActivas} tareas
@@ -499,9 +399,7 @@ export function RutaDiariaView() {
                           <div className="flex justify-end">
                             <AccionesParada
                               parada={parada}
-                              iniciando={iniciando}
                               onNavegar={indicarNavegacion}
-                              onIniciar={abrirVisita}
                             />
                           </div>
                         </td>
@@ -512,89 +410,21 @@ export function RutaDiariaView() {
               </div>
               {totalTabla > 0 ? (
                 <Paginacion
-                  page={paginaTabla}
+                  page={paginaRuta}
                   totalPages={totalPaginasTabla}
                   total={totalTabla}
-                  limit={limiteTabla}
-                  onPageChange={(nuevaPagina) => {
-                    if (ruta) {
-                      setPaginaRuta(nuevaPagina);
-                    } else {
-                      setPagina(nuevaPagina);
-                    }
-                  }}
+                  limit={limiteRuta}
+                  onPageChange={setPaginaRuta}
                   onLimitChange={(nuevoLimite) => {
-                    if (ruta) {
-                      setLimiteRuta(nuevoLimite);
-                      setPaginaRuta(1);
-                    } else {
-                      setLimite(nuevoLimite);
-                      setPagina(1);
-                    }
+                    setLimiteRuta(nuevoLimite);
+                    setPaginaRuta(1);
                   }}
                 />
               ) : null}
             </section>
           </div>
-
-          {ruta ? (
-            <section className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {[
-                [
-                  "Pendientes",
-                  String(ruta.paradas.length),
-                  `${ruta.totalCompletadas} completadas`,
-                ],
-                [
-                  "Distancia",
-                  formatoDistancia(ruta.distanciaTotalMetros),
-                  ruta.fuente === "OSRM" ? "por calles" : "estimada",
-                ],
-                [
-                  "En traslado",
-                  formatoDuracionSegundos(ruta.duracionTrasladoSegundos),
-                  "sin contar visitas",
-                ],
-                [
-                  "Ahorro",
-                  formatoDistancia(ruta.ahorroEstimadoMetros),
-                  "vs. orden horario",
-                ],
-              ].map(([etiqueta, valor, detalle], indice) => (
-                <motion.article
-                  key={etiqueta}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: indice * 0.05 }}
-                  className="rounded-xl border border-line bg-surface-raised p-3 shadow-[0_8px_24px_rgba(var(--warm-shadow),0.05)]"
-                >
-                  <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                    {etiqueta}
-                  </p>
-                  <p className="mt-0.5 text-lg font-black tracking-tight sm:text-xl">
-                    {valor}
-                  </p>
-                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                    {detalle}
-                  </p>
-                </motion.article>
-              ))}
-            </section>
-          ) : null}
         </>
       )}
-
-      {visita ? (
-        <VisitaActiva
-          visita={visita}
-          onCerrar={() => setVisita(null)}
-          onFinalizada={() => {
-            setVisita(null);
-            setRuta(null);
-            void Promise.all([cargarAgenda(), calcularRuta()]);
-          }}
-        />
-      ) : null}
 
       <PantallaCarga
         visible={cargaActiva !== null}
