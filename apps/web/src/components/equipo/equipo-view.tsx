@@ -1,5 +1,7 @@
 "use client";
 
+/* Hallmark · móvil muestra el contexto operativo antes de la tabla de escritorio. */
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch, ApiError } from "@/lib/api";
@@ -12,10 +14,76 @@ import type { RespuestaPaginada } from "@/types/paginacion";
 
 const ESPERA_BUSQUEDA_MS = 350;
 
+interface ListaEquipoMovilProps {
+  filas: RepositorEquipo[];
+  onVerLocales: (repositor: RepositorEquipo) => void;
+}
+
+function ListaEquipoMovil({ filas, onVerLocales }: ListaEquipoMovilProps) {
+  return (
+    <ul className="mt-4 space-y-3 md:hidden" aria-label="Equipo asignado">
+      {filas.map((repositor) => (
+        <li
+          key={repositor.id}
+          className="rounded-xl border border-line bg-surface-raised p-4 [content-visibility:auto]"
+        >
+          <div className="flex min-w-0 items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate font-semibold text-foreground">
+                {repositor.nombreCompleto}
+              </p>
+              <p className="mt-0.5 truncate text-xs text-muted">
+                @{repositor.nombreLogin}
+              </p>
+            </div>
+            <span className="shrink-0 text-xs text-muted">
+              {formatoFechaHora(repositor.ultimaActividad)}
+            </span>
+          </div>
+          <div className="mt-3 rounded-lg bg-surface-soft px-3 py-2.5 text-sm">
+            {repositor.visitaActual ? (
+              <>
+                <p className="font-medium text-foreground">
+                  En {repositor.visitaActual.localNombre}
+                </p>
+                <p className="mt-0.5 text-xs text-muted">
+                  {repositor.visitaActual.clienteNombre} ·{" "}
+                  {repositor.visitaActual.tareasCompletadas}/
+                  {repositor.visitaActual.tareasTotal} tareas
+                </p>
+              </>
+            ) : (
+              <p className="text-muted">Sin visita activa</p>
+            )}
+          </div>
+          <div className="mt-3 flex items-center justify-between gap-3 text-xs text-muted">
+            <span className="min-w-0 truncate">
+              {repositor.celular || repositor.correo || "Sin contacto"}
+            </span>
+            <span className="shrink-0 font-semibold text-foreground">
+              {repositor.localesCount}{" "}
+              {repositor.localesCount === 1 ? "local" : "locales"}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onVerLocales(repositor)}
+            disabled={repositor.localesCount === 0}
+            className={`${btnGhost} mt-3 min-h-11 w-full whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-45`}
+          >
+            <IconoLocal /> Ver locales asignados
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function EquipoView() {
   const router = useRouter();
-  const [datos, setDatos] =
-    useState<RespuestaPaginada<RepositorEquipo> | null>(null);
+  const [datos, setDatos] = useState<RespuestaPaginada<RepositorEquipo> | null>(
+    null,
+  );
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(7);
   const [buscar, setBuscar] = useState("");
@@ -51,9 +119,7 @@ export function EquipoView() {
       .catch((err) => {
         if (!vigente) return;
         setError(
-          err instanceof ApiError
-            ? err.message
-            : "No se pudo cargar el equipo",
+          err instanceof ApiError ? err.message : "No se pudo cargar el equipo",
         );
       })
       .finally(() => {
@@ -83,8 +149,8 @@ export function EquipoView() {
       <div>
         <h2 className="text-lg font-bold tracking-tight sm:text-xl">Equipo</h2>
         <p className="mt-1 max-w-2xl text-sm text-muted">
-          Consultá los repositores a tu cargo y entrá directamente a sus
-          locales asignados.
+          Consultá los repositores a tu cargo y entrá directamente a sus locales
+          asignados.
         </p>
       </div>
 
@@ -129,78 +195,87 @@ export function EquipoView() {
       {error ? <p className={`${errorBox} mt-4`}>{error}</p> : null}
 
       {filas.length > 0 ? (
-        <div className="mt-4 overflow-x-auto rounded-xl border border-line bg-surface-raised">
-          <table className="w-full min-w-[1040px] text-left text-sm">
-            <thead className="bg-surface-soft">
-              <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
-                <th className="px-4 py-3 font-medium">Repositor</th>
-                <th className="px-4 py-3 font-medium">Locales</th>
-                <th className="px-4 py-3 font-medium">Estado actual</th>
-                <th className="px-4 py-3 font-medium">Contacto</th>
-                <th className="px-4 py-3 font-medium">Última actividad</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filas.map((repositor) => (
-                <tr
-                  key={repositor.id}
-                  className="border-b border-line bg-surface-raised align-middle transition last:border-0 hover:bg-surface-soft"
-                >
-                  <td className="px-4 py-3">
-                    <p className="font-semibold text-foreground">
-                      {repositor.nombreCompleto}
-                    </p>
-                    <p className="mt-0.5 text-xs text-muted">
-                      @{repositor.nombreLogin}
-                    </p>
-                  </td>
-                  <td className="px-4 py-3">
-                    <button
-                      type="button"
-                      onClick={() => verLocales(repositor)}
-                      disabled={repositor.localesCount === 0}
-                      className={`${btnGhost} min-w-28 gap-2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-45`}
-                      aria-label={`Ver locales de ${repositor.nombreCompleto}`}
-                    >
-                      <IconoLocal />
-                      {repositor.localesCount} {repositor.localesCount === 1 ? "local" : "locales"}
-                    </button>
-                  </td>
-                  <td className="px-4 py-3">
-                    {repositor.visitaActual ? (
-                      <div className="min-w-44">
-                        <p className="font-medium text-foreground">
-                          En {repositor.visitaActual.localNombre}
-                        </p>
-                        <p className="mt-0.5 text-xs text-muted">
-                          {repositor.visitaActual.clienteNombre} ·{" "}
-                          {repositor.visitaActual.tareasCompletadas}/
-                          {repositor.visitaActual.tareasTotal} tareas
-                        </p>
-                        <p className="mt-0.5 text-xs text-muted [font-variant-numeric:tabular-nums]">
-                          Desde {formatoFechaHora(repositor.visitaActual.iniciadaEn)}
-                        </p>
-                      </div>
-                    ) : (
-                      <span className="inline-flex rounded-full bg-surface-soft px-2.5 py-1 text-xs font-medium text-muted">
-                        Sin visita activa
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <p className="text-foreground">{repositor.celular || "—"}</p>
-                    <p className="mt-0.5 text-xs text-muted">
-                      {repositor.correo || "Sin correo"}
-                    </p>
-                  </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-muted [font-variant-numeric:tabular-nums]">
-                    {formatoFechaHora(repositor.ultimaActividad)}
-                  </td>
+        <>
+          <ListaEquipoMovil filas={filas} onVerLocales={verLocales} />
+          <div className="mt-4 hidden overflow-x-auto rounded-xl border border-line bg-surface-raised md:block">
+            <table className="w-full min-w-[1040px] text-left text-sm">
+              <thead className="bg-surface-soft">
+                <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
+                  <th className="px-4 py-3 font-medium">Repositor</th>
+                  <th className="px-4 py-3 font-medium">Locales</th>
+                  <th className="px-4 py-3 font-medium">Estado actual</th>
+                  <th className="px-4 py-3 font-medium">Contacto</th>
+                  <th className="px-4 py-3 font-medium">Última actividad</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filas.map((repositor) => (
+                  <tr
+                    key={repositor.id}
+                    className="border-b border-line bg-surface-raised align-middle transition last:border-0 hover:bg-surface-soft"
+                  >
+                    <td className="px-4 py-3">
+                      <p className="font-semibold text-foreground">
+                        {repositor.nombreCompleto}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted">
+                        @{repositor.nombreLogin}
+                      </p>
+                    </td>
+                    <td className="px-4 py-3">
+                      <button
+                        type="button"
+                        onClick={() => verLocales(repositor)}
+                        disabled={repositor.localesCount === 0}
+                        className={`${btnGhost} min-w-28 gap-2 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-45`}
+                        aria-label={`Ver locales de ${repositor.nombreCompleto}`}
+                      >
+                        <IconoLocal />
+                        {repositor.localesCount}{" "}
+                        {repositor.localesCount === 1 ? "local" : "locales"}
+                      </button>
+                    </td>
+                    <td className="px-4 py-3">
+                      {repositor.visitaActual ? (
+                        <div className="min-w-44">
+                          <p className="font-medium text-foreground">
+                            En {repositor.visitaActual.localNombre}
+                          </p>
+                          <p className="mt-0.5 text-xs text-muted">
+                            {repositor.visitaActual.clienteNombre} ·{" "}
+                            {repositor.visitaActual.tareasCompletadas}/
+                            {repositor.visitaActual.tareasTotal} tareas
+                          </p>
+                          <p className="mt-0.5 text-xs text-muted [font-variant-numeric:tabular-nums]">
+                            Desde{" "}
+                            {formatoFechaHora(
+                              repositor.visitaActual.iniciadaEn,
+                            )}
+                          </p>
+                        </div>
+                      ) : (
+                        <span className="inline-flex rounded-full bg-surface-soft px-2.5 py-1 text-xs font-medium text-muted">
+                          Sin visita activa
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="text-foreground">
+                        {repositor.celular || "—"}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted">
+                        {repositor.correo || "Sin correo"}
+                      </p>
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-muted [font-variant-numeric:tabular-nums]">
+                      {formatoFechaHora(repositor.ultimaActividad)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       ) : null}
 
       {!cargando && filas.length === 0 ? (

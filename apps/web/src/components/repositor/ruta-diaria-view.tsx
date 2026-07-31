@@ -1,5 +1,10 @@
 "use client";
 
+/* Hallmark · component: lista móvil de paradas · genre: utilitarian · theme: tokens Comercia
+ * states: default · hover · focus · active · disabled · loading · error · success
+ * contrast: pass (46–50) · pre-emit critique: P4 H5 E5 S5 R5 V4
+ */
+
 import dynamic from "next/dynamic";
 import { motion } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -55,9 +60,14 @@ function formatoHora(iso: string) {
 interface AccionesParadaProps {
   parada: ParadaRuta;
   onNavegar: (mensaje: string) => void;
+  className?: string;
 }
 
-function AccionesParada({ parada, onNavegar }: AccionesParadaProps) {
+function AccionesParada({
+  parada,
+  onNavegar,
+  className = "",
+}: AccionesParadaProps) {
   return (
     <a
       href={urlNavegarA(parada)}
@@ -66,10 +76,108 @@ function AccionesParada({ parada, onNavegar }: AccionesParadaProps) {
       onClick={() => onNavegar(`Iniciando navegación a ${parada.local.nombre}`)}
       aria-label={`Abrir mapa hacia ${parada.local.nombre}`}
       title={`Abrir mapa hacia ${parada.local.nombre}`}
-      className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg border border-accent bg-surface-raised px-3 text-xs font-bold text-accent-ink transition hover:bg-surface-soft active:translate-y-px focus-visible:ring-2 focus-visible:ring-focus"
+      className={`inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg border border-accent bg-surface-raised px-3 text-xs font-bold text-accent-ink transition hover:bg-surface-soft active:translate-y-px focus-visible:ring-2 focus-visible:ring-focus ${className}`}
     >
       Abrir mapa
     </a>
+  );
+}
+
+interface ListaParadasMovilProps {
+  paradas: ParadaRuta[];
+  onNavegar: (mensaje: string) => void;
+}
+
+function ListaParadasMovil({ paradas, onNavegar }: ListaParadasMovilProps) {
+  return (
+    <ol
+      className="space-y-3 md:hidden"
+      aria-label="Orden recomendado de visitas"
+    >
+      {paradas.map((parada) => {
+        const estado =
+          parada.estado === "ATRASADA"
+            ? "Atrasada"
+            : parada.estado === "EN_CURSO"
+              ? "En curso"
+              : "Pendiente";
+        const colorEstado =
+          parada.estado === "ATRASADA"
+            ? "bg-rose-600"
+            : parada.estado === "EN_CURSO"
+              ? "bg-emerald-600"
+              : "bg-brand-700";
+        return (
+          <li
+            key={parada.clave}
+            className="[contain-intrinsic-size:auto_9rem] [content-visibility:auto]"
+          >
+            <article className="rounded-2xl border border-line bg-surface-raised p-4 shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)]">
+              <div className="flex min-w-0 items-start gap-3">
+                <span
+                  className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl text-sm font-black text-white ${colorEstado}`}
+                  aria-label={`Parada ${parada.orden}: ${estado}`}
+                >
+                  {parada.orden}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex min-w-0 items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-bold uppercase tracking-wide text-accent-ink">
+                        {parada.local.cliente.nombre}
+                      </p>
+                      <h3 className="mt-0.5 truncate text-base font-extrabold text-foreground">
+                        {parada.local.nombre}
+                      </h3>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-surface-soft px-2 py-1 text-[11px] font-bold text-muted">
+                      {estado}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted">
+                    {parada.local.zona ?? "Sin zona asignada"}
+                  </p>
+                </div>
+              </div>
+
+              <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-y border-line py-3 text-sm">
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+                    Agenda
+                  </dt>
+                  <dd className="mt-0.5 font-semibold text-foreground">
+                    {formatoHora(parada.programadaEn)} programada
+                  </dd>
+                  <dd className="text-xs text-muted">
+                    Llegada {formatoHora(parada.llegadaEstimada)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+                    Recorrido
+                  </dt>
+                  <dd className="mt-0.5 font-semibold text-foreground">
+                    {formatoDistancia(parada.distanciaDesdeAnteriorMetros)}
+                  </dd>
+                  <dd className="text-xs text-muted">
+                    {formatoDuracionSegundos(parada.viajeDesdeAnteriorSegundos)}{" "}
+                    · {parada.tareasActivas} tareas
+                  </dd>
+                </div>
+              </dl>
+
+              <div className="mt-3 grid">
+                <AccionesParada
+                  parada={parada}
+                  onNavegar={onNavegar}
+                  className="w-full"
+                />
+              </div>
+            </article>
+          </li>
+        );
+      })}
+    </ol>
   );
 }
 
@@ -130,12 +238,7 @@ export function RutaDiariaView() {
     } finally {
       setPreparandoRuta(false);
     }
-  }, [
-    cargarRuta,
-    fechaRuta,
-    totalParadasRuta,
-    usaUbicacionActual,
-  ]);
+  }, [cargarRuta, fechaRuta, totalParadasRuta, usaUbicacionActual]);
 
   useEffect(() => {
     if (intentoAutomatico.current) return;
@@ -198,10 +301,7 @@ export function RutaDiariaView() {
 
   const visitasMapa = ruta?.paradas ?? [];
   const totalTabla = visitasMapa.length;
-  const totalPaginasTabla = Math.max(
-    1,
-    Math.ceil(totalTabla / limiteRuta),
-  );
+  const totalPaginasTabla = Math.max(1, Math.ceil(totalTabla / limiteRuta));
   const visitasTabla = visitasMapa.slice(
     (paginaRuta - 1) * limiteRuta,
     paginaRuta * limiteRuta,
@@ -316,7 +416,11 @@ export function RutaDiariaView() {
                   </p>
                 </div>
               </div>
-              <div className="max-h-[430px] w-full overflow-auto rounded-xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)] xl:min-h-0 xl:max-h-none xl:flex-1">
+              <ListaParadasMovil
+                paradas={visitasTabla}
+                onNavegar={indicarNavegacion}
+              />
+              <div className="hidden max-h-[430px] w-full overflow-auto rounded-xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)] md:block xl:min-h-0 xl:max-h-none xl:flex-1">
                 <table className="w-full min-w-[680px] text-left">
                   <thead className="sticky top-0 z-10 bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
                     <tr>

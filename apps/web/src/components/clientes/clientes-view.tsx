@@ -1,5 +1,7 @@
 "use client";
 
+/* Hallmark · lista móvil operativa: la tabla se conserva desde md sin duplicar datos. */
+
 import { useCallback, useEffect, useState } from "react";
 import { IconoMas } from "@/components/icono-mas";
 import { Modal } from "@/components/modal";
@@ -38,6 +40,79 @@ function EstadoCliente({ activo }: { activo: boolean }) {
     >
       {activo ? "Activo" : "Inactivo"}
     </span>
+  );
+}
+
+interface ListaClientesMovilProps {
+  clientes: Cliente[];
+  onVerLocales: ClientesViewProps["onVerLocales"];
+  onEditar: (cliente: Cliente) => void;
+  onEliminar: (cliente: Cliente) => void;
+}
+
+function ListaClientesMovil({
+  clientes,
+  onVerLocales,
+  onEditar,
+  onEliminar,
+}: ListaClientesMovilProps) {
+  return (
+    <ul className="mt-5 space-y-3 md:hidden" aria-label="Clientes">
+      {clientes.map((cliente) => (
+        <li
+          key={cliente.id}
+          className="rounded-xl border border-line bg-surface-raised p-4 shadow-[0_8px_24px_rgba(var(--warm-shadow),0.05)] [content-visibility:auto]"
+        >
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand-50 font-bold text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+              {cliente.nombre.charAt(0).toUpperCase()}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-semibold text-foreground">
+                {cliente.nombre}
+              </p>
+              <p className="mt-0.5 text-xs text-muted">
+                Actualizado {formatoFechaHora(cliente.updatedAt)}
+              </p>
+            </div>
+            <EstadoCliente activo={cliente.activo} />
+          </div>
+          <div className="mt-3 flex items-center justify-between gap-3 border-t border-line pt-3">
+            <span className="text-sm text-muted">
+              <strong className="text-foreground">
+                {cliente.localesCount}
+              </strong>{" "}
+              {cliente.localesCount === 1 ? "local" : "locales"}
+            </span>
+            <div className="flex shrink-0 items-center gap-1">
+              <button
+                type="button"
+                onClick={() => onEditar(cliente)}
+                className="grid h-11 w-11 place-items-center rounded-lg border border-line text-muted transition hover:bg-surface-soft hover:text-foreground focus-visible:ring-2 focus-visible:ring-focus"
+                aria-label={`Editar ${cliente.nombre}`}
+              >
+                <IconoEditar />
+              </button>
+              <button
+                type="button"
+                onClick={() => onEliminar(cliente)}
+                className="grid h-11 w-11 place-items-center rounded-lg border border-line text-muted transition hover:border-red-300 hover:bg-red-50 hover:text-red-700 focus-visible:ring-2 focus-visible:ring-red-600 dark:hover:border-red-800 dark:hover:bg-red-950 dark:hover:text-red-300"
+                aria-label={`Eliminar ${cliente.nombre}`}
+              >
+                <IconoEliminar />
+              </button>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => onVerLocales(cliente)}
+            className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-brand-50 px-3 text-sm font-semibold text-brand-700 transition hover:bg-brand-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:bg-brand-950 dark:text-brand-300 dark:hover:bg-brand-900"
+          >
+            Ver locales
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -136,7 +211,7 @@ export function ClientesView({ onVerLocales }: ClientesViewProps) {
   const clientes = datos?.items ?? [];
 
   return (
-    <div>
+    <div className="w-full min-w-0">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-xl font-bold">Listado de clientes</h2>
@@ -164,77 +239,88 @@ export function ClientesView({ onVerLocales }: ClientesViewProps) {
           </p>
         </div>
       ) : (
-        <div className="mt-5 overflow-x-auto rounded-xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)]">
-          <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="bg-surface-soft">
-              <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
-                <th className="px-4 py-3 font-medium">Cliente</th>
-                <th className="px-4 py-3 text-center font-medium">Locales</th>
-                <th className="px-4 py-3 font-medium">Actualizado</th>
-                <th className="px-4 py-3 font-medium">Estado</th>
-                <th className="px-4 py-3 text-right font-medium">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {clientes.map((cliente) => (
-                <tr
-                  key={cliente.id}
-                  className="border-b border-line bg-surface-raised transition last:border-0 hover:bg-surface-soft"
-                >
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <span className="grid h-10 w-10 place-items-center rounded-lg bg-brand-50 font-bold text-brand-700 dark:bg-brand-950 dark:text-brand-300">
-                        {cliente.nombre.charAt(0).toUpperCase()}
-                      </span>
-                      <span className="max-w-64 font-semibold text-zinc-900 dark:text-zinc-100">
-                        {cliente.nombre}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-center font-semibold [font-variant-numeric:tabular-nums]">
-                    {cliente.localesCount}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-zinc-500 dark:text-zinc-400">
-                    {formatoFechaHora(cliente.updatedAt)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <EstadoCliente activo={cliente.activo} />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => onVerLocales(cliente)}
-                        className="inline-flex min-h-11 items-center rounded-lg bg-brand-50 px-3 text-xs font-semibold text-brand-700 transition hover:bg-brand-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:bg-brand-950 dark:text-brand-300 dark:hover:bg-brand-900"
-                      >
-                        Ver locales
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => abrir(cliente)}
-                        aria-label={`Editar ${cliente.nombre}`}
-                        className="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface-raised text-muted transition hover:bg-surface-soft hover:text-foreground focus-visible:ring-2 focus-visible:ring-focus"
-                      >
-                        <IconoEditar />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setErrorEliminar(null);
-                          setEliminando(cliente);
-                        }}
-                        aria-label={`Eliminar ${cliente.nombre}`}
-                        className="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface-raised text-muted transition hover:border-red-300 hover:bg-red-50 hover:text-red-700 focus-visible:ring-2 focus-visible:ring-red-600 dark:hover:border-red-800 dark:hover:bg-red-950 dark:hover:text-red-300"
-                      >
-                        <IconoEliminar />
-                      </button>
-                    </div>
-                  </td>
+        <>
+          <ListaClientesMovil
+            clientes={clientes}
+            onVerLocales={onVerLocales}
+            onEditar={abrir}
+            onEliminar={(cliente) => {
+              setErrorEliminar(null);
+              setEliminando(cliente);
+            }}
+          />
+          <div className="mt-5 hidden overflow-x-auto rounded-xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)] md:block">
+            <table className="w-full min-w-[720px] text-left text-sm">
+              <thead className="bg-surface-soft">
+                <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
+                  <th className="px-4 py-3 font-medium">Cliente</th>
+                  <th className="px-4 py-3 text-center font-medium">Locales</th>
+                  <th className="px-4 py-3 font-medium">Actualizado</th>
+                  <th className="px-4 py-3 font-medium">Estado</th>
+                  <th className="px-4 py-3 text-right font-medium">Acciones</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {clientes.map((cliente) => (
+                  <tr
+                    key={cliente.id}
+                    className="border-b border-line bg-surface-raised transition last:border-0 hover:bg-surface-soft"
+                  >
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <span className="grid h-10 w-10 place-items-center rounded-lg bg-brand-50 font-bold text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+                          {cliente.nombre.charAt(0).toUpperCase()}
+                        </span>
+                        <span className="max-w-64 font-semibold text-zinc-900 dark:text-zinc-100">
+                          {cliente.nombre}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-center font-semibold [font-variant-numeric:tabular-nums]">
+                      {cliente.localesCount}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-zinc-500 dark:text-zinc-400">
+                      {formatoFechaHora(cliente.updatedAt)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <EstadoCliente activo={cliente.activo} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => onVerLocales(cliente)}
+                          className="inline-flex min-h-11 items-center rounded-lg bg-brand-50 px-3 text-xs font-semibold text-brand-700 transition hover:bg-brand-100 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:bg-brand-950 dark:text-brand-300 dark:hover:bg-brand-900"
+                        >
+                          Ver locales
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => abrir(cliente)}
+                          aria-label={`Editar ${cliente.nombre}`}
+                          className="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface-raised text-muted transition hover:bg-surface-soft hover:text-foreground focus-visible:ring-2 focus-visible:ring-focus"
+                        >
+                          <IconoEditar />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setErrorEliminar(null);
+                            setEliminando(cliente);
+                          }}
+                          aria-label={`Eliminar ${cliente.nombre}`}
+                          className="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface-raised text-muted transition hover:border-red-300 hover:bg-red-50 hover:text-red-700 focus-visible:ring-2 focus-visible:ring-red-600 dark:hover:border-red-800 dark:hover:bg-red-950 dark:hover:text-red-300"
+                        >
+                          <IconoEliminar />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {datos && datos.total > 0 && (

@@ -1,5 +1,7 @@
 "use client";
 
+/* Hallmark · administración de usuarios en tarjetas táctiles para móvil. */
+
 import { useCallback, useEffect, useState } from "react";
 import type { CountryCode } from "libphonenumber-js";
 import { apiFetch, ApiError } from "@/lib/api";
@@ -43,6 +45,66 @@ const FORM_INICIAL: FormUsuario = {
   superiorId: "",
   isActive: true,
 };
+
+function ListaUsuariosMovil({
+  usuarios,
+  onEditar,
+}: {
+  usuarios: UsuarioAdmin[];
+  onEditar: (usuario: UsuarioAdmin) => void;
+}) {
+  return (
+    <ul className="mt-5 space-y-3 md:hidden" aria-label="Usuarios">
+      {usuarios.map((usuario) => (
+        <li
+          key={usuario.id}
+          className="rounded-xl border border-line bg-surface-raised p-4 [content-visibility:auto]"
+        >
+          <div className="flex min-w-0 items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate font-semibold text-foreground">
+                {usuario.nombre} {usuario.apellido}
+              </p>
+              <p className="mt-0.5 truncate text-xs text-muted">
+                {usuario.correo}
+              </p>
+            </div>
+            <span
+              className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${
+                usuario.isActive
+                  ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                  : "bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300"
+              }`}
+            >
+              {usuario.isActive ? "Activo" : "Inactivo"}
+            </span>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-2 border-t border-line pt-3 text-xs">
+            <p className="rounded-lg bg-surface-soft px-2.5 py-2 text-muted">
+              Rol:{" "}
+              <strong className="text-foreground">
+                {usuario.rol?.descripcion ?? "Sin rol"}
+              </strong>
+            </p>
+            <p className="truncate rounded-lg bg-surface-soft px-2.5 py-2 text-muted">
+              Superior:{" "}
+              <strong className="text-foreground">
+                {usuario.superior?.nombre ?? "Sin superior"}
+              </strong>
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onEditar(usuario)}
+            className={`${btnGhost} mt-3 min-h-11 w-full whitespace-nowrap`}
+          >
+            Editar usuario
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
 export function UsuariosPanel() {
   const [meta, setMeta] = useState<MetaUsuarios | null>(null);
@@ -155,7 +217,7 @@ export function UsuariosPanel() {
   );
 
   return (
-    <div>
+    <div className="w-full min-w-0">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-xl font-bold tracking-tight">Usuarios</h1>
@@ -196,7 +258,8 @@ export function UsuariosPanel() {
 
       {error && !editando && <p className={`${errorBox} mt-4`}>{error}</p>}
 
-      <div className="mt-5 overflow-x-auto rounded-xl border border-line bg-surface-raised">
+      <ListaUsuariosMovil usuarios={usuarios} onEditar={abrirEditar} />
+      <div className="mt-5 hidden overflow-x-auto rounded-xl border border-line bg-surface-raised md:block">
         <table className="min-w-full divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
           <thead className="bg-surface-soft text-left text-xs font-semibold uppercase text-foreground">
             <tr>

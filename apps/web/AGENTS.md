@@ -44,6 +44,27 @@ This version has breaking changes. APIs, conventions, and file structure may dif
 
 # Reglas de UI/UX de Comercia (OBLIGATORIAS — aplicarlas en TODO lo que se construya)
 
+## Vista móvil de tablas (OBLIGATORIA)
+
+- **Nunca forzar una tabla ancha en celular.** Toda tabla de más de tres
+  columnas, existente o nueva, debe tener una representación operativa para
+  pantallas menores a `md`: lista vertical (`md:hidden`) y tabla desde `md`
+  (`hidden md:block`). No usar scroll horizontal como experiencia principal en
+  teléfono.
+- La lista y la tabla consumen los **mismos `items` paginados, estado, filtros y
+  callbacks**: no duplicar peticiones ni crear una fuente de datos paralela.
+- Cada fila móvil muestra primero la identidad (nombre + contexto), luego entre
+  dos y cuatro datos prioritarios (estado, fecha/agenda, cantidades o progreso)
+  y por último la acción principal. Los detalles secundarios van en un
+  desplegable explícito, no en una tarjeta alta por defecto.
+- Mantener los objetivos tÃ¡ctiles en `min-h-11`, textos de botones en una sola
+  lÃ­nea (`whitespace-nowrap`), `w-full min-w-0` en el contenedor y colores con
+  soporte claro/oscuro. La vista mÃ³vil no puede causar scroll horizontal de la
+  pÃ¡gina.
+- Usar `aria-label` para las listas, `aria-expanded` / `aria-controls` en los
+  detalles expandibles y conservar las etiquetas accesibles de acciones. Para
+  listas largas, se puede aplicar `content-visibility: auto` a cada ítem.
+
 ## Elementos clickeables
 
 - **Todo** elemento clickeable (botón, link, opción de lista, fila accionable,

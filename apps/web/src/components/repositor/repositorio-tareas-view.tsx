@@ -1,7 +1,12 @@
 "use client";
 
+/* Hallmark · component: lista operativa de tareas · genre: utilitarian · theme: tokens Comercia
+ * states: default · hover · focus · active · disabled · loading · error · success
+ * contrast: pass (46–50) · pre-emit critique: P4 H5 E5 S5 R5 V4
+ */
+
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { PantallaCarga } from "@/components/pantalla-carga";
 import { Paginacion } from "@/components/paginacion";
 import { useRutaDiaria } from "@/components/repositor/ruta-diaria-contexto";
@@ -11,6 +16,11 @@ import { obtenerUbicacion } from "@/lib/geolocalizacion";
 import type { RespuestaPaginada } from "@/types/paginacion";
 import type { TareasLocalRepositor } from "@/types/repositor";
 import type { Visita } from "@/types/visita";
+import { formatoFechaHora } from "@/utils/fechas";
+import {
+  formatoFechaProgramacion,
+  resumenProgramacion,
+} from "@/utils/programacion-visita";
 
 const VisitaActiva = dynamic(
   () =>
@@ -19,6 +29,260 @@ const VisitaActiva = dynamic(
     ),
   { ssr: false },
 );
+
+interface DetalleTareasProps {
+  grupo: TareasLocalRepositor;
+}
+
+function DetalleTareas({ grupo }: DetalleTareasProps) {
+  return (
+    <div className="grid gap-5 lg:grid-cols-[minmax(220px,0.7fr)_minmax(0,1.3fr)]">
+      <section>
+        <h2 className="text-sm font-extrabold text-foreground">
+          Datos del local
+        </h2>
+        <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-1">
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-muted">
+              Zona
+            </dt>
+            <dd className="mt-0.5 font-medium text-foreground">
+              {grupo.local.zona?.nombre ?? "Sin zona asignada"}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-muted">
+              Fecha puntual
+            </dt>
+            <dd className="mt-0.5 font-medium text-foreground">
+              {formatoFechaHora(grupo.local.fechaVisita)}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-wide text-muted">
+              Evidencia de presencia
+            </dt>
+            <dd className="mt-0.5 font-medium text-foreground">
+              {grupo.local.requiereFotoPresencia
+                ? "Foto obligatoria al finalizar"
+                : "No requiere foto al finalizar"}
+            </dd>
+          </div>
+        </dl>
+      </section>
+      <section>
+        <h2 className="text-sm font-extrabold text-foreground">
+          Tareas del checklist
+        </h2>
+        {grupo.tareas.length === 0 ? (
+          <p className="mt-3 text-sm text-muted">
+            Este cliente no tiene tareas activas.
+          </p>
+        ) : (
+          <ol className="mt-3 divide-y divide-line rounded-xl border border-line bg-surface-raised">
+            {grupo.tareas.map((tarea) => (
+              <li key={tarea.id} className="flex gap-3 p-3">
+                <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 border-accent text-xs font-black text-accent-ink">
+                  {tarea.orden}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-bold text-foreground">{tarea.titulo}</p>
+                  <p className="mt-0.5 text-xs leading-relaxed text-muted">
+                    {tarea.descripcion || "Sin instrucciones adicionales"}
+                  </p>
+                </div>
+                <span
+                  className={`h-fit rounded-full px-2 py-1 text-[11px] font-bold ${
+                    tarea.requiereFoto
+                      ? "bg-[var(--accent-soft)] text-accent-ink"
+                      : "bg-surface-soft text-muted"
+                  }`}
+                >
+                  {tarea.requiereFoto ? "Foto requerida" : "Sin foto"}
+                </span>
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
+    </div>
+  );
+}
+
+interface ListaTareasMovilProps {
+  grupos: TareasLocalRepositor[];
+  abiertoId: number | null;
+  iniciandoLocalId: number | null;
+  onAlternarDetalle: (localId: number) => void;
+  onAbrirVisita: (grupo: TareasLocalRepositor) => void;
+}
+
+function ListaTareasMovil({
+  grupos,
+  abiertoId,
+  iniciandoLocalId,
+  onAlternarDetalle,
+  onAbrirVisita,
+}: ListaTareasMovilProps) {
+  return (
+    <ul className="space-y-3 md:hidden" aria-label="Tareas asignadas por local">
+      {grupos.map((grupo) => {
+        const expandido = abiertoId === grupo.local.id;
+        const total = grupo.tareas.length;
+        const tareasConFoto = grupo.tareas.filter(
+          (tarea) => tarea.requiereFoto,
+        ).length;
+        const progreso = grupo.visitaCompletadaHoy
+          ? 100
+          : total === 0
+            ? 0
+            : Math.round((grupo.completadasEnVisita / total) * 100);
+        const visitaEnCurso = grupo.visitaAbiertaId !== null;
+        const deshabilitado = grupo.visitaCompletadaHoy;
+        const agenda = grupo.local.programacion
+          ? resumenProgramacion(grupo.local.programacion)
+          : grupo.local.fechaVisita
+            ? formatoFechaHora(grupo.local.fechaVisita)
+            : "Sin fecha asignada";
+        const detalleId = `tareas-local-mobile-${grupo.local.id}`;
+
+        return (
+          <li
+            key={grupo.local.id}
+            className="[contain-intrinsic-size:auto_9rem] [content-visibility:auto]"
+          >
+            <article
+              className={`overflow-hidden rounded-2xl border bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)] ${
+                deshabilitado
+                  ? "border-brand-200 dark:border-brand-900"
+                  : visitaEnCurso
+                    ? "border-accent"
+                    : "border-line"
+              }`}
+            >
+              <div className="space-y-3 p-4">
+                <div className="flex min-w-0 items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate text-xs font-bold uppercase tracking-wide text-accent-ink">
+                      {grupo.local.cliente.nombre}
+                    </p>
+                    <h2 className="mt-0.5 truncate text-base font-extrabold text-foreground">
+                      {grupo.local.nombre}
+                    </h2>
+                    <p className="mt-1 text-xs text-muted">
+                      {grupo.local.zona?.nombre ?? "Sin zona asignada"}
+                    </p>
+                  </div>
+                  <span
+                    className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ${
+                      deshabilitado
+                        ? "bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-200"
+                        : visitaEnCurso
+                          ? "bg-[var(--accent-soft)] text-accent-ink"
+                          : "bg-surface-soft text-muted"
+                    }`}
+                  >
+                    {deshabilitado
+                      ? "Completada"
+                      : visitaEnCurso
+                        ? "En curso"
+                        : "Pendiente"}
+                  </span>
+                </div>
+
+                <div className="rounded-xl bg-surface-soft px-3 py-2.5">
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+                    Agenda
+                  </p>
+                  <p className="mt-0.5 text-sm font-semibold leading-snug text-foreground">
+                    {agenda}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+                      Checklist
+                    </p>
+                    <p className="mt-0.5 text-sm font-bold tabular-nums text-foreground">
+                      {grupo.completadasEnVisita}/{total} tareas
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+                      Evidencia
+                    </p>
+                    <p className="mt-0.5 text-sm font-bold text-foreground">
+                      {tareasConFoto > 0
+                        ? `${tareasConFoto} con foto`
+                        : grupo.local.requiereFotoPresencia
+                          ? "Foto final"
+                          : "No requiere"}
+                    </p>
+                  </div>
+                </div>
+
+                <div
+                  className="h-1.5 overflow-hidden rounded-full bg-surface-soft"
+                  role="progressbar"
+                  aria-label={`Progreso de tareas de ${grupo.local.nombre}`}
+                  aria-valuemin={0}
+                  aria-valuemax={total}
+                  aria-valuenow={grupo.completadasEnVisita}
+                >
+                  <div
+                    style={{ width: `${progreso}%` }}
+                    className={`h-full rounded-full ${
+                      deshabilitado ? "bg-brand-600" : "bg-accent"
+                    }`}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onAlternarDetalle(grupo.local.id)}
+                    aria-expanded={expandido}
+                    aria-controls={detalleId}
+                    className="min-h-11 min-w-0 whitespace-nowrap rounded-xl border border-control-line bg-surface-raised px-3 text-xs font-bold text-foreground transition hover:bg-surface-soft active:translate-y-px focus-visible:ring-2 focus-visible:ring-focus"
+                  >
+                    {expandido ? "Ocultar" : "Ver detalle"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onAbrirVisita(grupo)}
+                    disabled={deshabilitado || iniciandoLocalId !== null}
+                    className={`min-h-11 min-w-0 whitespace-nowrap rounded-xl px-3 text-xs font-extrabold transition active:translate-y-px focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-55 disabled:active:translate-y-0 ${
+                      deshabilitado
+                        ? "border border-line bg-surface-soft text-muted"
+                        : visitaEnCurso
+                          ? "bg-accent text-brand-950 hover:brightness-105"
+                          : "bg-brand-700 text-white hover:bg-brand-800"
+                    }`}
+                  >
+                    {iniciandoLocalId === grupo.local.id
+                      ? "Verificando GPS…"
+                      : visitaEnCurso
+                        ? "Continuar visita"
+                        : deshabilitado
+                          ? "Completada"
+                          : "Iniciar visita"}
+                  </button>
+                </div>
+              </div>
+
+              {expandido ? (
+                <div id={detalleId} className="border-t border-line p-4">
+                  <DetalleTareas grupo={grupo} />
+                </div>
+              ) : null}
+            </article>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
 
 export function RepositorTareasView() {
   const { invalidarRuta } = useRutaDiaria();
@@ -107,6 +371,10 @@ export function RepositorTareasView() {
     setRefresco((actual) => actual + 1);
   }
 
+  function alternarDetalle(localId: number) {
+    setAbierto((actual) => (actual === localId ? null : localId));
+  }
+
   function visitaFinalizada() {
     invalidarRuta();
     refrescarTareas();
@@ -114,7 +382,7 @@ export function RepositorTareasView() {
 
   return (
     <div
-      className="space-y-4 sm:space-y-5"
+      className="w-full min-w-0 space-y-4 sm:space-y-5"
       aria-busy={iniciandoLocalId !== null}
     >
       <section className="relative overflow-hidden rounded-2xl border border-brand-800 bg-commercial-ink p-4 text-white shadow-[0_16px_40px_rgba(var(--warm-shadow),0.18)] sm:p-5">
@@ -152,147 +420,183 @@ export function RepositorTareasView() {
         </div>
       ) : (
         <>
-          <div className="space-y-3">
-            {respuesta.items.map((grupo) => {
-              const expandido = abierto === grupo.local.id;
-              const total = grupo.tareas.length;
-              const progreso = grupo.visitaCompletadaHoy
-                ? 100
-                : total === 0
-                  ? 0
-                  : Math.round((grupo.completadasEnVisita / total) * 100);
-              const visitaEnCurso = grupo.visitaAbiertaId !== null;
-              const deshabilitado = grupo.visitaCompletadaHoy;
-              return (
-                <article
-                  key={grupo.local.id}
-                  className={`overflow-hidden rounded-2xl border bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)] ${
-                    deshabilitado
-                      ? "border-brand-200 opacity-70 dark:border-brand-900"
-                      : visitaEnCurso
-                        ? "border-accent"
-                        : "border-line"
-                  }`}
-                >
-                  <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:p-5">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setAbierto(expandido ? null : grupo.local.id)
-                      }
-                      aria-expanded={expandido}
-                      aria-controls={`tareas-local-${grupo.local.id}`}
-                      disabled={deshabilitado}
-                      className="flex min-h-20 min-w-0 flex-1 items-center gap-3 rounded-xl text-left transition hover:bg-surface-soft active:bg-[var(--accent-soft)] focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-70 sm:pr-3"
-                    >
-                      <div
-                        className={`relative grid h-14 w-14 shrink-0 place-items-center rounded-2xl font-black ${
+          <ListaTareasMovil
+            grupos={respuesta.items}
+            abiertoId={abierto}
+            iniciandoLocalId={iniciandoLocalId}
+            onAlternarDetalle={alternarDetalle}
+            onAbrirVisita={(grupo) => void abrirVisita(grupo)}
+          />
+          <div className="hidden overflow-x-auto rounded-2xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)] md:block">
+            <table
+              className="w-full min-w-[980px] text-left text-sm"
+              aria-label="Tareas asignadas por local"
+            >
+              <thead className="bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
+                <tr className="border-b border-line">
+                  <th scope="col" className="px-4 py-3 font-medium">
+                    Local y cliente
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-medium">
+                    Agenda
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-medium">
+                    Checklist
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-medium">
+                    Estado
+                  </th>
+                  <th scope="col" className="px-4 py-3 text-right font-medium">
+                    Acciones
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {respuesta.items.map((grupo) => {
+                  const expandido = abierto === grupo.local.id;
+                  const total = grupo.tareas.length;
+                  const progreso = grupo.visitaCompletadaHoy
+                    ? 100
+                    : total === 0
+                      ? 0
+                      : Math.round((grupo.completadasEnVisita / total) * 100);
+                  const visitaEnCurso = grupo.visitaAbiertaId !== null;
+                  const deshabilitado = grupo.visitaCompletadaHoy;
+                  const agenda = grupo.local.programacion
+                    ? resumenProgramacion(grupo.local.programacion)
+                    : grupo.local.fechaVisita
+                      ? formatoFechaHora(grupo.local.fechaVisita)
+                      : "Sin fecha asignada";
+                  return (
+                    <Fragment key={grupo.local.id}>
+                      <tr
+                        className={`border-b border-line align-top transition hover:bg-surface-soft ${
                           deshabilitado
-                            ? "bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-200"
-                            : "bg-[var(--accent-soft)] text-accent-ink"
+                            ? "bg-surface-soft/50"
+                            : "bg-surface-raised"
                         }`}
                       >
-                        {deshabilitado ? "✓" : total}
-                        {visitaEnCurso ? (
-                          <span className="absolute -right-1 -top-1 h-3 w-3 animate-pulse rounded-full bg-brand-600 ring-4 ring-surface-raised" />
-                        ) : null}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-xs font-bold uppercase tracking-wide text-accent-ink">
-                          {grupo.local.cliente.nombre}
-                        </p>
-                        <h2 className="truncate font-extrabold text-foreground">
-                          {grupo.local.nombre}
-                        </h2>
-                        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-soft">
-                          <div
-                            style={{ width: `${progreso}%` }}
-                            className={`h-full rounded-full ${
-                              deshabilitado ? "bg-brand-600" : "bg-accent"
+                        <td className="px-4 py-4">
+                          <p className="font-bold text-foreground">
+                            {grupo.local.nombre}
+                          </p>
+                          <p className="mt-0.5 text-xs text-muted">
+                            {grupo.local.cliente.nombre}
+                            {grupo.local.zona
+                              ? ` · ${grupo.local.zona.nombre}`
+                              : " · Sin zona"}
+                          </p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <p className="max-w-64 font-medium text-foreground">
+                            {agenda}
+                          </p>
+                          {grupo.local.programacion ? (
+                            <p className="mt-1 text-xs text-muted">
+                              Desde{" "}
+                              {formatoFechaProgramacion(
+                                grupo.local.programacion.fechaInicio,
+                              )}
+                              {grupo.local.programacion.fechaFin
+                                ? ` hasta ${formatoFechaProgramacion(grupo.local.programacion.fechaFin)}`
+                                : ""}
+                            </p>
+                          ) : null}
+                        </td>
+                        <td className="px-4 py-4">
+                          <p className="font-semibold tabular-nums text-foreground">
+                            {total} {total === 1 ? "tarea" : "tareas"}
+                          </p>
+                          <p className="mt-0.5 text-xs text-muted">
+                            {
+                              grupo.tareas.filter((tarea) => tarea.requiereFoto)
+                                .length
+                            }{" "}
+                            con foto requerida
+                            {grupo.local.requiereFotoPresencia
+                              ? " · Foto al finalizar"
+                              : ""}
+                          </p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span
+                            className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${
+                              deshabilitado
+                                ? "bg-brand-100 text-brand-800 dark:bg-brand-950 dark:text-brand-200"
+                                : visitaEnCurso
+                                  ? "bg-[var(--accent-soft)] text-accent-ink"
+                                  : "bg-surface-soft text-muted"
                             }`}
-                          />
-                        </div>
-                        <p className="mt-1 text-[11px] font-semibold text-muted">
-                          {deshabilitado
-                            ? "Visita completada hoy"
-                            : visitaEnCurso
-                              ? `${grupo.completadasEnVisita}/${total} tareas completadas`
-                              : `${total} ${total === 1 ? "tarea pendiente" : "tareas pendientes"}`}
-                        </p>
-                      </div>
-                      <svg
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className={`h-5 w-5 shrink-0 text-muted transition-transform ${
-                          expandido ? "rotate-180" : ""
-                        }`}
-                        aria-hidden
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => void abrirVisita(grupo)}
-                      disabled={deshabilitado || iniciandoLocalId !== null}
-                      className={`inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-xl px-4 text-sm font-extrabold transition active:translate-y-px focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-55 disabled:active:translate-y-0 ${
-                        deshabilitado
-                          ? "border border-line bg-surface-soft text-muted"
-                          : visitaEnCurso
-                            ? "bg-accent text-brand-950 hover:brightness-105"
-                            : "bg-brand-700 text-white hover:bg-brand-800"
-                      }`}
-                    >
-                      {deshabilitado
-                        ? "Completada"
-                        : iniciandoLocalId === grupo.local.id
-                          ? "Verificando GPS…"
-                          : visitaEnCurso
-                            ? "Continuar visita"
-                            : "Iniciar visita"}
-                    </button>
-                  </div>
-
-                  {expandido && !deshabilitado ? (
-                    <div
-                      id={`tareas-local-${grupo.local.id}`}
-                      className="border-t border-line"
-                    >
-                      <ul className="divide-y divide-line px-4 sm:px-5">
-                        {grupo.tareas.length === 0 ? (
-                          <li className="text-sm text-muted">
-                            Este cliente no tiene tareas activas.
-                          </li>
-                        ) : (
-                          grupo.tareas.map((tarea, posicion) => (
-                            <li key={tarea.id} className="flex gap-3 py-3.5">
-                              <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border-2 border-accent text-xs font-black text-accent-ink">
-                                {posicion + 1}
-                              </span>
-                              <div className="min-w-0">
-                                <p className="text-sm font-bold">
-                                  {tarea.titulo}
-                                </p>
-                                <p className="mt-0.5 text-xs leading-relaxed text-muted">
-                                  {tarea.descripcion ||
-                                    "Sin instrucciones adicionales"}
-                                  {tarea.requiereFoto ? " · Requiere foto" : ""}
-                                </p>
-                              </div>
-                            </li>
-                          ))
-                        )}
-                      </ul>
-                    </div>
-                  ) : null}
-                </article>
-              );
-            })}
+                          >
+                            {deshabilitado
+                              ? "Visita completada"
+                              : visitaEnCurso
+                                ? "Visita en curso"
+                                : "Pendiente"}
+                          </span>
+                          <div className="mt-2 h-1.5 w-28 overflow-hidden rounded-full bg-surface-soft">
+                            <div
+                              style={{ width: `${progreso}%` }}
+                              className={`h-full rounded-full ${
+                                deshabilitado ? "bg-brand-600" : "bg-accent"
+                              }`}
+                            />
+                          </div>
+                          <p className="mt-1 text-xs tabular-nums text-muted">
+                            {grupo.completadasEnVisita}/{total} completadas
+                          </p>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="flex min-w-40 flex-col items-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => alternarDetalle(grupo.local.id)}
+                              aria-expanded={expandido}
+                              aria-controls={`tareas-local-table-${grupo.local.id}`}
+                              className="min-h-10 whitespace-nowrap rounded-lg border border-control-line bg-surface-raised px-3 text-xs font-bold text-foreground transition hover:bg-surface-soft focus-visible:ring-2 focus-visible:ring-focus"
+                            >
+                              {expandido ? "Ocultar detalle" : "Ver detalle"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => void abrirVisita(grupo)}
+                              disabled={
+                                deshabilitado || iniciandoLocalId !== null
+                              }
+                              className={`min-h-11 whitespace-nowrap rounded-lg px-3 text-xs font-extrabold transition active:translate-y-px focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-55 disabled:active:translate-y-0 ${
+                                deshabilitado
+                                  ? "border border-line bg-surface-soft text-muted"
+                                  : visitaEnCurso
+                                    ? "bg-accent text-brand-950 hover:brightness-105"
+                                    : "bg-brand-700 text-white hover:bg-brand-800"
+                              }`}
+                            >
+                              {iniciandoLocalId === grupo.local.id
+                                ? "Verificando GPS…"
+                                : visitaEnCurso
+                                  ? "Continuar visita"
+                                  : deshabilitado
+                                    ? "Completada"
+                                    : "Iniciar visita"}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                      {expandido ? (
+                        <tr
+                          id={`tareas-local-table-${grupo.local.id}`}
+                          className="border-b border-line bg-surface-soft/60"
+                        >
+                          <td colSpan={5} className="p-4 sm:p-5">
+                            <DetalleTareas grupo={grupo} />
+                          </td>
+                        </tr>
+                      ) : null}
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
           <Paginacion
             page={respuesta.page}

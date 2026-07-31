@@ -1,5 +1,7 @@
 "use client";
 
+/* Hallmark · prioridades y alcance visibles en una lista móvil compacta. */
+
 import { useCallback, useEffect, useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
 import { IconoMas } from "@/components/icono-mas";
@@ -34,6 +36,80 @@ const FORM_INICIAL: FormTarea = {
   orden: 0,
   activo: true,
 };
+
+function ListaTareasGlobalesMovil({
+  tareas,
+  onEditar,
+}: {
+  tareas: TareaGlobal[];
+  onEditar: (tarea: TareaGlobal) => void;
+}) {
+  return (
+    <ul className="mt-5 space-y-3 md:hidden" aria-label="Tareas">
+      {tareas.map((tarea) => {
+        const completa = tarea.clientesAsignados === tarea.clientesEmpresa;
+        return (
+          <li
+            key={tarea.id}
+            className="rounded-xl border border-line bg-surface-raised p-4 [content-visibility:auto]"
+          >
+            <div className="flex items-start gap-3">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-brand-50 text-sm font-bold text-brand-700 dark:bg-brand-950 dark:text-brand-300">
+                {tarea.orden}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p
+                  className={`font-semibold ${
+                    tarea.activo ? "text-foreground" : "text-muted line-through"
+                  }`}
+                >
+                  {tarea.titulo}
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-muted">
+                  {tarea.descripcion}
+                </p>
+              </div>
+              <span
+                className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${
+                  tarea.activo
+                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                    : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                }`}
+              >
+                {tarea.activo ? "Activa" : "Inactiva"}
+              </span>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2 border-t border-line pt-3 text-xs">
+              <p className="rounded-lg bg-surface-soft px-2.5 py-2 text-muted">
+                Foto:{" "}
+                <strong className="text-foreground">
+                  {tarea.requiereFoto ? "requerida" : "no requerida"}
+                </strong>
+              </p>
+              <p
+                className={`rounded-lg bg-surface-soft px-2.5 py-2 ${
+                  completa
+                    ? "text-muted"
+                    : "font-medium text-amber-700 dark:text-amber-300"
+                }`}
+              >
+                {tarea.clientesAsignados}/{tarea.clientesEmpresa} clientes ·{" "}
+                {tarea.localesEmpresa} locales
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => onEditar(tarea)}
+              className={`${btnGhost} mt-3 min-h-11 w-full whitespace-nowrap`}
+            >
+              Editar tarea
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
 
 export function TareasView({
   filtrosIniciales,
@@ -130,7 +206,7 @@ function TareasAdministracionView() {
   }
 
   return (
-    <div>
+    <div className="w-full min-w-0">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-xl font-bold">Tareas</h1>
@@ -156,103 +232,106 @@ function TareasAdministracionView() {
       )}
 
       {datos && datos.items.length > 0 && (
-        <div className="mt-5 overflow-x-auto rounded-xl border border-line bg-surface-raised">
-          <table className="w-full min-w-[860px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-line bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
-                <th
-                  scope="col"
-                  className="w-20 px-4 py-3 text-center font-medium"
-                >
-                  Orden
-                </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Tarea
-                </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Estado
-                </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Foto
-                </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Alcance
-                </th>
-                <th scope="col" className="px-4 py-3 text-right font-medium">
-                  Acción
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {datos.items.map((tarea) => {
-                const completa =
-                  tarea.clientesAsignados === tarea.clientesEmpresa;
-                return (
-                  <tr
-                    key={tarea.id}
-                    className="border-b border-line bg-surface-raised align-top transition last:border-0 hover:bg-surface-soft"
+        <>
+          <ListaTareasGlobalesMovil tareas={datos.items} onEditar={abrir} />
+          <div className="mt-5 hidden overflow-x-auto rounded-xl border border-line bg-surface-raised md:block">
+            <table className="w-full min-w-[860px] text-left text-sm">
+              <thead>
+                <tr className="border-b border-line bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
+                  <th
+                    scope="col"
+                    className="w-20 px-4 py-3 text-center font-medium"
                   >
-                    <td className="px-4 py-3 text-center font-semibold text-brand-700 [font-variant-numeric:tabular-nums] dark:text-brand-300">
-                      {tarea.orden}
-                    </td>
-                    <td className="max-w-md px-4 py-3">
-                      <p
-                        className={`font-semibold ${
-                          tarea.activo
-                            ? "text-zinc-900 dark:text-zinc-100"
-                            : "text-zinc-400 line-through dark:text-zinc-500"
-                        }`}
-                      >
-                        {tarea.titulo}
-                      </p>
-                      <p className="mt-0.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-                        {tarea.descripcion}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
-                          tarea.activo
-                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                            : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
-                        }`}
-                      >
-                        {tarea.activo ? "Activa" : "Inactiva"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
-                      {tarea.requiereFoto ? "Requerida" : "No"}
-                    </td>
-                    <td
-                      className={`px-4 py-3 text-xs ${
-                        completa
-                          ? "text-zinc-500 dark:text-zinc-400"
-                          : "font-medium text-amber-700 dark:text-amber-300"
-                      }`}
+                    Orden
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-medium">
+                    Tarea
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-medium">
+                    Estado
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-medium">
+                    Foto
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-medium">
+                    Alcance
+                  </th>
+                  <th scope="col" className="px-4 py-3 text-right font-medium">
+                    Acción
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {datos.items.map((tarea) => {
+                  const completa =
+                    tarea.clientesAsignados === tarea.clientesEmpresa;
+                  return (
+                    <tr
+                      key={tarea.id}
+                      className="border-b border-line bg-surface-raised align-top transition last:border-0 hover:bg-surface-soft"
                     >
-                      <span className="block whitespace-nowrap">
-                        {tarea.clientesAsignados}/{tarea.clientesEmpresa}{" "}
-                        clientes
-                      </span>
-                      <span className="mt-0.5 block whitespace-nowrap">
-                        {tarea.localesEmpresa} locales
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        type="button"
-                        onClick={() => abrir(tarea)}
-                        className={`${btnGhost} min-h-11 whitespace-nowrap`}
+                      <td className="px-4 py-3 text-center font-semibold text-brand-700 [font-variant-numeric:tabular-nums] dark:text-brand-300">
+                        {tarea.orden}
+                      </td>
+                      <td className="max-w-md px-4 py-3">
+                        <p
+                          className={`font-semibold ${
+                            tarea.activo
+                              ? "text-zinc-900 dark:text-zinc-100"
+                              : "text-zinc-400 line-through dark:text-zinc-500"
+                          }`}
+                        >
+                          {tarea.titulo}
+                        </p>
+                        <p className="mt-0.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+                          {tarea.descripcion}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
+                            tarea.activo
+                              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                              : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                          }`}
+                        >
+                          {tarea.activo ? "Activa" : "Inactiva"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
+                        {tarea.requiereFoto ? "Requerida" : "No"}
+                      </td>
+                      <td
+                        className={`px-4 py-3 text-xs ${
+                          completa
+                            ? "text-zinc-500 dark:text-zinc-400"
+                            : "font-medium text-amber-700 dark:text-amber-300"
+                        }`}
                       >
-                        Editar
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                        <span className="block whitespace-nowrap">
+                          {tarea.clientesAsignados}/{tarea.clientesEmpresa}{" "}
+                          clientes
+                        </span>
+                        <span className="mt-0.5 block whitespace-nowrap">
+                          {tarea.localesEmpresa} locales
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => abrir(tarea)}
+                          className={`${btnGhost} min-h-11 whitespace-nowrap`}
+                        >
+                          Editar
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {datos && datos.items.length === 0 && (

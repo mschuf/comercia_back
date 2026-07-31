@@ -1,5 +1,7 @@
 "use client";
 
+/* Hallmark · comparativos en tarjetas legibles en móvil, tabla preservada en escritorio. */
+
 import { useEffect, useState } from "react";
 import { Paginacion } from "@/components/paginacion";
 import { ApiError, apiFetch } from "@/lib/api";
@@ -17,6 +19,54 @@ function consultaFechas(desde: string, hasta: string): string {
   if (hasta) parametros.set("hasta", hasta);
   const consulta = parametros.toString();
   return consulta ? `&${consulta}` : "";
+}
+
+function ListaKpisMovil({
+  items,
+  agrupadoPor,
+}: {
+  items: KpiVisitasDetalle[];
+  agrupadoPor: AgrupacionKpiVisita;
+}) {
+  const etiquetaAlcance = agrupadoPor === "USUARIO" ? "locales" : "repositores";
+  return (
+    <ul className="space-y-3 md:hidden" aria-label="Promedios comparativos">
+      {items.map((item) => (
+        <li
+          key={`${item.agrupadoPor}-${item.entidadId}`}
+          className="rounded-2xl border border-line bg-surface-raised p-4 [content-visibility:auto]"
+        >
+          <p className="font-semibold text-foreground">{item.nombre}</p>
+          {item.detalle ? (
+            <p className="mt-0.5 text-xs text-muted">{item.detalle}</p>
+          ) : null}
+          <div className="mt-3 grid grid-cols-3 gap-2 border-t border-line pt-3 text-center text-xs">
+            <p className="rounded-lg bg-surface-soft px-2 py-2 text-muted">
+              <strong className="block text-sm text-foreground">
+                {item.visitas}
+              </strong>
+              visitas
+            </p>
+            <p className="rounded-lg bg-surface-soft px-2 py-2 text-muted">
+              <strong className="block text-sm text-foreground">
+                {formatoDuracionMinutos(item.duracionPromedioMinutos)}
+              </strong>
+              promedio
+            </p>
+            <p className="rounded-lg bg-surface-soft px-2 py-2 text-muted">
+              <strong className="block text-sm text-foreground">
+                {item.cumplimientoPorcentaje}%
+              </strong>
+              checklist
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-muted">
+            {item.entidadesRelacionadas} {etiquetaAlcance}
+          </p>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 export function KpisVisitas() {
@@ -228,7 +278,8 @@ export function KpisVisitas() {
           <div className="h-56 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
         ) : detalle && detalle.items.length > 0 ? (
           <>
-            <div className="overflow-x-auto rounded-2xl border border-line bg-surface-raised">
+            <ListaKpisMovil items={detalle.items} agrupadoPor={agrupadoPor} />
+            <div className="hidden overflow-x-auto rounded-2xl border border-line bg-surface-raised md:block">
               <table className="w-full min-w-[720px] text-left text-sm">
                 <thead className="bg-surface-soft">
                   <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">

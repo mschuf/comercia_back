@@ -76,6 +76,10 @@ describe('RepositorService', () => {
       {
         id: 10,
         nombre: 'Local Centro',
+        fechaVisita: new Date('2026-07-30T18:00:00.000Z'),
+        requiereFotoPresencia: true,
+        zona: { id: 4, nombre: 'Centro' },
+        programacionVisita: null,
         cliente: {
           id: 20,
           nombre: 'Cliente Uno',
@@ -103,6 +107,12 @@ describe('RepositorService', () => {
       const respuesta = await service.tareas(1, { page: 1, limit: 7 });
 
       expect(respuesta.items[0]).toMatchObject({
+        local: {
+          zona: { id: 4, nombre: 'Centro' },
+          fechaVisita: '2026-07-30T18:00:00.000Z',
+          programacion: null,
+          requiereFotoPresencia: true,
+        },
         visitaAbiertaId: null,
         visitaCompletadaHoy: true,
         completadasEnVisita: 0,

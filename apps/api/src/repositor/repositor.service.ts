@@ -216,6 +216,10 @@ export class RepositorService {
         select: {
           id: true,
           nombre: true,
+          fechaVisita: true,
+          requiereFotoPresencia: true,
+          zona: { select: { id: true, nombre: true } },
+          programacionVisita: true,
           cliente: {
             select: {
               id: true,
@@ -263,6 +267,12 @@ export class RepositorService {
             id: local.id,
             nombre: local.nombre,
             cliente: { id: local.cliente.id, nombre: local.cliente.nombre },
+            zona: local.zona,
+            fechaVisita: local.fechaVisita?.toISOString() ?? null,
+            programacion: local.programacionVisita
+              ? aProgramacionVisitaDto(local.programacionVisita)
+              : null,
+            requiereFotoPresencia: local.requiereFotoPresencia,
           },
           tareas: local.cliente.tareas,
           completadasEnVisita:

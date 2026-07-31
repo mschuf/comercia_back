@@ -1,5 +1,7 @@
 "use client";
 
+/* Hallmark · agenda e historial con filas móviles de lectura rápida y acciones amplias. */
+
 import { useEffect, useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
 import { urlFotoVisita } from "@/lib/api-archivos";
@@ -114,6 +116,140 @@ function BotonFoto({
   );
 }
 
+function ListaProgramacionMovil({
+  locales,
+  onEditar,
+}: {
+  locales: VisitaEquipoLocal[];
+  onEditar: (local: VisitaEquipoLocal) => void;
+}) {
+  return (
+    <ul className="space-y-3 md:hidden" aria-label="Agenda de visitas">
+      {locales.map((local) => {
+        const ultima = local.ultimaVisita;
+        const estado = !local.activo
+          ? "Local inactivo"
+          : local.programacion?.activo === false
+            ? "Pausada"
+            : local.programacion
+              ? "Programada"
+              : "Sin programar";
+        return (
+          <li
+            key={local.localId}
+            className="rounded-xl border border-line bg-surface-raised p-4 [content-visibility:auto]"
+          >
+            <div className="flex min-w-0 items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate font-semibold text-foreground">
+                  {local.localNombre}
+                </p>
+                <p className="mt-0.5 truncate text-xs text-muted">
+                  {local.clienteNombre} · {local.zona?.nombre ?? "Sin zona"}
+                </p>
+              </div>
+              <span className={claseProximaVisita(local.fechaVisita)}>
+                {formatoFechaHora(local.fechaVisita)}
+              </span>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2 border-t border-line pt-3 text-xs">
+              <p className="rounded-lg bg-surface-soft px-2.5 py-2 text-muted">
+                Asignado:{" "}
+                <strong className="text-foreground">
+                  {local.asignadoA?.nombre ?? "Sin asignar"}
+                </strong>
+              </p>
+              <p className="rounded-lg bg-surface-soft px-2.5 py-2 text-muted">
+                Estado: <strong className="text-foreground">{estado}</strong>
+              </p>
+            </div>
+            <p className="mt-3 text-sm text-foreground">
+              {resumenProgramacion(local.programacion)}
+            </p>
+            {ultima ? (
+              <p className="mt-1 text-xs text-muted">
+                Última: {formatoFechaHora(ultima.iniciadaEn)} ·{" "}
+                {ultima.tareasCompletadas}/{ultima.tareasTotal} tareas
+              </p>
+            ) : null}
+            <button
+              type="button"
+              onClick={() => onEditar(local)}
+              className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-control-line bg-surface-raised px-3 text-sm font-medium text-foreground transition hover:border-brand-500 hover:bg-surface-soft focus-visible:ring-2 focus-visible:ring-focus"
+            >
+              <IconoEditar />{" "}
+              {local.programacion ? "Editar programación" : "Programar visita"}
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+function ListaHistorialMovil({
+  visitas,
+  onVerFoto,
+}: {
+  visitas: VisitaResumen[];
+  onVerFoto: (nombre: string) => void;
+}) {
+  return (
+    <ul className="space-y-3 md:hidden" aria-label="Historial de visitas">
+      {visitas.map((visita) => (
+        <li
+          key={visita.id}
+          className="rounded-xl border border-line bg-surface-raised p-4 [content-visibility:auto]"
+        >
+          <div className="flex min-w-0 items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate font-semibold text-foreground">
+                {visita.localNombre}
+              </p>
+              <p className="mt-0.5 truncate text-xs text-muted">
+                {visita.clienteNombre} · {visita.usuarioNombre}
+              </p>
+            </div>
+            <EstadoVisita visita={visita} />
+          </div>
+          <p className="mt-3 text-xs text-muted">
+            Inició {formatoFechaHora(visita.iniciadaEn)}
+          </p>
+          <div className="mt-3 grid grid-cols-3 gap-2 border-t border-line pt-3 text-center text-xs">
+            <p className="rounded-lg bg-surface-soft px-2 py-2 text-muted">
+              <strong className="block text-sm text-foreground">
+                {formatoDuracionMinutos(visita.duracionMinutos)}
+              </strong>
+              duración
+            </p>
+            <p className="rounded-lg bg-surface-soft px-2 py-2 text-muted">
+              <strong className="block text-sm text-foreground">
+                {Math.round(visita.distanciaMetros)} m
+              </strong>
+              distancia
+            </p>
+            <p className="rounded-lg bg-surface-soft px-2 py-2 text-muted">
+              <strong className="block text-sm text-foreground">
+                {visita.tareasCompletadas}/{visita.tareasTotal}
+              </strong>
+              checklist
+            </p>
+          </div>
+          {visita.fotoPresencia ? (
+            <button
+              type="button"
+              onClick={() => onVerFoto(visita.fotoPresencia!)}
+              className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-line text-sm font-semibold text-brand-700 transition hover:bg-brand-50 focus-visible:ring-2 focus-visible:ring-brand-600/40 dark:text-brand-300 dark:hover:bg-brand-950"
+            >
+              Ver foto de presencia
+            </button>
+          ) : null}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function VisitasView() {
   const [tab, setTab] = useState<Tab>("kpis");
   // se incrementa al finalizar una visita para refrescar ambos listados
@@ -208,7 +344,7 @@ export function VisitasView() {
     }`;
 
   return (
-    <div>
+    <div className="w-full min-w-0">
       <div className="flex gap-1 border-b border-zinc-200 dark:border-zinc-800">
         <button
           type="button"
@@ -268,146 +404,153 @@ export function VisitasView() {
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-line bg-surface-raised">
-                  <table className="w-full min-w-[1080px] text-left text-sm">
-                    <thead>
-                      <tr className="border-b border-line bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Local
-                        </th>
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Asignación
-                        </th>
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Programación
-                        </th>
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Próxima visita
-                        </th>
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Última visita
-                        </th>
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Estado
-                        </th>
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Duración
-                        </th>
-                        <th
-                          scope="col"
-                          className="px-4 py-3 text-right font-medium"
-                        >
-                          Acción
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {itemsEquipo.map((l) => {
-                        const ultima = l.ultimaVisita;
-                        return (
-                          <tr
-                            key={l.localId}
-                            className="border-b border-line bg-surface-raised align-middle transition last:border-0 hover:bg-surface-soft"
+                <>
+                  <ListaProgramacionMovil
+                    locales={itemsEquipo}
+                    onEditar={setEditandoProgramacion}
+                  />
+                  <div className="hidden overflow-x-auto rounded-xl border border-line bg-surface-raised md:block">
+                    <table className="w-full min-w-[1080px] text-left text-sm">
+                      <thead>
+                        <tr className="border-b border-line bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Local
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Asignación
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Programación
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Próxima visita
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Última visita
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Estado
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Duración
+                          </th>
+                          <th
+                            scope="col"
+                            className="px-4 py-3 text-right font-medium"
                           >
-                            <td className="px-4 py-3">
-                              <span className="block font-semibold text-zinc-900 dark:text-zinc-100">
-                                {l.localNombre}
-                              </span>
-                              <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
-                                {l.clienteNombre}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              <span className="block font-medium text-zinc-700 dark:text-zinc-200">
-                                {l.asignadoA?.nombre ?? "Sin asignar"}
-                              </span>
-                              <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
-                                {l.zona?.nombre ?? "Sin zona"}
-                              </span>
-                            </td>
-                            <td className="max-w-72 px-4 py-3">
-                              <span className="block text-sm text-zinc-700 dark:text-zinc-200">
-                                {resumenProgramacion(l.programacion)}
-                              </span>
-                              {l.programacion?.fechaFin && (
-                                <span className="mt-1 block text-xs text-zinc-500 dark:text-zinc-400">
-                                  Hasta{" "}
-                                  {formatoFechaProgramacion(
-                                    l.programacion.fechaFin,
-                                  )}
+                            Acción
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {itemsEquipo.map((l) => {
+                          const ultima = l.ultimaVisita;
+                          return (
+                            <tr
+                              key={l.localId}
+                              className="border-b border-line bg-surface-raised align-middle transition last:border-0 hover:bg-surface-soft"
+                            >
+                              <td className="px-4 py-3">
+                                <span className="block font-semibold text-zinc-900 dark:text-zinc-100">
+                                  {l.localNombre}
                                 </span>
-                              )}
-                            </td>
-                            <td className="whitespace-nowrap px-4 py-3">
-                              <span
-                                className={claseProximaVisita(l.fechaVisita)}
-                              >
-                                {formatoFechaHora(l.fechaVisita)}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">
-                              {ultima ? (
-                                <div className="flex flex-col items-start gap-1">
-                                  <span className="whitespace-nowrap text-xs text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-                                    {formatoFechaHora(ultima.iniciadaEn)}
+                                <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                                  {l.clienteNombre}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <span className="block font-medium text-zinc-700 dark:text-zinc-200">
+                                  {l.asignadoA?.nombre ?? "Sin asignar"}
+                                </span>
+                                <span className="mt-0.5 block text-xs text-zinc-500 dark:text-zinc-400">
+                                  {l.zona?.nombre ?? "Sin zona"}
+                                </span>
+                              </td>
+                              <td className="max-w-72 px-4 py-3">
+                                <span className="block text-sm text-zinc-700 dark:text-zinc-200">
+                                  {resumenProgramacion(l.programacion)}
+                                </span>
+                                {l.programacion?.fechaFin && (
+                                  <span className="mt-1 block text-xs text-zinc-500 dark:text-zinc-400">
+                                    Hasta{" "}
+                                    {formatoFechaProgramacion(
+                                      l.programacion.fechaFin,
+                                    )}
                                   </span>
-                                  <span
-                                    className={`${badgeBase} ${
-                                      ultima.completadaEn
+                                )}
+                              </td>
+                              <td className="whitespace-nowrap px-4 py-3">
+                                <span
+                                  className={claseProximaVisita(l.fechaVisita)}
+                                >
+                                  {formatoFechaHora(l.fechaVisita)}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                {ultima ? (
+                                  <div className="flex flex-col items-start gap-1">
+                                    <span className="whitespace-nowrap text-xs text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                                      {formatoFechaHora(ultima.iniciadaEn)}
+                                    </span>
+                                    <span
+                                      className={`${badgeBase} ${
+                                        ultima.completadaEn
+                                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                                          : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                                      }`}
+                                    >
+                                      {ultima.completadaEn
+                                        ? "Completada"
+                                        : "En curso"}
+                                    </span>
+                                    <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                                      {ultima.tareasCompletadas}/
+                                      {ultima.tareasTotal} tareas
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="text-zinc-400 dark:text-zinc-500">
+                                    Sin visitas
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3">
+                                <span
+                                  className={`${badgeBase} ${
+                                    !l.activo ||
+                                    l.programacion?.activo === false
+                                      ? "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                                      : l.programacion
                                         ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
                                         : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
-                                    }`}
-                                  >
-                                    {ultima.completadaEn
-                                      ? "Completada"
-                                      : "En curso"}
-                                  </span>
-                                  <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                                    {ultima.tareasCompletadas}/
-                                    {ultima.tareasTotal} tareas
-                                  </span>
-                                </div>
-                              ) : (
-                                <span className="text-zinc-400 dark:text-zinc-500">
-                                  Sin visitas
+                                  }`}
+                                >
+                                  {!l.activo
+                                    ? "Local inactivo"
+                                    : l.programacion?.activo === false
+                                      ? "Pausada"
+                                      : l.programacion
+                                        ? "Programada"
+                                        : "Sin programar"}
                                 </span>
-                              )}
-                            </td>
-                            <td className="px-4 py-3">
-                              <span
-                                className={`${badgeBase} ${
-                                  !l.activo || l.programacion?.activo === false
-                                    ? "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
-                                    : l.programacion
-                                      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
-                                      : "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300"
-                                }`}
-                              >
-                                {!l.activo
-                                  ? "Local inactivo"
-                                  : l.programacion?.activo === false
-                                    ? "Pausada"
-                                    : l.programacion
-                                      ? "Programada"
-                                      : "Sin programar"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3 text-right">
-                              <button
-                                type="button"
-                                onClick={() => setEditandoProgramacion(l)}
-                                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-control-line bg-surface-raised px-3 text-sm font-medium text-foreground transition hover:border-brand-500 hover:bg-surface-soft focus-visible:ring-2 focus-visible:ring-focus"
-                              >
-                                <IconoEditar />
-                                {l.programacion ? "Editar" : "Programar"}
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                <button
+                                  type="button"
+                                  onClick={() => setEditandoProgramacion(l)}
+                                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-control-line bg-surface-raised px-3 text-sm font-medium text-foreground transition hover:border-brand-500 hover:bg-surface-soft focus-visible:ring-2 focus-visible:ring-focus"
+                                >
+                                  <IconoEditar />
+                                  {l.programacion ? "Editar" : "Programar"}
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
 
               {equipo && equipo.total > 0 && (
@@ -447,66 +590,72 @@ export function VisitasView() {
                   </p>
                 </div>
               ) : (
-                <div className="overflow-x-auto rounded-xl border border-line bg-surface-raised">
-                  <table className="w-full min-w-[860px] text-left text-sm">
-                    <thead>
-                      <tr className="border-b border-line bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Local
-                        </th>
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Usuario
-                        </th>
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Iniciada
-                        </th>
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Estado
-                        </th>
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Distancia
-                        </th>
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Checklist
-                        </th>
-                        <th scope="col" className="px-4 py-3 font-medium">
-                          Foto
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {itemsHistorial.map((v) => (
-                        <tr
-                          key={v.id}
-                          className="border-b border-line bg-surface-raised align-middle transition last:border-0 hover:bg-surface-soft"
-                        >
-                          <td className="px-4 py-3 font-medium">
-                            {v.localNombre}
-                          </td>
-                          <td className="px-4 py-3">{v.usuarioNombre}</td>
-                          <td className="whitespace-nowrap px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-                            {formatoFechaHora(v.iniciadaEn)}
-                          </td>
-                          <td className="px-4 py-3">
-                            <EstadoVisita visita={v} />
-                          </td>
-                          <td className="whitespace-nowrap px-4 py-3 text-zinc-500 dark:text-zinc-400">
-                            {formatoDuracionMinutos(v.duracionMinutos)}
-                          </td>
-                          <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-                            {Math.round(v.distanciaMetros)} m
-                          </td>
-                          <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-                            {v.tareasCompletadas}/{v.tareasTotal}
-                          </td>
-                          <td className="px-4 py-3">
-                            <BotonFoto visita={v} onVer={setFotoAmpliada} />
-                          </td>
+                <>
+                  <ListaHistorialMovil
+                    visitas={itemsHistorial}
+                    onVerFoto={setFotoAmpliada}
+                  />
+                  <div className="hidden overflow-x-auto rounded-xl border border-line bg-surface-raised md:block">
+                    <table className="w-full min-w-[860px] text-left text-sm">
+                      <thead>
+                        <tr className="border-b border-line bg-surface-soft text-xs font-semibold uppercase tracking-wide text-foreground">
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Local
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Usuario
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Iniciada
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Estado
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Distancia
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Checklist
+                          </th>
+                          <th scope="col" className="px-4 py-3 font-medium">
+                            Foto
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {itemsHistorial.map((v) => (
+                          <tr
+                            key={v.id}
+                            className="border-b border-line bg-surface-raised align-middle transition last:border-0 hover:bg-surface-soft"
+                          >
+                            <td className="px-4 py-3 font-medium">
+                              {v.localNombre}
+                            </td>
+                            <td className="px-4 py-3">{v.usuarioNombre}</td>
+                            <td className="whitespace-nowrap px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                              {formatoFechaHora(v.iniciadaEn)}
+                            </td>
+                            <td className="px-4 py-3">
+                              <EstadoVisita visita={v} />
+                            </td>
+                            <td className="whitespace-nowrap px-4 py-3 text-zinc-500 dark:text-zinc-400">
+                              {formatoDuracionMinutos(v.duracionMinutos)}
+                            </td>
+                            <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                              {Math.round(v.distanciaMetros)} m
+                            </td>
+                            <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
+                              {v.tareasCompletadas}/{v.tareasTotal}
+                            </td>
+                            <td className="px-4 py-3">
+                              <BotonFoto visita={v} onVer={setFotoAmpliada} />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
 
               {historial && historial.total > 0 && (

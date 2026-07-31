@@ -1,5 +1,10 @@
 "use client";
 
+/* Hallmark · component: cartera móvil · genre: utilitarian · theme: tokens Comercia
+ * states: default · hover · focus · active · disabled · loading · error · success
+ * contrast: pass (46–50) · pre-emit critique: P4 H5 E5 S5 R5 V4
+ */
+
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { PantallaCarga } from "@/components/pantalla-carga";
@@ -8,6 +13,7 @@ import { ApiError, apiFetch } from "@/lib/api";
 import type { RespuestaPaginada } from "@/types/paginacion";
 import type { ClienteRepositor, LocalRepositor } from "@/types/repositor";
 import { formatoFechaHora } from "@/utils/fechas";
+import { resumenProgramacion } from "@/utils/programacion-visita";
 
 const LIMITE_INICIAL = 7;
 
@@ -26,6 +32,133 @@ function IconoUbicacion() {
       <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1116 0z" />
       <circle cx="12" cy="10" r="2.5" />
     </svg>
+  );
+}
+
+interface ListaClientesMovilProps {
+  clientes: ClienteRepositor[];
+  onVerLocales: (cliente: ClienteRepositor) => void;
+}
+
+function ListaClientesMovil({
+  clientes,
+  onVerLocales,
+}: ListaClientesMovilProps) {
+  return (
+    <ul className="space-y-3 md:hidden" aria-label="Clientes asignados">
+      {clientes.map((cliente) => (
+        <li
+          key={cliente.id}
+          className="[contain-intrinsic-size:auto_9rem] [content-visibility:auto]"
+        >
+          <article className="rounded-2xl border border-line bg-surface-raised p-4 shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)]">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-brand-100 font-bold text-brand-800 dark:bg-brand-950 dark:text-brand-300">
+                {cliente.nombre.slice(0, 1).toUpperCase()}
+              </span>
+              <h3 className="min-w-0 flex-1 truncate text-base font-extrabold text-foreground">
+                {cliente.nombre}
+              </h3>
+            </div>
+
+            <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-y border-line py-3 text-sm">
+              <div>
+                <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+                  Locales
+                </dt>
+                <dd className="mt-0.5 font-bold tabular-nums text-foreground">
+                  {cliente.localesAsignados}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+                  Tareas activas
+                </dt>
+                <dd className="mt-0.5 font-bold tabular-nums text-foreground">
+                  {cliente.tareasActivas}
+                </dd>
+              </div>
+              <div className="col-span-2">
+                <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+                  Próxima visita
+                </dt>
+                <dd className="mt-0.5 font-semibold text-foreground">
+                  {formatoFechaHora(cliente.proximaVisita)}
+                </dd>
+              </div>
+            </dl>
+
+            <button
+              type="button"
+              onClick={() => onVerLocales(cliente)}
+              className="mt-3 min-h-11 w-full whitespace-nowrap rounded-xl border border-brand-300 bg-surface-raised px-3 text-sm font-semibold text-brand-700 transition hover:bg-brand-50 active:translate-y-px focus-visible:ring-2 focus-visible:ring-focus dark:border-brand-800 dark:text-brand-200 dark:hover:bg-brand-950"
+            >
+              Ver locales
+            </button>
+          </article>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+interface ListaLocalesMovilProps {
+  locales: LocalRepositor[];
+}
+
+function ListaLocalesMovil({ locales }: ListaLocalesMovilProps) {
+  return (
+    <ul className="space-y-3 md:hidden" aria-label="Locales asignados">
+      {locales.map((local) => {
+        const agenda = local.programacion
+          ? resumenProgramacion(local.programacion)
+          : formatoFechaHora(local.fechaVisita);
+        return (
+          <li
+            key={local.id}
+            className="[contain-intrinsic-size:auto_8rem] [content-visibility:auto]"
+          >
+            <article className="rounded-2xl border border-line bg-surface-raised p-4 shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)]">
+              <div className="flex min-w-0 items-start gap-3">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300">
+                  <IconoUbicacion />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate text-base font-extrabold text-foreground">
+                    {local.nombre}
+                  </h3>
+                  <p className="mt-0.5 truncate text-xs font-semibold text-accent-ink">
+                    {local.cliente.nombre}
+                  </p>
+                  <p className="mt-1 text-xs text-muted">
+                    {local.zona?.nombre ?? "Sin zona asignada"}
+                  </p>
+                </div>
+              </div>
+
+              <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-line pt-3 text-sm">
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+                    Tareas activas
+                  </dt>
+                  <dd className="mt-0.5 font-bold tabular-nums text-foreground">
+                    {local.tareasActivas}
+                  </dd>
+                </div>
+                <div className="min-w-0">
+                  <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+                    Agenda
+                  </dt>
+                  <dd className="mt-0.5 truncate font-semibold text-foreground">
+                    {agenda}
+                  </dd>
+                </div>
+              </dl>
+            </article>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
@@ -153,7 +286,10 @@ export function RepositorClientesView() {
       : null;
 
   return (
-    <div className="space-y-4 sm:space-y-6" aria-busy={cargaActiva !== null}>
+    <div
+      className="w-full min-w-0 space-y-4 sm:space-y-6"
+      aria-busy={cargaActiva !== null}
+    >
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-950 via-brand-800 to-emerald-600 p-4 text-white shadow-lg shadow-emerald-950/15 sm:p-5">
         <div className="absolute -right-14 -top-16 h-44 w-44 rounded-full border border-[#58746a] bg-[#315247]" />
         <motion.div
@@ -243,7 +379,11 @@ export function RepositorClientesView() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto rounded-2xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)]">
+              <ListaClientesMovil
+                clientes={clientes.items}
+                onVerLocales={verLocalesDe}
+              />
+              <div className="hidden overflow-x-auto rounded-2xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)] md:block">
                 <table
                   className="w-full min-w-[760px] text-left text-sm"
                   aria-label="Clientes asignados"
@@ -363,7 +503,8 @@ export function RepositorClientesView() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto rounded-2xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)]">
+              <ListaLocalesMovil locales={locales.items} />
+              <div className="hidden overflow-x-auto rounded-2xl border border-line bg-surface-raised shadow-[0_10px_30px_rgba(var(--warm-shadow),0.05)] md:block">
                 <table
                   className="w-full min-w-[820px] text-left text-sm"
                   aria-label="Locales asignados"

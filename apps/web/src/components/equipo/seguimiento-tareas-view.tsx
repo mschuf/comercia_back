@@ -1,5 +1,7 @@
 "use client";
 
+/* Hallmark · seguimiento móvil: estado, contexto y evidencia sin tabla horizontal. */
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiFetch, ApiError } from "@/lib/api";
@@ -30,6 +32,84 @@ export interface FiltrosSeguimientoTareas {
 
 interface RespuestaSeguimiento extends RespuestaPaginada<TareaSeguimiento> {
   resumen: ResumenSeguimientoTareas;
+}
+
+function ListaSeguimientoTareasMovil({
+  tareas,
+  novedadSeleccionadaId,
+  onVerFoto,
+}: {
+  tareas: TareaSeguimiento[];
+  novedadSeleccionadaId?: number;
+  onVerFoto: (tarea: TareaSeguimiento) => void;
+}) {
+  return (
+    <ul className="mt-4 space-y-3 md:hidden" aria-label="Seguimiento de tareas">
+      {tareas.map((tarea) => (
+        <li
+          key={`${tarea.tareaId}-${tarea.visitaTareaId ?? "sin-visita"}`}
+          className={`rounded-xl border p-4 [content-visibility:auto] ${
+            novedadSeleccionadaId === tarea.novedad?.id
+              ? "border-amber-300 bg-amber-50/80 dark:border-amber-800 dark:bg-amber-950/30"
+              : "border-line bg-surface-raised"
+          }`}
+        >
+          <div className="flex min-w-0 items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="truncate font-semibold text-foreground">
+                {tarea.titulo}
+              </p>
+              <p className="mt-0.5 truncate text-xs text-muted">
+                {tarea.local.nombre} · {tarea.cliente.nombre}
+              </p>
+            </div>
+            <EstadoTarea estado={tarea.estado} />
+          </div>
+          <p className="mt-2 text-xs leading-relaxed text-muted">
+            {tarea.descripcion}
+          </p>
+          {tarea.comentario ? (
+            <p className="mt-2 rounded-lg bg-surface-soft px-2.5 py-2 text-xs text-foreground">
+              {tarea.comentario}
+            </p>
+          ) : null}
+          {tarea.novedad ? (
+            <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-xs text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
+              <p className="font-bold">Novedad reportada</p>
+              <p className="mt-1 line-clamp-2 leading-relaxed">
+                {tarea.novedad.comentario}
+              </p>
+            </div>
+          ) : null}
+          <div className="mt-3 flex items-center justify-between gap-3 border-t border-line pt-3 text-xs text-muted">
+            <span className="min-w-0 truncate">{tarea.repositor.nombre}</span>
+            <span className="shrink-0">
+              {formatoFechaHora(
+                tarea.novedad?.reportadaEn ?? tarea.completadaEn,
+              )}
+            </span>
+          </div>
+          {tarea.novedad ? (
+            <button
+              type="button"
+              onClick={() => onVerFoto(tarea)}
+              className={`${btnGhost} mt-3 min-h-11 w-full whitespace-nowrap text-amber-800 hover:text-amber-950 dark:text-amber-300 dark:hover:text-amber-100`}
+            >
+              Ver evidencia
+            </button>
+          ) : (
+            <p className="mt-3 text-center text-xs text-muted">
+              {tarea.requiereFoto
+                ? tarea.tieneFoto
+                  ? "Foto recibida"
+                  : "Foto pendiente"
+                : "Foto no requerida"}
+            </p>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 export function SeguimientoTareasView({
@@ -351,104 +431,111 @@ export function SeguimientoTareasView({
       {error ? <p className={`${errorBox} mt-4`}>{error}</p> : null}
 
       {filas.length > 0 ? (
-        <div className="mt-4 overflow-x-auto rounded-xl border border-line bg-surface-raised">
-          <table className="w-full min-w-[1000px] text-left text-sm">
-            <thead className="bg-surface-soft">
-              <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
-                <th className="px-4 py-3 font-medium">Estado</th>
-                <th className="px-4 py-3 font-medium">Tarea</th>
-                <th className="px-4 py-3 font-medium">Local / cliente</th>
-                <th className="px-4 py-3 font-medium">Repositor</th>
-                <th className="px-4 py-3 font-medium">Evidencia</th>
-                <th className="px-4 py-3 font-medium">Fecha</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filas.map((tarea) => (
-                <tr
-                  key={`${tarea.tareaId}-${tarea.visitaTareaId ?? "sin-visita"}`}
-                  className={`border-b border-line align-top transition last:border-0 hover:bg-surface-soft ${
-                    filtros.novedadId === tarea.novedad?.id
-                      ? "bg-amber-50/80 dark:bg-amber-950/30"
-                      : "bg-surface-raised"
-                  }`}
-                >
-                  <td className="px-4 py-3">
-                    <EstadoTarea estado={tarea.estado} />
-                  </td>
-                  <td className="max-w-sm px-4 py-3">
-                    <p className="font-semibold text-foreground">
-                      {tarea.titulo}
-                    </p>
-                    <p className="mt-0.5 text-xs leading-relaxed text-muted">
-                      {tarea.descripcion}
-                    </p>
-                    {tarea.comentario ? (
-                      <p className="mt-2 rounded-lg bg-surface-soft px-2.5 py-2 text-xs text-foreground">
-                        {tarea.comentario}
-                      </p>
-                    ) : null}
-                    {tarea.novedad ? (
-                      <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-xs text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
-                        <p className="font-bold">Novedad reportada</p>
-                        <p className="mt-1 whitespace-pre-wrap leading-relaxed">
-                          {tarea.novedad.comentario}
-                        </p>
-                      </div>
-                    ) : null}
-                  </td>
-                  <td className="px-4 py-3">
-                    <p className="font-medium text-foreground">
-                      {tarea.local.nombre}
-                    </p>
-                    <p className="mt-0.5 text-xs text-muted">
-                      {tarea.cliente.nombre}
-                    </p>
-                  </td>
-                  <td className="px-4 py-3 text-foreground">
-                    {tarea.repositor.nombre}
-                  </td>
-                  <td className="px-4 py-3 text-muted">
-                    {tarea.novedad ? (
-                      <button
-                        type="button"
-                        onClick={() => setFotoAbierta(tarea)}
-                        className="flex min-h-11 items-center gap-2 rounded-lg px-2 text-left text-xs font-semibold text-amber-800 transition hover:bg-amber-50 hover:text-amber-950 focus-visible:ring-2 focus-visible:ring-amber-600 dark:text-amber-300 dark:hover:bg-amber-950 dark:hover:text-amber-100"
-                      >
-                        <svg
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="h-5 w-5 shrink-0"
-                          aria-hidden
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M1 8a2 2 0 012-2h1.172a2 2 0 001.414-.586l.828-.828A2 2 0 017.828 4h4.344a2 2 0 011.414.586l.828.828A2 2 0 0015.828 6H17a2 2 0 012 2v7a2 2 0 01-2 2H3a2 2 0 01-2-2V8zm9 7a4 4 0 100-8 4 4 0 000 8zm0-1.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        Ver foto
-                      </button>
-                    ) : tarea.requiereFoto ? (
-                      tarea.tieneFoto ? (
-                        "Foto recibida"
-                      ) : (
-                        "Foto pendiente"
-                      )
-                    ) : (
-                      "No requerida"
-                    )}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-3 text-muted [font-variant-numeric:tabular-nums]">
-                    {formatoFechaHora(
-                      tarea.novedad?.reportadaEn ?? tarea.completadaEn,
-                    )}
-                  </td>
+        <>
+          <ListaSeguimientoTareasMovil
+            tareas={filas}
+            novedadSeleccionadaId={filtros.novedadId}
+            onVerFoto={setFotoAbierta}
+          />
+          <div className="mt-4 hidden overflow-x-auto rounded-xl border border-line bg-surface-raised md:block">
+            <table className="w-full min-w-[1000px] text-left text-sm">
+              <thead className="bg-surface-soft">
+                <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
+                  <th className="px-4 py-3 font-medium">Estado</th>
+                  <th className="px-4 py-3 font-medium">Tarea</th>
+                  <th className="px-4 py-3 font-medium">Local / cliente</th>
+                  <th className="px-4 py-3 font-medium">Repositor</th>
+                  <th className="px-4 py-3 font-medium">Evidencia</th>
+                  <th className="px-4 py-3 font-medium">Fecha</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filas.map((tarea) => (
+                  <tr
+                    key={`${tarea.tareaId}-${tarea.visitaTareaId ?? "sin-visita"}`}
+                    className={`border-b border-line align-top transition last:border-0 hover:bg-surface-soft ${
+                      filtros.novedadId === tarea.novedad?.id
+                        ? "bg-amber-50/80 dark:bg-amber-950/30"
+                        : "bg-surface-raised"
+                    }`}
+                  >
+                    <td className="px-4 py-3">
+                      <EstadoTarea estado={tarea.estado} />
+                    </td>
+                    <td className="max-w-sm px-4 py-3">
+                      <p className="font-semibold text-foreground">
+                        {tarea.titulo}
+                      </p>
+                      <p className="mt-0.5 text-xs leading-relaxed text-muted">
+                        {tarea.descripcion}
+                      </p>
+                      {tarea.comentario ? (
+                        <p className="mt-2 rounded-lg bg-surface-soft px-2.5 py-2 text-xs text-foreground">
+                          {tarea.comentario}
+                        </p>
+                      ) : null}
+                      {tarea.novedad ? (
+                        <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-2 text-xs text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
+                          <p className="font-bold">Novedad reportada</p>
+                          <p className="mt-1 whitespace-pre-wrap leading-relaxed">
+                            {tarea.novedad.comentario}
+                          </p>
+                        </div>
+                      ) : null}
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="font-medium text-foreground">
+                        {tarea.local.nombre}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted">
+                        {tarea.cliente.nombre}
+                      </p>
+                    </td>
+                    <td className="px-4 py-3 text-foreground">
+                      {tarea.repositor.nombre}
+                    </td>
+                    <td className="px-4 py-3 text-muted">
+                      {tarea.novedad ? (
+                        <button
+                          type="button"
+                          onClick={() => setFotoAbierta(tarea)}
+                          className="flex min-h-11 items-center gap-2 rounded-lg px-2 text-left text-xs font-semibold text-amber-800 transition hover:bg-amber-50 hover:text-amber-950 focus-visible:ring-2 focus-visible:ring-amber-600 dark:text-amber-300 dark:hover:bg-amber-950 dark:hover:text-amber-100"
+                        >
+                          <svg
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            className="h-5 w-5 shrink-0"
+                            aria-hidden
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M1 8a2 2 0 012-2h1.172a2 2 0 001.414-.586l.828-.828A2 2 0 017.828 4h4.344a2 2 0 011.414.586l.828.828A2 2 0 0015.828 6H17a2 2 0 012 2v7a2 2 0 01-2 2H3a2 2 0 01-2-2V8zm9 7a4 4 0 100-8 4 4 0 000 8zm0-1.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                          Ver foto
+                        </button>
+                      ) : tarea.requiereFoto ? (
+                        tarea.tieneFoto ? (
+                          "Foto recibida"
+                        ) : (
+                          "Foto pendiente"
+                        )
+                      ) : (
+                        "No requerida"
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 text-muted [font-variant-numeric:tabular-nums]">
+                      {formatoFechaHora(
+                        tarea.novedad?.reportadaEn ?? tarea.completadaEn,
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       ) : null}
 
       {!cargandoInicial && filas.length === 0 ? (

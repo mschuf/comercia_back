@@ -34,6 +34,10 @@ export interface TareasLocalRepositor {
     id: number;
     nombre: string;
     cliente: { id: number; nombre: string };
+    zona: { id: number; nombre: string } | null;
+    fechaVisita: string | null;
+    programacion: ProgramacionVisita | null;
+    requiereFotoPresencia: boolean;
   };
   tareas: TareaRepositor[];
   completadasEnVisita: number;
