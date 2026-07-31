@@ -14,6 +14,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import type { RequestConUsuario } from '../auth/interfaces/request-con-usuario.interface';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { SuperadminGuard } from '../auth/superadmin.guard';
 import {
   ActualizarUsuarioDto,
   CrearUsuarioDto,
@@ -21,10 +22,10 @@ import {
 } from './dto/usuario.dto';
 import { UsuariosService } from './usuarios.service';
 
-@ApiTags('usuarios')
-@Controller('usuarios')
-@UseGuards(JwtAuthGuard)
-export class UsuariosController {
+@ApiTags('administración')
+@Controller('admin/usuarios')
+@UseGuards(JwtAuthGuard, SuperadminGuard)
+export class AdminUsuariosController {
   constructor(private readonly usuarios: UsuariosService) {}
 
   @Get('meta')

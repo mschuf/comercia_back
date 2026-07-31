@@ -255,4 +255,27 @@ export class UsuariosService {
     });
     return aUsuarioDto(usuario);
   }
+
+  // Conserva el historial operacional y bloquea inmediatamente el acceso del
+  // usuario. Un usuario con visitas, locales o subordinados no se borra de BD.
+  async eliminar(usuarioId: number, id: number): Promise<{ ok: true }> {
+    const actual = await this.contexto(usuarioId);
+    const objetivo = await this.prisma.usuario.findUnique({
+      where: { id },
+      select: { id: true, empresaId: true, esSuperadmin: true },
+    });
+    if (
+      !objetivo ||
+      objetivo.esSuperadmin ||
+      (!actual.esSuperadmin && objetivo.empresaId !== actual.empresaId)
+    ) {
+      throw new NotFoundException('El usuario no existe');
+    }
+    await this.prisma.usuario.update({
+      where: { id },
+      data: { isActive: false },
+      select: { id: true },
+    });
+    return { ok: true };
+  }
 }

@@ -19,6 +19,7 @@ import { TareasModule } from './tareas/tareas.module';
 import { RepositorModule } from './repositor/repositor.module';
 import { EquipoModule } from './equipo/equipo.module';
 import { NotificacionesModule } from './notificaciones/notificaciones.module';
+import { RolesModule } from './roles/roles.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { NotificacionesModule } from './notificaciones/notificaciones.module';
     HealthModule,
     AuthModule,
     EmpresasModule,
+    RolesModule,
     PlataformaModule,
     ImpulsadorModule,
     LocalesModule,

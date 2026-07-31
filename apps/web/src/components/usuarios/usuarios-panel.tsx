@@ -32,6 +32,10 @@ interface FormUsuario {
   isActive: boolean;
 }
 
+interface UsuariosPanelProps {
+  soloSuperadmin?: boolean;
+}
+
 const FORM_INICIAL: FormUsuario = {
   nombre: "",
   apellido: "",
@@ -49,9 +53,11 @@ const FORM_INICIAL: FormUsuario = {
 function ListaUsuariosMovil({
   usuarios,
   onEditar,
+  onEliminar,
 }: {
   usuarios: UsuarioAdmin[];
   onEditar: (usuario: UsuarioAdmin) => void;
+  onEliminar?: (usuario: UsuarioAdmin) => void;
 }) {
   return (
     <ul className="mt-5 space-y-3 md:hidden" aria-label="Usuarios">
@@ -100,13 +106,22 @@ function ListaUsuariosMovil({
           >
             Editar usuario
           </button>
+          {onEliminar ? (
+            <button
+              type="button"
+              onClick={() => onEliminar(usuario)}
+              className="mt-2 inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-red-300 px-3 text-sm font-semibold text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950"
+            >
+              Desactivar usuario
+            </button>
+          ) : null}
         </li>
       ))}
     </ul>
   );
 }
 
-export function UsuariosPanel() {
+export function UsuariosPanel({ soloSuperadmin = false }: UsuariosPanelProps) {
   const [meta, setMeta] = useState<MetaUsuarios | null>(null);
   const [empresaId, setEmpresaId] = useState<number | "">("");
   const [datos, setDatos] = useState<RespuestaPaginada<UsuarioAdmin> | null>(
@@ -118,11 +133,15 @@ export function UsuariosPanel() {
   const [form, setForm] = useState<FormUsuario>(FORM_INICIAL);
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
+  const [eliminando, setEliminando] = useState<UsuarioAdmin | null>(null);
+  const [desactivando, setDesactivando] = useState(false);
+  const [errorEliminar, setErrorEliminar] = useState<string | null>(null);
+  const base = soloSuperadmin ? "/admin/usuarios" : "/usuarios";
 
   const cargar = useCallback(() => {
     if (empresaId === "") return;
     apiFetch<RespuestaPaginada<UsuarioAdmin>>(
-      `/usuarios?page=${page}&limit=${limit}&empresaId=${empresaId}`,
+      `${base}?page=${page}&limit=${limit}&empresaId=${empresaId}`,
     )
       .then(setDatos)
       .catch((e) =>
@@ -132,10 +151,10 @@ export function UsuariosPanel() {
             : "No se pudieron cargar los usuarios",
         ),
       );
-  }, [empresaId, page, limit]);
+  }, [base, empresaId, page, limit]);
 
   useEffect(() => {
-    apiFetch<MetaUsuarios>("/usuarios/meta")
+    apiFetch<MetaUsuarios>(`${base}/meta`)
       .then((data) => {
         setMeta(data);
         setEmpresaId(data.empresas[0]?.id ?? "");
@@ -145,7 +164,7 @@ export function UsuariosPanel() {
           e instanceof ApiError ? e.message : "No tenés acceso a usuarios",
         ),
       );
-  }, []);
+  }, [base]);
 
   useEffect(() => cargar(), [cargar]);
 
@@ -173,7 +192,7 @@ export function UsuariosPanel() {
     setError(null);
     try {
       if (editando === "nuevo") {
-        await apiFetch("/usuarios", {
+        await apiFetch(base, {
           method: "POST",
           body: JSON.stringify({
             empresaId,
@@ -190,7 +209,7 @@ export function UsuariosPanel() {
           }),
         });
       } else {
-        await apiFetch(`/usuarios/${editando.id}`, {
+        await apiFetch(`${base}/${editando.id}`, {
           method: "PATCH",
           body: JSON.stringify({
             rolId: form.rolId,
@@ -211,6 +230,29 @@ export function UsuariosPanel() {
     }
   }
 
+  async function confirmarDesactivacion() {
+    if (!eliminando || desactivando) return;
+    setDesactivando(true);
+    setErrorEliminar(null);
+    try {
+      await apiFetch(`${base}/${eliminando.id}`, { method: "DELETE" });
+      setEliminando(null);
+      if (datos?.items.length === 1 && page > 1) {
+        setPage((actual) => actual - 1);
+      } else {
+        cargar();
+      }
+    } catch (problema) {
+      setErrorEliminar(
+        problema instanceof ApiError
+          ? problema.message
+          : "No se pudo desactivar el usuario",
+      );
+    } finally {
+      setDesactivando(false);
+    }
+  }
+
   const usuarios = datos?.items ?? [];
   const superiores = usuarios.filter(
     (u) => editando === "nuevo" || u.id !== editando?.id,
@@ -220,7 +262,9 @@ export function UsuariosPanel() {
     <div className="w-full min-w-0">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold tracking-tight">Usuarios</h1>
+          <h1 className="text-xl font-bold tracking-tight">
+            {soloSuperadmin ? "Usuarios de empresas" : "Usuarios"}
+          </h1>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
             Alta, roles, superiores y estado de acceso por empresa.
           </p>
@@ -258,7 +302,11 @@ export function UsuariosPanel() {
 
       {error && !editando && <p className={`${errorBox} mt-4`}>{error}</p>}
 
-      <ListaUsuariosMovil usuarios={usuarios} onEditar={abrirEditar} />
+      <ListaUsuariosMovil
+        usuarios={usuarios}
+        onEditar={abrirEditar}
+        onEliminar={soloSuperadmin ? setEliminando : undefined}
+      />
       <div className="mt-5 hidden overflow-x-auto rounded-xl border border-line bg-surface-raised md:block">
         <table className="min-w-full divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
           <thead className="bg-surface-soft text-left text-xs font-semibold uppercase text-foreground">
@@ -299,13 +347,24 @@ export function UsuariosPanel() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button
-                    type="button"
-                    onClick={() => abrirEditar(usuario)}
-                    className={btnGhost}
-                  >
-                    Editar
-                  </button>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => abrirEditar(usuario)}
+                      className={btnGhost}
+                    >
+                      Editar
+                    </button>
+                    {soloSuperadmin ? (
+                      <button
+                        type="button"
+                        onClick={() => setEliminando(usuario)}
+                        className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-sm font-semibold text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:text-red-300 dark:hover:bg-red-950"
+                      >
+                        Desactivar
+                      </button>
+                    ) : null}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -470,6 +529,41 @@ export function UsuariosPanel() {
             </button>
           </div>
         </form>
+      </Modal>
+
+      <Modal
+        titulo="Desactivar usuario"
+        abierto={eliminando !== null}
+        onCerrar={() => setEliminando(null)}
+      >
+        <p className="text-sm text-muted">
+          {eliminando ? (
+            <>
+              {eliminando.nombre} {eliminando.apellido} ya no podrá iniciar
+              sesión. Conservamos su historial operativo.
+            </>
+          ) : null}
+        </p>
+        {errorEliminar ? (
+          <p className={`${errorBox} mt-3`}>{errorEliminar}</p>
+        ) : null}
+        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={() => setEliminando(null)}
+            className={btnGhost}
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={() => void confirmarDesactivacion()}
+            disabled={desactivando}
+            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-red-600 px-4 text-sm font-semibold text-white transition hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-600/40 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {desactivando ? "Desactivando..." : "Desactivar usuario"}
+          </button>
+        </div>
       </Modal>
     </div>
   );

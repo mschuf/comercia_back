@@ -11,14 +11,12 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Response } from 'express';
-import { AUTH_COOKIE } from './auth.constants';
+import { AUTH_COOKIE, TOKEN_DURACION_MS } from './auth.constants';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import type { UsuarioSesion } from './interfaces/usuario-sesion.interface';
 import type { RequestConUsuario } from './interfaces/request-con-usuario.interface';
-
-const SIETE_DIAS_MS = 7 * 24 * 60 * 60 * 1000;
 
 @ApiTags('auth')
 @Controller('auth')
@@ -60,7 +58,7 @@ export class AuthController {
       // secure:false porque producción corre por HTTP en la LAN (sin dominio).
       // Cambiar a true cuando haya HTTPS con Caddy.
       secure: false,
-      maxAge: SIETE_DIAS_MS,
+      maxAge: TOKEN_DURACION_MS,
       path: '/',
     });
   }
