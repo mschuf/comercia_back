@@ -106,6 +106,8 @@ jobs:
           context: .
           file: apps/web/Dockerfile
           push: true
+          build-args: |
+            NEXT_DEPLOYMENT_ID=${{ github.sha }}
           tags: |
             ghcr.io/mschuf/comercia-web:latest
             ghcr.io/mschuf/comercia-web:${{ github.sha }}

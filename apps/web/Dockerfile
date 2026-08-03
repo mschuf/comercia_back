@@ -15,7 +15,11 @@ RUN npm ci --workspace=web --ignore-scripts
 FROM base AS build
 # Las NEXT_PUBLIC_* salen de apps/web/.env.production (Next lo carga solo
 # porque `next build` corre con NODE_ENV=production) y se hornean en el bundle.
-ENV NEXT_TELEMETRY_DISABLED=1
+# Cada deploy recibe el SHA del commit para que Next detecte versiones antiguas
+# abiertas en el navegador y agregue cache-busting a los assets estáticos.
+ARG NEXT_DEPLOYMENT_ID=local
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    NEXT_DEPLOYMENT_ID=$NEXT_DEPLOYMENT_ID
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json package-lock.json ./
 COPY apps/web/ apps/web/
