@@ -45,3 +45,10 @@ export interface ResumenSeguimientoTareas {
   completadas: number;
   novedades: number;
 }
+
+export interface ResumenEquipoOperativo {
+  miembros: number;
+  visitasEnCurso: number;
+  tareasPendientes: number;
+  novedadesSinLeer: number;
+}

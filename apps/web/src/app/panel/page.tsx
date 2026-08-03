@@ -5,20 +5,33 @@ import Link from "next/link";
 import imagenComercial from "@/assets/comercial-repositor-v2.webp";
 import { IconoModulo } from "@/components/panel/iconos";
 import { usePanel } from "@/components/panel/contexto";
+import { ResumenEquipoOperativo } from "@/components/panel/resumen-equipo-operativo";
 import { ResumenJornadaRepositor } from "@/components/repositor/resumen-jornada-view";
+
+const DESCRIPCIONES_HERRAMIENTA: Record<string, string> = {
+  "supervisor/equipo": "Revisá personas, actividad y locales asignados.",
+  "supervisor/mapa": "Ubicá cobertura, territorios y zonas de trabajo.",
+  "supervisor/tareas": "Atendé checklists, pendientes y novedades.",
+  "supervisor/clientes": "Consultá clientes y puntos de venta del equipo.",
+  "repositor/clientes": "Encontrá tus clientes y puntos asignados.",
+  "repositor/tareas": "Completá los checklists de tus visitas.",
+  "repositor/visitas": "Organizá y seguí tu recorrido del día.",
+  admin: "Configurá usuarios, accesos y la plataforma.",
+};
+
+function descripcionHerramienta(ruta: string): string {
+  return (
+    DESCRIPCIONES_HERRAMIENTA[ruta] ??
+    "Abrí esta herramienta para continuar trabajando."
+  );
+}
 
 export default function PanelInicioPage() {
   const { usuario, modulos } = usePanel();
-  const descripcionRol = usuario.esSuperadmin
-    ? "Superadmin"
-    : (usuario.rol?.descripcion ?? "Sin rol asignado");
-  const textoRol = descripcionRol.toLocaleLowerCase("es");
-  const esRepositor = textoRol.includes("repositor");
   const paginas = modulos.flatMap((modulo) =>
     modulo.paginas.map((pagina) => ({
       href: `/panel/${modulo.ruta}/${pagina.ruta}`,
       nombre: pagina.nombre,
-      modulo: modulo.nombre,
       icono: pagina.icono ?? modulo.icono,
     })),
   );
@@ -28,15 +41,22 @@ export default function PanelInicioPage() {
         {
           href: "/panel/admin",
           nombre: "Administración",
-          modulo: "Plataforma",
           icono: "equipo",
         },
       ]
     : paginas;
 
-  const mensaje = esRepositor
+  const tienePagina = (modulo: string, pagina: string) =>
+    modulos.some(
+      (item) =>
+        item.ruta === modulo && item.paginas.some((item) => item.ruta === pagina),
+    );
+  const muestraResumenEquipo = tienePagina("supervisor", "equipo");
+  const muestraResumenRepositor = tienePagina("repositor", "visitas");
+
+  const mensaje = muestraResumenRepositor
     ? "Tus clientes, tareas y recorridos del día, siempre a mano."
-    : textoRol.includes("supervisor")
+    : muestraResumenEquipo
       ? "Acompañá al equipo en campo y convertí cada visita en decisiones."
       : usuario.esSuperadmin
         ? "Configurá la plataforma y mantené cada equipo listo para trabajar."
@@ -49,7 +69,7 @@ export default function PanelInicioPage() {
           <div className="flex min-w-0 flex-col justify-end p-4 sm:p-7 lg:p-8">
             <div className="mb-auto flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-[#557267] bg-[#25483d] px-3 py-1 text-[10px] font-extrabold uppercase tracking-[0.18em] text-white">
-                {descripcionRol}
+                Panel de trabajo
               </span>
               <span className="rounded-full border border-[#76523a] bg-[#4a3427] px-3 py-1 text-[10px] font-bold text-[#f2ceb0]">
                 {usuario.empresa.nombre}
@@ -88,28 +108,28 @@ export default function PanelInicioPage() {
         </div>
       )}
 
-      {esRepositor ? <ResumenJornadaRepositor /> : null}
+      {muestraResumenEquipo ? <ResumenEquipoOperativo /> : null}
+      {muestraResumenRepositor ? <ResumenJornadaRepositor /> : null}
 
       <section
-        aria-labelledby="accesos-titulo"
+        aria-labelledby="herramientas-titulo"
         className="rounded-[1.4rem] border border-line bg-surface p-4 shadow-[0_14px_38px_rgba(var(--warm-shadow),0.06)] sm:p-5"
       >
-        <header className="flex flex-wrap items-end justify-between gap-2">
+        <header>
           <div>
             <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-brand-700 dark:text-brand-200">
-              Espacio de trabajo
+              Continuá desde acá
             </p>
             <h2
-              id="accesos-titulo"
+              id="herramientas-titulo"
               className="mt-1 text-lg font-extrabold tracking-[-0.025em] sm:text-xl"
             >
-              Accesos habilitados
+              Herramientas de trabajo
             </h2>
+            <p className="mt-1 text-sm text-muted">
+              Elegí la vista que necesitás para avanzar en tu jornada.
+            </p>
           </div>
-          <p className="text-xs font-semibold text-muted">
-            {modulos.length} {modulos.length === 1 ? "módulo" : "módulos"} ·{" "}
-            {paginas.length} {paginas.length === 1 ? "página" : "páginas"}
-          </p>
         </header>
 
         {accesos.length > 0 ? (
@@ -118,23 +138,23 @@ export default function PanelInicioPage() {
               <Link
                 key={acceso.href}
                 href={acceso.href}
-                className="group flex min-h-[5.25rem] items-center gap-3 rounded-2xl border border-line bg-surface-raised p-3.5 shadow-[0_5px_18px_rgba(var(--warm-shadow),0.04)] transition hover:-translate-y-0.5 hover:border-brand-500 hover:shadow-[0_12px_26px_rgba(var(--warm-shadow),0.09)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+                className="group flex min-h-[5.25rem] items-center gap-3 rounded-2xl border border-line bg-surface-raised p-3.5 shadow-[0_5px_18px_rgba(var(--warm-shadow),0.04)] transition-[background-color,border-color] duration-200 hover:border-brand-500 hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
               >
-                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-100 text-brand-800 transition group-hover:bg-brand-700 group-hover:text-white dark:bg-brand-950 dark:text-brand-200">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand-100 text-brand-800 transition-[background-color,color] duration-200 group-hover:bg-brand-700 group-hover:text-white dark:bg-brand-950 dark:text-brand-200">
                   <IconoModulo nombre={acceso.icono} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[11px] font-bold uppercase tracking-[0.12em] text-muted">
-                    {acceso.modulo}
-                  </span>
-                  <span className="mt-0.5 block truncate text-sm font-extrabold text-foreground">
+                  <span className="block truncate text-sm font-extrabold text-foreground">
                     {acceso.nombre}
+                  </span>
+                  <span className="mt-1 block text-xs leading-snug text-muted">
+                    {descripcionHerramienta(acceso.href.replace("/panel/", ""))}
                   </span>
                 </span>
                 <svg
                   viewBox="0 0 20 20"
                   fill="currentColor"
-                  className="h-4 w-4 shrink-0 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand-700"
+                  className="h-4 w-4 shrink-0 text-muted transition-colors duration-200 group-hover:text-brand-700"
                   aria-hidden
                 >
                   <path d="M3 10a.75.75 0 01.75-.75h10.69l-3.22-3.22a.75.75 0 111.06-1.06l4.5 4.5a.75.75 0 010 1.06l-4.5 4.5a.75.75 0 11-1.06-1.06l3.22-3.22H3.75A.75.75 0 013 10z" />
@@ -144,7 +164,7 @@ export default function PanelInicioPage() {
           </div>
         ) : (
           <div className="mt-4 rounded-2xl border border-dashed border-line bg-surface-raised px-5 py-9 text-center">
-            <p className="font-bold">Todavía no hay accesos habilitados.</p>
+            <p className="font-bold">Todavía no tenés herramientas asignadas.</p>
             <p className="mt-1 text-sm text-muted">
               Cuando un administrador configure tu rol, van a aparecer acá.
             </p>

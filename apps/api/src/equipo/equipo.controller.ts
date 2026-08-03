@@ -22,6 +22,11 @@ export class EquipoController {
     return this.equipo.repositores(req.usuarioId, query);
   }
 
+  @Get('resumen')
+  resumen(@Req() req: RequestConUsuario) {
+    return this.equipo.resumen(req.usuarioId);
+  }
+
   @Get('tareas')
   tareas(@Req() req: RequestConUsuario, @Query() query: ListarTareasEquipoDto) {
     return this.equipo.tareas(req.usuarioId, query);

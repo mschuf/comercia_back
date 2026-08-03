@@ -21,6 +21,7 @@ import type {
   RespuestaTareasEquipoDto,
   TareaEquipoDto,
 } from './interfaces/equipo.interface';
+import type { ResumenEquipoDto } from './interfaces/resumen-equipo.interface';
 
 @Injectable()
 export class EquipoService {
@@ -28,6 +29,36 @@ export class EquipoService {
     private readonly prisma: PrismaService,
     private readonly accesoCampo: AccesoOperacionesCampoService,
   ) {}
+
+  async resumen(usuarioId: number): Promise<ResumenEquipoDto> {
+    const actual = await this.accesoCampo.usuarioSupervisor(
+      usuarioId,
+      PAGINA_EQUIPO,
+    );
+    const alcance =
+      await this.accesoCampo.filtroRepositoresDelSupervisor(actual);
+    const visitasDelEquipo = { usuario: { is: alcance } };
+
+    const [miembros, visitasEnCurso, tareasPendientes, novedadesSinLeer] =
+      await Promise.all([
+        this.prisma.usuario.count({ where: alcance }),
+        this.prisma.visita.count({
+          where: { ...visitasDelEquipo, completadaEn: null },
+        }),
+        this.prisma.visitaTarea.count({
+          where: {
+            visita: visitasDelEquipo,
+            completada: false,
+            novedad: null,
+          },
+        }),
+        this.prisma.novedadTarea.count({
+          where: { supervisorId: actual.id, leidaEn: null },
+        }),
+      ]);
+
+    return { miembros, visitasEnCurso, tareasPendientes, novedadesSinLeer };
+  }
 
   async repositores(
     usuarioId: number,

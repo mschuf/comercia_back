@@ -12,8 +12,9 @@ describe('EquipoService', () => {
   const prisma = {
     usuario: { count: jest.fn(), findMany: jest.fn() },
     local: { findFirst: jest.fn() },
-    visita: { findFirst: jest.fn() },
+    visita: { count: jest.fn(), findFirst: jest.fn() },
     visitaTarea: { count: jest.fn(), findMany: jest.fn() },
+    novedadTarea: { count: jest.fn() },
     tareaCliente: { count: jest.fn(), findMany: jest.fn() },
   };
   const alcance = {
@@ -41,6 +42,35 @@ describe('EquipoService', () => {
       esOperativo: false,
     });
     acceso.filtroRepositoresDelSupervisor.mockResolvedValue(alcance);
+  });
+
+  it('resume solo la operación del equipo a cargo', async () => {
+    prisma.usuario.count.mockResolvedValue(4);
+    prisma.visita.count.mockResolvedValue(2);
+    prisma.visitaTarea.count.mockResolvedValue(7);
+    prisma.novedadTarea.count.mockResolvedValue(1);
+
+    await expect(service.resumen(10)).resolves.toEqual({
+      miembros: 4,
+      visitasEnCurso: 2,
+      tareasPendientes: 7,
+      novedadesSinLeer: 1,
+    });
+
+    expect(acceso.usuarioSupervisor).toHaveBeenCalledWith(10, 'equipo');
+    expect(prisma.visita.count).toHaveBeenCalledWith({
+      where: { usuario: { is: alcance }, completadaEn: null },
+    });
+    expect(prisma.visitaTarea.count).toHaveBeenCalledWith({
+      where: {
+        visita: { usuario: { is: alcance } },
+        completada: false,
+        novedad: null,
+      },
+    });
+    expect(prisma.novedadTarea.count).toHaveBeenCalledWith({
+      where: { supervisorId: 10, leidaEn: null },
+    });
   });
 
   it('pagina y busca repositores por términos dentro del alcance', async () => {
