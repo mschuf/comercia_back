@@ -30,6 +30,8 @@ import {
 import { ReportarNovedadTareaDto } from './dto/novedad.dto';
 import { FotosService } from './fotos.service';
 import {
+  PAGINA_CLIENTES,
+  PAGINA_EQUIPO,
   PAGINA_TAREAS,
   PAGINA_VISITAS,
   RADIO_METROS_DEFECTO,
@@ -401,6 +403,16 @@ export class VisitasService {
     return this.accesoCampo.usuario(usuarioId, [PAGINA_VISITAS]);
   }
 
+  private usuarioSupervisorAgenda(
+    usuarioId: number,
+  ): Promise<UsuarioOperacionesCampo> {
+    return this.accesoCampo.usuarioSupervisorConAlgunaPagina(usuarioId, [
+      PAGINA_EQUIPO,
+      PAGINA_CLIENTES,
+      PAGINA_VISITAS,
+    ]);
+  }
+
   // Lectura de una visita: el dueño o un gestor de la misma empresa.
   // 404 neutro en cualquier otro caso (no revela existencia).
   private async visitaVisible(
@@ -580,12 +592,13 @@ export class VisitasService {
     usuarioId: number,
     query: ListarVisitasEquipoDto,
   ): Promise<RespuestaPaginada<VisitaEquipoLocalDto>> {
-    const usuario = await this.usuarioActual(usuarioId);
-    if (!usuario.esGestor) {
-      throw new ForbiddenException('Solo un gestor puede ver el equipo');
-    }
-
-    const where = { empresaId: usuario.empresaId };
+    const usuario = await this.usuarioSupervisorAgenda(usuarioId);
+    const alcance =
+      await this.accesoCampo.filtroRepositoresDelSupervisor(usuario);
+    const where = {
+      empresaId: usuario.empresaId,
+      usuario: { is: alcance },
+    };
     const { skip, take, page, limit } = rangoPaginacion(query);
     const [total, locales] = await Promise.all([
       this.prisma.local.count({ where }),
@@ -610,16 +623,18 @@ export class VisitasService {
     localId: number,
     dto: GuardarProgramacionVisitaDto,
   ): Promise<VisitaEquipoLocalDto['programacion']> {
-    const usuario = await this.usuarioActual(usuarioId);
-    if (!usuario.esGestor) {
-      throw new ForbiddenException('Solo un gestor puede programar visitas');
-    }
-
-    const local = await this.prisma.local.findUnique({
-      where: { id: localId },
-      select: { empresaId: true },
+    const usuario = await this.usuarioSupervisorAgenda(usuarioId);
+    const alcance =
+      await this.accesoCampo.filtroRepositoresDelSupervisor(usuario);
+    const local = await this.prisma.local.findFirst({
+      where: {
+        id: localId,
+        empresaId: usuario.empresaId,
+        usuario: { is: alcance },
+      },
+      select: { id: true },
     });
-    if (!local || local.empresaId !== usuario.empresaId) {
+    if (!local) {
       throw new NotFoundException('El local no existe');
     }
     if (!validarZonaHoraria(dto.zonaHoraria)) {
@@ -693,16 +708,18 @@ export class VisitasService {
   }
 
   async quitarProgramacion(usuarioId: number, localId: number): Promise<void> {
-    const usuario = await this.usuarioActual(usuarioId);
-    if (!usuario.esGestor) {
-      throw new ForbiddenException('Solo un gestor puede programar visitas');
-    }
-
-    const local = await this.prisma.local.findUnique({
-      where: { id: localId },
-      select: { empresaId: true },
+    const usuario = await this.usuarioSupervisorAgenda(usuarioId);
+    const alcance =
+      await this.accesoCampo.filtroRepositoresDelSupervisor(usuario);
+    const local = await this.prisma.local.findFirst({
+      where: {
+        id: localId,
+        empresaId: usuario.empresaId,
+        usuario: { is: alcance },
+      },
+      select: { id: true },
     });
-    if (!local || local.empresaId !== usuario.empresaId) {
+    if (!local) {
       throw new NotFoundException('El local no existe');
     }
 

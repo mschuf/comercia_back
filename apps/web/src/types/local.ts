@@ -1,3 +1,5 @@
+import type { ProgramacionVisita } from "@/types/visita";
+
 // Locales geolocalizados de operaciones de campo (respuestas de /locales)
 
 export interface Local {
@@ -11,6 +13,7 @@ export interface Local {
   radioMetros: number | null;
   // Próxima visita programada por el gestor (ISO 8601)
   fechaVisita: string | null;
+  programacion: ProgramacionVisita | null;
   requiereFotoPresencia: boolean;
   tareasCount: number;
   activo: boolean;

@@ -7,10 +7,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AccesoOperacionesCampoService } from '../impulsador/acceso-operaciones-campo.service';
 import {
   PAGINA_CLIENTES,
+  PAGINA_EQUIPO,
   PAGINA_MAPA,
+  PAGINA_VISITAS,
   RADIO_METROS_DEFECTO,
 } from '../impulsador/impulsador.constants';
 import type { UsuarioOperacionesCampo } from '../impulsador/interfaces/usuario-operaciones-campo.interface';
+import type { ProgramacionVisitaCalculo } from '../impulsador/interfaces/programacion-visita.interface';
+import { aProgramacionVisitaDto } from '../impulsador/utils/programacion-visita';
 import {
   respuestaPaginada,
   rangoPaginacion,
@@ -45,6 +49,7 @@ type LocalConRelaciones = {
   zona: { id: number; nombre: string } | null;
   radioMetros: number | null;
   fechaVisita: Date | null;
+  programacionVisita: ProgramacionVisitaCalculo | null;
   requiereFotoPresencia: boolean;
   activo: boolean;
   createdAt: Date;
@@ -70,6 +75,19 @@ const SELECT_LOCAL = {
   zona: { select: { id: true, nombre: true } },
   radioMetros: true,
   fechaVisita: true,
+  programacionVisita: {
+    select: {
+      frecuencia: true,
+      fechaInicio: true,
+      fechaFin: true,
+      intervalo: true,
+      diasSemana: true,
+      diasMes: true,
+      horarios: true,
+      zonaHoraria: true,
+      activo: true,
+    },
+  },
   requiereFotoPresencia: true,
   activo: true,
   createdAt: true,
@@ -88,6 +106,9 @@ function aLocalDto(local: LocalConRelaciones): LocalDto {
     zona: local.zona ? { id: local.zona.id, nombre: local.zona.nombre } : null,
     radioMetros: local.radioMetros,
     fechaVisita: local.fechaVisita?.toISOString() ?? null,
+    programacion: local.programacionVisita
+      ? aProgramacionVisitaDto(local.programacionVisita)
+      : null,
     requiereFotoPresencia: local.requiereFotoPresencia,
     tareasCount: local.cliente._count.tareas,
     activo: local.activo,
@@ -167,7 +188,7 @@ export class LocalesService {
   ): Promise<RespuestaPaginada<UsuarioAsignable>> {
     const actual = await this.accesoCampo.usuarioSupervisorConAlgunaPagina(
       usuarioId,
-      [PAGINA_CLIENTES, PAGINA_MAPA],
+      [PAGINA_CLIENTES, PAGINA_EQUIPO, PAGINA_MAPA, PAGINA_VISITAS],
     );
     const alcance =
       await this.accesoCampo.filtroRepositoresDelSupervisor(actual);
@@ -241,21 +262,6 @@ export class LocalesService {
     }
   }
 
-  private async validarRepositorDeZona(
-    zonaId: number,
-    usuarioId: number,
-  ): Promise<void> {
-    const asignacion = await this.prisma.zonaUsuario.findUnique({
-      where: { zonaId_usuarioId: { zonaId, usuarioId } },
-      select: { id: true },
-    });
-    if (!asignacion) {
-      throw new ForbiddenException(
-        'El repositor debe estar asignado a la zona del local',
-      );
-    }
-  }
-
   async crear(usuarioId: number, dto: CrearLocalDto): Promise<LocalDto> {
     const actual = await this.usuarioActual(usuarioId);
     if (!actual.esGestor) {
@@ -266,7 +272,6 @@ export class LocalesService {
       this.validarAsignado(actual, dto.usuarioId),
       this.zonaDeEmpresa(dto.zonaId, actual.empresaId),
     ]);
-    await this.validarRepositorDeZona(dto.zonaId, dto.usuarioId);
     const local = await this.prisma.local.create({
       data: {
         empresaId: actual.empresaId,
@@ -349,7 +354,6 @@ export class LocalesService {
     if (zonaId === null || usuarioAsignadoId === null) {
       throw new ForbiddenException('El local debe tener zona y repositor');
     }
-    await this.validarRepositorDeZona(zonaId, usuarioAsignadoId);
     const local = await this.prisma.local.update({
       where: { id },
       data: {

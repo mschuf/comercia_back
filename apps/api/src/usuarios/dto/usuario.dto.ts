@@ -33,6 +33,10 @@ export class CrearUsuarioDto extends RegisterDto {
   @Min(1)
   @Max(MAX_INT4)
   superiorId?: number | null;
+
+  @IsOptional()
+  @IsBoolean()
+  esSuperadmin?: boolean;
 }
 
 export class ActualizarUsuarioDto {

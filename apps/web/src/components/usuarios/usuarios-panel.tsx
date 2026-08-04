@@ -29,6 +29,7 @@ interface FormUsuario {
   password: string;
   rolId: number | "";
   superiorId: number | "";
+  esSuperadmin: boolean;
   isActive: boolean;
 }
 
@@ -47,6 +48,7 @@ const FORM_INICIAL: FormUsuario = {
   password: "",
   rolId: "",
   superiorId: "",
+  esSuperadmin: false,
   isActive: true,
 };
 
@@ -89,7 +91,9 @@ function ListaUsuariosMovil({
             <p className="rounded-lg bg-surface-soft px-2.5 py-2 text-muted">
               Rol:{" "}
               <strong className="text-foreground">
-                {usuario.rol?.descripcion ?? "Sin rol"}
+                {usuario.esSuperadmin
+                  ? "Superadmin"
+                  : (usuario.rol?.descripcion ?? "Sin rol")}
               </strong>
             </p>
             <p className="truncate rounded-lg bg-surface-soft px-2.5 py-2 text-muted">
@@ -99,22 +103,30 @@ function ListaUsuariosMovil({
               </strong>
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => onEditar(usuario)}
-            className={`${btnGhost} mt-3 min-h-11 w-full whitespace-nowrap`}
-          >
-            Editar usuario
-          </button>
-          {onEliminar ? (
-            <button
-              type="button"
-              onClick={() => onEliminar(usuario)}
-              className="mt-2 inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-red-300 px-3 text-sm font-semibold text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950"
-            >
-              Desactivar usuario
-            </button>
-          ) : null}
+          {usuario.esSuperadmin ? (
+            <p className="mt-3 rounded-lg bg-surface-soft px-3 py-2 text-center text-xs font-medium text-muted">
+              Cuenta superadmin protegida
+            </p>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => onEditar(usuario)}
+                className={`${btnGhost} mt-3 min-h-11 w-full whitespace-nowrap`}
+              >
+                Editar usuario
+              </button>
+              {onEliminar ? (
+                <button
+                  type="button"
+                  onClick={() => onEliminar(usuario)}
+                  className="mt-2 inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-red-300 px-3 text-sm font-semibold text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950"
+                >
+                  Desactivar usuario
+                </button>
+              ) : null}
+            </>
+          )}
         </li>
       ))}
     </ul>
@@ -206,6 +218,7 @@ export function UsuariosPanel({ soloSuperadmin = false }: UsuariosPanelProps) {
             password: form.password,
             rolId: form.rolId,
             superiorId: form.superiorId === "" ? null : form.superiorId,
+            esSuperadmin: form.esSuperadmin,
           }),
         });
       } else {
@@ -330,7 +343,9 @@ export function UsuariosPanel({ soloSuperadmin = false }: UsuariosPanelProps) {
                   </p>
                 </td>
                 <td className="px-4 py-3">
-                  {usuario.rol?.descripcion ?? "Sin rol"}
+                  {usuario.esSuperadmin
+                    ? "Superadmin"
+                    : (usuario.rol?.descripcion ?? "Sin rol")}
                 </td>
                 <td className="px-4 py-3">
                   {usuario.superior?.nombre ?? "Sin superior"}
@@ -347,24 +362,30 @@ export function UsuariosPanel({ soloSuperadmin = false }: UsuariosPanelProps) {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <div className="flex justify-end gap-2">
-                    <button
-                      type="button"
-                      onClick={() => abrirEditar(usuario)}
-                      className={btnGhost}
-                    >
-                      Editar
-                    </button>
-                    {soloSuperadmin ? (
+                  {usuario.esSuperadmin ? (
+                    <span className="text-xs font-medium text-muted">
+                      Cuenta protegida
+                    </span>
+                  ) : (
+                    <div className="flex justify-end gap-2">
                       <button
                         type="button"
-                        onClick={() => setEliminando(usuario)}
-                        className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-sm font-semibold text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:text-red-300 dark:hover:bg-red-950"
+                        onClick={() => abrirEditar(usuario)}
+                        className={btnGhost}
                       >
-                        Desactivar
+                        Editar
                       </button>
-                    ) : null}
-                  </div>
+                      {soloSuperadmin ? (
+                        <button
+                          type="button"
+                          onClick={() => setEliminando(usuario)}
+                          className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-sm font-semibold text-red-700 transition hover:bg-red-50 focus-visible:ring-2 focus-visible:ring-red-600/40 dark:text-red-300 dark:hover:bg-red-950"
+                        >
+                          Desactivar
+                        </button>
+                      ) : null}
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}
@@ -492,6 +513,26 @@ export function UsuariosPanel({ soloSuperadmin = false }: UsuariosPanelProps) {
               ))}
             </select>
           </label>
+          {editando === "nuevo" && meta?.esSuperadmin ? (
+            <label className="flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border border-line bg-surface-soft px-3 py-2.5 text-sm">
+              <input
+                type="checkbox"
+                checked={form.esSuperadmin}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, esSuperadmin: e.target.checked }))
+                }
+                className="mt-0.5 h-4 w-4 accent-brand-700"
+              />
+              <span>
+                <strong className="block text-foreground">
+                  Otorgar acceso de superadmin
+                </strong>
+                <span className="mt-0.5 block text-xs text-muted">
+                  Podrá administrar todas las empresas, usuarios y accesos.
+                </span>
+              </span>
+            </label>
+          ) : null}
           <Campo
             label={
               editando === "nuevo"

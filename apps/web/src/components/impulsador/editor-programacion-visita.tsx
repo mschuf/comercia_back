@@ -82,7 +82,10 @@ export function EditorProgramacionVisita({
   onCerrar,
   onGuardada,
 }: {
-  local: VisitaEquipoLocal;
+  local: Pick<
+    VisitaEquipoLocal,
+    "localId" | "localNombre" | "programacion"
+  >;
   onCerrar: () => void;
   onGuardada: () => void;
 }) {

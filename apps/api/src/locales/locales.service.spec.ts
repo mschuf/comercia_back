@@ -24,7 +24,6 @@ describe('LocalesService - alcance de Supervisor', () => {
     },
     cliente: { findUnique: jest.fn() },
     zona: { findUnique: jest.fn() },
-    zonaUsuario: { findUnique: jest.fn() },
   };
   const actual = {
     id: 10,
@@ -109,7 +108,9 @@ describe('LocalesService - alcance de Supervisor', () => {
 
     expect(acceso.usuarioSupervisorConAlgunaPagina).toHaveBeenCalledWith(10, [
       'clientes',
+      'equipo',
       'mapa',
+      'visitas',
     ]);
 
     const llamadas = prisma.usuario.findMany.mock.calls as unknown as Array<
@@ -166,6 +167,61 @@ describe('LocalesService - alcance de Supervisor', () => {
       select: { id: true },
     });
     expect(prisma.local.create).not.toHaveBeenCalled();
+  });
+
+  it('permite cambiar el local a otro repositor del equipo', async () => {
+    prisma.local.findFirst.mockResolvedValue({
+      id: 90,
+      clienteId: 1,
+      zonaId: 2,
+      usuarioId: 11,
+    });
+    prisma.cliente.findUnique.mockResolvedValue({
+      empresaId: 20,
+      activo: true,
+    });
+    prisma.usuario.findFirst.mockResolvedValue({ id: 12 });
+    prisma.local.update.mockResolvedValue({
+      id: 90,
+      nombre: 'Local',
+      cliente: {
+        id: 1,
+        nombre: 'Cliente',
+        descripcionTareas: '',
+        imagenReferencia: null,
+        _count: { tareas: 0 },
+      },
+      latitud: -25.3,
+      longitud: -57.6,
+      zona: { id: 2, nombre: 'Centro' },
+      radioMetros: null,
+      fechaVisita: null,
+      programacionVisita: null,
+      requiereFotoPresencia: false,
+      activo: true,
+      createdAt: new Date('2026-08-01T12:00:00.000Z'),
+      updatedAt: new Date('2026-08-04T12:00:00.000Z'),
+      usuario: { id: 12, nombre: 'Bea', apellido: 'López' },
+      creadoPor: { id: 10, nombre: 'Supervisor', apellido: 'Uno' },
+    });
+
+    await expect(
+      service.actualizar(10, 90, { usuarioId: 12 }),
+    ).resolves.toMatchObject({
+      id: 90,
+      asignadoA: { id: 12, nombre: 'Bea López' },
+    });
+    expect(prisma.usuario.findFirst).toHaveBeenCalledWith({
+      where: { AND: [alcance, { id: 12 }] },
+      select: { id: true },
+    });
+    const actualizaciones = prisma.local.update.mock.calls as unknown as Array<
+      [{ where: { id: number }; data: { usuarioId?: number | null } }]
+    >;
+    expect(actualizaciones[0]?.[0]).toMatchObject({
+      where: { id: 90 },
+      data: { usuarioId: 12 },
+    });
   });
 
   it('oculta por localId los locales de otro equipo con 404 neutro', async () => {

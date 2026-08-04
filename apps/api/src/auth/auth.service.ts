@@ -14,6 +14,7 @@ import { normalizarCelular, normalizarRucUsuario } from './utils/datos-usuario';
 import { puedeAdministrarUsuarios } from '../common/utils/permisos-usuario';
 import type { UsuarioSesion } from './interfaces/usuario-sesion.interface';
 import type { TokenPayload } from './interfaces/token-payload.interface';
+import type { AsignacionUsuario } from './interfaces/asignacion-usuario.interface';
 
 const MENSAJES_DUPLICADO: Record<string, string> = {
   correo: 'Ya existe un usuario registrado con ese correo',
@@ -30,7 +31,7 @@ export class AuthService {
 
   async crearUsuario(
     dto: RegisterDto,
-    asignacion: { rolId: number; superiorId?: number | null },
+    asignacion: AsignacionUsuario,
   ): Promise<UsuarioSesion> {
     const celularE164 = normalizarCelular(dto.celular, dto.celularPais);
     const ruc = normalizarRucUsuario(dto.ruc, dto.celularPais);
@@ -71,6 +72,7 @@ export class AuthService {
           empresaId: dto.empresaId,
           rolId: asignacion.rolId,
           superiorId: asignacion.superiorId ?? null,
+          esSuperadmin: asignacion.esSuperadmin ?? false,
           ruc,
           celular: celularE164,
           passwordHash,

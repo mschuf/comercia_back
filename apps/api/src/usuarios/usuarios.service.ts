@@ -32,6 +32,7 @@ const SELECT_USUARIO_ADMIN = {
   nombreLogin: true,
   ruc: true,
   celular: true,
+  esSuperadmin: true,
   isActive: true,
   createdAt: true,
   empresa: { select: { id: true, nombre: true } },
@@ -47,6 +48,7 @@ type UsuarioFila = {
   nombreLogin: string;
   ruc: string;
   celular: string;
+  esSuperadmin: boolean;
   isActive: boolean;
   createdAt: Date;
   empresa: { id: number; nombre: string };
@@ -78,6 +80,7 @@ function aUsuarioDto(usuario: UsuarioFila): UsuarioAdminDto {
             `${usuario.superior.nombre} ${usuario.superior.apellido}`.trim(),
         }
       : null,
+    esSuperadmin: usuario.esSuperadmin,
     isActive: usuario.isActive,
     createdAt: usuario.createdAt.toISOString(),
   };
@@ -134,7 +137,9 @@ export class UsuariosService {
   ): Promise<RespuestaPaginada<UsuarioAdminDto>> {
     const actual = await this.contexto(usuarioId);
     const empresaId = this.empresaObjetivo(actual, query.empresaId);
-    const where = { empresaId, esSuperadmin: false };
+    const where = actual.esSuperadmin
+      ? { empresaId }
+      : { empresaId, esSuperadmin: false };
     const { skip, take, page, limit } = rangoPaginacion(query);
     const [total, usuarios] = await Promise.all([
       this.prisma.usuario.count({ where }),
@@ -203,10 +208,19 @@ export class UsuariosService {
   ): Promise<UsuarioAdminDto> {
     const actual = await this.contexto(usuarioId);
     const empresaId = this.empresaObjetivo(actual, dto.empresaId);
+    if (dto.esSuperadmin && !actual.esSuperadmin) {
+      throw new ForbiddenException(
+        'Solo un superadministrador puede otorgar ese permiso',
+      );
+    }
     await this.validarAsignaciones(empresaId, dto.rolId, dto.superiorId);
     const creado = await this.auth.crearUsuario(
       { ...dto, empresaId },
-      { rolId: dto.rolId, superiorId: dto.superiorId },
+      {
+        rolId: dto.rolId,
+        superiorId: dto.superiorId,
+        esSuperadmin: dto.esSuperadmin,
+      },
     );
     const usuario = await this.prisma.usuario.findUnique({
       where: { id: creado.id },

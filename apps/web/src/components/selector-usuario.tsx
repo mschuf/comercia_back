@@ -104,8 +104,8 @@ export function SelectorUsuario({
   }, [abierto, busqueda]);
 
   useEffect(() => {
-    // Locales ya conoce el único repositor permitido por su zona. El acceso
-    // remoto se reserva para conjuntos abiertos, como el selector del Mapa.
+    // Si el consumidor no entrega una lista cerrada, consulta en forma
+    // paginada los repositores que el backend autoriza para el supervisor.
     if (!abierto || disabled || idsPermitidos !== null) return;
     const controlador = new AbortController();
     let vigente = true;

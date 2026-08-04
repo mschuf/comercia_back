@@ -1,6 +1,7 @@
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import type { PrismaService } from '../prisma/prisma.service';
 import type { AccesoOperacionesCampoService } from './acceso-operaciones-campo.service';
+import { FrecuenciaVisitaDto } from './dto/programacion-visita.dto';
 import type { FotosService } from './fotos.service';
 import { VisitasService } from './visitas.service';
 
@@ -353,5 +354,87 @@ describe('VisitasService - novedades', () => {
 
     expect(prisma.visita.update).not.toHaveBeenCalled();
     expect(prisma.$transaction).not.toHaveBeenCalled();
+  });
+});
+
+describe('VisitasService - agenda del equipo', () => {
+  const prisma = {
+    local: {
+      count: jest.fn(),
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
+    },
+  };
+  const supervisor = {
+    id: 10,
+    empresaId: 20,
+    rolId: 5,
+    esGestor: true,
+    esOperativo: false,
+  };
+  const alcance = {
+    empresaId: 20,
+    isActive: true,
+    superiorId: 10,
+    rolId: { in: [6] },
+  };
+  const accesoCampo = {
+    usuarioSupervisorConAlgunaPagina: jest.fn(),
+    filtroRepositoresDelSupervisor: jest.fn(),
+  };
+  const service = new VisitasService(
+    prisma as unknown as PrismaService,
+    accesoCampo as unknown as AccesoOperacionesCampoService,
+    {} as FotosService,
+  );
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    accesoCampo.usuarioSupervisorConAlgunaPagina.mockResolvedValue(supervisor);
+    accesoCampo.filtroRepositoresDelSupervisor.mockResolvedValue(alcance);
+  });
+
+  it('lista únicamente locales de repositores subordinados al supervisor', async () => {
+    prisma.local.count.mockResolvedValue(0);
+    prisma.local.findMany.mockResolvedValue([]);
+
+    await service.equipo(10, { page: 1, limit: 7 });
+
+    expect(accesoCampo.usuarioSupervisorConAlgunaPagina).toHaveBeenCalledWith(
+      10,
+      ['equipo', 'clientes', 'visitas'],
+    );
+    expect(prisma.local.count).toHaveBeenCalledWith({
+      where: {
+        empresaId: 20,
+        usuario: { is: alcance },
+      },
+    });
+  });
+
+  it('oculta con 404 un local asignado a otro supervisor', async () => {
+    prisma.local.findFirst.mockResolvedValue(null);
+
+    await expect(
+      service.guardarProgramacion(10, 90, {
+        frecuencia: FrecuenciaVisitaDto.SEMANAL,
+        fechaInicio: '2026-08-04',
+        fechaFin: null,
+        intervalo: 1,
+        diasSemana: [2],
+        diasMes: [],
+        horarios: ['09:00'],
+        zonaHoraria: 'America/Asuncion',
+        activo: true,
+      }),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    expect(prisma.local.findFirst).toHaveBeenCalledWith({
+      where: {
+        id: 90,
+        empresaId: 20,
+        usuario: { is: alcance },
+      },
+      select: { id: true },
+    });
   });
 });

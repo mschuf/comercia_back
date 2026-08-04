@@ -11,6 +11,7 @@ import { Modal } from "@/components/modal";
 import { Paginacion } from "@/components/paginacion";
 import { PantallaCarga } from "@/components/pantalla-carga";
 import { SelectorUsuario } from "@/components/selector-usuario";
+import { EditorProgramacionVisita } from "@/components/impulsador/editor-programacion-visita";
 import {
   btnGhost,
   btnPrimary,
@@ -20,8 +21,9 @@ import {
 } from "@/components/ui";
 import { formatoCoordenada } from "@/utils/formato";
 import { formatoFechaHora } from "@/utils/fechas";
+import { resumenProgramacion } from "@/utils/programacion-visita";
 import type { RespuestaPaginada } from "@/types/paginacion";
-import type { Local, UsuarioAsignable } from "@/types/local";
+import type { Local } from "@/types/local";
 import type { Zona } from "@/types/territorio";
 import type { Cliente } from "@/types/cliente";
 
@@ -89,6 +91,19 @@ function EstadoLocal({ activo }: { activo: boolean }) {
   );
 }
 
+function IconoCalendario() {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className="h-4 w-4"
+      aria-hidden
+    >
+      <path d="M6.75 2a.75.75 0 01.75.75V4h5V2.75a.75.75 0 011.5 0V4h.75A2.25 2.25 0 0117 6.25v8.5A2.25 2.25 0 0114.75 17h-9.5A2.25 2.25 0 013 14.75v-8.5A2.25 2.25 0 015.25 4H6V2.75A.75.75 0 016.75 2zM4.5 8v6.75c0 .414.336.75.75.75h9.5a.75.75 0 00.75-.75V8h-11z" />
+    </svg>
+  );
+}
+
 export function LocalesView({
   clienteInicial,
   repositorInicial,
@@ -122,6 +137,8 @@ export function LocalesView({
   const [form, setForm] = useState<FormLocal>(FORM_VACIO);
   const [guardando, setGuardando] = useState(false);
   const [errorForm, setErrorForm] = useState<string | null>(null);
+  const [editandoProgramacion, setEditandoProgramacion] =
+    useState<Local | null>(null);
 
   const [eliminando, setEliminando] = useState<Local | null>(null);
   const [borrando, setBorrando] = useState(false);
@@ -367,16 +384,8 @@ export function LocalesView({
 
   const latForm = parseCoordenada(form.latitud);
   const lngForm = parseCoordenada(form.longitud);
-  const zonaSeleccionada = zonas.find((z) => z.id === form.zonaId);
-  const asignablesDeZona: UsuarioAsignable[] = (
-    zonaSeleccionada?.repositores ?? []
-  ).map((usuario) => ({
-    ...usuario,
-    rol: null,
-  }));
   const asignadoInicial =
-    asignablesDeZona.find((usuario) => usuario.id === form.usuarioId) ??
-    (editando !== null &&
+    editando !== null &&
     editando !== "nuevo" &&
     editando.asignadoA?.id === form.usuarioId
       ? {
@@ -384,7 +393,7 @@ export function LocalesView({
           nombre: editando.asignadoA.nombre,
           rol: null,
         }
-      : null);
+      : null;
 
   if (cargando && !datos) {
     return <p className="text-sm text-zinc-400">Cargando locales...</p>;
@@ -600,6 +609,15 @@ export function LocalesView({
                   </div>
                 </dl>
 
+                <p className="mt-3 rounded-lg bg-surface-soft px-3 py-2.5 text-sm text-foreground">
+                  <span className="block text-[11px] font-medium uppercase tracking-wide text-muted">
+                    Agenda
+                  </span>
+                  <span className="mt-0.5 block">
+                    {resumenProgramacion(l.programacion)}
+                  </span>
+                </p>
+
                 <button
                   type="button"
                   onClick={() => verTareas(l)}
@@ -611,6 +629,13 @@ export function LocalesView({
                 </button>
 
                 <div className="mt-4 grid grid-cols-2 gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+                  <button
+                    type="button"
+                    onClick={() => setEditandoProgramacion(l)}
+                    className="col-span-2 inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-brand-300 bg-brand-50 px-3 text-sm font-medium text-brand-800 transition hover:bg-brand-100 focus-visible:ring-2 focus-visible:ring-focus dark:border-brand-800 dark:bg-brand-950 dark:text-brand-200 dark:hover:bg-brand-900"
+                  >
+                    <IconoCalendario /> Editar días y horarios
+                  </button>
                   <button
                     type="button"
                     onClick={() => abrirEdicion(l)}
@@ -663,7 +688,7 @@ export function LocalesView({
                   <th className="px-4 py-3 font-medium">Coordenadas</th>
                   <th className="px-4 py-3 font-medium">Zona</th>
                   <th className="px-4 py-3 font-medium">Asignado a</th>
-                  <th className="px-4 py-3 font-medium">Próx. visita</th>
+                  <th className="px-4 py-3 font-medium">Agenda</th>
                   <th className="px-4 py-3 font-medium">Actualizado</th>
                   <th className="px-4 py-3 font-medium">Estado</th>
                   <th className="px-4 py-3 text-right font-medium">Acciones</th>
@@ -709,8 +734,13 @@ export function LocalesView({
                         <span className="text-zinc-400">Sin asignar</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
-                      {formatoFechaHora(l.fechaVisita)}
+                    <td className="max-w-64 px-4 py-3 text-zinc-500 dark:text-zinc-400">
+                      <span className="block text-foreground">
+                        {resumenProgramacion(l.programacion)}
+                      </span>
+                      <span className="mt-0.5 block text-xs [font-variant-numeric:tabular-nums]">
+                        Próxima: {formatoFechaHora(l.fechaVisita)}
+                      </span>
                     </td>
                     <td className="px-4 py-3 text-zinc-500 [font-variant-numeric:tabular-nums] dark:text-zinc-400">
                       {formatoFechaHora(l.updatedAt)}
@@ -720,6 +750,15 @@ export function LocalesView({
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setEditandoProgramacion(l)}
+                          aria-label={`Editar días y horarios de ${l.nombre}`}
+                          title="Editar días y horarios"
+                          className="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface-raised text-muted transition hover:border-brand-300 hover:bg-brand-50 hover:text-brand-800 focus-visible:ring-2 focus-visible:ring-focus dark:hover:border-brand-800 dark:hover:bg-brand-950 dark:hover:text-brand-200"
+                        >
+                          <IconoCalendario />
+                        </button>
                         <button
                           type="button"
                           onClick={() => abrirEdicion(l)}
@@ -880,11 +919,9 @@ export function LocalesView({
               Asignado a
             </p>
             <SelectorUsuario
-              key={`${editando === "nuevo" ? "nuevo" : (editando?.id ?? "cerrado")}-${form.zonaId}`}
+              key={editando === "nuevo" ? "nuevo" : (editando?.id ?? "cerrado")}
               value={form.usuarioId}
               seleccionadoInicial={asignadoInicial}
-              usuariosPermitidos={asignablesDeZona}
-              disabled={form.zonaId === ""}
               onChange={(usuarioId) =>
                 setForm((f) => ({
                   ...f,
@@ -893,11 +930,7 @@ export function LocalesView({
               }
             />
             <p className="mt-1.5 text-xs text-zinc-500 dark:text-zinc-400">
-              {form.zonaId === ""
-                ? "Elegí una zona para ver su repositor."
-                : asignablesDeZona.length === 0
-                  ? "La zona seleccionada todavía no tiene un repositor."
-                  : "La asignación se limita al repositor de la zona."}
+              Podés elegir cualquier repositor activo de tu equipo.
             </p>
           </div>
 
@@ -910,7 +943,6 @@ export function LocalesView({
                   setForm((f) => ({
                     ...f,
                     zonaId: e.target.value === "" ? "" : Number(e.target.value),
-                    usuarioId: "",
                   }))
                 }
                 required
@@ -958,7 +990,8 @@ export function LocalesView({
           </div>
 
           <p className="rounded-lg bg-zinc-50 p-3 text-xs text-zinc-500 dark:bg-zinc-800 dark:text-zinc-300">
-            Los días y horarios se administran desde la pantalla Visitas.
+            Los días y horarios se administran con el botón de calendario de
+            cada local.
           </p>
 
           {editando !== null && editando !== "nuevo" && (
@@ -995,6 +1028,19 @@ export function LocalesView({
           </div>
         </form>
       </Modal>
+
+      {editandoProgramacion ? (
+        <EditorProgramacionVisita
+          key={editandoProgramacion.id}
+          local={{
+            localId: editandoProgramacion.id,
+            localNombre: editandoProgramacion.nombre,
+            programacion: editandoProgramacion.programacion,
+          }}
+          onCerrar={() => setEditandoProgramacion(null)}
+          onGuardada={() => void cargar()}
+        />
+      ) : null}
 
       {/* Modal de confirmación de borrado */}
       <Modal

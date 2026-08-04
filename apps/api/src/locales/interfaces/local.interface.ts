@@ -1,3 +1,4 @@
+import type { ProgramacionVisitaDto } from '../../impulsador/interfaces/programacion-visita.interface';
 import { TareaLocalDto } from './tarea-local.interface';
 
 // Local geolocalizado, como lo ve el front (DTO de salida mínimo)
@@ -12,6 +13,7 @@ export interface LocalDto {
   radioMetros: number | null;
   // Próxima visita programada por el gestor
   fechaVisita: string | null;
+  programacion: ProgramacionVisitaDto | null;
   requiereFotoPresencia: boolean;
   tareasCount: number;
   activo: boolean;

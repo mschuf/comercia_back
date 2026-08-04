@@ -24,6 +24,7 @@ export interface UsuarioAdmin {
   empresa: { id: number; nombre: string };
   rol: { id: number; descripcion: string } | null;
   superior: { id: number; nombre: string } | null;
+  esSuperadmin: boolean;
   isActive: boolean;
   createdAt: string;
 }
