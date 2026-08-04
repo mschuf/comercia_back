@@ -27,5 +27,17 @@ pnpm-debug.log*
 .claude/settings.local.json
 backups/
 
+# Graphify: conservar el grafo portable, excluir estado local y caché regenerable
+.codex/hooks.json
+apps/graphify-out/
+graphify-out/cache/
+graphify-out/20??-??-??/
+graphify-out/.graphify_python
+graphify-out/.graphify_root
+graphify-out/.graphify_detect.json
+graphify-out/.graphify_ast.json
+graphify-out/.graphify_semantic.json
+graphify-out/.graphify_analysis.json
+
 .DS_Store
 Thumbs.db
