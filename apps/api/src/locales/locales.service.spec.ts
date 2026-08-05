@@ -55,7 +55,7 @@ describe('LocalesService - alcance de Supervisor', () => {
     acceso.filtroRepositoresDelSupervisor.mockResolvedValue(alcance);
   });
 
-  it('filtra usuarioId y nombre completo sin salir del equipo', async () => {
+  it('filtra usuarioId y nombre completo dentro de la empresa', async () => {
     prisma.local.count.mockResolvedValue(0);
     prisma.local.findMany.mockResolvedValue([]);
 
@@ -81,10 +81,10 @@ describe('LocalesService - alcance de Supervisor', () => {
     const llamada = llamadas[0]?.[0];
     if (!llamada) throw new Error('Falta la consulta de locales');
     expect(llamada.where.empresaId).toBe(20);
-    expect(llamada.where.usuario.is.AND[0]).toEqual(alcance);
-    expect(llamada.where.usuario.is.AND[1]).toEqual({ id: 11 });
+    expect(llamada.where.usuario.is.AND[0]).toEqual({ id: 11 });
+    expect(llamada.where.usuario.is.AND[1]?.OR).toHaveLength(4);
     expect(llamada.where.usuario.is.AND[2]?.OR).toHaveLength(4);
-    expect(llamada.where.usuario.is.AND[3]?.OR).toHaveLength(4);
+    expect(acceso.filtroRepositoresDelSupervisor).not.toHaveBeenCalled();
     expect(llamada).toMatchObject({ skip: 7, take: 7 });
   });
 

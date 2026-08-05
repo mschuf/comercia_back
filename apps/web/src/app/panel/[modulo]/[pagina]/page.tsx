@@ -74,9 +74,9 @@ export default function PaginaModulo({
         <div className="mt-6">
           <ClientesLocalesView
             vistaInicial={
-              valorConsulta(consulta.vista) === "locales"
-                ? "locales"
-                : "clientes"
+              valorConsulta(consulta.vista) === "clientes"
+                ? "clientes"
+                : "locales"
             }
             repositorInicial={filtroRepositor(consulta)}
           />

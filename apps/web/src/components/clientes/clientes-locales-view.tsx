@@ -8,7 +8,7 @@ import type { Cliente } from "@/types/cliente";
 type Tab = "clientes" | "locales";
 
 export function ClientesLocalesView({
-  vistaInicial = "clientes",
+  vistaInicial = "locales",
   repositorInicial,
 }: {
   vistaInicial?: Tab;

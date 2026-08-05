@@ -660,13 +660,13 @@
     "semantic_hash": "2fd6fdec4ab8a24520428e040fc7c619"
   },
   "apps/api/src/locales/locales.service.spec.ts": {
-    "mtime": 1785842455.8386576,
-    "ast_hash": "f1c30db7678207e4954149671eedfc30",
+    "mtime": 1785958168.4836946,
+    "ast_hash": "d5451dd5721e3ee3c622c1307fc7ee76",
     "semantic_hash": ""
   },
   "apps/api/src/locales/locales.service.ts": {
-    "mtime": 1785842090.3613956,
-    "ast_hash": "50fd92d993dec5e31534277b314d656f",
+    "mtime": 1785958167.7832541,
+    "ast_hash": "aa7500101d5d40c5b673773e988dc844",
     "semantic_hash": ""
   },
   "apps/api/src/locales/tareas-local.controller.ts": {
@@ -1115,9 +1115,9 @@
     "semantic_hash": "d9f771f7f9842dc2363d611826f66eb7"
   },
   "apps/web/src/app/panel/[modulo]/[pagina]/page.tsx": {
-    "mtime": 1784322675.036531,
-    "ast_hash": "ac73b777d79f8cc936f08d6439df82c3",
-    "semantic_hash": "ac73b777d79f8cc936f08d6439df82c3"
+    "mtime": 1785958169.19962,
+    "ast_hash": "ea66b7be5a2b9435399ae62dbabf7820",
+    "semantic_hash": ""
   },
   "apps/web/src/app/panel/admin/page.tsx": {
     "mtime": 1785500605.024876,
@@ -1175,9 +1175,9 @@
     "semantic_hash": "519bb59bf7c20a14db9fc51d940705c4"
   },
   "apps/web/src/components/clientes/clientes-locales-view.tsx": {
-    "mtime": 1784311932.896651,
-    "ast_hash": "c36acf134582cd094efc53f2d6e2528e",
-    "semantic_hash": "c36acf134582cd094efc53f2d6e2528e"
+    "mtime": 1785958169.9880524,
+    "ast_hash": "5201e2d1a98aa0fcbe411ee38a3d2743",
+    "semantic_hash": ""
   },
   "apps/web/src/components/clientes/clientes-view.tsx": {
     "mtime": 1785498793.4392483,
@@ -1305,9 +1305,9 @@
     "semantic_hash": "d442bf561bc9b782fe7927ab07a3252e"
   },
   "apps/web/src/components/repositor/ruta-diaria-view.tsx": {
-    "mtime": 1785498427.477998,
-    "ast_hash": "6a7bc7a4efed0c2a9e42661237a302bc",
-    "semantic_hash": "6a7bc7a4efed0c2a9e42661237a302bc"
+    "mtime": 1785958170.841652,
+    "ast_hash": "33e6ccd5cbc5803407c53bcf8e153c76",
+    "semantic_hash": ""
   },
   "apps/web/src/components/repositor/ruta-mapa.tsx": {
     "mtime": 1785441894.533368,
@@ -2452,6 +2452,16 @@
   "apps/web/src/assets/comercial-repositor-v2.webp": {
     "mtime": 1784237693.362,
     "ast_hash": "a6227f9b71629ebc638a7ec5f1f8d4b3",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260805_171111_que_significa_programacion_pausada_y_como_reanudar.md": {
+    "mtime": 1785949871.6169374,
+    "ast_hash": "48a7aa9c647c52fedee2ac1ea31cd18e",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260805_171603_cuales_son_las_librerias_que_usa_para_el_calculo_d.md": {
+    "mtime": 1785950163.3848522,
+    "ast_hash": "e70cf3bc57d65ae8e22925baec456edc",
     "semantic_hash": ""
   }
 }

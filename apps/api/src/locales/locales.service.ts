@@ -138,7 +138,7 @@ export class LocalesService {
     return this.accesoCampo.usuario(usuarioId, [PAGINA_CLIENTES]);
   }
 
-  // Supervisor: locales de su equipo. Repositor: solo los suyos.
+  // Gestor: todos los locales de su empresa. Repositor: solo los suyos.
   async listar(
     usuarioId: number,
     query: ListarLocalesDto,
@@ -148,17 +148,20 @@ export class LocalesService {
       ? {
           empresaId: actual.empresaId,
           clienteId: query.clienteId,
-          usuario: {
-            is: {
-              AND: [
-                await this.accesoCampo.filtroRepositoresDelSupervisor(actual),
-                ...(query.usuarioId !== undefined
-                  ? [{ id: query.usuarioId }]
-                  : []),
-                ...filtrosBusquedaUsuario(query.repositor),
-              ],
-            },
-          },
+          ...(query.usuarioId !== undefined || query.repositor
+            ? {
+                usuario: {
+                  is: {
+                    AND: [
+                      ...(query.usuarioId !== undefined
+                        ? [{ id: query.usuarioId }]
+                        : []),
+                      ...filtrosBusquedaUsuario(query.repositor),
+                    ],
+                  },
+                },
+              }
+            : {}),
         }
       : {
           empresaId: actual.empresaId,

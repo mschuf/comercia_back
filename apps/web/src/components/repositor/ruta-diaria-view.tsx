@@ -92,7 +92,7 @@ function ListaParadasMovil({ paradas, onNavegar }: ListaParadasMovilProps) {
   return (
     <ol
       className="space-y-3 md:hidden"
-      aria-label="Orden recomendado de visitas"
+      aria-label="Orden recomendado por IA de visitas"
     >
       {paradas.map((parada) => {
         const estado =
@@ -409,7 +409,7 @@ export function RutaDiariaView() {
               <div className="mb-2">
                 <div>
                   <h2 className="text-base font-bold sm:text-lg">
-                    Orden recomendado
+                    Orden recomendado por IA
                   </h2>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400 sm:text-sm">
                     Ordenado por horarios y tiempos de traslado.
