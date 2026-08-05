@@ -1,0 +1,86 @@
+{
+  "generated_at": "2026-08-05T18:06:21.671761+00:00",
+  "nodes": {
+    "apps_api_src_impulsador_interfaces_programacion_visita_interface_frecuenciaprogramacionvisita": {
+      "code_fingerprint": "4946380e900b0d2c28666fd55caafc03a73c53321ca2fdbefd0d7321e4188ec7",
+      "label": "FrecuenciaProgramacionVisita",
+      "last": "2026-08-05T17:11:11.616937+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-05T17:11:11.616937+00:00",
+          "outcome": "useful",
+          "q": "que significa programacion pausada y como reanudar"
+        }
+      ],
+      "score": 0.999115224,
+      "source_file": "apps/api/src/impulsador/interfaces/programacion-visita.interface.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_repositor_osrm_service_osrmservice": {
+      "code_fingerprint": "2cf9b2ecac46e319651db7d77e7107bfc2aac435f09d617aea33d23d72525390",
+      "label": "OsrmService",
+      "last": "2026-08-05T17:16:03.384852+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-05T17:16:03.384852+00:00",
+          "outcome": "useful",
+          "q": "cuales son las librerias que usa para el calculo de ruta"
+        }
+      ],
+      "score": 0.999193182,
+      "source_file": "apps/api/src/repositor/osrm.service.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_repositor_utils_optimizacion_ruta": {
+      "code_fingerprint": "c2392d0e251071dbc4ecd83dd50be24a74c7438b35e1162bf3eec1223ebe61ae",
+      "label": "optimizacion-ruta.ts",
+      "last": "2026-08-05T17:16:03.384852+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-05T17:16:03.384852+00:00",
+          "outcome": "useful",
+          "q": "cuales son las librerias que usa para el calculo de ruta"
+        }
+      ],
+      "score": 0.999193182,
+      "source_file": "apps/api/src/repositor/utils/optimizacion-ruta.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_web_src_components_impulsador_editor_programacion_visita": {
+      "code_fingerprint": "3efd764b6003cc5498c8ceb3026a1ec2f982f2dadf8b9c34994c5735c8b0ad5f",
+      "label": "editor-programacion-visita.tsx",
+      "last": "2026-08-05T17:11:11.616937+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-05T17:11:11.616937+00:00",
+          "outcome": "useful",
+          "q": "que significa programacion pausada y como reanudar"
+        }
+      ],
+      "score": 0.999115224,
+      "source_file": "apps/web/src/components/impulsador/editor-programacion-visita.tsx",
+      "status": "tentative",
+      "uses": 1
+    },
+    "leaflet": {
+      "code_fingerprint": "0dac0f1ec35e47f008eb57e3e6ec07b75bbf95a569c85906a4c570460d831a6b",
+      "label": "leaflet",
+      "last": "2026-08-05T17:16:03.384852+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-05T17:16:03.384852+00:00",
+          "outcome": "useful",
+          "q": "cuales son las librerias que usa para el calculo de ruta"
+        }
+      ],
+      "score": 0.999193182,
+      "source_file": "apps/web/package.json",
+      "status": "tentative",
+      "uses": 1
+    }
+  },
+  "version": 1
+}
