@@ -13,12 +13,13 @@ export class LoginSimDto {
   @ArrayMaxSize(2)
   @IsString({ each: true })
   @MaxLength(40, { each: true })
-  @Transform(({ value }) =>
-    Array.isArray(value)
-      ? value.map((telefono) =>
-          typeof telefono === 'string' ? telefono.trim() : telefono,
-        )
-      : value,
-  )
+  @Transform(({ value }) => {
+    const valor: unknown = value;
+    if (!Array.isArray(valor)) return valor;
+
+    return valor.map((telefono: unknown) =>
+      typeof telefono === 'string' ? telefono.trim() : telefono,
+    );
+  })
   telefonos!: string[];
 }

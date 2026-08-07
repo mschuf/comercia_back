@@ -50,15 +50,21 @@ describe('UbicacionesService', () => {
       }),
     ).resolves.toMatchObject({ id: 7 });
 
-    expect(prisma.ubicacionUsuario.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({
-          usuarioId: 12,
-          correoUsuario: 'operador@comercia.test',
-          celularUsuario: '+595981000000',
-        }),
-      }),
-    );
+    const crearUbicacion = prisma.ubicacionUsuario.create as jest.Mock<
+      unknown,
+      [unknown]
+    >;
+    const primeraLlamada = crearUbicacion.mock.calls[0]?.[0];
+    const llamada = primeraLlamada as {
+      data: {
+        usuarioId: number;
+        correoUsuario: string;
+        celularUsuario: string;
+      };
+    };
+    expect(llamada.data.usuarioId).toBe(12);
+    expect(llamada.data.correoUsuario).toBe('operador@comercia.test');
+    expect(llamada.data.celularUsuario).toBe('+595981000000');
   });
 
   it('no acepta posiciones cuando el consentimiento no está activo', async () => {
