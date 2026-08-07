@@ -25,12 +25,12 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.telephony.SubscriptionManager
+import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.uimanager.ViewManager
 
@@ -57,7 +57,6 @@ class SimPhoneNumbersModule(
     try {
       val subscriptionManager = reactContext.getSystemService(SubscriptionManager::class.java)
       val numeros = Arguments.createArray()
-      val vistos = mutableSetOf<String>()
       for (subscription in subscriptionManager.activeSubscriptionInfoList.orEmpty()) {
         @Suppress("DEPRECATION")
         val numero = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -65,12 +64,14 @@ class SimPhoneNumbersModule(
         } else {
           subscription.number
         }) ?: ""
-        if (numero.isNotBlank() && vistos.add(numero)) {
-          val item = Arguments.createMap()
-          item.putInt("slotIndex", subscription.simSlotIndex + 1)
+        val item = Arguments.createMap()
+        item.putInt("slotIndex", subscription.simSlotIndex + 1)
+        if (numero.isNotBlank()) {
           item.putString("number", numero)
-          numeros.pushMap(item)
+        } else {
+          item.putNull("number")
         }
+        numeros.pushMap(item)
       }
       promise.resolve(numeros)
     } catch (error: SecurityException) {

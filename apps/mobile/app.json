@@ -1,16 +1,18 @@
 {
   "expo": {
-    "name": "Comercia Móvil",
+    "name": "Comercia Ubicación",
+    "description": "Ubicación consentida del equipo comercial de Comercia.",
     "slug": "comercia-mobile",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/comercia-ubicacion-icon.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "package": "pro.comercia.mobile",
+      "versionCode": 2,
       "permissions": [
         "android.permission.READ_PHONE_STATE",
         "android.permission.READ_PHONE_NUMBERS",
@@ -21,10 +23,8 @@
         "android.permission.FOREGROUND_SERVICE_LOCATION"
       ],
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#073B4C",
+        "foregroundImage": "./assets/comercia-ubicacion-foreground.png"
       },
       "predictiveBackGestureEnabled": false
     },

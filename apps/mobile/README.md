@@ -1,5 +1,8 @@
 # Comercia Móvil
 
+La guía operativa para actualizar la app y generar APKs locales está en
+[GUIA_DE_ACTUALIZACIONES_Y_BUILDS.md](./GUIA_DE_ACTUALIZACIONES_Y_BUILDS.md).
+
 MVP de ubicación consentida para usuarios de Comercia. En Android intenta leer
 los números que el sistema expone para SIM 1 y SIM 2, con permiso explícito, y
 los compara con el celular E.164 de los usuarios de Comercia. Si Android no

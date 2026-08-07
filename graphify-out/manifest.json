@@ -2500,13 +2500,13 @@
     "semantic_hash": ""
   },
   "apps/mobile/App.tsx": {
-    "mtime": 1786124568.5677671,
-    "ast_hash": "8d53acf93e8ba0ebb00cf285e0138af1",
+    "mtime": 1786130636.2341337,
+    "ast_hash": "341a4c4d5fde057c16779e5b0723e21c",
     "semantic_hash": ""
   },
   "apps/mobile/app.json": {
-    "mtime": 1786124260.1887333,
-    "ast_hash": "f3c1df20000027b67728fd3aa5cc526e",
+    "mtime": 1786131080.4188704,
+    "ast_hash": "1b1f3b7aa8aa66b010fbdf10047562a7",
     "semantic_hash": ""
   },
   "apps/mobile/index.ts": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/package.json": {
-    "mtime": 1786124342.003329,
-    "ast_hash": "9140636a4596547d950339a154ecb011",
+    "mtime": 1786128646.0327535,
+    "ast_hash": "6343cbe50f46b05285e35fac82cd60b2",
     "semantic_hash": ""
   },
   "apps/mobile/src/config.ts": {
@@ -2525,8 +2525,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/api.ts": {
-    "mtime": 1786124568.5867815,
-    "ast_hash": "82ff618dcd56549405912f0acaa58fd6",
+    "mtime": 1786130635.498434,
+    "ast_hash": "46c77131ca0b0a51a40ff9a824ee4341",
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/seguimiento.ts": {
@@ -2555,8 +2555,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/README.md": {
-    "mtime": 1786124438.5928342,
-    "ast_hash": "fd0120b8fc39c2170d61c953c7373b28",
+    "mtime": 1786128648.2881083,
+    "ast_hash": "bcedf93894f34a344103e5924eb28742",
     "semantic_hash": ""
   },
   "apps/mobile/assets/android-icon-background.png": {
@@ -2610,13 +2610,33 @@
     "semantic_hash": ""
   },
   "apps/mobile/plugins/with-sim-phone-numbers.js": {
-    "mtime": 1786124568.6134126,
-    "ast_hash": "2c741c7dbf98a5dc2c3e7c8f6d20dd5f",
+    "mtime": 1786130634.798026,
+    "ast_hash": "a8f08f47db0cfb4cdbfcce84f2a46b67",
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/sim.ts": {
-    "mtime": 1786124568.594791,
-    "ast_hash": "0a76146cd645abf59a0f0bfd9dab8897",
+    "mtime": 1786130633.9609365,
+    "ast_hash": "7883d0ac051eb162588bbea4a5a2781b",
+    "semantic_hash": ""
+  },
+  "apps/mobile/scripts/build-local-apk.cjs": {
+    "mtime": 1786130636.9691174,
+    "ast_hash": "9fc85c3fa473dc7e3c1ce11af47d2c39",
+    "semantic_hash": ""
+  },
+  "apps/mobile/GUIA_DE_ACTUALIZACIONES_Y_BUILDS.md": {
+    "mtime": 1786130637.679965,
+    "ast_hash": "9ec2677786898f46e15dc6edfa09dbaa",
+    "semantic_hash": ""
+  },
+  "apps/mobile/assets/comercia-ubicacion-foreground.png": {
+    "mtime": 1786128539.8546648,
+    "ast_hash": "5a1af4c17e1e8e74a6e08954e14e4818",
+    "semantic_hash": ""
+  },
+  "apps/mobile/assets/comercia-ubicacion-icon.png": {
+    "mtime": 1786128412.5227864,
+    "ast_hash": "abf64901a9dcd08d5f4f655f15e9bedc",
     "semantic_hash": ""
   }
 }

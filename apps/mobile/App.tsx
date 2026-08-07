@@ -30,7 +30,11 @@ import {
   estaSeguimientoActivo,
   reanudarSeguimiento,
 } from "./src/lib/seguimiento";
-import { leerNumerosSim, puedeLeerSimEnEsteDispositivo } from "./src/lib/sim";
+import {
+  diagnosticarSim,
+  puedeLeerSimEnEsteDispositivo,
+  type DiagnosticoSim,
+} from "./src/lib/sim";
 
 function textoError(error: unknown): string {
   if (error instanceof ErrorApi || error instanceof Error) return error.message;
@@ -45,6 +49,8 @@ export default function App() {
   const [procesando, setProcesando] = useState(false);
   const [seguimientoActivo, setSeguimientoActivo] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [diagnosticoSim, setDiagnosticoSim] =
+    useState<DiagnosticoSim | null>(null);
 
   useEffect(() => {
     void (async () => {
@@ -68,7 +74,15 @@ export default function App() {
   async function intentarInicioConSim(
     solicitarPermiso: boolean,
   ): Promise<boolean> {
-    const telefonos = await leerNumerosSim(solicitarPermiso);
+    const lectura = await diagnosticarSim(solicitarPermiso);
+    if (solicitarPermiso) setDiagnosticoSim(lectura);
+    const telefonos = [
+      ...new Set(
+        lectura.sims
+          .map((sim) => sim.number)
+          .filter((numero): numero is string => Boolean(numero)),
+      ),
+    ];
     if (telefonos.length === 0) return false;
 
     const nuevaSesion = await iniciarSesionMovilConSim(telefonos);
@@ -87,10 +101,8 @@ export default function App() {
           "No se pudo leer un número de las SIM. Ingresá con correo o usuario y contraseña.",
         );
       }
-    } catch {
-      setError(
-        "No se pudo iniciar sesión automáticamente. Ingresá con correo o usuario y contraseña.",
-      );
+    } catch (errorDeSim) {
+      setError(textoError(errorDeSim));
     } finally {
       setProcesando(false);
     }
@@ -187,6 +199,7 @@ export default function App() {
               alCambiarPassword={setPassword}
               alIngresar={iniciarSesion}
               puedeLeerSim={puedeLeerSimEnEsteDispositivo()}
+              diagnosticoSim={diagnosticoSim}
               alIniciarConSim={iniciarConSim}
             />
           )}
@@ -216,6 +229,7 @@ function PanelLogin({
   alCambiarPassword,
   alIngresar,
   puedeLeerSim,
+  diagnosticoSim,
   alIniciarConSim,
 }: {
   identificador: string;
@@ -225,6 +239,7 @@ function PanelLogin({
   alCambiarPassword: (valor: string) => void;
   alIngresar: () => void;
   puedeLeerSim: boolean;
+  diagnosticoSim: DiagnosticoSim | null;
   alIniciarConSim: () => void;
 }) {
   return (
@@ -250,6 +265,24 @@ function PanelLogin({
             deshabilitado={procesando}
             onPress={alIniciarConSim}
           />
+          {diagnosticoSim ? (
+            <View style={styles.simDiagnostico}>
+              <Text style={styles.simDiagnosticoTitulo}>
+                Diagnóstico de SIM (solo visible en este teléfono)
+              </Text>
+              <Text style={styles.simDiagnosticoTexto}>
+                {diagnosticoSim.mensaje}
+              </Text>
+              <Text style={styles.simDiagnosticoTexto}>
+                Permiso de teléfono: {diagnosticoSim.permisoTelefono ? "concedido" : "no concedido"}. Permiso de números: {diagnosticoSim.permisoNumeros ? "concedido" : "no concedido"}.
+              </Text>
+              {diagnosticoSim.sims.map((sim) => (
+                <Text key={sim.slotIndex} style={styles.simNumero}>
+                  SIM {sim.slotIndex}: {sim.number ?? "Android no expone un número"}
+                </Text>
+              ))}
+            </View>
+          ) : null}
           <Text style={styles.separador}>o ingresá tus credenciales</Text>
         </>
       ) : null}
@@ -460,6 +493,17 @@ const styles = StyleSheet.create({
     padding: 13,
   },
   simAvisoTexto: { color: "#27566B", fontSize: 14, lineHeight: 20 },
+  simDiagnostico: {
+    backgroundColor: "#EAF7F2",
+    borderColor: "#B9E6D5",
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 5,
+    padding: 13,
+  },
+  simDiagnosticoTitulo: { color: "#145647", fontSize: 13, fontWeight: "800" },
+  simDiagnosticoTexto: { color: "#2D6258", fontSize: 13, lineHeight: 19 },
+  simNumero: { color: "#102E3C", fontSize: 14, fontWeight: "700" },
   separador: {
     color: "#647A84",
     fontSize: 13,

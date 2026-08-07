@@ -38,7 +38,14 @@ async function solicitar<T>(
     },
   });
   if (!response.ok) {
-    throw new ErrorApi(await mensajeError(response), response.status);
+    const mensaje = await mensajeError(response);
+    if (response.status === 404 && ruta.startsWith("/auth/mobile/")) {
+      throw new ErrorApi(
+        "El servidor configurado no tiene habilitado el login móvil. El backend debe publicar las rutas de acceso móvil antes de poder iniciar sesión.",
+        response.status,
+      );
+    }
+    throw new ErrorApi(mensaje, response.status);
   }
   return (await response.json()) as T;
 }
