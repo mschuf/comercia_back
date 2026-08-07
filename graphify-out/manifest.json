@@ -2590,8 +2590,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/ubicaciones/ubicaciones.service.spec.ts": {
-    "mtime": 1786123659.1514244,
-    "ast_hash": "b1b19f0d870aa52172078671aae454f5",
+    "mtime": 1786132364.068384,
+    "ast_hash": "483f4caf70840c6995f5408a754126ef",
     "semantic_hash": ""
   },
   "apps/api/src/auth/auth.service.spec.ts": {
@@ -2600,8 +2600,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/auth/dto/login-sim.dto.ts": {
-    "mtime": 1786124195.108461,
-    "ast_hash": "19e627f5c3aa904f73a1ce59a8613ebe",
+    "mtime": 1786132330.0110612,
+    "ast_hash": "c13a2ee544ca62fbd5038674ff3a67b6",
     "semantic_hash": ""
   },
   "apps/mobile/eas.json": {
@@ -2637,6 +2637,16 @@
   "apps/mobile/assets/comercia-ubicacion-icon.png": {
     "mtime": 1786128412.5227864,
     "ast_hash": "abf64901a9dcd08d5f4f655f15e9bedc",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260807_194111_en_que_tabla_puedo_ver_que_se_guarda_los_datos_de.md": {
+    "mtime": 1786131671.6168127,
+    "ast_hash": "45a9daca186fdb15ee9443014f1fadf3",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260807_194359_el_back_en_api_comercia_pro_funciona__hice_un_logi.md": {
+    "mtime": 1786131839.1796055,
+    "ast_hash": "ccdffbf11c9f7d2b5f71b6414f2738d4",
     "semantic_hash": ""
   }
 }
