@@ -20,9 +20,14 @@ export class JwtAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<RequestConUsuario>();
-    const token = (request.cookies as Record<string, string> | undefined)?.[
-      AUTH_COOKIE
-    ];
+    const authorization = request.headers?.authorization;
+    const bearer =
+      typeof authorization === 'string' && authorization.startsWith('Bearer ')
+        ? authorization.slice('Bearer '.length).trim()
+        : null;
+    const token =
+      bearer ||
+      (request.cookies as Record<string, string> | undefined)?.[AUTH_COOKIE];
     if (!token) {
       throw new UnauthorizedException('Sesión no iniciada');
     }
@@ -40,17 +45,18 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException('Sesión inválida o expirada');
     }
     request.usuarioId = payload.sub;
-    // Renovación deslizante: el JWT y la cookie vuelven a durar 30 días en
-    // cada uso autenticado. Evita cierres de sesión por tiempo sin crear un
-    // token imposible de revocar o auditar.
-    const response = context.switchToHttp().getResponse<Response>();
-    response?.cookie(AUTH_COOKIE, this.jwt.sign({ sub: payload.sub }), {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: false,
-      maxAge: TOKEN_DURACION_MS,
-      path: '/',
-    });
+    // Solo la sesión web renueva su cookie. El token Bearer de la app móvil
+    // permanece aislado de las cookies httpOnly del navegador.
+    if (!bearer) {
+      const response = context.switchToHttp().getResponse<Response>();
+      response?.cookie(AUTH_COOKIE, this.jwt.sign({ sub: payload.sub }), {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
+        maxAge: TOKEN_DURACION_MS,
+        path: '/',
+      });
+    }
     return true;
   }
 }

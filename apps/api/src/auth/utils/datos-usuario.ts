@@ -24,6 +24,21 @@ export function normalizarCelular(celular: string, pais: string): string {
   return parsed.number;
 }
 
+// Los números leídos desde una SIM no siempre traen país ni formato uniforme.
+// Esta variante no revela detalles al usuario: el flujo de autenticación decide
+// si un número ausente o inválido debe caer al login habitual.
+export function normalizarNumeroSim(celular: string): string | null {
+  // Comercia normaliza sus celulares actuales como Paraguay; con el prefijo
+  // por defecto también se puede resolver un número local que la operadora
+  // exponga sin +595.
+  const parsed = parsePhoneNumberFromString(celular, 'PY');
+  if (!parsed || !parsed.isValid()) return null;
+
+  const tipo = parsed.getType();
+  if (tipo !== undefined && !TIPOS_CELULAR_VALIDOS.has(tipo)) return null;
+  return parsed.number;
+}
+
 export function normalizarRucUsuario(ruc: string, pais: string): string {
   if (pais === 'PY') {
     const normalizado = normalizarRucPy(ruc.toUpperCase());

@@ -160,9 +160,9 @@
     "semantic_hash": "7eee3d8be686734a7d02be67c7555852"
   },
   "apps/api/src/app.module.ts": {
-    "mtime": 1785500217.0353842,
-    "ast_hash": "b38f0d4163de899ad7fe6a2f58f4a42b",
-    "semantic_hash": "b38f0d4163de899ad7fe6a2f58f4a42b"
+    "mtime": 1786123169.769458,
+    "ast_hash": "f54ac1ea9b7d0e22b7d31804f0ae5a04",
+    "semantic_hash": ""
   },
   "apps/api/src/app.service.ts": {
     "mtime": 1782998785.0057294,
@@ -175,9 +175,9 @@
     "semantic_hash": "b996d6a832d105a7008aa3000164062c"
   },
   "apps/api/src/auth/auth.controller.ts": {
-    "mtime": 1785500149.9025888,
-    "ast_hash": "d0e90a5cb664a5196b9fbddcc4114561",
-    "semantic_hash": "d0e90a5cb664a5196b9fbddcc4114561"
+    "mtime": 1786124183.1108098,
+    "ast_hash": "b5b8cc75feaf1b80577a29a189fe3b7a",
+    "semantic_hash": ""
   },
   "apps/api/src/auth/auth.module.ts": {
     "mtime": 1784122795.1161208,
@@ -185,8 +185,8 @@
     "semantic_hash": "e4ed3d80ac04c72497bfcb055d1dab05"
   },
   "apps/api/src/auth/auth.service.ts": {
-    "mtime": 1785842049.8125155,
-    "ast_hash": "2e458ef0da601e3f144c719d056789c3",
+    "mtime": 1786124182.5823078,
+    "ast_hash": "e688513c12af21f86226de85eddd7b3b",
     "semantic_hash": ""
   },
   "apps/api/src/auth/dto/login.dto.ts": {
@@ -215,14 +215,14 @@
     "semantic_hash": "5ace7d98cf048bdbc8c65b5e969d01c7"
   },
   "apps/api/src/auth/jwt-auth.guard.spec.ts": {
-    "mtime": 1785500771.384006,
-    "ast_hash": "282d1e8da14c1468b8bbf3b147bc38a3",
-    "semantic_hash": "282d1e8da14c1468b8bbf3b147bc38a3"
+    "mtime": 1786123098.342876,
+    "ast_hash": "7abe23d8e33925fecf73f6b31a1dcf09",
+    "semantic_hash": ""
   },
   "apps/api/src/auth/jwt-auth.guard.ts": {
-    "mtime": 1785500923.2166514,
-    "ast_hash": "12437fa7c1b26ec3237efb343d5ebc6a",
-    "semantic_hash": "12437fa7c1b26ec3237efb343d5ebc6a"
+    "mtime": 1786123622.0107982,
+    "ast_hash": "eedc7af07077d64067f798ba7ebad9c5",
+    "semantic_hash": ""
   },
   "apps/api/src/auth/superadmin.guard.ts": {
     "mtime": 1783341295.5229788,
@@ -230,9 +230,9 @@
     "semantic_hash": "7392d6d94b4ae81c9f376f16c575d5d3"
   },
   "apps/api/src/auth/utils/datos-usuario.ts": {
-    "mtime": 1784122792.261749,
-    "ast_hash": "a6122e95f6ce4ddea6a81cfc64d7b88f",
-    "semantic_hash": "a6122e95f6ce4ddea6a81cfc64d7b88f"
+    "mtime": 1786124513.3213735,
+    "ast_hash": "44ee07b75afd63d6161cac350fa97d57",
+    "semantic_hash": ""
   },
   "apps/api/src/auth/utils/password.spec.ts": {
     "mtime": 1783341199.3715694,
@@ -2462,6 +2462,161 @@
   "graphify-out/memory/query_20260805_171603_cuales_son_las_librerias_que_usa_para_el_calculo_d.md": {
     "mtime": 1785950163.3848522,
     "ast_hash": "e70cf3bc57d65ae8e22925baec456edc",
+    "semantic_hash": ""
+  },
+  "apps/api/prisma/migrations/20260807120000_agrega_seguimiento_ubicacion/migration.sql": {
+    "mtime": 1786123170.86944,
+    "ast_hash": "39f28b443187ae5308f99cf30695f54e",
+    "semantic_hash": ""
+  },
+  "apps/api/src/ubicaciones/dto/ubicacion.dto.ts": {
+    "mtime": 1786123506.5586357,
+    "ast_hash": "e7ca1af1403d32938e0b8b98499f8dbe",
+    "semantic_hash": ""
+  },
+  "apps/api/src/ubicaciones/interfaces/ubicacion.interface.ts": {
+    "mtime": 1786123151.6106994,
+    "ast_hash": "88836bbb155f94d6602cd3a21e6611a3",
+    "semantic_hash": ""
+  },
+  "apps/api/src/ubicaciones/ubicaciones.controller.ts": {
+    "mtime": 1786123487.16355,
+    "ast_hash": "226e643a52e5b2cc15dc325b59b9ac4c",
+    "semantic_hash": ""
+  },
+  "apps/api/src/ubicaciones/ubicaciones.module.ts": {
+    "mtime": 1786123153.4117916,
+    "ast_hash": "68cc1a924c319a7a46a9c0740441e232",
+    "semantic_hash": ""
+  },
+  "apps/api/src/ubicaciones/ubicaciones.service.ts": {
+    "mtime": 1786123487.1882885,
+    "ast_hash": "175ff899120852d957a6f6a8faeaba66",
+    "semantic_hash": ""
+  },
+  "apps/mobile/.claude/settings.json": {
+    "mtime": 1786122880.9258373,
+    "ast_hash": "dc580fca35a0e98ed20777ede5e545a1",
+    "semantic_hash": ""
+  },
+  "apps/mobile/App.tsx": {
+    "mtime": 1786124568.5677671,
+    "ast_hash": "8d53acf93e8ba0ebb00cf285e0138af1",
+    "semantic_hash": ""
+  },
+  "apps/mobile/app.json": {
+    "mtime": 1786124260.1887333,
+    "ast_hash": "f3c1df20000027b67728fd3aa5cc526e",
+    "semantic_hash": ""
+  },
+  "apps/mobile/index.ts": {
+    "mtime": 1786122853.3209274,
+    "ast_hash": "33caa6d28d87fc7e637c033d0d7124b1",
+    "semantic_hash": ""
+  },
+  "apps/mobile/package.json": {
+    "mtime": 1786124342.003329,
+    "ast_hash": "9140636a4596547d950339a154ecb011",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/config.ts": {
+    "mtime": 1786123487.3055542,
+    "ast_hash": "251b51c1937e40bd7dd5ad585683740c",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/lib/api.ts": {
+    "mtime": 1786124568.5867815,
+    "ast_hash": "82ff618dcd56549405912f0acaa58fd6",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/lib/seguimiento.ts": {
+    "mtime": 1786123487.330495,
+    "ast_hash": "92f73dcad82126f9fe80c3a917f7cabe",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/lib/sesion.ts": {
+    "mtime": 1786123487.3376372,
+    "ast_hash": "d2af3b31182499ff3548d27d0264a323",
+    "semantic_hash": ""
+  },
+  "apps/mobile/tsconfig.json": {
+    "mtime": 1786122853.3139236,
+    "ast_hash": "a5df9ddad82c56de332cbb7d00dd294b",
+    "semantic_hash": ""
+  },
+  "apps/mobile/AGENTS.md": {
+    "mtime": 1786122880.9248369,
+    "ast_hash": "963888ec05f17b13375386f058dd621e",
+    "semantic_hash": ""
+  },
+  "apps/mobile/CLAUDE.md": {
+    "mtime": 1786122880.9248369,
+    "ast_hash": "5c27369b226fcf2be8a6cfe52224e767",
+    "semantic_hash": ""
+  },
+  "apps/mobile/README.md": {
+    "mtime": 1786124438.5928342,
+    "ast_hash": "fd0120b8fc39c2170d61c953c7373b28",
+    "semantic_hash": ""
+  },
+  "apps/mobile/assets/android-icon-background.png": {
+    "mtime": 1786122853.314928,
+    "ast_hash": "2d65569cc0e2afdcea0af9f9902d4173",
+    "semantic_hash": ""
+  },
+  "apps/mobile/assets/android-icon-foreground.png": {
+    "mtime": 1786122853.3159277,
+    "ast_hash": "72e71a9c846c6aa4ae32476641a00e18",
+    "semantic_hash": ""
+  },
+  "apps/mobile/assets/android-icon-monochrome.png": {
+    "mtime": 1786122853.3159277,
+    "ast_hash": "1e097dab989759fc0b69440092ca22cd",
+    "semantic_hash": ""
+  },
+  "apps/mobile/assets/favicon.png": {
+    "mtime": 1786122853.3169274,
+    "ast_hash": "d9f444efbdfbe7931aa93beada07318a",
+    "semantic_hash": ""
+  },
+  "apps/mobile/assets/icon.png": {
+    "mtime": 1786122853.3189275,
+    "ast_hash": "cb975bba2216ce10a60e6c0ffe9941a2",
+    "semantic_hash": ""
+  },
+  "apps/mobile/assets/splash-icon.png": {
+    "mtime": 1786122853.3199277,
+    "ast_hash": "97dae5a0e62ad8551d8a31897b425e63",
+    "semantic_hash": ""
+  },
+  "apps/api/src/ubicaciones/ubicaciones.service.spec.ts": {
+    "mtime": 1786123659.1514244,
+    "ast_hash": "b1b19f0d870aa52172078671aae454f5",
+    "semantic_hash": ""
+  },
+  "apps/api/src/auth/auth.service.spec.ts": {
+    "mtime": 1786124568.495249,
+    "ast_hash": "b08eaa31b1189aca84581932e0d61078",
+    "semantic_hash": ""
+  },
+  "apps/api/src/auth/dto/login-sim.dto.ts": {
+    "mtime": 1786124195.108461,
+    "ast_hash": "19e627f5c3aa904f73a1ce59a8613ebe",
+    "semantic_hash": ""
+  },
+  "apps/mobile/eas.json": {
+    "mtime": 1786124437.9934065,
+    "ast_hash": "e290dd4e3b04b08684d2be1026ee5801",
+    "semantic_hash": ""
+  },
+  "apps/mobile/plugins/with-sim-phone-numbers.js": {
+    "mtime": 1786124568.6134126,
+    "ast_hash": "2c741c7dbf98a5dc2c3e7c8f6d20dd5f",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/lib/sim.ts": {
+    "mtime": 1786124568.594791,
+    "ast_hash": "0a76146cd645abf59a0f0bfd9dab8897",
     "semantic_hash": ""
   }
 }

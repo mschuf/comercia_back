@@ -10,7 +10,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { hashPassword, verifyPassword } from './utils/password';
-import { normalizarCelular, normalizarRucUsuario } from './utils/datos-usuario';
+import {
+  normalizarCelular,
+  normalizarNumeroSim,
+  normalizarRucUsuario,
+} from './utils/datos-usuario';
+import { LoginSimDto } from './dto/login-sim.dto';
 import { puedeAdministrarUsuarios } from '../common/utils/permisos-usuario';
 import type { UsuarioSesion } from './interfaces/usuario-sesion.interface';
 import type { TokenPayload } from './interfaces/token-payload.interface';
@@ -123,6 +128,40 @@ export class AuthService {
       throw credencialesInvalidas;
     }
 
+    return {
+      usuario: this.aSesion(usuario),
+      token: this.firmarToken(usuario.id),
+    };
+  }
+
+  async loginMovilConSim(
+    dto: LoginSimDto,
+  ): Promise<{ usuario: UsuarioSesion; token: string }> {
+    const telefonos = [
+      ...new Set(
+        dto.telefonos
+          .map(normalizarNumeroSim)
+          .filter((telefono): telefono is string => telefono !== null),
+      ),
+    ];
+    const credencialesInvalidas = new UnauthorizedException(
+      'No se pudo iniciar sesión automáticamente',
+    );
+    if (telefonos.length === 0) throw credencialesInvalidas;
+
+    // No elegir arbitrariamente si dos SIMs pertenecen a usuarios distintos.
+    // Es un endpoint público deliberado, equivalente al login móvil, porque la
+    // app necesita resolver el fallback antes de contar con un JWT.
+    const usuarios = await this.prisma.usuario.findMany({
+      where: { celular: { in: telefonos } },
+      include: { empresa: true, rol: true },
+      take: 2,
+    });
+    if (usuarios.length !== 1 || !usuarios[0].isActive) {
+      throw credencialesInvalidas;
+    }
+
+    const usuario = usuarios[0];
     return {
       usuario: this.aSesion(usuario),
       token: this.firmarToken(usuario.id),

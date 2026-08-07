@@ -20,6 +20,7 @@ import { RepositorModule } from './repositor/repositor.module';
 import { EquipoModule } from './equipo/equipo.module';
 import { NotificacionesModule } from './notificaciones/notificaciones.module';
 import { RolesModule } from './roles/roles.module';
+import { UbicacionesModule } from './ubicaciones/ubicaciones.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { RolesModule } from './roles/roles.module';
     RepositorModule,
     EquipoModule,
     NotificacionesModule,
+    UbicacionesModule,
   ],
   controllers: [AppController],
   providers: [

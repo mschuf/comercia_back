@@ -65,4 +65,22 @@ describe('JwtAuthGuard', () => {
     expect(jwt.sign).not.toHaveBeenCalled();
     expect(response.cookie).not.toHaveBeenCalled();
   });
+
+  it('acepta un Bearer token móvil sin emitir una cookie', async () => {
+    const request = { headers: { authorization: 'Bearer token-movil' } };
+    const response = { cookie: jest.fn() };
+    const context = {
+      switchToHttp: () => ({
+        getRequest: () => request,
+        getResponse: () => response,
+      }),
+    };
+    jwt.verify.mockReturnValue({ sub: 42 });
+    prisma.usuario.findUnique.mockResolvedValue({ isActive: true });
+
+    await expect(guard.canActivate(context as never)).resolves.toBe(true);
+    expect(request).toMatchObject({ usuarioId: 42 });
+    expect(jwt.sign).not.toHaveBeenCalled();
+    expect(response.cookie).not.toHaveBeenCalled();
+  });
 });

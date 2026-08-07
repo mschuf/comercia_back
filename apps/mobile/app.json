@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "Comercia Móvil",
+    "slug": "comercia-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "pro.comercia.mobile",
+      "permissions": [
+        "android.permission.READ_PHONE_STATE",
+        "android.permission.READ_PHONE_NUMBERS"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Comercia usa tu ubicación para enviar tu posición mientras el seguimiento está activo.",
+          "locationAlwaysAndWhenInUsePermission": "Comercia usa tu ubicación en segundo plano solo mientras el seguimiento esté activo.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
+        }
+      ],
+      [
+        "expo-secure-store",
+        {
+          "configureAndroidBackup": true
+        }
+      ],
+      "./plugins/with-sim-phone-numbers"
+    ]
+  }
+}

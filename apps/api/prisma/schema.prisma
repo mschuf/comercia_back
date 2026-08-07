@@ -484,12 +484,45 @@ model Usuario {
   zonasAsignadas         ZonaUsuario[]         @relation("ZonasAsignadas")
   zonasAsignadasPor      ZonaUsuario[]         @relation("ZonasAsignadasPor")
   visitas                Visita[]              @relation("VisitasRealizadas")
-  rutasDiarias           RutaDiariaRepositor[] @relation("RutasDiariasRepositor")
-  novedadesReportadas    NovedadTarea[]        @relation("NovedadesReportadas")
+  rutasDiarias            RutaDiariaRepositor[]    @relation("RutasDiariasRepositor")
+  consentimientoUbicacion ConsentimientoUbicacion?
+  ubicaciones             UbicacionUsuario[]
+  novedadesReportadas     NovedadTarea[]           @relation("NovedadesReportadas")
   novedadesRecibidas     NovedadTarea[]        @relation("NovedadesRecibidas")
   isActive               Boolean               @default(true) @map("is_active")
   createdAt              DateTime              @default(now()) @map("created_at")
   updatedAt              DateTime              @default(now()) @updatedAt @map("updated_at")
 
   @@map("usuarios")
+}
+
+// El consentimiento se registra en servidor y se puede revocar desde la app.
+// Sin un consentimiento activo no se aceptan coordenadas de este usuario.
+model ConsentimientoUbicacion {
+  usuarioId       Int       @id @map("usuario_id")
+  usuario         Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  otorgadoEn      DateTime  @map("otorgado_en")
+  revocadoEn      DateTime? @map("revocado_en")
+  versionPolitica String    @map("version_politica")
+  actualizadoEn   DateTime  @updatedAt @map("updated_at")
+
+  @@map("consentimientos_ubicacion")
+}
+
+// Registro auditable de posiciones. El correo y celular son un snapshot
+// derivado exclusivamente del usuario autenticado, nunca del payload móvil.
+model UbicacionUsuario {
+  id              Int      @id @default(autoincrement())
+  usuarioId       Int      @map("usuario_id")
+  usuario         Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  latitud         Float
+  longitud        Float
+  precisionMetros Float?   @map("precision_metros")
+  registradaEn    DateTime @map("registrada_en")
+  recibidaEn      DateTime @default(now()) @map("recibida_en")
+  correoUsuario   String   @map("correo_usuario")
+  celularUsuario  String   @map("celular_usuario")
+
+  @@index([usuarioId, registradaEn(sort: Desc)])
+  @@map("ubicaciones_usuario")
 }

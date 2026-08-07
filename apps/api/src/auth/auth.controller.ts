@@ -14,6 +14,7 @@ import type { Response } from 'express';
 import { AUTH_COOKIE, TOKEN_DURACION_MS } from './auth.constants';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { LoginSimDto } from './dto/login-sim.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import type { UsuarioSesion } from './interfaces/usuario-sesion.interface';
 import type { RequestConUsuario } from './interfaces/request-con-usuario.interface';
@@ -34,6 +35,29 @@ export class AuthController {
     const { usuario, token } = await this.authService.login(dto);
     this.setAuthCookie(res, token);
     return { usuario };
+  }
+
+  // La app nativa no puede leer la cookie httpOnly de la web. Este endpoint
+  // entrega el mismo JWT solamente tras validar usuario y contraseña; no usa
+  // la SIM ni el número de teléfono como credencial.
+  @Post('mobile/login')
+  @HttpCode(200)
+  @Throttle({ default: { ttl: 60000, limit: 10 } })
+  @ApiOperation({ summary: 'Iniciar sesión desde la app móvil' })
+  loginMovil(
+    @Body() dto: LoginDto,
+  ): Promise<{ usuario: UsuarioSesion; token: string }> {
+    return this.authService.login(dto);
+  }
+
+  @Post('mobile/sim-login')
+  @HttpCode(200)
+  @Throttle({ default: { ttl: 60000, limit: 5 } })
+  @ApiOperation({ summary: 'Intentar inicio de sesión con SIM disponible' })
+  loginMovilConSim(
+    @Body() dto: LoginSimDto,
+  ): Promise<{ usuario: UsuarioSesion; token: string }> {
+    return this.authService.loginMovilConSim(dto);
   }
 
   @Post('logout')
