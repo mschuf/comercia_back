@@ -3,7 +3,7 @@
     "name": "Comercia Ubicación",
     "description": "Ubicación consentida del equipo comercial de Comercia.",
     "slug": "comercia-mobile",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/comercia-ubicacion-icon.png",
     "userInterfaceStyle": "light",
@@ -12,7 +12,7 @@
     },
     "android": {
       "package": "pro.comercia.mobile",
-      "versionCode": 2,
+      "versionCode": 3,
       "permissions": [
         "android.permission.READ_PHONE_STATE",
         "android.permission.READ_PHONE_NUMBERS",

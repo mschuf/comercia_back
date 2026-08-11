@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-07T19:48:45.453602+00:00",
+  "generated_at": "2026-08-07T20:25:49.831648+00:00",
   "nodes": {
     "apps_api_src_auth_auth_controller_authcontroller": {
       "code_fingerprint": "41d1dc8b5a2bb2dbb6ed83c349b139367fd7de34296754d681f14e36d1ed60a0",
@@ -12,7 +12,7 @@
           "q": "el back en api.comercia.pro funciona, hice un login y funciono https://api.comercia.pro/api/v1/auth/login"
         }
       ],
-      "score": 0.999923448,
+      "score": 0.999328832,
       "source_file": "apps/api/src/auth/auth.controller.ts",
       "status": "tentative",
       "uses": 1
@@ -28,7 +28,7 @@
           "q": "que significa programacion pausada y como reanudar"
         }
       ],
-      "score": 0.952430694,
+      "score": 0.95186432,
       "source_file": "apps/api/src/impulsador/interfaces/programacion-visita.interface.ts",
       "status": "tentative",
       "uses": 1
@@ -44,7 +44,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.952505009,
+      "score": 0.951938591,
       "source_file": "apps/api/src/repositor/osrm.service.ts",
       "status": "tentative",
       "uses": 1
@@ -60,7 +60,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.952505009,
+      "score": 0.951938591,
       "source_file": "apps/api/src/repositor/utils/optimizacion-ruta.ts",
       "status": "tentative",
       "uses": 1
@@ -76,7 +76,7 @@
           "q": "en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios"
         }
       ],
-      "score": 0.999878635,
+      "score": 0.999284046,
       "source_file": "apps/api/src/ubicaciones/ubicaciones.service.ts",
       "status": "tentative",
       "uses": 1
@@ -97,7 +97,7 @@
           "q": "en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios"
         }
       ],
-      "score": 1.999802083,
+      "score": 1.998612877,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
       "status": "preferred",
       "uses": 2
@@ -113,7 +113,7 @@
           "q": "el back en api.comercia.pro funciona, hice un login y funciono https://api.comercia.pro/api/v1/auth/login"
         }
       ],
-      "score": 0.999923448,
+      "score": 0.999328832,
       "source_file": "apps/mobile/src/lib/sesion.ts",
       "status": "tentative",
       "uses": 1
@@ -129,7 +129,7 @@
           "q": "que significa programacion pausada y como reanudar"
         }
       ],
-      "score": 0.952430694,
+      "score": 0.95186432,
       "source_file": "apps/web/src/components/impulsador/editor-programacion-visita.tsx",
       "status": "tentative",
       "uses": 1
@@ -145,7 +145,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.952505009,
+      "score": 0.951938591,
       "source_file": "apps/web/package.json",
       "status": "tentative",
       "uses": 1

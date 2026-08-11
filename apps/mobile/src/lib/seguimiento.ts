@@ -58,8 +58,14 @@ async function registrarLote(
 
 if (!TaskManager.isTaskDefined(NOMBRE_TAREA_UBICACION)) {
   TaskManager.defineTask(NOMBRE_TAREA_UBICACION, async ({ data, error }) => {
-    if (error || !sonDatosDeUbicacion(data)) return;
-    await registrarLote(data.locations);
+    try {
+      if (error || !sonDatosDeUbicacion(data)) return;
+      await registrarLote(data.locations);
+    } catch {
+      // Una tarea de segundo plano no puede dejar excepciones sin manejar:
+      // Android podría finalizar todo el proceso de la aplicación.
+      await detenerSeguimientoLocal().catch(() => undefined);
+    }
   });
 }
 

@@ -2505,8 +2505,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/app.json": {
-    "mtime": 1786131080.4188704,
-    "ast_hash": "1b1f3b7aa8aa66b010fbdf10047562a7",
+    "mtime": 1786134628.3884008,
+    "ast_hash": "792b126cc95b1c09e9085e1b30cea57b",
     "semantic_hash": ""
   },
   "apps/mobile/index.ts": {
@@ -2515,7 +2515,7 @@
     "semantic_hash": ""
   },
   "apps/mobile/package.json": {
-    "mtime": 1786128646.0327535,
+    "mtime": 1786135715.1708736,
     "ast_hash": "6343cbe50f46b05285e35fac82cd60b2",
     "semantic_hash": ""
   },
@@ -2530,8 +2530,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/seguimiento.ts": {
-    "mtime": 1786123487.330495,
-    "ast_hash": "92f73dcad82126f9fe80c3a917f7cabe",
+    "mtime": 1786134627.231778,
+    "ast_hash": "c3b672bdcfb30b8fe9697c2e694b58f0",
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/sesion.ts": {

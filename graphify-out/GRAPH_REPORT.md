@@ -1,16 +1,16 @@
 # Graph Report - COMERCIA  (2026-08-07)
 
 ## Corpus Check
-- 510 files · ~255,070 words
+- 510 files · ~255,102 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2901 nodes · 5534 edges · 341 communities (156 shown, 185 thin omitted)
+- 2901 nodes · 5534 edges · 340 communities (155 shown, 185 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 30 edges (avg confidence: 0.63)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `30ae3cb2`
+- Built from commit: `ff57e8f5`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -18,12 +18,12 @@
 - VisitasController
 - AdminUsuariosController
 - app.module.ts
-- visitas-view.tsx
+- @eslint/eslintrc
 - ActualizarTareaGlobalDto
 - seguimiento-tareas-view.tsx
 - mapa-view.tsx
 - clientes.service.ts
-- repositorio-tareas-view.tsx
+- ruta-diaria-view.tsx
 - ubicaciones.service.ts
 - admin-empresas.service.ts
 - scripts
@@ -62,7 +62,7 @@
 - apiFetch
 - UsuariosController
 - Web Components Tablero
-- equipo-view.tsx
+- repositorio-tareas-view.tsx
 - GuardarProgramacionVisitaDto
 - @types/node
 - empresas-abm-panel.tsx
@@ -85,7 +85,7 @@
 - 7. JavaScript Performance
 - Q: en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios
 - Quick Reference
-- visita-activa.tsx
+- visitas-view.tsx
 - usuarios.service.ts
 - 7. JavaScript Performance
 - Quick Reference
@@ -248,7 +248,6 @@
 - Q: cuales son las librerias que usa para el calculo de ruta
 - libphonenumber-js
 - @prisma/client
-- eslint-config-prettier
 - visitas.service.ts
 - supertest
 - tsconfig-paths
@@ -350,19 +349,19 @@
 ## Surprising Connections (you probably didn't know these)
 - `ListaTareasGlobalesMovil()` --indirect_call--> `tarea()`  [INFERRED]
   apps/web/src/components/tareas/tareas-view.tsx → apps/api/src/impulsador/visitas.service.spec.ts
-- `ListaEquipoMovil()` --calls--> `formatoFechaHora()`  [EXTRACTED]
-  apps/web/src/components/equipo/equipo-view.tsx → apps/web/src/utils/fechas.ts
-- `BotonFoto()` --calls--> `urlFotoVisita()`  [EXTRACTED]
-  apps/web/src/components/impulsador/visitas-view.tsx → apps/web/src/lib/api-archivos.ts
 - `CrearUsuarioDto` --inherits--> `RegisterDto`  [EXTRACTED]
   apps/api/src/usuarios/dto/usuario.dto.ts → apps/api/src/auth/dto/register.dto.ts
 - `ListarClientesDto` --inherits--> `PaginacionDto`  [EXTRACTED]
   apps/api/src/clientes/dto/cliente.dto.ts → apps/api/src/common/utils/paginacion.ts
+- `exigirDentroDelRadio()` --calls--> `distanciaMetros()`  [EXTRACTED]
+  apps/api/src/impulsador/visitas.service.ts → apps/api/src/common/utils/geo.ts
+- `ListarRepositoresEquipoDto` --inherits--> `PaginacionDto`  [EXTRACTED]
+  apps/api/src/equipo/dto/equipo.dto.ts → apps/api/src/common/utils/paginacion.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (341 total, 185 thin omitted)
+## Communities (340 total, 185 thin omitted)
 
 ### Community 0 - "VisitasController"
 Cohesion: 0.16
@@ -376,17 +375,13 @@ Nodes (12): AdminUsuariosController, ApiTags, Body, Controller, Delete, Get, Par
 Cohesion: 0.06
 Nodes (50): ApiOkResponse, AppController, ApiTags, Controller, Get, AppModule, Module, AppService (+42 more)
 
-### Community 3 - "visitas-view.tsx"
-Cohesion: 0.11
-Nodes (28): ListaClientesMovil(), DIAS, EditorProgramacionVisita(), fechaHoy(), programacionInicial(), BotonFoto(), claseProximaVisita(), EstadoVisita() (+20 more)
-
 ### Community 4 - "ActualizarTareaGlobalDto"
 Cohesion: 0.10
 Nodes (23): ActualizarTareaGlobalDto, CrearTareaGlobalDto, PIPE, IsBoolean, IsInt, IsOptional, IsString, Length (+15 more)
 
 ### Community 5 - "seguimiento-tareas-view.tsx"
-Cohesion: 0.12
-Nodes (18): tarea(), FiltroEstado, FiltrosSeguimientoTareas, ListaSeguimientoTareasMovil(), RespuestaSeguimiento, SeguimientoTareasView(), OPCIONES_POR_PAGINA, Paginacion() (+10 more)
+Cohesion: 0.13
+Nodes (16): tarea(), FiltroEstado, FiltrosSeguimientoTareas, ListaSeguimientoTareasMovil(), RespuestaSeguimiento, SeguimientoTareasView(), FORM_INICIAL, FormTarea (+8 more)
 
 ### Community 6 - "mapa-view.tsx"
 Cohesion: 0.06
@@ -396,9 +391,9 @@ Nodes (36): CAPAS_MAPA, CENTRO_DEFECTO, SeleccionMapa, useMapaOscuro(), Visibili
 Cohesion: 0.09
 Nodes (27): ClientesController, ApiTags, Body, Controller, Delete, Get, Param, Patch (+19 more)
 
-### Community 8 - "repositorio-tareas-view.tsx"
-Cohesion: 0.09
-Nodes (33): DetalleTareasProps, ListaTareasMovilProps, VisitaActiva, ResumenJornadaRepositor(), ContextoRutaDiaria, RutaDiariaProvider(), SolicitudRuta, useRutaDiaria() (+25 more)
+### Community 8 - "ruta-diaria-view.tsx"
+Cohesion: 0.11
+Nodes (28): ResumenJornadaRepositor(), ContextoRutaDiaria, RutaDiariaProvider(), SolicitudRuta, useRutaDiaria(), AccionesParada(), AccionesParadaProps, formatoHora() (+20 more)
 
 ### Community 9 - "ubicaciones.service.ts"
 Cohesion: 0.09
@@ -552,9 +547,9 @@ Nodes (12): ApiTags, Body, Controller, Delete, Get, Param, Patch, Post (+4 more)
 Cohesion: 0.12
 Nodes (9): aparecer, CHIPS, KPIS, PropsTooltip, Tablero(), TENDENCIA_VENTAS, VENTAS_MENSUALES, VENTAS_POR_CATEGORIA (+1 more)
 
-### Community 47 - "equipo-view.tsx"
-Cohesion: 0.15
-Nodes (8): AuthShell(), BrandMark(), EquipoView(), ListaEquipoMovil(), ListaEquipoMovilProps, LoginForm(), PantallaCarga(), RepositorEquipo
+### Community 47 - "repositorio-tareas-view.tsx"
+Cohesion: 0.08
+Nodes (26): AuthShell(), BrandMark(), ListaClientesMovil(), EquipoView(), ListaEquipoMovil(), ListaEquipoMovilProps, EstadoVisita(), LoginForm() (+18 more)
 
 ### Community 48 - "GuardarProgramacionVisitaDto"
 Cohesion: 0.10
@@ -628,9 +623,9 @@ Nodes (4): Answer, Outcome, Q: en que tabla puedo ver que se guarda los datos de
 Cohesion: 0.13
 Nodes (14): 1. Eliminating Waterfalls (CRITICAL), 2. Bundle Size Optimization (CRITICAL), 3. Server-Side Performance (HIGH), 4. Client-Side Data Fetching (MEDIUM-HIGH), 5. Re-render Optimization (MEDIUM), 6. Rendering Performance (MEDIUM), 7. JavaScript Performance (LOW-MEDIUM), 8. Advanced Patterns (LOW) (+6 more)
 
-### Community 70 - "visita-activa.tsx"
-Cohesion: 0.11
-Nodes (25): consultaFechas(), KpisVisitas(), ListaKpisMovil(), EstadoFoto, FOTO_MIMETYPES, NovedadReportada(), VisitaActiva(), WidgetFoto() (+17 more)
+### Community 70 - "visitas-view.tsx"
+Cohesion: 0.08
+Nodes (42): DIAS, EditorProgramacionVisita(), fechaHoy(), programacionInicial(), consultaFechas(), KpisVisitas(), ListaKpisMovil(), EstadoFoto (+34 more)
 
 ### Community 71 - "usuarios.service.ts"
 Cohesion: 0.19
@@ -694,7 +689,7 @@ Nodes (9): UsuarioOperacionesCampo, LocalDetalleDto, LocalDto, UsuarioAsignable,
 
 ### Community 86 - "devDependencies"
 Cohesion: 0.29
-Nodes (7): devDependencies, eslint, @eslint/eslintrc, @types/cookie-parser, eslint, @eslint/eslintrc, @types/cookie-parser
+Nodes (7): devDependencies, eslint, eslint-config-prettier, @types/cookie-parser, eslint, eslint-config-prettier, @types/cookie-parser
 
 ### Community 92 - "jest"
 Cohesion: 0.15
@@ -908,7 +903,7 @@ Nodes (3): fs, path, { withDangerousMod }
 ## Work-memory lessons
 
 **Preferred sources** — corroborated by past sessions; start here.
-- `seguimiento.ts` (2× useful, score=1.999802083)
+- `seguimiento.ts` (2× useful, score=1.998612877) _(code changed — re-verify)_
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
@@ -923,7 +918,7 @@ _Questions this graph is uniquely positioned to answer:_
   _857 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app.module.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.0560126582278481 - nodes in this community are weakly interconnected._
-- **Should `visitas-view.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.10634920634920635 - nodes in this community are weakly interconnected._
 - **Should `ActualizarTareaGlobalDto` be split into smaller, more focused modules?**
   _Cohesion score 0.09885057471264368 - nodes in this community are weakly interconnected._
+- **Should `seguimiento-tareas-view.tsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.13438735177865613 - nodes in this community are weakly interconnected._

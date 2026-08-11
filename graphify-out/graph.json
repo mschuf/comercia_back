@@ -868,8 +868,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "apps_api_package_devdependencies_eslint_eslintrc",
-      "community": 86,
-      "community_name": "devDependencies",
+      "community": 3,
+      "community_name": "@eslint/eslintrc",
       "norm_label": "@eslint/eslintrc"
     },
     {
@@ -879,8 +879,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "eslint_eslintrc",
-      "community": 86,
-      "community_name": "devDependencies",
+      "community": 3,
+      "community_name": "@eslint/eslintrc",
       "norm_label": "@eslint/eslintrc"
     },
     {
@@ -1154,8 +1154,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "apps_api_package_devdependencies_eslint_config_prettier",
-      "community": 251,
-      "community_name": "eslint-config-prettier",
+      "community": 86,
+      "community_name": "devDependencies",
       "norm_label": "eslint-config-prettier"
     },
     {
@@ -1165,8 +1165,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "eslint_config_prettier",
-      "community": 251,
-      "community_name": "eslint-config-prettier",
+      "community": 86,
+      "community_name": "devDependencies",
       "norm_label": "eslint-config-prettier"
     },
     {
@@ -18113,7 +18113,7 @@
       "label": "detenerSeguimientoLocal()",
       "file_type": "code",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L66",
+      "source_location": "L72",
       "_origin": "ast",
       "id": "apps_mobile_src_lib_seguimiento_detenerseguimientolocal",
       "community": 15,
@@ -18124,7 +18124,7 @@
       "label": "iniciarTareaUbicacion()",
       "file_type": "code",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L79",
+      "source_location": "L85",
       "_origin": "ast",
       "id": "apps_mobile_src_lib_seguimiento_iniciartareaubicacion",
       "community": 15,
@@ -18135,7 +18135,7 @@
       "label": "activarSeguimiento()",
       "file_type": "code",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L100",
+      "source_location": "L106",
       "_origin": "ast",
       "id": "apps_mobile_src_lib_seguimiento_activarseguimiento",
       "community": 15,
@@ -18146,7 +18146,7 @@
       "label": "detenerSeguimiento()",
       "file_type": "code",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L143",
+      "source_location": "L149",
       "_origin": "ast",
       "id": "apps_mobile_src_lib_seguimiento_detenerseguimiento",
       "community": 15,
@@ -18157,7 +18157,7 @@
       "label": "reanudarSeguimiento()",
       "file_type": "code",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L151",
+      "source_location": "L157",
       "_origin": "ast",
       "id": "apps_mobile_src_lib_seguimiento_reanudarseguimiento",
       "community": 15,
@@ -18168,7 +18168,7 @@
       "label": "estaSeguimientoActivo()",
       "file_type": "code",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L168",
+      "source_location": "L174",
       "_origin": "ast",
       "id": "apps_mobile_src_lib_seguimiento_estaseguimientoactivo",
       "community": 15,
@@ -19041,7 +19041,7 @@
       "_origin": "ast",
       "id": "apps_web_src_app_login_page",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "login/page.tsx"
     },
     {
@@ -19052,7 +19052,7 @@
       "_origin": "ast",
       "id": "apps_web_src_app_login_page_loginpage",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "loginpage()"
     },
     {
@@ -19624,7 +19624,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_auth_shell",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "auth-shell.tsx"
     },
     {
@@ -19635,7 +19635,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_auth_shell_authshell",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "authshell()"
     },
     {
@@ -19646,7 +19646,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_auth_shell_brandmark",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "brandmark()"
     },
     {
@@ -19777,8 +19777,8 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "apps_web_src_components_clientes_clientes_view_listaclientesmovil",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "listaclientesmovil()"
     },
     {
@@ -19822,7 +19822,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_equipo_equipo_view",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "equipo-view.tsx"
     },
     {
@@ -19833,7 +19833,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_equipo_equipo_view_listaequipomovilprops",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "listaequipomovilprops"
     },
     {
@@ -19844,7 +19844,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_equipo_equipo_view_listaequipomovil",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "listaequipomovil()"
     },
     {
@@ -19855,7 +19855,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_equipo_equipo_view_equipoview",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "equipoview()"
     },
     {
@@ -19866,7 +19866,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_equipo_equipo_view_iconolocal",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "iconolocal()"
     },
     {
@@ -19986,7 +19986,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_editor_programacion_visita",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "editor-programacion-visita.tsx"
     },
@@ -19997,7 +19997,7 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_editor_programacion_visita_dias",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "dias"
     },
@@ -20008,7 +20008,7 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_editor_programacion_visita_fechahoy",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "fechahoy()"
     },
@@ -20019,7 +20019,7 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_editor_programacion_visita_programacioninicial",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "programacioninicial()"
     },
@@ -20030,7 +20030,7 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_editor_programacion_visita_iconoeliminar",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "iconoeliminar()"
     },
@@ -20041,7 +20041,7 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_editor_programacion_visita_editorprogramacionvisita",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "editorprogramacionvisita()"
     },
@@ -20053,7 +20053,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_kpis_visitas",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "kpis-visitas.tsx"
     },
     {
@@ -20064,7 +20064,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_kpis_visitas_consultafechas",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "consultafechas()"
     },
     {
@@ -20075,7 +20075,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_kpis_visitas_listakpismovil",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "listakpismovil()"
     },
     {
@@ -20086,7 +20086,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_kpis_visitas_kpisvisitas",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "kpisvisitas()"
     },
     {
@@ -20438,7 +20438,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visita_activa",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "visita-activa.tsx"
     },
     {
@@ -20449,7 +20449,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visita_activa_spinner",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "spinner()"
     },
     {
@@ -20460,7 +20460,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visita_activa_estadofoto",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "estadofoto"
     },
     {
@@ -20471,7 +20471,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visita_activa_foto_mimetypes",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "foto_mimetypes"
     },
     {
@@ -20482,7 +20482,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visita_activa_widgetfoto",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "widgetfoto()"
     },
     {
@@ -20493,7 +20493,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visita_activa_formularionovedad",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "formularionovedad()"
     },
     {
@@ -20504,7 +20504,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visita_activa_novedadreportada",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "novedadreportada()"
     },
     {
@@ -20515,7 +20515,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visita_activa_visitaactiva",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "visitaactiva()"
     },
     {
@@ -20525,7 +20525,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visitas_view",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "visitas-view.tsx"
     },
@@ -20536,7 +20536,7 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visitas_view_tab",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "tab"
     },
@@ -20547,7 +20547,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visitas_view_iconoeditar",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "iconoeditar()"
     },
@@ -20558,7 +20558,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visitas_view_claseproximavisita",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "claseproximavisita()"
     },
@@ -20569,8 +20569,8 @@
       "source_location": "L64",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visitas_view_estadovisita",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "estadovisita()"
     },
     {
@@ -20580,7 +20580,7 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visitas_view_botonfoto",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "botonfoto()"
     },
@@ -20591,7 +20591,7 @@
       "source_location": "L119",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visitas_view_listaprogramacionmovil",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "listaprogramacionmovil()"
     },
@@ -20603,7 +20603,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visitas_view_listahistorialmovil",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "listahistorialmovil()"
     },
     {
@@ -20613,7 +20613,7 @@
       "source_location": "L253",
       "_origin": "ast",
       "id": "apps_web_src_components_impulsador_visitas_view_visitasview",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "visitasview()"
     },
@@ -20823,7 +20823,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_login_form",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "login-form.tsx"
     },
     {
@@ -20834,7 +20834,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_login_form_loginform",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "loginform()"
     },
     {
@@ -20845,7 +20845,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_login_form_iconomostrar",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "iconomostrar()"
     },
     {
@@ -20856,7 +20856,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_login_form_iconoocultar",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "iconoocultar()"
     },
     {
@@ -20866,7 +20866,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_components_modal",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "modal.tsx"
     },
@@ -20877,7 +20877,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "apps_web_src_components_modal_modal",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "modal()"
     },
@@ -20932,8 +20932,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_components_paginacion",
-      "community": 5,
-      "community_name": "seguimiento-tareas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "paginacion.tsx"
     },
     {
@@ -20943,8 +20943,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "apps_web_src_components_paginacion_opciones_por_pagina",
-      "community": 5,
-      "community_name": "seguimiento-tareas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "opciones_por_pagina"
     },
     {
@@ -20954,8 +20954,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "apps_web_src_components_paginacion_paginacion",
-      "community": 5,
-      "community_name": "seguimiento-tareas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "paginacion()"
     },
     {
@@ -21131,7 +21131,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_pantalla_carga",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "pantalla-carga.tsx"
     },
     {
@@ -21142,7 +21142,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_pantalla_carga_pantallacarga",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "pantallacarga()"
     },
     {
@@ -21152,8 +21152,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_clientes_view",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "repositorio-clientes-view.tsx"
     },
     {
@@ -21163,8 +21163,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_clientes_view_pestanacartera",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "pestanacartera"
     },
     {
@@ -21174,8 +21174,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_clientes_view_iconoubicacion",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "iconoubicacion()"
     },
     {
@@ -21185,8 +21185,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_clientes_view_listaclientesmovilprops",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "listaclientesmovilprops"
     },
     {
@@ -21196,8 +21196,8 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_clientes_view_listaclientesmovil",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "listaclientesmovil()"
     },
     {
@@ -21207,8 +21207,8 @@
       "source_location": "L105",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_clientes_view_listalocalesmovilprops",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "listalocalesmovilprops"
     },
     {
@@ -21218,8 +21218,8 @@
       "source_location": "L109",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_clientes_view_listalocalesmovil",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "listalocalesmovil()"
     },
     {
@@ -21229,8 +21229,8 @@
       "source_location": "L165",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_clientes_view_repositorclientesview",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "repositorclientesview()"
     },
     {
@@ -21240,7 +21240,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_tareas_view",
-      "community": 8,
+      "community": 47,
       "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "repositorio-tareas-view.tsx"
     },
@@ -21251,7 +21251,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_tareas_view_visitaactiva",
-      "community": 8,
+      "community": 47,
       "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "visitaactiva"
     },
@@ -21262,7 +21262,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_tareas_view_detalletareasprops",
-      "community": 8,
+      "community": 47,
       "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "detalletareasprops"
     },
@@ -21273,8 +21273,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_tareas_view_detalletareas",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "detalletareas()"
     },
     {
@@ -21284,7 +21284,7 @@
       "source_location": "L112",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_tareas_view_listatareasmovilprops",
-      "community": 8,
+      "community": 47,
       "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "listatareasmovilprops"
     },
@@ -21295,8 +21295,8 @@
       "source_location": "L120",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_tareas_view_listatareasmovil",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "listatareasmovil()"
     },
     {
@@ -21306,7 +21306,7 @@
       "source_location": "L287",
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_repositorio_tareas_view_repositortareasview",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "repositortareasview()"
     },
@@ -21318,7 +21318,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_resumen_jornada_view",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "resumen-jornada-view.tsx"
     },
     {
@@ -21329,7 +21329,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_resumen_jornada_view_resumenjornadarepositor",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "resumenjornadarepositor()"
     },
     {
@@ -21340,7 +21340,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_contexto",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "ruta-diaria-contexto.tsx"
     },
     {
@@ -21351,7 +21351,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_contexto_contextorutadiaria",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "contextorutadiaria"
     },
     {
@@ -21362,7 +21362,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_contexto_solicitudruta",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "solicitudruta"
     },
     {
@@ -21373,7 +21373,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_contexto_rutadiariaprovider",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "rutadiariaprovider()"
     },
     {
@@ -21384,7 +21384,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_contexto_userutadiaria",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "userutadiaria()"
     },
     {
@@ -21395,7 +21395,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_view",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "ruta-diaria-view.tsx"
     },
     {
@@ -21406,7 +21406,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_view_rutamapa",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "rutamapa"
     },
     {
@@ -21417,7 +21417,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_view_iconoabrirruta",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "iconoabrirruta()"
     },
     {
@@ -21428,7 +21428,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_view_formatohora",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "formatohora()"
     },
     {
@@ -21439,7 +21439,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_view_accionesparadaprops",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "accionesparadaprops"
     },
     {
@@ -21450,7 +21450,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_view_accionesparada",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "accionesparada()"
     },
     {
@@ -21461,7 +21461,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_view_listaparadasmovilprops",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "listaparadasmovilprops"
     },
     {
@@ -21472,7 +21472,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_view_listaparadasmovil",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "listaparadasmovil()"
     },
     {
@@ -21483,7 +21483,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_repositor_ruta_diaria_view_rutadiariaview",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "rutadiariaview()"
     },
     {
@@ -21934,7 +21934,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_toast_toast_provider_usetoast",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "usetoast()"
     },
     {
@@ -21945,7 +21945,7 @@
       "_origin": "ast",
       "id": "apps_web_src_components_ui",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "ui.ts"
     },
     {
@@ -22033,7 +22033,7 @@
       "_origin": "ast",
       "id": "apps_web_src_lib_api_archivos",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "api-archivos.ts"
     },
     {
@@ -22044,7 +22044,7 @@
       "_origin": "ast",
       "id": "apps_web_src_lib_api_archivos_extraermensaje",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "extraermensaje()"
     },
     {
@@ -22055,7 +22055,7 @@
       "_origin": "ast",
       "id": "apps_web_src_lib_api_archivos_enviarformulario",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "enviarformulario()"
     },
     {
@@ -22066,7 +22066,7 @@
       "_origin": "ast",
       "id": "apps_web_src_lib_api_archivos_apisubirfoto",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "apisubirfoto()"
     },
     {
@@ -22077,7 +22077,7 @@
       "_origin": "ast",
       "id": "apps_web_src_lib_api_archivos_apireportarnovedad",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "apireportarnovedad()"
     },
     {
@@ -22088,7 +22088,7 @@
       "_origin": "ast",
       "id": "apps_web_src_lib_api_archivos_urlfotovisita",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "urlfotovisita()"
     },
     {
@@ -22099,7 +22099,7 @@
       "_origin": "ast",
       "id": "apps_web_src_lib_api_archivos_urlfotonovedad",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "urlfotonovedad()"
     },
     {
@@ -22110,7 +22110,7 @@
       "_origin": "ast",
       "id": "apps_web_src_lib_api",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "web/src/lib/api.ts"
     },
     {
@@ -22121,7 +22121,7 @@
       "_origin": "ast",
       "id": "apps_web_src_lib_api_apierror",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "apierror"
     },
     {
@@ -22132,7 +22132,7 @@
       "_origin": "ast",
       "id": "apps_web_src_lib_api_apierror_constructor",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": ".constructor()"
     },
     {
@@ -22209,7 +22209,7 @@
       "_origin": "ast",
       "id": "apps_web_src_lib_geolocalizacion",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "geolocalizacion.ts"
     },
     {
@@ -22220,7 +22220,7 @@
       "_origin": "ast",
       "id": "apps_web_src_lib_geolocalizacion_obtenerubicacion",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "obtenerubicacion()"
     },
     {
@@ -22319,7 +22319,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_equipo_repositorequipo",
       "community": 47,
-      "community_name": "equipo-view.tsx",
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "repositorequipo"
     },
     {
@@ -22693,7 +22693,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_repositor",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "repositor.ts"
     },
     {
@@ -22704,7 +22704,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_repositor_clienterepositor",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "clienterepositor"
     },
     {
@@ -22726,7 +22726,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_repositor_tarearepositor",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "tarearepositor"
     },
     {
@@ -22736,7 +22736,7 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "apps_web_src_types_repositor_tareaslocalrepositor",
-      "community": 8,
+      "community": 47,
       "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "tareaslocalrepositor"
     },
@@ -22748,7 +22748,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_repositor_estadoparadaruta",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "estadoparadaruta"
     },
     {
@@ -22759,7 +22759,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_repositor_visitahoy",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "visitahoy"
     },
     {
@@ -22770,7 +22770,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_repositor_paradaruta",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "paradaruta"
     },
     {
@@ -22781,7 +22781,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_repositor_rutadiaria",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "rutadiaria"
     },
     {
@@ -22792,7 +22792,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_repositor_ubicacionruta",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "ubicacionruta"
     },
     {
@@ -22803,7 +22803,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_repositor_opcionescargaruta",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "opcionescargaruta"
     },
     {
@@ -22814,7 +22814,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_repositor_rutadiariacontexto",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "rutadiariacontexto"
     },
     {
@@ -23001,7 +23001,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_visita",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "visita.ts"
     },
     {
@@ -23012,7 +23012,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_visita_novedadvisitatarea",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "novedadvisitatarea"
     },
     {
@@ -23023,7 +23023,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_visita_visitatarea",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "visitatarea"
     },
     {
@@ -23033,7 +23033,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "apps_web_src_types_visita_visita",
-      "community": 8,
+      "community": 47,
       "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "visita"
     },
@@ -23044,7 +23044,7 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "apps_web_src_types_visita_visitaresumen",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "visitaresumen"
     },
@@ -23056,7 +23056,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_visita_visitaequipoultimavisita",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "visitaequipoultimavisita"
     },
     {
@@ -23067,7 +23067,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_visita_frecuenciavisita",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "frecuenciavisita"
     },
     {
@@ -23088,7 +23088,7 @@
       "source_location": "L87",
       "_origin": "ast",
       "id": "apps_web_src_types_visita_visitaequipolocal",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "visitaequipolocal"
     },
@@ -23100,7 +23100,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_visita_agrupacionkpivisita",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "agrupacionkpivisita"
     },
     {
@@ -23111,7 +23111,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_visita_kpivisitasresumen",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "kpivisitasresumen"
     },
     {
@@ -23122,7 +23122,7 @@
       "_origin": "ast",
       "id": "apps_web_src_types_visita_kpivisitasdetalle",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "kpivisitasdetalle"
     },
     {
@@ -23177,7 +23177,7 @@
       "_origin": "ast",
       "id": "apps_web_src_utils_distancia",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "distancia.ts"
     },
     {
@@ -23188,7 +23188,7 @@
       "_origin": "ast",
       "id": "apps_web_src_utils_distancia_formatodistancia",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "formatodistancia()"
     },
     {
@@ -23199,7 +23199,7 @@
       "_origin": "ast",
       "id": "apps_web_src_utils_duracion",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "duracion.ts"
     },
     {
@@ -23210,7 +23210,7 @@
       "_origin": "ast",
       "id": "apps_web_src_utils_duracion_formatoduracionminutos",
       "community": 70,
-      "community_name": "visita-activa.tsx",
+      "community_name": "visitas-view.tsx",
       "norm_label": "formatoduracionminutos()"
     },
     {
@@ -23221,7 +23221,7 @@
       "_origin": "ast",
       "id": "apps_web_src_utils_duracion_formatoduracionsegundos",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "formatoduracionsegundos()"
     },
     {
@@ -23231,7 +23231,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_utils_fechas",
-      "community": 8,
+      "community": 47,
       "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "fechas.ts"
     },
@@ -23242,7 +23242,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "apps_web_src_utils_fechas_fechainputaiso",
-      "community": 8,
+      "community": 47,
       "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "fechainputaiso()"
     },
@@ -23253,7 +23253,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "apps_web_src_utils_fechas_isoafechainput",
-      "community": 8,
+      "community": 47,
       "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "isoafechainput()"
     },
@@ -23275,8 +23275,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "apps_web_src_utils_fechas_formatofechahora",
-      "community": 3,
-      "community_name": "visitas-view.tsx",
+      "community": 47,
+      "community_name": "repositorio-tareas-view.tsx",
       "norm_label": "formatofechahora()"
     },
     {
@@ -23287,7 +23287,7 @@
       "_origin": "ast",
       "id": "apps_web_src_utils_fechas_fechaenzonaiso",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "fechaenzonaiso()"
     },
     {
@@ -23342,7 +23342,7 @@
       "_origin": "ast",
       "id": "apps_web_src_utils_google_maps",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "google-maps.ts"
     },
     {
@@ -23353,7 +23353,7 @@
       "_origin": "ast",
       "id": "apps_web_src_utils_google_maps_coordenada",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "coordenada()"
     },
     {
@@ -23364,7 +23364,7 @@
       "_origin": "ast",
       "id": "apps_web_src_utils_google_maps_urlnavegara",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "urlnavegara()"
     },
     {
@@ -23375,7 +23375,7 @@
       "_origin": "ast",
       "id": "apps_web_src_utils_google_maps_urlrutacompleta",
       "community": 8,
-      "community_name": "repositorio-tareas-view.tsx",
+      "community_name": "ruta-diaria-view.tsx",
       "norm_label": "urlrutacompleta()"
     },
     {
@@ -23473,7 +23473,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_utils_programacion_visita",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "src/utils/programacion-visita.ts"
     },
@@ -23484,7 +23484,7 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "apps_web_src_utils_programacion_visita_dias_semana",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "dias_semana"
     },
@@ -23495,7 +23495,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "apps_web_src_utils_programacion_visita_formatofechaprogramacion",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "formatofechaprogramacion()"
     },
@@ -23506,7 +23506,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "apps_web_src_utils_programacion_visita_resumenprogramacion",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "resumenprogramacion()"
     },
@@ -23517,7 +23517,7 @@
       "source_location": "L53",
       "_origin": "ast",
       "id": "apps_web_src_utils_programacion_visita_zonahorarianavegador",
-      "community": 3,
+      "community": 70,
       "community_name": "visitas-view.tsx",
       "norm_label": "zonahorarianavegador()"
     },
@@ -77059,7 +77059,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L126",
+      "source_location": "L132",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento_activarseguimiento",
@@ -77071,7 +77071,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L147",
+      "source_location": "L153",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento_detenerseguimiento",
@@ -77105,7 +77105,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L100",
+      "source_location": "L106",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento",
@@ -77127,7 +77127,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L143",
+      "source_location": "L149",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento",
@@ -77138,7 +77138,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L66",
+      "source_location": "L72",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento",
@@ -77149,7 +77149,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L168",
+      "source_location": "L174",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento",
@@ -77160,7 +77160,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L79",
+      "source_location": "L85",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento",
@@ -77171,7 +77171,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L151",
+      "source_location": "L157",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento",
@@ -77229,7 +77229,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L133",
+      "source_location": "L139",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento_activarseguimiento",
@@ -77265,7 +77265,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L138",
+      "source_location": "L144",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento_activarseguimiento",
@@ -77277,7 +77277,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L145",
+      "source_location": "L151",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento_detenerseguimiento",
@@ -77289,7 +77289,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L128",
+      "source_location": "L134",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento_activarseguimiento",
@@ -77301,7 +77301,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L161",
+      "source_location": "L167",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento_reanudarseguimiento",
@@ -77314,7 +77314,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L108",
+      "source_location": "L114",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento_activarseguimiento",
@@ -77326,7 +77326,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
-      "source_location": "L144",
+      "source_location": "L150",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_mobile_src_lib_seguimiento_detenerseguimiento",
@@ -96454,5 +96454,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "30ae3cb264a5aa42f7aa6562e91708433050f710"
+  "built_at_commit": "ff57e8f5341ca493fb3c2c89bfbe4fb9ef49605e"
 }
