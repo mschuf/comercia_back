@@ -256,9 +256,11 @@ model TareaGlobal {
   titulo       String
   descripcion  String
   requiereFoto Boolean        @default(false) @map("requiere_foto")
+  alcance      AlcanceTarea   @default(TODOS)
   orden        Int            @default(0)
   activo       Boolean        @default(true)
   tareas       TareaCliente[]
+  destinatarios TareaGlobalUsuario[]
   creadoPorId  Int            @map("creado_por_id")
   creadoPor    Usuario        @relation("TareasGlobalesCreadas", fields: [creadoPorId], references: [id])
   createdAt    DateTime       @default(now()) @map("created_at")
@@ -266,6 +268,27 @@ model TareaGlobal {
 
   @@unique([empresaId, titulo])
   @@map("tareas_globales")
+}
+
+enum AlcanceTarea {
+  TODOS
+  SELECCIONADOS
+}
+
+// Destinatarios operativos de una tarea cuando su alcance es SELECCIONADOS.
+// La tarea de cliente sigue existiendo como plantilla estable; este vínculo
+// decide qué impulsadores la reciben en sus visitas.
+model TareaGlobalUsuario {
+  id            Int         @id @default(autoincrement())
+  tareaGlobalId Int         @map("tarea_global_id")
+  tareaGlobal   TareaGlobal @relation(fields: [tareaGlobalId], references: [id], onDelete: Cascade)
+  usuarioId     Int         @map("usuario_id")
+  usuario       Usuario     @relation("TareasGlobalesAsignadas", fields: [usuarioId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  @@unique([tareaGlobalId, usuarioId])
+  @@index([usuarioId, tareaGlobalId])
+  @@map("tareas_globales_usuario")
 }
 
 // Locales geolocalizados. Los carga un Supervisor y puede asignarlos a un
@@ -373,6 +396,9 @@ model Visita {
   longitudFin        Float?        @map("longitud_fin")
   distanciaFinMetros Float?        @map("distancia_fin_metros")
   precisionFinMetros Float?        @map("precision_fin_metros")
+  // Claves generadas por la APK para reintentos idempotentes sin conexión.
+  entradaClaveMovil  String?       @unique @map("entrada_clave_movil") @db.VarChar(80)
+  salidaClaveMovil   String?       @unique @map("salida_clave_movil") @db.VarChar(80)
   // Nombre de archivo de la foto de presencia (en UPLOADS_DIR del servidor)
   fotoPresencia      String?       @map("foto_presencia")
   tareas             VisitaTarea[]
@@ -478,6 +504,7 @@ model Usuario {
   localesCreados         Local[]               @relation("LocalesCreados")
   clientesCreados        Cliente[]             @relation("ClientesCreados")
   tareasGlobalesCreadas  TareaGlobal[]         @relation("TareasGlobalesCreadas")
+  tareasGlobalesAsignadas TareaGlobalUsuario[] @relation("TareasGlobalesAsignadas")
   territoriosCreados     Territorio[]          @relation("TerritoriosCreados")
   territoriosResponsable Territorio[]          @relation("TerritoriosResponsable")
   zonasCreadas           Zona[]                @relation("ZonasCreadas")

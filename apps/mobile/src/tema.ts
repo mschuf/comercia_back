@@ -1,34 +1,31 @@
-/*
- * Hallmark · modern-minimal · utilitario · ancla verde azulado
- * Macroestructura: estado operativo primero, acción única, sincronización aparte
- */
+/* Hallmark · macrostructure: Workbench de jornada · genre: modern-minimal · tone: amable · anchor: verde azulado + durazno */
 export const colores = {
-  fondo: "#071F2A",
-  fondoElevado: "#0B2A37",
-  tarjeta: "#F7FAF9",
-  tarjetaSuave: "#EDF4F2",
-  texto: "#102E3C",
-  textoSecundario: "#516A74",
-  textoSobreOscuro: "#F6FAFB",
-  textoSobreOscuroSecundario: "#B9CDD3",
-  borde: "#CCD9DC",
-  bordeSobreOscuro: "#214553",
-  primario: "#087E8B",
-  primarioPresionado: "#066873",
-  acento: "#43D4A0",
-  acentoSuave: "#DFF4EC",
-  exito: "#16865F",
-  advertencia: "#9A6412",
-  advertenciaSuave: "#FFF0CF",
-  indicadorAdvertencia: "#F4B95B",
-  peligro: "#B44643",
-  peligroPresionado: "#963B39",
-  errorFondo: "#4A2528",
-  errorTexto: "#FFDAD7",
-  textoAviso: "#285D51",
-  textoPlaceholder: "#617983",
-  inactivo: "#93A7AE",
-  blanco: "#FFFFFF",
+  fondo: "#F4F0E7",
+  fondoElevado: "#103D3A",
+  tarjeta: "#FFFCF6",
+  tarjetaSuave: "#EAF3EF",
+  texto: "#173A38",
+  textoSecundario: "#5C716D",
+  textoSobreOscuro: "#FFF9EF",
+  textoSobreOscuroSecundario: "#C7DBD5",
+  borde: "#CFDDD7",
+  bordeSobreOscuro: "#2D5B57",
+  primario: "#18766A",
+  primarioPresionado: "#115F56",
+  acento: "#F0A35B",
+  acentoSuave: "#FBE8D5",
+  exito: "#287D5A",
+  advertencia: "#8A5B16",
+  advertenciaSuave: "#FFF0D4",
+  indicadorAdvertencia: "#E8A84F",
+  peligro: "#B7524D",
+  peligroPresionado: "#963F3B",
+  errorFondo: "#F8E1DE",
+  errorTexto: "#7E302E",
+  textoAviso: "#2E6259",
+  textoPlaceholder: "#71827E",
+  inactivo: "#9AABA7",
+  blanco: "#FFFDF8",
 } as const;
 
 export const radios = {
@@ -49,3 +46,7 @@ export const espacios = {
 } as const;
 
 export const anchoMaximoContenido = 560;
+
+export const fuentes = {
+  titulos: "Manrope",
+} as const;

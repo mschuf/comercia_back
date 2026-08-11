@@ -2,11 +2,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { AccesoPlataformaService } from '../plataforma/acceso-plataforma.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
-  MODULO_REPOSITOR,
-  MODULO_SUPERVISOR,
+  MODULOS_GESTION_CAMPO,
   MODULOS_OPERACION_CAMPO,
+  MODULOS_OPERATIVOS_CAMPO,
   PAGINA_MAPA,
   PAGINAS_REPOSITOR,
+  paginasOperacionEquivalentes,
 } from './impulsador.constants';
 import type { UsuarioAsignableOperacionesDto } from './interfaces/usuario-asignable-operaciones.interface';
 import type { UsuarioOperacionesCampo } from './interfaces/usuario-operaciones-campo.interface';
@@ -25,12 +26,16 @@ export class AccesoOperacionesCampoService {
     const acceso = await this.acceso.exigirAccesosPaginasEnModulos(
       usuarioId,
       MODULOS_OPERACION_CAMPO,
-      paginasRutas,
+      paginasRutas.flatMap(paginasOperacionEquivalentes),
     );
     return {
       ...acceso.usuario,
-      esGestor: acceso.modulosRutas.includes(MODULO_SUPERVISOR),
-      esOperativo: acceso.modulosRutas.includes(MODULO_REPOSITOR),
+      esGestor: acceso.modulosRutas.some((ruta) =>
+        MODULOS_GESTION_CAMPO.includes(ruta),
+      ),
+      esOperativo: acceso.modulosRutas.some((ruta) =>
+        MODULOS_OPERATIVOS_CAMPO.includes(ruta),
+      ),
     };
   }
 
@@ -38,10 +43,10 @@ export class AccesoOperacionesCampoService {
     usuarioId: number,
     paginaRuta: string,
   ): Promise<UsuarioOperacionesCampo> {
-    const usuario = await this.acceso.exigirAccesoPagina(
+    const usuario = await this.acceso.exigirAccesoAlgunaPaginaEnModulos(
       usuarioId,
-      MODULO_REPOSITOR,
-      paginaRuta,
+      MODULOS_OPERATIVOS_CAMPO,
+      paginasOperacionEquivalentes(paginaRuta),
     );
     return {
       ...usuario,
@@ -54,10 +59,10 @@ export class AccesoOperacionesCampoService {
     usuarioId: number,
     paginaRuta: string,
   ): Promise<UsuarioOperacionesCampo> {
-    const usuario = await this.acceso.exigirAccesoPagina(
+    const usuario = await this.acceso.exigirAccesoAlgunaPaginaEnModulos(
       usuarioId,
-      MODULO_SUPERVISOR,
-      paginaRuta,
+      MODULOS_GESTION_CAMPO,
+      paginasOperacionEquivalentes(paginaRuta),
     );
     return {
       ...usuario,
@@ -70,10 +75,10 @@ export class AccesoOperacionesCampoService {
     usuarioId: number,
     paginasRutas: string[],
   ): Promise<UsuarioOperacionesCampo> {
-    const usuario = await this.acceso.exigirAccesoAlgunaPagina(
+    const usuario = await this.acceso.exigirAccesoAlgunaPaginaEnModulos(
       usuarioId,
-      MODULO_SUPERVISOR,
-      paginasRutas,
+      MODULOS_GESTION_CAMPO,
+      paginasRutas.flatMap(paginasOperacionEquivalentes),
     );
     return {
       ...usuario,
@@ -87,9 +92,9 @@ export class AccesoOperacionesCampoService {
     usuarioId: number,
   ): Promise<void> {
     try {
-      const usuario = await this.acceso.exigirAccesoAlgunaPagina(
+      const usuario = await this.acceso.exigirAccesoAlgunaPaginaEnModulos(
         usuarioId,
-        MODULO_SUPERVISOR,
+        MODULOS_GESTION_CAMPO,
         [PAGINA_MAPA],
       );
       if (usuario.empresaId !== empresaId) throw new Error();
@@ -108,9 +113,9 @@ export class AccesoOperacionesCampoService {
     try {
       const usuarios = await Promise.all(
         ids.map((usuarioId) =>
-          this.acceso.exigirAccesoAlgunaPagina(
+          this.acceso.exigirAccesoAlgunaPaginaEnModulos(
             usuarioId,
-            MODULO_REPOSITOR,
+            MODULOS_OPERATIVOS_CAMPO,
             PAGINAS_REPOSITOR,
           ),
         ),
@@ -124,12 +129,30 @@ export class AccesoOperacionesCampoService {
     }
   }
 
+  async validarOperativosDelGestor(
+    gestor: UsuarioOperacionesCampo,
+    usuarioIds: number[],
+  ): Promise<number[]> {
+    const ids = [...new Set(usuarioIds)];
+    if (ids.length === 0) return ids;
+    const where = await this.filtroRepositoresDelSupervisor(gestor);
+    const encontrados = await this.prisma.usuario.findMany({
+      where: { ...where, id: { in: ids } },
+      select: { id: true },
+      take: 200,
+    });
+    if (encontrados.length !== ids.length) {
+      throw new NotFoundException('Algún impulsador no pertenece a tu equipo');
+    }
+    return ids;
+  }
+
   async responsablesTerritorio(
     usuarioId: number,
   ): Promise<UsuarioAsignableOperacionesDto[]> {
     const actual = await this.usuario(usuarioId, [PAGINA_MAPA]);
     if (!actual.esGestor) return [];
-    return this.usuariosAsignables(actual.empresaId, MODULO_SUPERVISOR, [
+    return this.usuariosAsignables(actual.empresaId, MODULOS_GESTION_CAMPO, [
       PAGINA_MAPA,
     ]);
   }
@@ -139,7 +162,7 @@ export class AccesoOperacionesCampoService {
   ): Promise<UsuarioAsignableOperacionesDto[]> {
     return this.usuariosAsignables(
       empresaId,
-      MODULO_REPOSITOR,
+      MODULOS_OPERATIVOS_CAMPO,
       PAGINAS_REPOSITOR,
     );
   }
@@ -149,9 +172,9 @@ export class AccesoOperacionesCampoService {
   async restriccionRolesRepositores(
     empresaId: number,
   ): Promise<number[] | null | undefined> {
-    return this.restriccionRolesAsignables(
+    return this.restriccionRolesAsignablesEnModulos(
       empresaId,
-      MODULO_REPOSITOR,
+      MODULOS_OPERATIVOS_CAMPO,
       PAGINAS_REPOSITOR,
     );
   }
@@ -222,14 +245,30 @@ export class AccesoOperacionesCampoService {
     return roles.size === 0 ? undefined : [...roles];
   }
 
+  private async restriccionRolesAsignablesEnModulos(
+    empresaId: number,
+    modulosRutas: string[],
+    paginasRutas: string[],
+  ): Promise<number[] | null | undefined> {
+    const restricciones = await Promise.all(
+      modulosRutas.map((moduloRuta) =>
+        this.restriccionRolesAsignables(empresaId, moduloRuta, paginasRutas),
+      ),
+    );
+    if (restricciones.some((roles) => roles === null)) return null;
+    const ids = new Set<number>();
+    restricciones.forEach((roles) => roles?.forEach((id) => ids.add(id)));
+    return ids.size === 0 ? undefined : [...ids];
+  }
+
   private async usuariosAsignables(
     empresaId: number,
-    moduloRuta: string,
+    modulosRutas: string[],
     paginasRutas: string[],
   ): Promise<UsuarioAsignableOperacionesDto[]> {
-    const restriccionRoles = await this.restriccionRolesAsignables(
+    const restriccionRoles = await this.restriccionRolesAsignablesEnModulos(
       empresaId,
-      moduloRuta,
+      modulosRutas,
       paginasRutas,
     );
     if (restriccionRoles === undefined) return [];

@@ -20,6 +20,7 @@ import type { UsuarioOperacionesCampo } from '../impulsador/interfaces/usuario-o
 import { PrismaService } from '../prisma/prisma.service';
 import {
   ActualizarTareaGlobalDto,
+  AlcanceTareaDto,
   CrearTareaGlobalDto,
   ListarTareasGlobalesDto,
 } from './dto/tarea-global.dto';
@@ -32,8 +33,15 @@ const SELECT_TAREA_GLOBAL = {
   requiereFoto: true,
   orden: true,
   activo: true,
+  alcance: true,
   createdAt: true,
   updatedAt: true,
+  destinatarios: {
+    select: {
+      usuario: { select: { id: true, nombre: true, apellido: true } },
+    },
+    orderBy: { usuarioId: 'asc' as const },
+  },
   _count: { select: { tareas: true } },
 } as const;
 
@@ -44,9 +52,13 @@ type TareaGlobalFila = {
   requiereFoto: boolean;
   orden: number;
   activo: boolean;
+  alcance: 'TODOS' | 'SELECCIONADOS';
   createdAt: Date;
   updatedAt: Date;
   _count: { tareas: number };
+  destinatarios: {
+    usuario: { id: number; nombre: string; apellido: string };
+  }[];
 };
 
 function aTareaGlobalDto(
@@ -54,6 +66,7 @@ function aTareaGlobalDto(
   clientesEmpresa: number,
   localesEmpresa: number,
   clientesAsignados = tarea._count.tareas,
+  mostrarDestinatarios = true,
 ): TareaGlobalDto {
   return {
     id: tarea.id,
@@ -62,6 +75,14 @@ function aTareaGlobalDto(
     requiereFoto: tarea.requiereFoto,
     orden: tarea.orden,
     activo: tarea.activo,
+    alcance: tarea.alcance,
+    destinatarios: mostrarDestinatarios
+      ? tarea.destinatarios.map(({ usuario }) => ({
+          id: usuario.id,
+          nombre: `${usuario.nombre} ${usuario.apellido}`.trim(),
+        }))
+      : [],
+    usuariosAsignados: mostrarDestinatarios ? tarea.destinatarios.length : 0,
     clientesAsignados,
     clientesEmpresa,
     localesEmpresa,
@@ -123,7 +144,15 @@ export class TareasService {
     const usuario = await this.usuarioActual(usuarioId);
     const where = {
       empresaId: usuario.empresaId,
-      ...(usuario.esGestor ? {} : { activo: true }),
+      ...(usuario.esGestor
+        ? {}
+        : {
+            activo: true,
+            OR: [
+              { alcance: AlcanceTareaDto.TODOS },
+              { destinatarios: { some: { usuarioId: usuario.id } } },
+            ],
+          }),
     };
     const whereClientes = {
       empresaId: usuario.empresaId,
@@ -160,6 +189,7 @@ export class TareasService {
           clientesEmpresa,
           localesEmpresa,
           usuario.esGestor ? tarea._count.tareas : clientesEmpresa,
+          usuario.esGestor,
         ),
       ),
       total,
@@ -173,6 +203,12 @@ export class TareasService {
     dto: CrearTareaGlobalDto,
   ): Promise<TareaGlobalDto> {
     const usuario = await this.exigirGestor(usuarioId);
+    const alcance = dto.alcance ?? AlcanceTareaDto.TODOS;
+    const destinatarios = await this.resolverDestinatarios(
+      usuario,
+      alcance,
+      dto.usuarioIds ?? [],
+    );
     const cantidad = await this.prisma.tareaGlobal.count({
       where: { empresaId: usuario.empresaId },
     });
@@ -199,7 +235,13 @@ export class TareasService {
             titulo: dto.titulo,
             descripcion: dto.descripcion,
             requiereFoto: dto.requiereFoto ?? false,
+            alcance,
             orden,
+            destinatarios: {
+              create: destinatarios.map((destinatarioId) => ({
+                usuarioId: destinatarioId,
+              })),
+            },
           },
           select: {
             id: true,
@@ -208,6 +250,7 @@ export class TareasService {
             requiereFoto: true,
             orden: true,
             activo: true,
+            alcance: true,
           },
         });
         const clientes = await tx.cliente.findMany({
@@ -241,6 +284,20 @@ export class TareasService {
   ): Promise<TareaGlobalDto> {
     const usuario = await this.exigirGestor(usuarioId);
     await this.exigirDeEmpresa(tareaId, usuario.empresaId);
+    const actual = await this.prisma.tareaGlobal.findUnique({
+      where: { id: tareaId },
+      select: {
+        alcance: true,
+        destinatarios: { select: { usuarioId: true }, take: 200 },
+      },
+    });
+    if (!actual) throw new NotFoundException('La tarea no existe');
+    const alcance = dto.alcance ?? actual.alcance;
+    const destinatarios = await this.resolverDestinatarios(
+      usuario,
+      alcance,
+      dto.usuarioIds ?? actual.destinatarios.map(({ usuarioId }) => usuarioId),
+    );
     await this.prisma
       .$transaction(async (tx) => {
         const tarea = await tx.tareaGlobal.update({
@@ -249,6 +306,7 @@ export class TareasService {
             titulo: dto.titulo,
             descripcion: dto.descripcion,
             requiereFoto: dto.requiereFoto,
+            alcance,
             orden: dto.orden,
             activo: dto.activo,
           },
@@ -261,6 +319,17 @@ export class TareasService {
             activo: true,
           },
         });
+        await tx.tareaGlobalUsuario.deleteMany({
+          where: { tareaGlobalId: tarea.id },
+        });
+        if (destinatarios.length > 0) {
+          await tx.tareaGlobalUsuario.createMany({
+            data: destinatarios.map((destinatarioId) => ({
+              tareaGlobalId: tarea.id,
+              usuarioId: destinatarioId,
+            })),
+          });
+        }
         await tx.tareaCliente.updateMany({
           where: { tareaGlobalId: tarea.id },
           data: {
@@ -327,5 +396,19 @@ export class TareasService {
     ]);
     if (!tarea) throw new NotFoundException('La tarea no existe');
     return aTareaGlobalDto(tarea, clientesEmpresa, localesEmpresa);
+  }
+
+  private async resolverDestinatarios(
+    gestor: UsuarioOperacionesCampo,
+    alcance: AlcanceTareaDto | 'TODOS' | 'SELECCIONADOS',
+    usuarioIds: number[],
+  ): Promise<number[]> {
+    if (alcance === AlcanceTareaDto.TODOS) return [];
+    if (usuarioIds.length === 0) {
+      throw new BadRequestException(
+        'Elegí al menos un impulsador para esta tarea',
+      );
+    }
+    return this.accesoCampo.validarOperativosDelGestor(gestor, usuarioIds);
   }
 }

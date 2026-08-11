@@ -29,6 +29,7 @@ import { GuardarProgramacionVisitaDto } from './dto/programacion-visita.dto';
 import {
   ActualizarVisitaTareaDto,
   FinalizarVisitaDto,
+  FinalizarVisitaMovilDto,
   IniciarVisitaDto,
   ListarVisitasEquipoDto,
   ListarVisitasDto,
@@ -116,6 +117,14 @@ export class VisitasController {
     @Query() query: ListarKpisVisitasDto,
   ) {
     return this.kpis.detalle(req.usuarioId, query);
+  }
+
+  @Post('movil/finalizar')
+  finalizarMovil(
+    @Req() req: RequestConUsuario,
+    @Body() dto: FinalizarVisitaMovilDto,
+  ) {
+    return this.visitas.finalizarMovil(req.usuarioId, dto);
   }
 
   @Get(':id')

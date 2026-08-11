@@ -10,6 +10,7 @@ export interface VisitaHoyDto {
     zona: string | null;
     latitud: number;
     longitud: number;
+    radioMetros: number;
   };
   programadaEn: string;
   tareasActivas: number;

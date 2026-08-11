@@ -1,5 +1,14 @@
 import { obtenerApiUrl } from "../config";
 import type { SesionMovil } from "./sesion";
+import type {
+  CoordenadasMarcacion,
+  MarcacionResumen,
+  RendimientoImpulsador,
+  RespuestaPaginada,
+  TareaVisita,
+  Visita,
+  VisitaHoy,
+} from "../types/impulsador";
 
 const TIEMPO_ESPERA_MS = 15_000;
 
@@ -39,7 +48,9 @@ async function solicitar<T>(
       signal: controlador.signal,
       headers: {
         Accept: "application/json",
-        ...(opciones.body ? { "Content-Type": "application/json" } : {}),
+        ...(opciones.body && !(opciones.body instanceof FormData)
+          ? { "Content-Type": "application/json" }
+          : {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...opciones.headers,
       },
@@ -118,4 +129,120 @@ export function registrarUbicacion(
     { method: "POST", body: JSON.stringify(ubicacion) },
     token,
   );
+}
+
+export function obtenerAgendaHoy(
+  token: string,
+): Promise<RespuestaPaginada<VisitaHoy>> {
+  return solicitar("/repositor/visitas-hoy?page=1&limit=50", {}, token);
+}
+
+export function obtenerVisita(
+  token: string,
+  visitaId: number,
+): Promise<Visita> {
+  return solicitar(`/visitas/${visitaId}`, {}, token);
+}
+
+export function obtenerMarcaciones(
+  token: string,
+  page = 1,
+): Promise<RespuestaPaginada<MarcacionResumen>> {
+  return solicitar(`/visitas?page=${page}&limit=20`, {}, token);
+}
+
+export function obtenerRendimiento(
+  token: string,
+): Promise<RendimientoImpulsador> {
+  return solicitar("/repositor/rendimiento", {}, token);
+}
+
+export function iniciarVisita(
+  token: string,
+  localId: number,
+  ubicacion: CoordenadasMarcacion,
+): Promise<Visita> {
+  return solicitar(
+    "/visitas",
+    {
+      method: "POST",
+      body: JSON.stringify({ localId, ...ubicacion }),
+    },
+    token,
+  );
+}
+
+export function finalizarVisita(
+  token: string,
+  visitaId: number,
+  ubicacion: CoordenadasMarcacion,
+): Promise<Visita> {
+  return solicitar(
+    `/visitas/${visitaId}/finalizar`,
+    { method: "POST", body: JSON.stringify(ubicacion) },
+    token,
+  );
+}
+
+export function finalizarVisitaMovil(
+  token: string,
+  entradaClaveMovil: string,
+  ubicacion: CoordenadasMarcacion,
+): Promise<Visita> {
+  return solicitar(
+    "/visitas/movil/finalizar",
+    {
+      method: "POST",
+      body: JSON.stringify({ entradaClaveMovil, ...ubicacion }),
+    },
+    token,
+  );
+}
+
+export function actualizarTareaVisita(
+  token: string,
+  visitaId: number,
+  tarea: TareaVisita,
+  completada: boolean,
+): Promise<Visita> {
+  return solicitar(
+    `/visitas/${visitaId}/tareas/${tarea.id}`,
+    { method: "PATCH", body: JSON.stringify({ completada }) },
+    token,
+  );
+}
+
+async function subirFoto(
+  token: string,
+  ruta: string,
+  uri: string,
+): Promise<Visita> {
+  const formulario = new FormData();
+  formulario.append("foto", {
+    uri,
+    name: `evidencia-${Date.now()}.jpg`,
+    type: "image/jpeg",
+  } as unknown as Blob);
+  return solicitar(ruta, { method: "POST", body: formulario }, token);
+}
+
+export function subirFotoTarea(
+  token: string,
+  visitaId: number,
+  visitaTareaId: number,
+  uri: string,
+): Promise<Visita> {
+  return subirFoto(
+    token,
+    `/visitas/${visitaId}/tareas/${visitaTareaId}/foto`,
+    uri,
+  );
+}
+
+export function subirFotoPresencia(
+  token: string,
+  visitaId: number,
+  uri: string,
+): Promise<Visita> {
+  return subirFoto(token, `/visitas/${visitaId}/foto-presencia`, uri);
 }

@@ -7,6 +7,7 @@ import { apiFetch, ApiError } from "@/lib/api";
 import { IconoMas } from "@/components/icono-mas";
 import { Modal } from "@/components/modal";
 import { Paginacion } from "@/components/paginacion";
+import { SelectorUsuario } from "@/components/selector-usuario";
 import {
   btnGhost,
   btnPrimary,
@@ -27,6 +28,8 @@ interface FormTarea {
   requiereFoto: boolean;
   orden: number;
   activo: boolean;
+  alcance: "TODOS" | "SELECCIONADOS";
+  destinatarios: { id: number; nombre: string }[];
 }
 
 const FORM_INICIAL: FormTarea = {
@@ -35,6 +38,8 @@ const FORM_INICIAL: FormTarea = {
   requiereFoto: false,
   orden: 0,
   activo: true,
+  alcance: "TODOS",
+  destinatarios: [],
 };
 
 function ListaTareasGlobalesMovil({
@@ -47,7 +52,6 @@ function ListaTareasGlobalesMovil({
   return (
     <ul className="mt-5 space-y-3 md:hidden" aria-label="Tareas">
       {tareas.map((tarea) => {
-        const completa = tarea.clientesAsignados === tarea.clientesEmpresa;
         return (
           <li
             key={tarea.id}
@@ -86,15 +90,12 @@ function ListaTareasGlobalesMovil({
                   {tarea.requiereFoto ? "requerida" : "no requerida"}
                 </strong>
               </p>
-              <p
-                className={`rounded-lg bg-surface-soft px-2.5 py-2 ${
-                  completa
-                    ? "text-muted"
-                    : "font-medium text-amber-700 dark:text-amber-300"
-                }`}
-              >
-                {tarea.clientesAsignados}/{tarea.clientesEmpresa} clientes ·{" "}
-                {tarea.localesEmpresa} locales
+              <p className="rounded-lg bg-surface-soft px-2.5 py-2 text-muted">
+                <strong className="text-foreground">
+                  {tarea.alcance === "TODOS"
+                    ? "Todo el equipo"
+                    : `${tarea.usuariosAsignados} impulsador${tarea.usuariosAsignados === 1 ? "" : "es"}`}
+                </strong>
               </p>
             </div>
             <button
@@ -169,6 +170,8 @@ function TareasAdministracionView() {
             requiereFoto: tarea.requiereFoto,
             orden: tarea.orden,
             activo: tarea.activo,
+            alcance: tarea.alcance,
+            destinatarios: tarea.destinatarios,
           },
     );
     setError(null);
@@ -178,6 +181,10 @@ function TareasAdministracionView() {
   async function guardar(e: React.FormEvent) {
     e.preventDefault();
     if (editando === null) return;
+    if (form.alcance === "SELECCIONADOS" && form.destinatarios.length === 0) {
+      setError("Elegí al menos un impulsador para esta tarea.");
+      return;
+    }
     setGuardando(true);
     setError(null);
     try {
@@ -190,6 +197,8 @@ function TareasAdministracionView() {
             descripcion: form.descripcion.trim(),
             requiereFoto: form.requiereFoto,
             orden: form.orden,
+            alcance: form.alcance,
+            usuarioIds: form.destinatarios.map(({ id }) => id),
             ...(editando === "nueva" ? {} : { activo: form.activo }),
           }),
         },
@@ -263,8 +272,6 @@ function TareasAdministracionView() {
               </thead>
               <tbody>
                 {datos.items.map((tarea) => {
-                  const completa =
-                    tarea.clientesAsignados === tarea.clientesEmpresa;
                   return (
                     <tr
                       key={tarea.id}
@@ -301,20 +308,19 @@ function TareasAdministracionView() {
                       <td className="px-4 py-3 text-zinc-600 dark:text-zinc-300">
                         {tarea.requiereFoto ? "Requerida" : "No"}
                       </td>
-                      <td
-                        className={`px-4 py-3 text-xs ${
-                          completa
-                            ? "text-zinc-500 dark:text-zinc-400"
-                            : "font-medium text-amber-700 dark:text-amber-300"
-                        }`}
-                      >
-                        <span className="block whitespace-nowrap">
-                          {tarea.clientesAsignados}/{tarea.clientesEmpresa}{" "}
-                          clientes
+                      <td className="px-4 py-3 text-xs text-muted">
+                        <span className="block whitespace-nowrap font-medium text-foreground">
+                          {tarea.alcance === "TODOS"
+                            ? "Todo el equipo"
+                            : `${tarea.usuariosAsignados} seleccionado${tarea.usuariosAsignados === 1 ? "" : "s"}`}
                         </span>
-                        <span className="mt-0.5 block whitespace-nowrap">
-                          {tarea.localesEmpresa} locales
-                        </span>
+                        {tarea.alcance === "SELECCIONADOS" ? (
+                          <span className="mt-0.5 block max-w-56 truncate">
+                            {tarea.destinatarios
+                              .map(({ nombre }) => nombre)
+                              .join(", ")}
+                          </span>
+                        ) : null}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <button
@@ -410,6 +416,95 @@ function TareasAdministracionView() {
               className={inputBase}
             />
           </label>
+          <fieldset className="space-y-2">
+            <legend className={labelBase}>Asignar esta tarea a</legend>
+            <div className="grid grid-cols-2 gap-2">
+              {(
+                [
+                  ["TODOS", "Todo el equipo"],
+                  ["SELECCIONADOS", "Elegir personas"],
+                ] as const
+              ).map(([valor, etiqueta]) => (
+                <label
+                  key={valor}
+                  className={`flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium ${
+                    form.alcance === valor
+                      ? "border-brand-500 bg-brand-50 text-brand-900 dark:bg-brand-950 dark:text-brand-100"
+                      : "border-control-line bg-surface-raised text-foreground"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="alcance-tarea"
+                    checked={form.alcance === valor}
+                    onChange={() =>
+                      setForm((actual) => ({
+                        ...actual,
+                        alcance: valor,
+                        destinatarios:
+                          valor === "TODOS" ? [] : actual.destinatarios,
+                      }))
+                    }
+                    className="accent-brand-700"
+                  />
+                  {etiqueta}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          {form.alcance === "SELECCIONADOS" ? (
+            <div>
+              <p className={labelBase}>Agregar impulsador</p>
+              <SelectorUsuario
+                value=""
+                onChange={() => undefined}
+                onSelect={(usuario) => {
+                  if (!usuario) return;
+                  setForm((actual) =>
+                    actual.destinatarios.some(({ id }) => id === usuario.id)
+                      ? actual
+                      : {
+                          ...actual,
+                          destinatarios: [
+                            ...actual.destinatarios,
+                            { id: usuario.id, nombre: usuario.nombre },
+                          ],
+                        },
+                  );
+                }}
+              />
+              {form.destinatarios.length > 0 ? (
+                <ul
+                  className="mt-3 flex flex-wrap gap-2"
+                  aria-label="Impulsadores seleccionados"
+                >
+                  {form.destinatarios.map((usuario) => (
+                    <li key={usuario.id}>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setForm((actual) => ({
+                            ...actual,
+                            destinatarios: actual.destinatarios.filter(
+                              ({ id }) => id !== usuario.id,
+                            ),
+                          }))
+                        }
+                        className="min-h-11 whitespace-nowrap rounded-full border border-brand-200 bg-brand-50 px-3 text-sm font-medium text-brand-900 hover:border-brand-400 focus-visible:ring-2 focus-visible:ring-brand-600/55 dark:border-brand-800 dark:bg-brand-950 dark:text-brand-100"
+                        aria-label={`Quitar a ${usuario.nombre}`}
+                      >
+                        {usuario.nombre} ×
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-2 text-xs text-muted">
+                  Todavía no elegiste a nadie.
+                </p>
+              )}
+            </div>
+          ) : null}
           <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
             <input
               type="checkbox"
@@ -440,10 +535,18 @@ function TareasAdministracionView() {
               Tarea activa
             </label>
           )}
-          <p className="rounded-lg bg-brand-50 px-3 py-2.5 text-xs text-brand-800 dark:bg-brand-950 dark:text-brand-200">
-            Al guardar, este cambio se sincroniza con todos los clientes y sus
-            locales sin borrar las respuestas de visitas anteriores.
+          <p
+            className={`rounded-lg bg-brand-50 px-3 py-2.5 text-xs text-brand-800 dark:bg-brand-950 dark:text-brand-200 ${form.alcance === "TODOS" ? "hidden" : ""}`}
+          >
+            La tarea aparecerá sólo a las personas elegidas. Las visitas ya
+            registradas conservan su historial.
           </p>
+          {form.alcance === "TODOS" ? (
+            <p className="rounded-lg bg-brand-50 px-3 py-2.5 text-xs text-brand-800 dark:bg-brand-950 dark:text-brand-200">
+              La tarea aparecer&aacute; para todo el equipo. Las visitas ya
+              registradas conservan su historial.
+            </p>
+          ) : null}
           {error && <p className={errorBox}>{error}</p>}
           <div className="flex justify-end gap-2">
             <button

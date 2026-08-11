@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { motion } from "motion/react";
 import { apiFetch, ApiError } from "@/lib/api";
 import { Modal } from "@/components/modal";
 import { IconoMas } from "@/components/icono-mas";

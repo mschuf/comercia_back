@@ -111,6 +111,20 @@ export interface KpiVisitasResumen {
   cumplimientoPorcentaje: number;
 }
 
+export interface RendimientoImpulsador {
+  desde: string;
+  hasta: string;
+  localesAsignados: number;
+  localesVisitados: number;
+  presentacionesProgramadas: number;
+  presentacionesRealizadas: number;
+  presentacionesPorcentaje: number;
+  tareasTotales: number;
+  tareasCompletadas: number;
+  tareasPorcentaje: number;
+  visitasEnCurso: number;
+}
+
 export interface KpiVisitasDetalle {
   agrupadoPor: AgrupacionKpiVisita;
   entidadId: number;

@@ -17,6 +17,7 @@ describe('AccesoOperacionesCampoService', () => {
     exigirAccesosPaginasEnModulos: jest.fn(),
     exigirAccesoPagina: jest.fn(),
     exigirAccesoAlgunaPagina: jest.fn(),
+    exigirAccesoAlgunaPaginaEnModulos: jest.fn(),
   };
   const service = new AccesoOperacionesCampoService(
     prisma as unknown as PrismaService,
@@ -43,7 +44,7 @@ describe('AccesoOperacionesCampoService', () => {
   });
 
   it('exige el módulo Repositor para sus endpoints dedicados', async () => {
-    acceso.exigirAccesoPagina.mockResolvedValue({
+    acceso.exigirAccesoAlgunaPaginaEnModulos.mockResolvedValue({
       id: 11,
       empresaId: 20,
       rolId: 6,
@@ -56,15 +57,15 @@ describe('AccesoOperacionesCampoService', () => {
       esGestor: false,
       esOperativo: true,
     });
-    expect(acceso.exigirAccesoPagina).toHaveBeenCalledWith(
+    expect(acceso.exigirAccesoAlgunaPaginaEnModulos).toHaveBeenCalledWith(
       11,
-      'repositor',
-      'visitas',
+      ['impulsador', 'repositor'],
+      ['visitas', 'entrada', 'marcaciones', 'rendimiento'],
     );
   });
 
   it('exige la página del Supervisor para sus endpoints dedicados', async () => {
-    acceso.exigirAccesoPagina.mockResolvedValue({
+    acceso.exigirAccesoAlgunaPaginaEnModulos.mockResolvedValue({
       id: 10,
       empresaId: 20,
       rolId: 5,
@@ -77,15 +78,15 @@ describe('AccesoOperacionesCampoService', () => {
       esGestor: true,
       esOperativo: false,
     });
-    expect(acceso.exigirAccesoPagina).toHaveBeenCalledWith(
+    expect(acceso.exigirAccesoAlgunaPaginaEnModulos).toHaveBeenCalledWith(
       10,
-      'supervisor',
-      'equipo',
+      ['teamleader-impulsador', 'supervisor'],
+      ['equipo'],
     );
   });
 
   it('acepta alguna de las páginas habilitadas para un recurso compartido', async () => {
-    acceso.exigirAccesoAlgunaPagina.mockResolvedValue({
+    acceso.exigirAccesoAlgunaPaginaEnModulos.mockResolvedValue({
       id: 10,
       empresaId: 20,
       rolId: 5,
@@ -94,10 +95,10 @@ describe('AccesoOperacionesCampoService', () => {
     await expect(
       service.usuarioSupervisorConAlgunaPagina(10, ['clientes', 'mapa']),
     ).resolves.toMatchObject({ id: 10, empresaId: 20, esGestor: true });
-    expect(acceso.exigirAccesoAlgunaPagina).toHaveBeenCalledWith(
+    expect(acceso.exigirAccesoAlgunaPaginaEnModulos).toHaveBeenCalledWith(
       10,
-      'supervisor',
-      ['clientes', 'mapa'],
+      ['teamleader-impulsador', 'supervisor'],
+      ['clientes', 'locales', 'mapa'],
     );
   });
 
@@ -141,7 +142,9 @@ describe('AccesoOperacionesCampoService', () => {
   });
 
   it('oculta responsables que no tengan acceso a Supervisor', async () => {
-    acceso.exigirAccesoAlgunaPagina.mockRejectedValue(new Error('sin acceso'));
+    acceso.exigirAccesoAlgunaPaginaEnModulos.mockRejectedValue(
+      new Error('sin acceso'),
+    );
 
     await expect(
       service.validarResponsableTerritorio(20, 12),
@@ -169,5 +172,60 @@ describe('AccesoOperacionesCampoService', () => {
       superiorId: 10,
       rolId: { in: [6] },
     });
+  });
+
+  it('acepta destinatarios de tareas solo cuando pertenecen al equipo directo', async () => {
+    prisma.empresaModulo.findFirst.mockResolvedValue({
+      todasLasPaginas: true,
+      rolIds: [6],
+      modulo: { paginas: [{ id: 101 }] },
+    });
+    prisma.usuario.findMany.mockResolvedValue([{ id: 11 }, { id: 12 }]);
+
+    await expect(
+      service.validarOperativosDelGestor(
+        {
+          id: 10,
+          empresaId: 20,
+          rolId: 5,
+          esGestor: true,
+          esOperativo: false,
+        },
+        [11, 12, 12],
+      ),
+    ).resolves.toEqual([11, 12]);
+    expect(prisma.usuario.findMany).toHaveBeenCalledWith({
+      where: {
+        empresaId: 20,
+        isActive: true,
+        superiorId: 10,
+        rolId: { in: [6] },
+        id: { in: [11, 12] },
+      },
+      select: { id: true },
+      take: 200,
+    });
+  });
+
+  it('rechaza destinatarios ajenos al equipo sin revelar cual falta', async () => {
+    prisma.empresaModulo.findFirst.mockResolvedValue({
+      todasLasPaginas: true,
+      rolIds: [6],
+      modulo: { paginas: [{ id: 101 }] },
+    });
+    prisma.usuario.findMany.mockResolvedValue([{ id: 11 }]);
+
+    await expect(
+      service.validarOperativosDelGestor(
+        {
+          id: 10,
+          empresaId: 20,
+          rolId: 5,
+          esGestor: true,
+          esOperativo: false,
+        },
+        [11, 99],
+      ),
+    ).rejects.toBeInstanceOf(NotFoundException);
   });
 });

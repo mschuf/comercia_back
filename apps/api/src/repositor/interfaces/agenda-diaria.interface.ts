@@ -7,6 +7,7 @@ export interface CandidataAgendaDiaria {
     zona: string | null;
     latitud: number;
     longitud: number;
+    radioMetros: number | null;
     tareasActivas: number;
   };
   programadaEn: Date;

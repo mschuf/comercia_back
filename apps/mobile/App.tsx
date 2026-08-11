@@ -1,6 +1,7 @@
-/* Hallmark · pre-emit critique: P5 H5 E4 S5 R5 V5 */
-/* Hallmark · contrast: pass · tokens: pass · mobile: pass · slop: pass */
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 */
+/* Hallmark · contrast: pass (40–41) · nav: C4 · tokens: pass (48) · mobile: pass (34, 49–57) · slop: pass */
 import * as Network from "expo-network";
+import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -29,10 +30,12 @@ import {
 } from "./src/lib/api";
 import {
   borrarSesion,
+  esSesionImpulsador,
   guardarSesion,
   obtenerSesion,
   type SesionMovil,
 } from "./src/lib/sesion";
+import { PanelImpulsador } from "./src/components/panel-impulsador";
 import {
   activarSeguimiento,
   cantidadUbicacionesPendientes,
@@ -47,6 +50,7 @@ import {
   anchoMaximoContenido,
   colores,
   espacios,
+  fuentes,
   radios,
 } from "./src/tema";
 
@@ -70,6 +74,11 @@ function hayInternet(estado: Network.NetworkState): boolean {
 }
 
 export default function App() {
+  const [fuentesListas, errorFuente] = useFonts({
+    Manrope: require("../web/src/app/fonts/Manrope-Variable.ttf"),
+  });
+  if (!fuentesListas && !errorFuente) return null;
+
   return (
     <SafeAreaProvider>
       <Aplicacion />
@@ -130,7 +139,9 @@ function Aplicacion() {
         if (sesionGuardada) {
           if (!montada) return;
           setSesion(sesionGuardada);
-          const reanudado = await reanudarSeguimiento();
+          const reanudado = esSesionImpulsador(sesionGuardada)
+            ? await detenerSeguimiento().then(() => false)
+            : await reanudarSeguimiento();
           if (!montada) return;
           setSeguimientoActivo(reanudado || (await estaSeguimientoActivo()));
           await actualizarPendientes();
@@ -219,9 +230,11 @@ function Aplicacion() {
       }
     };
 
-    void Network.getNetworkStateAsync().then(aplicarEstado).catch(() => {
-      if (montada) setEnLinea(false);
-    });
+    void Network.getNetworkStateAsync()
+      .then(aplicarEstado)
+      .catch(() => {
+        if (montada) setEnLinea(false);
+      });
     const suscripcionRed = Network.addNetworkStateListener((estado) => {
       void aplicarEstado(estado);
     });
@@ -305,6 +318,19 @@ function Aplicacion() {
     return <PantallaCarga />;
   }
 
+  if (sesion && esSesionImpulsador(sesion)) {
+    return (
+      <>
+        <StatusBar style="light" />
+        <PanelImpulsador
+          sesion={sesion}
+          enLinea={enLinea}
+          alCerrar={cerrarSesion}
+        />
+      </>
+    );
+  }
+
   const paddingHorizontal = compacto ? espacios.md : espacios.xl;
 
   return (
@@ -320,7 +346,8 @@ function Aplicacion() {
             {
               paddingBottom: Math.max(insets.bottom, espacios.md) + espacios.lg,
               paddingHorizontal,
-              paddingTop: Math.max(insets.top, espacios.md) +
+              paddingTop:
+                Math.max(insets.top, espacios.md) +
                 (compacto ? espacios.sm : espacios.lg),
             },
           ]}
@@ -651,7 +678,7 @@ function Boton({
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  pantalla: { backgroundColor: colores.fondo, flex: 1 },
+  pantalla: { backgroundColor: colores.fondoElevado, flex: 1 },
   centrado: {
     alignItems: "center",
     justifyContent: "center",
@@ -673,6 +700,7 @@ const styles = StyleSheet.create({
   },
   titulo: {
     color: colores.textoSobreOscuro,
+    fontFamily: fuentes.titulos,
     fontSize: 30,
     fontWeight: "800",
     letterSpacing: -0.6,
@@ -702,6 +730,7 @@ const styles = StyleSheet.create({
   grupoTarjetas: { gap: espacios.sm },
   encabezadoTarjeta: {
     color: colores.texto,
+    fontFamily: fuentes.titulos,
     fontSize: 23,
     fontWeight: "800",
     letterSpacing: -0.3,
@@ -794,9 +823,19 @@ const styles = StyleSheet.create({
   },
   avatarTexto: { color: colores.exito, fontSize: 16, fontWeight: "900" },
   identidadTexto: { flex: 1 },
-  saludo: { color: colores.texto, fontSize: 20, fontWeight: "800" },
+  saludo: {
+    color: colores.texto,
+    fontFamily: fuentes.titulos,
+    fontSize: 20,
+    fontWeight: "800",
+  },
   empresa: { color: colores.textoSecundario, fontSize: 13, marginTop: 2 },
-  celular: { color: colores.texto, fontSize: 13, fontWeight: "700", marginTop: 3 },
+  celular: {
+    color: colores.texto,
+    fontSize: 13,
+    fontWeight: "700",
+    marginTop: 3,
+  },
   divisor: { backgroundColor: colores.borde, height: StyleSheet.hairlineWidth },
   estadoPrincipal: {
     alignItems: "flex-start",

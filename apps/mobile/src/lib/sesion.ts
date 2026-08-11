@@ -9,6 +9,11 @@ export interface UsuarioSesion {
   correo: string;
   celular: string;
   empresa: { id: number; nombre: string };
+  rol: { id: number; descripcion: string } | null;
+}
+
+export function esSesionImpulsador(sesion: SesionMovil): boolean {
+  return sesion.usuario.rol?.descripcion.toLowerCase() === "impulsador";
 }
 
 export interface SesionMovil {

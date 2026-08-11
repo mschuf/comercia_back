@@ -7,6 +7,15 @@ jest.mock('../prisma/prisma.service', () => ({
   PrismaService: class PrismaService {},
 }));
 
+jest.mock('../../generated/prisma/client', () => ({
+  Prisma: {
+    sql: jest.fn((strings: TemplateStringsArray, ...values: unknown[]) => ({
+      strings,
+      values,
+    })),
+  },
+}));
+
 describe('RepositorService', () => {
   const prisma = {
     local: { count: jest.fn(), findMany: jest.fn() },

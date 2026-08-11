@@ -7,6 +7,7 @@ import { ListarLocalesRepositorDto } from './dto/listar-locales-repositor.dto';
 import { ListarTareasRepositorDto } from './dto/listar-tareas-repositor.dto';
 import { ListarVisitasHoyDto } from './dto/listar-visitas-hoy.dto';
 import { RutaHoyDto } from './dto/ruta-hoy.dto';
+import { RendimientoImpulsadorDto } from './dto/rendimiento-impulsador.dto';
 import { RepositorService } from './repositor.service';
 
 @ApiTags('repositor')
@@ -50,5 +51,13 @@ export class RepositorController {
     @Query() query: ListarVisitasHoyDto,
   ) {
     return this.repositor.visitasHoy(req.usuarioId, query);
+  }
+
+  @Get('rendimiento')
+  rendimiento(
+    @Req() req: RequestConUsuario,
+    @Query() query: RendimientoImpulsadorDto,
+  ) {
+    return this.repositor.rendimiento(req.usuarioId, query);
   }
 }

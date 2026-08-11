@@ -1,6 +1,11 @@
 import { Transform } from 'class-transformer';
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  ArrayUnique,
+  IsArray,
   IsBoolean,
+  IsEnum,
   IsInt,
   IsOptional,
   IsString,
@@ -13,6 +18,11 @@ import { MAX_INT4 } from '../../common/utils/numeros';
 import { trimString } from '../../common/utils/transforms';
 
 export class ListarTareasGlobalesDto extends PaginacionDto {}
+
+export enum AlcanceTareaDto {
+  TODOS = 'TODOS',
+  SELECCIONADOS = 'SELECCIONADOS',
+}
 
 export class CrearTareaGlobalDto {
   @IsString()
@@ -34,6 +44,20 @@ export class CrearTareaGlobalDto {
   @Min(0)
   @Max(MAX_INT4)
   orden?: number;
+
+  @IsOptional()
+  @IsEnum(AlcanceTareaDto)
+  alcance?: AlcanceTareaDto;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(200)
+  @ArrayUnique()
+  @IsInt({ each: true })
+  @Min(1, { each: true })
+  @Max(MAX_INT4, { each: true })
+  usuarioIds?: number[];
 }
 
 export class ActualizarTareaGlobalDto {
@@ -62,4 +86,18 @@ export class ActualizarTareaGlobalDto {
   @IsOptional()
   @IsBoolean()
   activo?: boolean;
+
+  @IsOptional()
+  @IsEnum(AlcanceTareaDto)
+  alcance?: AlcanceTareaDto;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(200)
+  @ArrayUnique()
+  @IsInt({ each: true })
+  @Min(1, { each: true })
+  @Max(MAX_INT4, { each: true })
+  usuarioIds?: number[];
 }

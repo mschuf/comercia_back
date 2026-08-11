@@ -1,11 +1,13 @@
 import { Transform, Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsISO8601,
   IsInt,
   IsNumber,
   IsOptional,
   IsString,
   Length,
+  Matches,
   Max,
   Min,
 } from 'class-validator';
@@ -35,6 +37,16 @@ export class IniciarVisitaDto {
   @Min(0)
   @Max(100_000)
   precisionMetros?: number;
+
+  @IsOptional()
+  @IsString()
+  @Length(16, 80)
+  @Matches(/^[A-Za-z0-9._:-]+$/)
+  claveMovil?: string;
+
+  @IsOptional()
+  @IsISO8601({ strict: true })
+  registradaEn?: string;
 }
 
 export class ActualizarVisitaTareaDto {
@@ -66,6 +78,23 @@ export class FinalizarVisitaDto {
   @Min(0)
   @Max(100_000)
   precisionMetros?: number;
+
+  @IsOptional()
+  @IsString()
+  @Length(16, 80)
+  @Matches(/^[A-Za-z0-9._:-]+$/)
+  claveMovil?: string;
+
+  @IsOptional()
+  @IsISO8601({ strict: true })
+  registradaEn?: string;
+}
+
+export class FinalizarVisitaMovilDto extends FinalizarVisitaDto {
+  @IsString()
+  @Length(16, 80)
+  @Matches(/^[A-Za-z0-9._:-]+$/)
+  entradaClaveMovil!: string;
 }
 
 export class ListarVisitasDto extends PaginacionDto {

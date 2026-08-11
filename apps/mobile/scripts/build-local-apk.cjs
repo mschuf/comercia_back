@@ -10,7 +10,9 @@ const config = JSON.parse(
 ).expo;
 
 function existeDirectorio(ruta) {
-  return Boolean(ruta) && fs.existsSync(ruta) && fs.statSync(ruta).isDirectory();
+  return (
+    Boolean(ruta) && fs.existsSync(ruta) && fs.statSync(ruta).isDirectory()
+  );
 }
 
 function primerDirectorioExistente(candidatos) {
@@ -52,11 +54,14 @@ function ejecutar(comando, argumentos, directorio, entorno) {
 
 function marcaDeTiempo(fecha) {
   const dosDigitos = (valor) => String(valor).padStart(2, "0");
-  return [
-    fecha.getFullYear(),
-    dosDigitos(fecha.getMonth() + 1),
-    dosDigitos(fecha.getDate()),
-  ].join("") + `-${dosDigitos(fecha.getHours())}${dosDigitos(fecha.getMinutes())}`;
+  return (
+    [
+      fecha.getFullYear(),
+      dosDigitos(fecha.getMonth() + 1),
+      dosDigitos(fecha.getDate()),
+    ].join("") +
+    `-${dosDigitos(fecha.getHours())}${dosDigitos(fecha.getMinutes())}`
+  );
 }
 
 function nombreSeguro(valor) {
@@ -88,7 +93,12 @@ const npx = process.platform === "win32" ? "npx.cmd" : "npx";
 const gradle = process.platform === "win32" ? "gradlew.bat" : "./gradlew";
 
 console.log("Regenerando Android desde app.json...");
-ejecutar(npx, ["expo", "prebuild", "--platform", "android"], mobileRoot, entorno);
+ejecutar(
+  npx,
+  ["expo", "prebuild", "--platform", "android", "--no-install"],
+  mobileRoot,
+  entorno,
+);
 
 console.log("Compilando APK release...");
 ejecutar(gradle, ["assembleRelease", "--no-daemon"], androidRoot, entorno);
@@ -106,7 +116,11 @@ if (!fs.existsSync(apkOrigen)) {
   throw new Error("La build terminó, pero no se encontró app-release.apk.");
 }
 
-const carpetaDestino = path.join(os.homedir(), "Documents", "Comercia Ubicacion APK");
+const carpetaDestino = path.join(
+  os.homedir(),
+  "Documents",
+  "Comercia Ubicacion APK",
+);
 fs.mkdirSync(carpetaDestino, { recursive: true });
 
 const version = nombreSeguro(config.version);

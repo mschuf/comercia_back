@@ -9,6 +9,7 @@ import { normalizarBusqueda } from "@/utils/texto";
 interface SelectorUsuarioProps {
   value: number | "";
   onChange: (usuarioId: number | "") => void;
+  onSelect?: (usuario: UsuarioAsignable | null) => void;
   seleccionadoInicial?: UsuarioAsignable | null;
   usuariosPermitidos?: UsuarioAsignable[];
   disabled?: boolean;
@@ -20,6 +21,7 @@ const LIMITE_PAGINA = 15;
 export function SelectorUsuario({
   value,
   onChange,
+  onSelect,
   seleccionadoInicial = null,
   usuariosPermitidos,
   disabled = false,
@@ -50,13 +52,10 @@ export function SelectorUsuario({
     [usuariosPermitidos],
   );
   const claveSolicitud = `${busquedaAplicada}\u0000${pagina}\u0000${reintento}`;
-  const usaBusquedaRemota =
-    abierto && !disabled && idsPermitidos === null;
+  const usaBusquedaRemota = abierto && !disabled && idsPermitidos === null;
   const cargando = usaBusquedaRemota && claveResuelta !== claveSolicitud;
   const error =
-    errorSolicitud?.clave === claveSolicitud
-      ? errorSolicitud.mensaje
-      : null;
+    errorSolicitud?.clave === claveSolicitud ? errorSolicitud.mensaje : null;
 
   const seleccionado =
     (seleccionRecordada?.id === value ? seleccionRecordada : null) ??
@@ -183,6 +182,7 @@ export function SelectorUsuario({
   function elegir(usuario: UsuarioAsignable | null) {
     setSeleccionRecordada(usuario);
     onChange(usuario?.id ?? "");
+    onSelect?.(usuario);
     setAbierto(false);
   }
 
@@ -340,17 +340,13 @@ export function SelectorUsuario({
                 Anterior
               </button>
               <span aria-live="polite">
-                {cargando
-                  ? "Buscando…"
-                  : `${datos.page} / ${datos.totalPages}`}
+                {cargando ? "Buscando…" : `${datos.page} / ${datos.totalPages}`}
               </span>
               <button
                 type="button"
                 onClick={() => {
                   setIndiceActivo(0);
-                  setPagina((actual) =>
-                    Math.min(datos.totalPages, actual + 1),
-                  );
+                  setPagina((actual) => Math.min(datos.totalPages, actual + 1));
                 }}
                 disabled={pagina >= datos.totalPages || cargando}
                 className="min-h-11 rounded-lg px-3 font-medium text-foreground transition hover:bg-surface-soft focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-40"

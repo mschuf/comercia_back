@@ -711,7 +711,7 @@ export function VisitaActiva({
                 </div>
                 <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-700">
                   <div
-                    className="h-full rounded-full bg-brand-600 transition-all"
+                    className="h-full rounded-full bg-brand-600"
                     style={{ width: `${progreso}%` }}
                   />
                 </div>

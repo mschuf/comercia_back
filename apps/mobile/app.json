@@ -1,9 +1,9 @@
 {
   "expo": {
-    "name": "Comercia Ubicación",
-    "description": "Ubicación consentida del equipo comercial de Comercia.",
+    "name": "Comercia Campo",
+    "description": "Jornada, tareas y marcaciones del equipo de campo de Comercia.",
     "slug": "comercia-mobile",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/comercia-ubicacion-icon.png",
     "userInterfaceStyle": "light",
@@ -12,7 +12,7 @@
     },
     "android": {
       "package": "pro.comercia.mobile",
-      "versionCode": 5,
+      "versionCode": 6,
       "permissions": [
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.READ_PHONE_STATE",
@@ -36,8 +36,8 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Comercia usa tu ubicación para enviar tu posición mientras el seguimiento está activo.",
-          "locationAlwaysAndWhenInUsePermission": "Comercia usa tu ubicación en segundo plano solo mientras el seguimiento esté activo.",
+          "locationWhenInUsePermission": "Comercia usa tu ubicación para confirmar que estás cerca del local al marcar entrada o salida.",
+          "locationAlwaysAndWhenInUsePermission": "Comercia puede reconocer cuando llegás a un local programado y avisarte. No guarda un recorrido continuo.",
           "isIosBackgroundLocationEnabled": true,
           "isAndroidBackgroundLocationEnabled": true,
           "isAndroidForegroundServiceEnabled": true
@@ -50,7 +50,23 @@
         }
       ],
       "./plugins/with-sim-phone-numbers",
-      "expo-sqlite"
+      "./plugins/with-short-cmake-object-paths",
+      "expo-sqlite",
+      [
+        "expo-notifications",
+        {
+          "color": "#18766A",
+          "defaultChannel": "proximidad"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Comercia usa la cámara para adjuntar evidencia de tareas y presencia.",
+          "photosPermission": "Comercia permite elegir una evidencia ya guardada en el teléfono.",
+          "microphonePermission": false
+        }
+      ]
     ],
     "experiments": {
       "autolinkingModuleResolution": true

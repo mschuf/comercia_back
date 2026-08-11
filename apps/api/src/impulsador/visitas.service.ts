@@ -23,6 +23,7 @@ import {
 import {
   ActualizarVisitaTareaDto,
   FinalizarVisitaDto,
+  FinalizarVisitaMovilDto,
   IniciarVisitaDto,
   ListarVisitasEquipoDto,
   ListarVisitasDto,
@@ -50,6 +51,7 @@ import {
   validarZonaHoraria,
 } from './utils/programacion-visita';
 import { duracionVisitaMinutos } from './utils/duracion-visita';
+import { fechaMarcacionDispositivo } from './utils/fecha-marcacion';
 
 type VisitaTareaConTarea = {
   id: number;
@@ -379,6 +381,21 @@ function exigirDentroDelRadio(
   return distancia;
 }
 
+function tareasVisiblesPara(usuarioId: number): Prisma.TareaClienteWhereInput {
+  return {
+    activo: true,
+    OR: [
+      { tareaGlobalId: null },
+      { tareaGlobal: { is: { alcance: 'TODOS' } } },
+      {
+        tareaGlobal: {
+          is: { destinatarios: { some: { usuarioId } } },
+        },
+      },
+    ],
+  };
+}
+
 // Mensaje neutro: no revela tareas de otras visitas
 function tareaDeVisita(
   visita: VisitaConRelaciones,
@@ -458,6 +475,19 @@ export class VisitasService {
   async iniciar(usuarioId: number, dto: IniciarVisitaDto): Promise<VisitaDto> {
     const usuario = await this.usuarioActual(usuarioId);
 
+    if (dto.claveMovil) {
+      const repetida = await this.prisma.visita.findUnique({
+        where: { entradaClaveMovil: dto.claveMovil },
+        select: SELECT_VISITA,
+      });
+      if (repetida) {
+        if (repetida.usuarioId !== usuario.id) {
+          throw new NotFoundException('La visita no existe');
+        }
+        return aVisitaDto(repetida, RADIO_METROS_DEFECTO);
+      }
+    }
+
     const local = await this.prisma.local.findUnique({
       where: { id: dto.localId },
       select: {
@@ -484,7 +514,10 @@ export class VisitasService {
     }
 
     const tareasActivas = await this.prisma.tareaCliente.findMany({
-      where: { clienteId: local.clienteId, activo: true },
+      where: {
+        clienteId: local.clienteId,
+        ...tareasVisiblesPara(usuario.id),
+      },
       select: { id: true },
       orderBy: [{ orden: 'asc' }, { id: 'asc' }],
     });
@@ -512,6 +545,12 @@ export class VisitasService {
       if (!visita) {
         throw new NotFoundException('La visita no existe');
       }
+      if (dto.claveMovil) {
+        await this.prisma.visita.updateMany({
+          where: { id: abierta.id, entradaClaveMovil: null },
+          data: { entradaClaveMovil: dto.claveMovil },
+        });
+      }
       return aVisitaDto(visita, RADIO_METROS_DEFECTO);
     }
 
@@ -529,7 +568,8 @@ export class VisitasService {
         localId: local.id,
         usuarioId: usuario.id,
         // Se fija explícitamente para que inicio y fin sean la fuente de los KPIs.
-        iniciadaEn: new Date(),
+        iniciadaEn: fechaMarcacionDispositivo(dto.registradaEn),
+        entradaClaveMovil: dto.claveMovil,
         latitud: dto.latitud,
         longitud: dto.longitud,
         distanciaMetros: redondear1Decimal(distancia),
@@ -991,6 +1031,18 @@ export class VisitasService {
     dto: FinalizarVisitaDto,
   ): Promise<VisitaDto> {
     const usuario = await this.usuarioActual(usuarioId);
+    if (dto.claveMovil) {
+      const repetida = await this.prisma.visita.findUnique({
+        where: { salidaClaveMovil: dto.claveMovil },
+        select: SELECT_VISITA,
+      });
+      if (repetida) {
+        if (repetida.usuarioId !== usuario.id) {
+          throw new NotFoundException('La visita no existe');
+        }
+        return aVisitaDto(repetida, RADIO_METROS_DEFECTO);
+      }
+    }
     const visita = await this.visitaAbiertaPropia(usuario, visitaId);
 
     const radio = visita.local.radioMetros ?? RADIO_METROS_DEFECTO;
@@ -1019,7 +1071,12 @@ export class VisitasService {
       throw new BadRequestException('Falta la foto de presencia en el local');
     }
 
-    const completadaEn = new Date();
+    const completadaEn = fechaMarcacionDispositivo(dto.registradaEn);
+    if (completadaEn < visita.iniciadaEn) {
+      throw new BadRequestException(
+        'La salida no puede ser anterior a la entrada',
+      );
+    }
     const programacion = visita.local.programacionVisita;
     const referenciaSiguiente = new Date(
       Math.max(
@@ -1036,6 +1093,7 @@ export class VisitasService {
         where: { id: visita.id },
         data: {
           completadaEn,
+          salidaClaveMovil: dto.claveMovil,
           latitudFin: dto.latitud,
           longitudFin: dto.longitud,
           distanciaFinMetros: redondear1Decimal(distancia),
@@ -1053,6 +1111,20 @@ export class VisitasService {
       }),
     ]);
     return aVisitaDto(registrada, RADIO_METROS_DEFECTO);
+  }
+
+  async finalizarMovil(
+    usuarioId: number,
+    dto: FinalizarVisitaMovilDto,
+  ): Promise<VisitaDto> {
+    const visita = await this.prisma.visita.findUnique({
+      where: { entradaClaveMovil: dto.entradaClaveMovil },
+      select: { id: true, usuarioId: true },
+    });
+    if (!visita || visita.usuarioId !== usuarioId) {
+      throw new NotFoundException('La entrada todavía no fue sincronizada');
+    }
+    return this.finalizar(usuarioId, visita.id, dto);
   }
 
   // Devuelve la ruta absoluta de la foto solo si el usuario puede verla: es de

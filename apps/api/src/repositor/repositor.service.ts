@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import type { Prisma } from '../../generated/prisma/client';
+import { Prisma } from '../../generated/prisma/client';
 import {
   respuestaPaginada,
   rangoPaginacion,
@@ -23,6 +23,7 @@ import { ListarLocalesRepositorDto } from './dto/listar-locales-repositor.dto';
 import { ListarTareasRepositorDto } from './dto/listar-tareas-repositor.dto';
 import { ListarVisitasHoyDto } from './dto/listar-visitas-hoy.dto';
 import { RutaHoyDto } from './dto/ruta-hoy.dto';
+import { RendimientoImpulsadorDto as FiltroRendimientoImpulsadorDto } from './dto/rendimiento-impulsador.dto';
 import type { AgendaDiaria } from './interfaces/agenda-diaria.interface';
 import type { ClienteRepositorDto } from './interfaces/cliente-repositor.interface';
 import type { CoordenadaRuta } from './interfaces/osrm.interface';
@@ -33,6 +34,10 @@ import type {
 } from './interfaces/ruta-diaria.interface';
 import type { TareasLocalRepositorDto } from './interfaces/tareas-repositor.interface';
 import type { VisitaHoyDto } from './interfaces/visita-hoy.interface';
+import type {
+  RendimientoImpulsadorDto,
+  RendimientoImpulsadorFila,
+} from './interfaces/rendimiento-impulsador.interface';
 import { OsrmService } from './osrm.service';
 import {
   actualizarRutaGuardada,
@@ -51,6 +56,21 @@ const ZONA_HORARIA_DEFECTO = 'America/Asuncion';
 const MAX_PARADAS_DIARIAS = 50;
 const VENTANA_VISITAS_MS = 36 * 60 * 60 * 1000;
 const CACHE_RESPALDO_MS = 5 * 60 * 1000;
+
+function tareasVisiblesPara(usuarioId: number): Prisma.TareaClienteWhereInput {
+  return {
+    activo: true,
+    OR: [
+      { tareaGlobalId: null },
+      { tareaGlobal: { is: { alcance: 'TODOS' } } },
+      {
+        tareaGlobal: {
+          is: { destinatarios: { some: { usuarioId } } },
+        },
+      },
+    ],
+  };
+}
 
 @Injectable()
 export class RepositorService {
@@ -86,7 +106,7 @@ export class RepositorService {
           _count: {
             select: {
               locales: { where: { usuarioId: usuario.id, activo: true } },
-              tareas: { where: { activo: true } },
+              tareas: { where: tareasVisiblesPara(usuario.id) },
             },
           },
         },
@@ -163,7 +183,9 @@ export class RepositorService {
             select: {
               id: true,
               nombre: true,
-              _count: { select: { tareas: { where: { activo: true } } } },
+              _count: {
+                select: { tareas: { where: tareasVisiblesPara(usuario.id) } },
+              },
             },
           },
         },
@@ -225,7 +247,7 @@ export class RepositorService {
               id: true,
               nombre: true,
               tareas: {
-                where: { activo: true },
+                where: tareasVisiblesPara(usuario.id),
                 select: {
                   id: true,
                   titulo: true,
@@ -321,6 +343,7 @@ export class RepositorService {
           zona: candidata.local.zona,
           latitud: candidata.local.latitud,
           longitud: candidata.local.longitud,
+          radioMetros: candidata.local.radioMetros ?? 200,
         },
         programadaEn: candidata.programadaEn.toISOString(),
         tareasActivas: candidata.local.tareasActivas,
@@ -332,6 +355,113 @@ export class RepositorService {
         visitaAbiertaId: candidata.visitaAbiertaId,
       }));
     return respuestaPaginada(items, agenda.candidatas.length, page, limit);
+  }
+
+  async rendimiento(
+    usuarioId: number,
+    query: FiltroRendimientoImpulsadorDto,
+  ): Promise<RendimientoImpulsadorDto> {
+    const usuario = await this.accesoCampo.usuarioRepositor(
+      usuarioId,
+      PAGINA_VISITAS,
+    );
+    const hoy = fechaEnZonaIso(new Date(), ZONA_HORARIA_DEFECTO);
+    const hasta = query.hasta ?? hoy;
+    const desde =
+      query.desde ??
+      new Date(new Date(`${hasta}T00:00:00.000Z`).getTime() - 29 * 86_400_000)
+        .toISOString()
+        .slice(0, 10);
+    const inicio = new Date(`${desde}T00:00:00.000Z`);
+    const fin = new Date(`${hasta}T00:00:00.000Z`);
+    const dias =
+      Math.floor((fin.getTime() - inicio.getTime()) / 86_400_000) + 1;
+    if (
+      Number.isNaN(inicio.getTime()) ||
+      Number.isNaN(fin.getTime()) ||
+      inicio > fin ||
+      dias > 366
+    ) {
+      throw new BadRequestException('El rango de rendimiento no es válido');
+    }
+
+    const [locales, filas, visitasEnCurso] = await Promise.all([
+      this.prisma.local.findMany({
+        where: {
+          empresaId: usuario.empresaId,
+          usuarioId: usuario.id,
+          activo: true,
+        },
+        select: { fechaVisita: true, programacionVisita: true },
+        take: 200,
+      }),
+      this.prisma.$queryRaw<RendimientoImpulsadorFila[]>(Prisma.sql`
+        SELECT
+          COUNT(DISTINCT v.id) FILTER (WHERE v.completada_en IS NOT NULL)::int AS presentaciones_realizadas,
+          COUNT(DISTINCT v.local_id) FILTER (WHERE v.completada_en IS NOT NULL)::int AS locales_visitados,
+          COUNT(vt.id)::int AS tareas_totales,
+          COUNT(vt.id) FILTER (WHERE vt.completada)::int AS tareas_completadas
+        FROM "visitas" v
+        INNER JOIN "locales" l ON l.id = v.local_id
+        LEFT JOIN "visita_tareas" vt ON vt.visita_id = v.id
+        WHERE v.usuario_id = ${usuario.id}
+          AND l.empresa_id = ${usuario.empresaId}
+          AND v.iniciada_en >= (
+            ${desde}::date::timestamp AT TIME ZONE ${ZONA_HORARIA_DEFECTO}
+          )
+          AND v.iniciada_en < (
+            (${hasta}::date + INTERVAL '1 day')::timestamp
+            AT TIME ZONE ${ZONA_HORARIA_DEFECTO}
+          )
+      `),
+      this.prisma.visita.count({
+        where: { usuarioId: usuario.id, completadaEn: null },
+      }),
+    ]);
+
+    let presentacionesProgramadas = 0;
+    for (const local of locales) {
+      for (let indice = 0; indice < dias; indice += 1) {
+        const dia = new Date(inicio.getTime() + indice * 86_400_000);
+        if (local.programacionVisita) {
+          presentacionesProgramadas += ocurrenciasVisitaEnDia(
+            local.programacionVisita,
+            dia,
+          ).length;
+        } else if (
+          local.fechaVisita &&
+          fechaEnZonaIso(local.fechaVisita, ZONA_HORARIA_DEFECTO) ===
+            dia.toISOString().slice(0, 10)
+        ) {
+          presentacionesProgramadas += 1;
+        }
+      }
+    }
+    const fila = filas[0];
+    const realizadas = fila?.presentaciones_realizadas ?? 0;
+    const tareasTotales = fila?.tareas_totales ?? 0;
+    const tareasCompletadas = fila?.tareas_completadas ?? 0;
+    return {
+      desde,
+      hasta,
+      localesAsignados: locales.length,
+      localesVisitados: fila?.locales_visitados ?? 0,
+      presentacionesProgramadas,
+      presentacionesRealizadas: realizadas,
+      presentacionesPorcentaje:
+        presentacionesProgramadas === 0
+          ? 0
+          : Math.round(
+              Math.min(100, (realizadas * 1000) / presentacionesProgramadas),
+            ) / 10,
+      tareasTotales,
+      tareasCompletadas,
+      tareasPorcentaje:
+        tareasTotales === 0
+          ? 0
+          : Math.round((tareasCompletadas * 1000) / tareasTotales) / 10,
+      visitasEnCurso,
+    };
   }
 
   private async obtenerAgendaDiaria(
@@ -351,6 +481,7 @@ export class RepositorService {
         nombre: true,
         latitud: true,
         longitud: true,
+        radioMetros: true,
         fechaVisita: true,
         zona: { select: { nombre: true } },
         programacionVisita: true,
@@ -358,7 +489,9 @@ export class RepositorService {
           select: {
             id: true,
             nombre: true,
-            _count: { select: { tareas: { where: { activo: true } } } },
+            _count: {
+              select: { tareas: { where: tareasVisiblesPara(usuarioId) } },
+            },
           },
         },
       },
@@ -426,6 +559,7 @@ export class RepositorService {
             zona: local.zona?.nombre ?? null,
             latitud: local.latitud,
             longitud: local.longitud,
+            radioMetros: local.radioMetros,
             tareasActivas: local.cliente._count.tareas,
           },
           programadaEn,
