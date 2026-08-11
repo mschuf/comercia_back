@@ -24,7 +24,9 @@ function codigoModulo(packageName) {
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
+import android.telephony.PhoneNumberUtils
 import android.telephony.SubscriptionManager
+import android.telephony.TelephonyManager
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -33,6 +35,7 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.uimanager.ViewManager
+import java.util.Locale
 
 class SimPhoneNumbersModule(
   private val reactContext: ReactApplicationContext,
@@ -47,6 +50,16 @@ class SimPhoneNumbersModule(
       reactContext.checkSelfPermission(Manifest.permission.READ_PHONE_NUMBERS) == PackageManager.PERMISSION_GRANTED
   }
 
+  private fun normalizarNumero(numero: String?, paisIso: String?): String? {
+    val limpio = numero?.trim().orEmpty()
+    if (limpio.isBlank()) return null
+    val iso = paisIso?.trim()?.uppercase(Locale.ROOT).orEmpty()
+    if (iso.isNotBlank()) {
+      PhoneNumberUtils.formatNumberToE164(limpio, iso)?.let { return it }
+    }
+    return limpio
+  }
+
   @ReactMethod
   fun getAvailablePhoneNumbers(promise: Promise) {
     if (!tienePermisos()) {
@@ -56,17 +69,28 @@ class SimPhoneNumbersModule(
 
     try {
       val subscriptionManager = reactContext.getSystemService(SubscriptionManager::class.java)
+      val telephonyManager = reactContext.getSystemService(TelephonyManager::class.java)
       val numeros = Arguments.createArray()
       for (subscription in subscriptionManager.activeSubscriptionInfoList.orEmpty()) {
         @Suppress("DEPRECATION")
-        val numero = (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val principal = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
           subscriptionManager.getPhoneNumber(subscription.subscriptionId)
         } else {
           subscription.number
-        }) ?: ""
+        }
+        val telefonoDeSim = telephonyManager.createForSubscriptionId(subscription.subscriptionId)
+        @Suppress("DEPRECATION")
+        val respaldo = try {
+          telefonoDeSim.line1Number
+        } catch (_: SecurityException) {
+          null
+        }
+        val paisIso = subscription.countryIso ?: telefonoDeSim.networkCountryIso
+        val numero = normalizarNumero(principal, paisIso)
+          ?: normalizarNumero(respaldo, paisIso)
         val item = Arguments.createMap()
         item.putInt("slotIndex", subscription.simSlotIndex + 1)
-        if (numero.isNotBlank()) {
+        if (!numero.isNullOrBlank()) {
           item.putString("number", numero)
         } else {
           item.putNull("number")

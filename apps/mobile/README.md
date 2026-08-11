@@ -3,71 +3,76 @@
 La guía operativa para actualizar la app y generar APKs locales está en
 [GUIA_DE_ACTUALIZACIONES_Y_BUILDS.md](./GUIA_DE_ACTUALIZACIONES_Y_BUILDS.md).
 
-MVP de ubicación consentida para usuarios de Comercia. En Android intenta leer
-los números que el sistema expone para SIM 1 y SIM 2, con permiso explícito, y
-los compara con el celular E.164 de los usuarios de Comercia. Si Android no
-expone un número, no hay coincidencia o el dispositivo es iOS, se usa correo o
-usuario y contraseña. La sesión resultante se conserva cifrada en el equipo.
+Aplicación de ubicación consentida para usuarios de Comercia. En Android
+intenta leer automáticamente los números que el sistema expone para SIM 1 y
+SIM 2 y los compara con el celular E.164 de los usuarios. Si Android no expone
+un número o no hay coincidencia, se usa correo/usuario y contraseña.
+
+## Ubicación sin conexión
+
+Con el seguimiento activo, cada lectura se guarda primero en una base SQLite
+privada de la aplicación. Luego se intenta enviar al servidor y solo se elimina
+del teléfono cuando la API confirma la recepción. La cola se vuelve a procesar:
+
+- en cada ciclo de ubicación (aproximadamente cada 3 minutos);
+- cuando Android detecta nuevamente una conexión a internet;
+- al abrir o regresar a la aplicación.
+
+La primera activación necesita internet para registrar el consentimiento. Una
+vez activa, la captura puede continuar sin Wi-Fi ni datos móviles. La pantalla
+muestra cuántas ubicaciones siguen pendientes.
 
 ## Configuración
 
 1. La app apunta por defecto a `https://api.comercia.pro/api/v1`; el valor está
    en `.env` y `.env.example`.
-2. Aplicá la migración de la API antes de usar el rastreo:
+2. Aplicá las migraciones de la API antes de usar cambios nuevos del backend:
 
 ```powershell
 npm --prefix apps/api run prisma:deploy
 ```
 
-3. Desplegá también los cambios de backend de este repositorio antes de probar
-   login por SIM o ubicaciones contra producción. No alcanza con configurar la
-   URL: esos endpoints tienen que existir en `api.comercia.pro`.
+3. Desplegá los cambios del backend antes de probar rutas nuevas contra
+   producción.
 
-## Generar el APK de prueba
+## Generar el APK
 
-La configuración `eas.json` ya produce un APK instalable (`preview`) y fija la
-URL de producción en la build. Desde esta carpeta ejecutá:
+La configuración `eas.json` produce un APK instalable con el perfil `preview`:
 
 ```powershell
 npx eas-cli@latest login
 npx eas-cli@latest build --platform android --profile preview
 ```
 
-EAS mostrará un enlace al APK terminado. Abrilo en el Android, permití instalar
-desde el navegador o administrador de archivos cuando Android lo solicite y
-después instalalo. El APK no funciona en Expo Go porque usa un módulo Android
-propio para SIM y una tarea de ubicación en segundo plano.
-
-Para compilar localmente necesitás JDK 17 y Android SDK configurados. Luego:
+Para compilar localmente necesitás JDK 17 y Android SDK configurados:
 
 ```powershell
 npx expo prebuild --platform android
 npx expo run:android
 ```
 
-El APK debug queda en
+El APK de depuración queda en
 `android/app/build/outputs/apk/debug/app-debug.apk`.
 
 ## Prueba en Android
 
-1. Abrí la app. Si ya hubo una sesión cifrada, se restaura automáticamente.
-2. En un primer uso, tocá **Continuar con número de SIM** y aceptá la lectura
-   de estado y número de teléfono. Android puede devolver cero, uno o dos
-   números según el equipo y la operadora.
-3. Si solo una SIM coincide con `usuarios.celular`, inicia la sesión. Si no,
-   ingresá correo/usuario y contraseña.
-4. Activá el seguimiento y aceptá primero ubicación y luego ubicación en
-   segundo plano. Android muestra la notificación persistente.
+1. Abrí la app. Si existe una sesión segura, se restaura automáticamente.
+2. En el primer uso, aceptá los permisos de teléfono. La app intenta el inicio
+   por SIM sin mostrar un botón adicional.
+3. Si Android no entrega un número o no coincide con una cuenta, ingresá las
+   credenciales.
+4. Activá el seguimiento y aceptá ubicación precisa y en segundo plano.
+5. Desactivá Wi-Fi y datos para comprobar que aumenta el contador pendiente;
+   al recuperar internet debe volver a cero.
 
-## Alcance y límites
+## Límites reales del sistema
 
-Al activar el seguimiento, la app explica qué se envía y solicita los permisos
-de ubicación de primer plano y segundo plano. Android muestra una notificación
-persistente mientras el servicio está activo e iOS muestra su indicador de uso
-de ubicación. La persona puede detener el seguimiento o cerrar sesión.
+Android puede devolver el número de SIM vacío aunque los permisos estén
+concedidos. El número tampoco prueba por sí solo quién posee el teléfono; para
+una autenticación fuerte se necesita una verificación adicional, por ejemplo
+SMS OTP y vinculación del dispositivo.
 
-Se solicita una actualización cada minuto, pero iOS y Android pueden agrupar,
-retrasar o detener eventos para ahorrar batería; una app eliminada por el
-usuario no puede garantizar reiniciarse sola, especialmente en Android. Android
-documenta que un número de SIM puede estar vacío o requerir verificación extra,
-por lo que el fallback de contraseña siempre se conserva.
+Android e iOS también pueden retrasar eventos para ahorrar batería. Ninguna app
+puede seguir ejecutándose si el usuario la fuerza a detener, revoca permisos o
+el sistema restringe totalmente su actividad. Por eso se conserva el ingreso
+por contraseña y la pantalla informa el estado real de captura y sincronización.

@@ -1,6 +1,8 @@
 import { obtenerApiUrl } from "../config";
 import type { SesionMovil } from "./sesion";
 
+const TIEMPO_ESPERA_MS = 15_000;
+
 export class ErrorApi extends Error {
   constructor(
     message: string,
@@ -28,15 +30,28 @@ async function solicitar<T>(
   opciones: RequestInit = {},
   token?: string,
 ): Promise<T> {
-  const response = await fetch(`${obtenerApiUrl()}${ruta}`, {
-    ...opciones,
-    headers: {
-      Accept: "application/json",
-      ...(opciones.body ? { "Content-Type": "application/json" } : {}),
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...opciones.headers,
-    },
-  });
+  const controlador = new AbortController();
+  const temporizador = setTimeout(() => controlador.abort(), TIEMPO_ESPERA_MS);
+  let response: Response;
+  try {
+    response = await fetch(`${obtenerApiUrl()}${ruta}`, {
+      ...opciones,
+      signal: controlador.signal,
+      headers: {
+        Accept: "application/json",
+        ...(opciones.body ? { "Content-Type": "application/json" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...opciones.headers,
+      },
+    });
+  } catch (error) {
+    if (controlador.signal.aborted) {
+      throw new Error("El servidor tardó demasiado en responder.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(temporizador);
+  }
   if (!response.ok) {
     const mensaje = await mensajeError(response);
     if (response.status === 404 && ruta.startsWith("/auth/mobile/")) {
@@ -67,6 +82,12 @@ export function iniciarSesionMovilConSim(
     method: "POST",
     body: JSON.stringify({ telefonos }),
   });
+}
+
+export function obtenerUsuarioActual(
+  token: string,
+): Promise<{ usuario: SesionMovil["usuario"] }> {
+  return solicitar("/auth/me", {}, token);
 }
 
 export function actualizarConsentimientoUbicacion(

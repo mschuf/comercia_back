@@ -21,6 +21,7 @@ actualizador
 actualizar
 adapter
 adaptive
+ademas
 admin
 administracion
 administrar
@@ -33,7 +34,6 @@ agents
 agrega
 agrupacion
 ajustar
-alcance
 algo
 alguna
 all
@@ -55,6 +55,7 @@ aparecer
 api
 apk
 aplicaci
+aplicacion
 aplicar
 aplicarlas
 app
@@ -63,6 +64,7 @@ apply
 apps
 archivo
 archivos
+area
 arquitectura
 arranque
 array
@@ -81,6 +83,7 @@ authenticate
 authentication
 author
 auto
+autolinking
 automatic
 automatizaci
 automatizacion
@@ -110,6 +113,7 @@ bloquean
 bloqueante
 body
 boolean
+boot
 bootstrap
 borrar
 boton
@@ -140,6 +144,7 @@ campana
 campo
 can
 candidata
+cantidad
 capas
 carga
 carpeta
@@ -176,9 +181,11 @@ code
 codex
 codigo
 coincide
+cola
 collect
 collection
 color
+colores
 comando
 comandos
 combine
@@ -196,6 +203,7 @@ compiled
 compiler
 completa
 completar
+completed
 completo
 component
 components
@@ -208,6 +216,7 @@ concurrently
 condition
 conditional
 conditions
+conexi
 conexion
 conexiones
 config
@@ -224,6 +233,7 @@ constants
 constructor
 construya
 consulta
+contar
 contenido
 content
 contents
@@ -364,6 +374,7 @@ entrar
 enum
 env
 enviar
+envie
 environment
 equipo
 error
@@ -371,12 +382,14 @@ escritorio
 eslint
 eslintrc
 esnext
+espacios
 est
 esta
 estado
 este
 estilos
 estructura
+etc
 etiqueta
 event
 eventos
@@ -390,6 +403,7 @@ exp
 expected
 expensive
 experimental
+experiments
 explicit
 expo
 exports
@@ -404,6 +418,7 @@ extract
 extraer
 fail
 failed
+fallido
 fallthrough
 favicon
 fecha
@@ -450,6 +465,7 @@ full
 fullstack
 funciona
 funciones
+funciono
 function
 functional
 functions
@@ -475,6 +491,7 @@ grafico
 graphify
 guaranies
 guard
+guarda
 guardada
 guardar
 guards
@@ -487,11 +504,13 @@ handlers
 has
 hash
 haversine
+hay
 health
 heavy
 helmet
 here
 herramienta
+hice
 hide
 high
 hints
@@ -507,6 +526,7 @@ how
 hoy
 html
 http
+https
 hub
 hydration
 icon
@@ -543,9 +563,11 @@ instalar
 instead
 int
 intent
+intento
 interaction
 interceptors
 interface
+internet
 interop
 ios
 iso
@@ -600,6 +622,7 @@ local
 locales
 localstorage
 location
+logi
 logic
 login
 logout
@@ -640,6 +663,7 @@ mensuales
 menu
 meta
 metadata
+metro
 metros
 migraciones
 migrate
@@ -692,6 +716,7 @@ needed
 nest
 nested
 nestjs
+network
 new
 next
 nico
@@ -708,6 +733,7 @@ notificaciones
 notificar
 novedad
 novedades
+nueva
 nuevo
 null
 number
@@ -792,6 +818,7 @@ patterns
 pausada
 payload
 pedido
+pendiente
 pendientes
 per
 performance
@@ -840,6 +867,7 @@ primitive
 priority
 prisma
 private
+pro
 probar
 problemas
 procedimientos
@@ -860,6 +888,7 @@ proxima
 proyecto
 prueba
 puede
+puedo
 puerto
 puertos
 punto
@@ -868,9 +897,11 @@ que
 queda
 query
 quick
+quiero
 quitar
 radianes
 radio
+radios
 rango
 raw
 react
@@ -879,7 +910,9 @@ readme
 reads
 reales
 reanudar
+receive
 recharts
+recibida
 recomendado
 recursos
 redondear
@@ -894,6 +927,7 @@ reg
 regex
 regexp
 register
+registrada
 registrar
 registro
 regla
@@ -930,6 +964,7 @@ resultado
 results
 resumen
 return
+revocacion
 robustez
 rol
 roles
@@ -945,6 +980,7 @@ run
 ruta
 rutas
 rxjs
+safe
 salen
 salir
 schema
@@ -981,9 +1017,13 @@ shell
 show
 side
 significa
+significan
 sim
 simple
 sin
+sincronizacion
+sincronizar
+sistema
 size
 skill
 skills
@@ -1003,6 +1043,7 @@ spec
 spinner
 split
 sql
+sqlite
 src
 ssh
 stable
@@ -1107,6 +1148,8 @@ type
 typecheck
 types
 typescript
+ubi
+ubicaci
 ubicacion
 ubicaciones
 ultima

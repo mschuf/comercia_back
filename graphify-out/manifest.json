@@ -1530,7 +1530,7 @@
     "semantic_hash": "3d49e207de4f2cf6035a2317c1838b05"
   },
   "package.json": {
-    "mtime": 1783085677.6421776,
+    "mtime": 1786450836.860649,
     "ast_hash": "21318fbaa2df14f72ce8a1672f85f7d6",
     "semantic_hash": "21318fbaa2df14f72ce8a1672f85f7d6"
   },
@@ -2500,13 +2500,13 @@
     "semantic_hash": ""
   },
   "apps/mobile/App.tsx": {
-    "mtime": 1786130636.2341337,
-    "ast_hash": "341a4c4d5fde057c16779e5b0723e21c",
+    "mtime": 1786454149.4549155,
+    "ast_hash": "8a11a9a156caf1b92703196960d88cbb",
     "semantic_hash": ""
   },
   "apps/mobile/app.json": {
-    "mtime": 1786134628.3884008,
-    "ast_hash": "792b126cc95b1c09e9085e1b30cea57b",
+    "mtime": 1786452146.6128068,
+    "ast_hash": "1e04995c2c211f941ac2d3279e1b181a",
     "semantic_hash": ""
   },
   "apps/mobile/index.ts": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/package.json": {
-    "mtime": 1786135715.1708736,
-    "ast_hash": "6343cbe50f46b05285e35fac82cd60b2",
+    "mtime": 1786451039.3934789,
+    "ast_hash": "9faf3e2c5252a7efa988676093c39166",
     "semantic_hash": ""
   },
   "apps/mobile/src/config.ts": {
@@ -2525,13 +2525,13 @@
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/api.ts": {
-    "mtime": 1786130635.498434,
-    "ast_hash": "46c77131ca0b0a51a40ff9a824ee4341",
+    "mtime": 1786454148.5529845,
+    "ast_hash": "69dda87861c9e6ced388607ee370f8ac",
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/seguimiento.ts": {
-    "mtime": 1786134627.231778,
-    "ast_hash": "c3b672bdcfb30b8fe9697c2e694b58f0",
+    "mtime": 1786453220.523579,
+    "ast_hash": "88f17d4c837a1fc78e2ad243cab5baee",
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/sesion.ts": {
@@ -2555,8 +2555,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/README.md": {
-    "mtime": 1786128648.2881083,
-    "ast_hash": "bcedf93894f34a344103e5924eb28742",
+    "mtime": 1786450346.0201857,
+    "ast_hash": "cad8a599f7a7515855d64c836d555396",
     "semantic_hash": ""
   },
   "apps/mobile/assets/android-icon-background.png": {
@@ -2610,8 +2610,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/plugins/with-sim-phone-numbers.js": {
-    "mtime": 1786130634.798026,
-    "ast_hash": "a8f08f47db0cfb4cdbfcce84f2a46b67",
+    "mtime": 1786450320.244529,
+    "ast_hash": "953aae7d412a5408a36d89172b765afb",
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/sim.ts": {
@@ -2647,6 +2647,41 @@
   "graphify-out/memory/query_20260807_194359_el_back_en_api_comercia_pro_funciona__hice_un_logi.md": {
     "mtime": 1786131839.1796055,
     "ast_hash": "ccdffbf11c9f7d2b5f71b6414f2738d4",
+    "semantic_hash": ""
+  },
+  "apps/api/src/auth/utils/datos-usuario.spec.ts": {
+    "mtime": 1786450394.275515,
+    "ast_hash": "37db21a3024be50cf9ff92f8a595df5e",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/lib/cola-ubicaciones.ts": {
+    "mtime": 1786450049.256552,
+    "ast_hash": "a980e0a7426460adae705f7db673dc6f",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/tema.ts": {
+    "mtime": 1786451963.5927453,
+    "ast_hash": "094c879d428703085b2a1719d9218220",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260811_115701_qu\u00e9_significan_precision_metros__registrada_en_y_r.md": {
+    "mtime": 1786449421.864614,
+    "ast_hash": "c28977c07c46ad613256a8e6c283c101",
+    "semantic_hash": ""
+  },
+  ".hallmark/log.json": {
+    "mtime": 1786453561.145587,
+    "ast_hash": "0f0f4f6fda40a2cd16f5816c23a26234",
+    "semantic_hash": ""
+  },
+  ".hallmark/preflight.json": {
+    "mtime": 1786453560.2870672,
+    "ast_hash": "b9cfd020b8ac213f03ea38a81c927e5a",
+    "semantic_hash": ""
+  },
+  "apps/mobile/metro.config.js": {
+    "mtime": 1786452425.5633852,
+    "ast_hash": "bf7278873086adf7b13ffe5efcc02380",
     "semantic_hash": ""
   }
 }
