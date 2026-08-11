@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-11T13:12:22.109419+00:00",
+  "generated_at": "2026-08-11T18:01:05.491538+00:00",
   "nodes": {
     "apps_api_src_auth_auth_controller_authcontroller": {
       "code_fingerprint": "41d1dc8b5a2bb2dbb6ed83c349b139367fd7de34296754d681f14e36d1ed60a0",
@@ -12,8 +12,24 @@
           "q": "el back en api.comercia.pro funciona, hice un login y funciono https://api.comercia.pro/api/v1/auth/login"
         }
       ],
-      "score": 0.917469367,
+      "score": 0.913228944,
       "source_file": "apps/api/src/auth/auth.controller.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_auth_auth_service_authservice": {
+      "code_fingerprint": "6353c1eade1af57b6dd10bb1804450f6cd17e04216649c08277973046c12f7a4",
+      "label": "AuthService",
+      "last": "2026-08-11T13:33:16.261843+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-11T13:33:16.261843+00:00",
+          "outcome": "useful",
+          "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
+        }
+      ],
+      "score": 0.99571202,
+      "source_file": "apps/api/src/auth/auth.service.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -28,7 +44,7 @@
           "q": "que significa programacion pausada y como reanudar"
         }
       ],
-      "score": 0.873892884,
+      "score": 0.869853866,
       "source_file": "apps/api/src/impulsador/interfaces/programacion-visita.interface.ts",
       "status": "tentative",
       "uses": 1
@@ -44,7 +60,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.873961071,
+      "score": 0.869921738,
       "source_file": "apps/api/src/repositor/osrm.service.ts",
       "status": "tentative",
       "uses": 1
@@ -60,7 +76,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.873961071,
+      "score": 0.869921738,
       "source_file": "apps/api/src/repositor/utils/optimizacion-ruta.ts",
       "status": "tentative",
       "uses": 1
@@ -76,7 +92,7 @@
           "q": "Qué significan precision_metros, registrada_en y recibida_en en ubicaciones_usuario"
         }
       ],
-      "score": 0.998791936,
+      "score": 0.994175651,
       "source_file": "apps/api/src/ubicaciones/dto/ubicacion.dto.ts",
       "status": "tentative",
       "uses": 1
@@ -97,10 +113,26 @@
           "q": "en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios"
         }
       ],
-      "score": 1.916220185,
+      "score": 1.907363668,
       "source_file": "apps/api/src/ubicaciones/ubicaciones.service.ts",
       "status": "preferred",
       "uses": 2
+    },
+    "apps_mobile_app_tsx_apps_mobile_app": {
+      "code_fingerprint": "1745fa1eb54807f8efb8c3c35cb1102a57e408442f2e7874b38cbfa53d14b1f0",
+      "label": "App.tsx",
+      "last": "2026-08-11T13:33:16.261843+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-11T13:33:16.261843+00:00",
+          "outcome": "useful",
+          "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
+        }
+      ],
+      "score": 0.99571202,
+      "source_file": "apps/mobile/App.tsx",
+      "status": "tentative",
+      "uses": 1
     },
     "apps_mobile_src_lib_seguimiento": {
       "code_fingerprint": "da06db4f8c7e3eb32b5898b2c45ed59f8d87b5c21032b737265b7ab69e7169ef",
@@ -123,10 +155,26 @@
           "q": "en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios"
         }
       ],
-      "score": 2.833689552,
+      "score": 2.820592612,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
       "status": "preferred",
       "uses": 3
+    },
+    "apps_mobile_src_lib_sesion": {
+      "code_fingerprint": "2302d3d323c3635b0c474328ff204bf7ea8f201f987f199112c200a0025b330a",
+      "label": "sesion.ts",
+      "last": "2026-08-11T13:33:16.261843+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-11T13:33:16.261843+00:00",
+          "outcome": "useful",
+          "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
+        }
+      ],
+      "score": 0.99571202,
+      "source_file": "apps/mobile/src/lib/sesion.ts",
+      "status": "tentative",
+      "uses": 1
     },
     "apps_mobile_src_lib_sesion_sesionmovil": {
       "code_fingerprint": "2302d3d323c3635b0c474328ff204bf7ea8f201f987f199112c200a0025b330a",
@@ -139,7 +187,7 @@
           "q": "el back en api.comercia.pro funciona, hice un login y funciono https://api.comercia.pro/api/v1/auth/login"
         }
       ],
-      "score": 0.917469367,
+      "score": 0.913228944,
       "source_file": "apps/mobile/src/lib/sesion.ts",
       "status": "tentative",
       "uses": 1
@@ -155,7 +203,7 @@
           "q": "que significa programacion pausada y como reanudar"
         }
       ],
-      "score": 0.873892884,
+      "score": 0.869853866,
       "source_file": "apps/web/src/components/impulsador/editor-programacion-visita.tsx",
       "status": "tentative",
       "uses": 1
@@ -171,7 +219,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.873961071,
+      "score": 0.869921738,
       "source_file": "apps/web/package.json",
       "status": "tentative",
       "uses": 1
