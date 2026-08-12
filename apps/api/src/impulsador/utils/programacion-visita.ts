@@ -177,6 +177,18 @@ export function fechaEnZonaIso(fecha: Date, zonaHoraria: string): string {
   return `${String(partes.anio).padStart(4, '0')}-${String(partes.mes).padStart(2, '0')}-${String(partes.dia).padStart(2, '0')}`;
 }
 
+export function rangoDiaIsoEnZona(
+  fechaIso: string,
+  zonaHoraria: string,
+): { inicio: Date; fin: Date } {
+  const [anio, mes, dia] = fechaIso.split('-').map(Number);
+  const fecha = { anio, mes, dia };
+  return {
+    inicio: fechaLocalAUtc(fecha, 0, 0, zonaHoraria),
+    fin: fechaLocalAUtc(sumarDias(fecha, 1), 0, 0, zonaHoraria),
+  };
+}
+
 export function ocurrenciasVisitaEnDia(
   programacion: ProgramacionVisitaCalculo,
   referencia: Date,

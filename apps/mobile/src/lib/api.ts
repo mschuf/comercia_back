@@ -146,9 +146,14 @@ export function obtenerVisita(
 
 export function obtenerMarcaciones(
   token: string,
-  page = 1,
+  opciones: { page?: number; fecha?: string | null } = {},
 ): Promise<RespuestaPaginada<MarcacionResumen>> {
-  return solicitar(`/visitas?page=${page}&limit=20`, {}, token);
+  const parametros = new URLSearchParams({
+    page: String(opciones.page ?? 1),
+    limit: "10",
+  });
+  if (opciones.fecha) parametros.set("fecha", opciones.fecha);
+  return solicitar(`/visitas?${parametros.toString()}`, {}, token);
 }
 
 export function obtenerRendimiento(
@@ -204,7 +209,7 @@ export function actualizarTareaVisita(
   visitaId: number,
   tarea: TareaVisita,
   completada: boolean,
-): Promise<Visita> {
+): Promise<TareaVisita> {
   return solicitar(
     `/visitas/${visitaId}/tareas/${tarea.id}`,
     { method: "PATCH", body: JSON.stringify({ completada }) },
@@ -212,18 +217,18 @@ export function actualizarTareaVisita(
   );
 }
 
-async function subirFoto(
+async function subirFoto<T>(
   token: string,
   ruta: string,
   uri: string,
-): Promise<Visita> {
+): Promise<T> {
   const formulario = new FormData();
   formulario.append("foto", {
     uri,
     name: `evidencia-${Date.now()}.jpg`,
     type: "image/jpeg",
   } as unknown as Blob);
-  return solicitar(ruta, { method: "POST", body: formulario }, token);
+  return solicitar<T>(ruta, { method: "POST", body: formulario }, token);
 }
 
 export function subirFotoTarea(
@@ -231,8 +236,8 @@ export function subirFotoTarea(
   visitaId: number,
   visitaTareaId: number,
   uri: string,
-): Promise<Visita> {
-  return subirFoto(
+): Promise<TareaVisita> {
+  return subirFoto<TareaVisita>(
     token,
     `/visitas/${visitaId}/tareas/${visitaTareaId}/foto`,
     uri,
@@ -244,5 +249,5 @@ export function subirFotoPresencia(
   visitaId: number,
   uri: string,
 ): Promise<Visita> {
-  return subirFoto(token, `/visitas/${visitaId}/foto-presencia`, uri);
+  return subirFoto<Visita>(token, `/visitas/${visitaId}/foto-presencia`, uri);
 }

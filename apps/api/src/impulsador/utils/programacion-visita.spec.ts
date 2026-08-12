@@ -2,6 +2,7 @@ import type { ProgramacionVisitaCalculo } from '../interfaces/programacion-visit
 import {
   ocurrenciasVisitaEnDia,
   proximaOcurrenciaVisita,
+  rangoDiaIsoEnZona,
 } from './programacion-visita';
 
 function base(
@@ -98,5 +99,14 @@ describe('ocurrenciasVisitaEnDia', () => {
     );
 
     expect(resultado).toEqual([]);
+  });
+});
+
+describe('rangoDiaIsoEnZona', () => {
+  it('construye un intervalo exclusivo para filtrar una fecha completa', () => {
+    const rango = rangoDiaIsoEnZona('2026-07-15', 'UTC');
+
+    expect(rango.inicio.toISOString()).toBe('2026-07-15T00:00:00.000Z');
+    expect(rango.fin.toISOString()).toBe('2026-07-16T00:00:00.000Z');
   });
 });

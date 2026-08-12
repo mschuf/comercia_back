@@ -470,8 +470,8 @@
     "semantic_hash": "75b534fa5e8035be602cdcc6f0b9c067"
   },
   "apps/api/src/impulsador/dto/visita.dto.ts": {
-    "mtime": 1786472934.2308154,
-    "ast_hash": "0b5042e05448994fc839e4e8a9c1c592",
+    "mtime": 1786539032.036566,
+    "ast_hash": "0f48a7046a98c484d05b717937a49566",
     "semantic_hash": ""
   },
   "apps/api/src/impulsador/dto/zona.dto.spec.ts": {
@@ -595,14 +595,14 @@
     "semantic_hash": "6d0117052784769965bf046c11dd9249"
   },
   "apps/api/src/impulsador/utils/programacion-visita.spec.ts": {
-    "mtime": 1784209911.607711,
-    "ast_hash": "447bb2ff6f8362392d60c2948cc2848b",
-    "semantic_hash": "447bb2ff6f8362392d60c2948cc2848b"
+    "mtime": 1786539095.470738,
+    "ast_hash": "fc3458b08d8aa7b9cb5eb1159205e8b2",
+    "semantic_hash": ""
   },
   "apps/api/src/impulsador/utils/programacion-visita.ts": {
-    "mtime": 1784209825.9512043,
-    "ast_hash": "cde62ffeeb546b4dc26d9b18939eca8a",
-    "semantic_hash": "cde62ffeeb546b4dc26d9b18939eca8a"
+    "mtime": 1786539073.385945,
+    "ast_hash": "9e166e90854340134cbd2b3c47f83f9c",
+    "semantic_hash": ""
   },
   "apps/api/src/impulsador/visitas.controller.ts": {
     "mtime": 1786472936.1408446,
@@ -615,8 +615,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/impulsador/visitas.service.ts": {
-    "mtime": 1786472937.056151,
-    "ast_hash": "784a202158bc29829a55c53f74e14ea9",
+    "mtime": 1786539074.1290367,
+    "ast_hash": "9abdad932c8ba1400736d776deeb19c8",
     "semantic_hash": ""
   },
   "apps/api/src/impulsador/zonas.controller.ts": {
@@ -2505,8 +2505,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/app.json": {
-    "mtime": 1786536106.5956888,
-    "ast_hash": "5de092610d336d3b9ff1cca89506cab2",
+    "mtime": 1786546353.5811517,
+    "ast_hash": "3f047b721d28155e6b1d1d9b532dc27f",
     "semantic_hash": ""
   },
   "apps/mobile/index.ts": {
@@ -2515,8 +2515,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/package.json": {
-    "mtime": 1786474882.9705758,
-    "ast_hash": "8b2a1bfd980f85fa947373dcc01e7757",
+    "mtime": 1786538295.6541865,
+    "ast_hash": "41193a7780b1294206b2c8d8eb50925c",
     "semantic_hash": ""
   },
   "apps/mobile/src/config.ts": {
@@ -2525,8 +2525,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/api.ts": {
-    "mtime": 1786474341.097987,
-    "ast_hash": "476af914031d1b888def197d001d94c9",
+    "mtime": 1786546334.7222204,
+    "ast_hash": "829201c3bea080e7354b7a89b08c3571",
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/seguimiento.ts": {
@@ -2725,8 +2725,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/proximidad.ts": {
-    "mtime": 1786474341.1509058,
-    "ast_hash": "dd6c1e84b57a1477f5d6e072f896dc25",
+    "mtime": 1786540253.735221,
+    "ast_hash": "95956a973eb1fb471d4e2b5563e4e624",
     "semantic_hash": ""
   },
   "apps/mobile/src/types/impulsador.ts": {
@@ -2765,8 +2765,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/src/components/acceso/panel-login.tsx": {
-    "mtime": 1786536896.11822,
-    "ast_hash": "6844fe2018d77f453d60df95cf07ae50",
+    "mtime": 1786545282.0439222,
+    "ast_hash": "dcfeca7f0a4d45ecfe7ca4f80a933a1c",
     "semantic_hash": ""
   },
   "apps/mobile/src/components/acceso/panel-seguimiento.tsx": {
@@ -2780,8 +2780,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/src/components/impulsador/panel-impulsador.tsx": {
-    "mtime": 1786537380.0417306,
-    "ast_hash": "d3aedf86bba1987f7e02de30be2e8c00",
+    "mtime": 1786546335.3742447,
+    "ast_hash": "3ec97df3e533c7e25336b3befecefaff",
     "semantic_hash": ""
   },
   "apps/mobile/src/components/impulsador/utils.ts": {
@@ -2790,13 +2790,33 @@
     "semantic_hash": ""
   },
   "apps/mobile/src/components/impulsador/vistas.tsx": {
-    "mtime": 1786537256.5653307,
-    "ast_hash": "81d1ca329a11b9823cbaf36952ba2279",
+    "mtime": 1786546299.721407,
+    "ast_hash": "5bea26f2ad4af4f4bbd0d277ed0df5ed",
     "semantic_hash": ""
   },
   "apps/mobile/src/components/ui/boton.tsx": {
     "mtime": 1786536894.5518498,
     "ast_hash": "d33867313f46005c348c39db63c3280b",
+    "semantic_hash": ""
+  },
+  "apps/mobile/assets/repositor-comercial-hero.png": {
+    "mtime": 1786544814.5914054,
+    "ast_hash": "0d2b0270ac0453837f92d872940cea29",
+    "semantic_hash": ""
+  },
+  "tmp-comercia-entrada-v134.png": {
+    "mtime": 1786552545.6941676,
+    "ast_hash": "92075506536287361cf36b41531420ba",
+    "semantic_hash": ""
+  },
+  "tmp-comercia-home-v133.png": {
+    "mtime": 1786546195.274126,
+    "ast_hash": "e6882c8325a0ce8f18f2946b8aaa44a1",
+    "semantic_hash": ""
+  },
+  "tmp-comercia-home-v134.png": {
+    "mtime": 1786552526.6039386,
+    "ast_hash": "9e82d072b6abd8a177d6de89421402d2",
     "semantic_hash": ""
   }
 }

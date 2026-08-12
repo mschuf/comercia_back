@@ -104,6 +104,11 @@ export class ListarVisitasDto extends PaginacionDto {
   @Min(1)
   @Max(MAX_INT4)
   localId?: number;
+
+  @IsOptional()
+  @IsISO8601({ strict: true })
+  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  fecha?: string;
 }
 
 export class ListarVisitasEquipoDto extends PaginacionDto {}

@@ -48,6 +48,7 @@ import type {
 import {
   aProgramacionVisitaDto,
   proximaOcurrenciaVisita,
+  rangoDiaIsoEnZona,
   validarZonaHoraria,
 } from './utils/programacion-visita';
 import { duracionVisitaMinutos } from './utils/duracion-visita';
@@ -129,6 +130,8 @@ type LocalEquipo = {
     tareas: { completada: boolean }[];
   }[];
 };
+
+const ZONA_HORARIA_LISTADO_MARCACIONES = 'America/Asuncion';
 
 // El estado activo viaja al front y también decide qué tareas exige finalizar().
 const SELECT_VISITA_TAREA = {
@@ -592,6 +595,10 @@ export class VisitasService {
   ): Promise<RespuestaPaginada<VisitaResumenDto>> {
     const usuario = await this.usuarioActual(usuarioId);
 
+    const rangoFecha = query.fecha
+      ? rangoDiaIsoEnZona(query.fecha, ZONA_HORARIA_LISTADO_MARCACIONES)
+      : null;
+
     if (query.localId !== undefined) {
       const local = await this.prisma.local.findUnique({
         where: { id: query.localId },
@@ -607,6 +614,9 @@ export class VisitasService {
       local: { empresaId: usuario.empresaId },
       ...(usuario.esGestor ? {} : { usuarioId: usuario.id }),
       ...(query.localId !== undefined ? { localId: query.localId } : {}),
+      ...(rangoFecha
+        ? { iniciadaEn: { gte: rangoFecha.inicio, lt: rangoFecha.fin } }
+        : {}),
     };
 
     const { skip, take, page, limit } = rangoPaginacion(query);

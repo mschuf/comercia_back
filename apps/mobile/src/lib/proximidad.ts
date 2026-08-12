@@ -3,25 +3,34 @@ import * as Notifications from "expo-notifications";
 import * as SQLite from "expo-sqlite";
 import * as TaskManager from "expo-task-manager";
 import { Platform } from "react-native";
-import type { SesionMovil } from "./sesion";
 import type { VisitaHoy } from "../types/impulsador";
+import type { SesionMovil } from "./sesion";
 
 export const TAREA_GEOCERCAS = "comercia.impulsador.geocercas";
+export const TAREA_PROXIMIDAD = "comercia.impulsador.proximidad";
+
 const NOMBRE_BASE = "comercia-ubicaciones.db";
 const CANAL_PROXIMIDAD = "proximidad";
+const INTERVALO_PROXIMIDAD_MS = 120_000;
+const ZONA_HORARIA = "America/Asuncion";
 
-export interface NotificacionProximidad {
-  id: number;
+type AgendaProximidad = {
+  usuarioId: number;
   localId: number;
   localNombre: string;
   clienteNombre: string;
-  creadaEn: string;
-  leidaEn: string | null;
-}
+  latitud: number;
+  longitud: number;
+  radioMetros: number;
+};
 
 type DatosGeocerca = {
   eventType: Location.GeofencingEventType;
   region: Location.LocationRegion;
+};
+
+type DatosUbicacion = {
+  locations?: Location.LocationObject[];
 };
 
 let promesaBase: ReturnType<typeof SQLite.openDatabaseAsync> | null = null;
@@ -68,6 +77,35 @@ async function obtenerBase() {
   return promesaBase;
 }
 
+function fechaLocalActual(fecha = new Date()) {
+  const partes = new Intl.DateTimeFormat("en-CA", {
+    timeZone: ZONA_HORARIA,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(fecha);
+  const valor = (tipo: Intl.DateTimeFormatPartTypes) =>
+    partes.find((parte) => parte.type === tipo)?.value;
+  return `${valor("year")}-${valor("month")}-${valor("day")}`;
+}
+
+function distanciaMetros(
+  latitud1: number,
+  longitud1: number,
+  latitud2: number,
+  longitud2: number,
+) {
+  const aRadianes = (grados: number) => (grados * Math.PI) / 180;
+  const deltaLatitud = aRadianes(latitud2 - latitud1);
+  const deltaLongitud = aRadianes(longitud2 - longitud1);
+  const a =
+    Math.sin(deltaLatitud / 2) ** 2 +
+    Math.cos(aRadianes(latitud1)) *
+      Math.cos(aRadianes(latitud2)) *
+      Math.sin(deltaLongitud / 2) ** 2;
+  return 6_371_000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldPlaySound: false,
@@ -77,52 +115,138 @@ Notifications.setNotificationHandler({
   }),
 });
 
+async function notificarUnaVezPorDia(local: AgendaProximidad) {
+  const base = await obtenerBase();
+  const ahora = new Date();
+  const fechaHoy = fechaLocalActual(ahora);
+  await base.runAsync(
+    `DELETE FROM notificaciones_proximidad WHERE fecha < $fechaLimite`,
+    { $fechaLimite: fechaLocalActual(new Date(ahora.getTime() - 31 * 86_400_000)) },
+  );
+  const resultado = await base.runAsync(
+    `INSERT OR IGNORE INTO notificaciones_proximidad
+      (usuario_id, local_id, local_nombre, cliente_nombre, fecha, creada_en)
+     VALUES ($usuarioId, $localId, $localNombre, $clienteNombre, $fecha, $creadaEn)`,
+    {
+      $usuarioId: local.usuarioId,
+      $localId: local.localId,
+      $localNombre: local.localNombre,
+      $clienteNombre: local.clienteNombre,
+      $fecha: fechaHoy,
+      $creadaEn: ahora.toISOString(),
+    },
+  );
+  if (resultado.changes === 0) return;
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: `Estás cerca de ${local.localNombre}`,
+      body: "Si ya llegaste, podés marcar tu entrada en Comercia.",
+      data: { pantalla: "entrada", localId: local.localId },
+    },
+    trigger: Platform.OS === "android" ? { channelId: CANAL_PROXIMIDAD } : null,
+  });
+}
+
+async function revisarUbicacion(
+  latitud: number,
+  longitud: number,
+  agenda?: AgendaProximidad[],
+) {
+  const base = await obtenerBase();
+  const locales =
+    agenda ??
+    (await base.getAllAsync<{
+      usuario_id: number;
+      local_id: number;
+      local_nombre: string;
+      cliente_nombre: string;
+      latitud: number;
+      longitud: number;
+      radio_metros: number;
+    }>(
+      `SELECT usuario_id, local_id, local_nombre, cliente_nombre, latitud,
+              longitud, radio_metros
+         FROM agenda_geocercas`,
+    )).map((local) => ({
+      usuarioId: local.usuario_id,
+      localId: local.local_id,
+      localNombre: local.local_nombre,
+      clienteNombre: local.cliente_nombre,
+      latitud: local.latitud,
+      longitud: local.longitud,
+      radioMetros: local.radio_metros,
+    }));
+
+  for (const local of locales) {
+    if (
+      distanciaMetros(latitud, longitud, local.latitud, local.longitud) <=
+      Math.max(50, local.radioMetros)
+    ) {
+      await notificarUnaVezPorDia(local);
+    }
+  }
+}
+
 if (!TaskManager.isTaskDefined(TAREA_GEOCERCAS)) {
   TaskManager.defineTask(TAREA_GEOCERCAS, async ({ data, error }) => {
     try {
       if (error || !data) return;
       const { eventType, region } = data as DatosGeocerca;
       if (eventType !== Location.GeofencingEventType.Enter) return;
-      const localId = Number(region.identifier?.replace("local:", ""));
-      if (!Number.isInteger(localId)) return;
+      const coincidencia = /^usuario:(\d+):local:(\d+)$/.exec(
+        region.identifier ?? "",
+      );
+      if (!coincidencia) return;
+
+      const usuarioId = Number(coincidencia[1]);
+      const localId = Number(coincidencia[2]);
       const base = await obtenerBase();
-      const agenda = await base.getFirstAsync<{
+      const local = await base.getFirstAsync<{
         usuario_id: number;
+        local_id: number;
         local_nombre: string;
         cliente_nombre: string;
+        latitud: number;
+        longitud: number;
+        radio_metros: number;
       }>(
-        `SELECT usuario_id, local_nombre, cliente_nombre
-           FROM agenda_geocercas WHERE local_id = $localId LIMIT 1`,
-        { $localId: localId },
+        `SELECT usuario_id, local_id, local_nombre, cliente_nombre, latitud,
+                longitud, radio_metros
+           FROM agenda_geocercas
+          WHERE usuario_id = $usuarioId AND local_id = $localId
+          LIMIT 1`,
+        { $usuarioId: usuarioId, $localId: localId },
       );
-      if (!agenda) return;
-      const ahora = new Date();
-      const fecha = ahora.toISOString().slice(0, 10);
-      const resultado = await base.runAsync(
-        `INSERT OR IGNORE INTO notificaciones_proximidad
-          (usuario_id, local_id, local_nombre, cliente_nombre, fecha, creada_en)
-         VALUES ($usuarioId, $localId, $localNombre, $clienteNombre, $fecha, $creadaEn)`,
-        {
-          $usuarioId: agenda.usuario_id,
-          $localId: localId,
-          $localNombre: agenda.local_nombre,
-          $clienteNombre: agenda.cliente_nombre,
-          $fecha: fecha,
-          $creadaEn: ahora.toISOString(),
-        },
-      );
-      if (resultado.changes === 0) return;
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: `Estás cerca de ${agenda.local_nombre}`,
-          body: "Si ya llegaste, podés marcar tu entrada en Comercia.",
-          data: { pantalla: "entrada", localId },
-        },
-        trigger:
-          Platform.OS === "android" ? { channelId: CANAL_PROXIMIDAD } : null,
+      if (!local) return;
+      await notificarUnaVezPorDia({
+        usuarioId: local.usuario_id,
+        localId: local.local_id,
+        localNombre: local.local_nombre,
+        clienteNombre: local.cliente_nombre,
+        latitud: local.latitud,
+        longitud: local.longitud,
+        radioMetros: local.radio_metros,
       });
     } catch {
-      // La geocerca nunca debe cerrar el proceso si Android limita la tarea.
+      // Android puede limitar tareas en segundo plano; nunca cerramos la app.
+    }
+  });
+}
+
+if (!TaskManager.isTaskDefined(TAREA_PROXIMIDAD)) {
+  TaskManager.defineTask(TAREA_PROXIMIDAD, async ({ data, error }) => {
+    try {
+      if (error || !data) return;
+      const ubicaciones = (data as DatosUbicacion).locations ?? [];
+      const ubicacion = ubicaciones[ubicaciones.length - 1];
+      if (!ubicacion) return;
+      await revisarUbicacion(
+        ubicacion.coords.latitude,
+        ubicacion.coords.longitude,
+      );
+    } catch {
+      // El monitoreo sólo genera avisos locales y debe fallar de forma segura.
     }
   });
 }
@@ -190,26 +314,29 @@ export async function sincronizarGeocercas(
     );
   });
 
-  const disponible = await TaskManager.isAvailableAsync();
-  if (!disponible || agenda.length === 0) return false;
-  let primero = await Location.getForegroundPermissionsAsync();
-  if (primero.status !== "granted" && solicitarPermisos) {
-    primero = await Location.requestForegroundPermissionsAsync();
+  if (!(await TaskManager.isAvailableAsync()) || agenda.length === 0) {
+    await detenerGeocercas();
+    return false;
   }
-  if (primero.status !== "granted") return false;
-  let segundo = await Location.getBackgroundPermissionsAsync();
-  if (segundo.status !== "granted" && solicitarPermisos) {
-    segundo = await Location.requestBackgroundPermissionsAsync();
+
+  let permisoPrimerPlano = await Location.getForegroundPermissionsAsync();
+  if (permisoPrimerPlano.status !== "granted" && solicitarPermisos) {
+    permisoPrimerPlano = await Location.requestForegroundPermissionsAsync();
   }
-  if (segundo.status !== "granted") return false;
+  if (permisoPrimerPlano.status !== "granted") return false;
+
+  let permisoSegundoPlano = await Location.getBackgroundPermissionsAsync();
+  if (permisoSegundoPlano.status !== "granted" && solicitarPermisos) {
+    permisoSegundoPlano = await Location.requestBackgroundPermissionsAsync();
+  }
+  if (permisoSegundoPlano.status !== "granted") return false;
   if (!(await prepararNotificaciones(solicitarPermisos))) return false;
 
-  const unicos = new Map<number, VisitaHoy>();
-  agenda.forEach((visita) => unicos.set(visita.local.id, visita));
+  const locales = [...new Map(agenda.map((visita) => [visita.local.id, visita])).values()].slice(0, 100);
   await Location.startGeofencingAsync(
     TAREA_GEOCERCAS,
-    [...unicos.values()].slice(0, 100).map((visita) => ({
-      identifier: `local:${visita.local.id}`,
+    locales.map((visita) => ({
+      identifier: `usuario:${sesion.usuario.id}:local:${visita.local.id}`,
       latitude: visita.local.latitud,
       longitude: visita.local.longitud,
       radius: Math.max(50, visita.local.radioMetros),
@@ -217,12 +344,31 @@ export async function sincronizarGeocercas(
       notifyOnExit: false,
     })),
   );
+
+  if (await Location.hasStartedLocationUpdatesAsync(TAREA_PROXIMIDAD)) {
+    await Location.stopLocationUpdatesAsync(TAREA_PROXIMIDAD);
+  }
+  await Location.startLocationUpdatesAsync(TAREA_PROXIMIDAD, {
+    accuracy: Location.Accuracy.Balanced,
+    timeInterval: INTERVALO_PROXIMIDAD_MS,
+    distanceInterval: 50,
+    deferredUpdatesInterval: INTERVALO_PROXIMIDAD_MS,
+    deferredUpdatesDistance: 50,
+    ...(Platform.OS === "android"
+      ? {
+          foregroundService: {
+            notificationTitle: "Cercanía automática activa",
+            notificationBody: "Comercia revisa tus locales programados.",
+            notificationColor: "#18766A",
+            killServiceOnDestroy: true,
+          },
+        }
+      : {}),
+  });
   return true;
 }
 
-export async function obtenerAgendaGuardada(
-  usuarioId: number,
-): Promise<VisitaHoy[]> {
+export async function obtenerAgendaGuardada(usuarioId: number): Promise<VisitaHoy[]> {
   const base = await obtenerBase();
   const fila = await base.getFirstAsync<{ datos_json: string }>(
     `SELECT datos_json FROM agenda_impulsador_cache
@@ -238,48 +384,11 @@ export async function obtenerAgendaGuardada(
   }
 }
 
-export async function listarNotificacionesProximidad(
-  usuarioId: number,
-): Promise<NotificacionProximidad[]> {
-  const base = await obtenerBase();
-  const filas = await base.getAllAsync<{
-    id: number;
-    local_id: number;
-    local_nombre: string;
-    cliente_nombre: string;
-    creada_en: string;
-    leida_en: string | null;
-  }>(
-    `SELECT id, local_id, local_nombre, cliente_nombre, creada_en, leida_en
-       FROM notificaciones_proximidad
-      WHERE usuario_id = $usuarioId
-      ORDER BY creada_en DESC
-      LIMIT 50`,
-    { $usuarioId: usuarioId },
-  );
-  return filas.map((fila) => ({
-    id: fila.id,
-    localId: fila.local_id,
-    localNombre: fila.local_nombre,
-    clienteNombre: fila.cliente_nombre,
-    creadaEn: fila.creada_en,
-    leidaEn: fila.leida_en,
-  }));
-}
-
-export async function marcarNotificacionesLeidas(
-  usuarioId: number,
-): Promise<void> {
-  const base = await obtenerBase();
-  await base.runAsync(
-    `UPDATE notificaciones_proximidad SET leida_en = $leidaEn
-      WHERE usuario_id = $usuarioId AND leida_en IS NULL`,
-    { $usuarioId: usuarioId, $leidaEn: new Date().toISOString() },
-  );
-}
-
 export async function detenerGeocercas(): Promise<void> {
   if (await Location.hasStartedGeofencingAsync(TAREA_GEOCERCAS)) {
     await Location.stopGeofencingAsync(TAREA_GEOCERCAS);
+  }
+  if (await Location.hasStartedLocationUpdatesAsync(TAREA_PROXIMIDAD)) {
+    await Location.stopLocationUpdatesAsync(TAREA_PROXIMIDAD);
   }
 }
