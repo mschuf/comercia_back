@@ -17,9 +17,10 @@ const ESPERA_BUSQUEDA_MS = 350;
 interface ListaEquipoMovilProps {
   filas: RepositorEquipo[];
   onVerLocales: (repositor: RepositorEquipo) => void;
+  mostrarTareas: boolean;
 }
 
-function ListaEquipoMovil({ filas, onVerLocales }: ListaEquipoMovilProps) {
+function ListaEquipoMovil({ filas, onVerLocales, mostrarTareas }: ListaEquipoMovilProps) {
   return (
     <ul className="mt-4 space-y-3 md:hidden" aria-label="Equipo asignado">
       {filas.map((repositor) => (
@@ -47,9 +48,10 @@ function ListaEquipoMovil({ filas, onVerLocales }: ListaEquipoMovilProps) {
                   En {repositor.visitaActual.localNombre}
                 </p>
                 <p className="mt-0.5 text-xs text-muted">
-                  {repositor.visitaActual.clienteNombre} ·{" "}
-                  {repositor.visitaActual.tareasCompletadas}/
-                  {repositor.visitaActual.tareasTotal} tareas
+                  {repositor.visitaActual.clienteNombre}
+                  {mostrarTareas
+                    ? ` · ${repositor.visitaActual.tareasCompletadas}/${repositor.visitaActual.tareasTotal} tareas`
+                    : " · entrada registrada"}
                 </p>
               </>
             ) : (
@@ -79,7 +81,7 @@ function ListaEquipoMovil({ filas, onVerLocales }: ListaEquipoMovilProps) {
   );
 }
 
-export function EquipoView() {
+export function EquipoView({ modulo }: { modulo: string }) {
   const router = useRouter();
   const [datos, setDatos] = useState<RespuestaPaginada<RepositorEquipo> | null>(
     null,
@@ -139,24 +141,26 @@ export function EquipoView() {
       usuarioId: String(repositor.id),
       repositor: repositor.nombreCompleto,
     });
-    router.push(`/panel/supervisor/clientes?${parametros.toString()}`);
+    const pagina = modulo === "supervisor" ? "clientes" : "locales";
+    router.push(`/panel/${modulo}/${pagina}?${parametros.toString()}`);
   }
 
   const filas = datos?.items ?? [];
+  const gestionaImpulsadores = modulo !== "supervisor";
 
   return (
     <div className="min-w-0 w-full">
       <div>
         <h2 className="text-lg font-bold tracking-tight sm:text-xl">Equipo</h2>
         <p className="mt-1 max-w-2xl text-sm text-muted">
-          Consultá los repositores a tu cargo y entrá directamente a sus locales
+          Consultá las personas a tu cargo y entrá directamente a sus locales
           asignados.
         </p>
       </div>
 
       <div className="mt-4 rounded-xl border border-line bg-surface-raised p-3 sm:max-w-xl">
         <label className={labelBase}>
-          Buscar repositor
+          Buscar persona
           <div className="relative">
             <svg
               viewBox="0 0 20 20"
@@ -196,12 +200,12 @@ export function EquipoView() {
 
       {filas.length > 0 ? (
         <>
-          <ListaEquipoMovil filas={filas} onVerLocales={verLocales} />
+          <ListaEquipoMovil filas={filas} onVerLocales={verLocales} mostrarTareas={!gestionaImpulsadores} />
           <div className="mt-4 hidden overflow-x-auto rounded-xl border border-line bg-surface-raised md:block">
             <table className="w-full min-w-[1040px] text-left text-sm">
               <thead className="bg-surface-soft">
                 <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
-                  <th className="px-4 py-3 font-medium">Repositor</th>
+                  <th className="px-4 py-3 font-medium">Persona</th>
                   <th className="px-4 py-3 font-medium">Locales</th>
                   <th className="px-4 py-3 font-medium">Estado actual</th>
                   <th className="px-4 py-3 font-medium">Contacto</th>
@@ -242,9 +246,10 @@ export function EquipoView() {
                             En {repositor.visitaActual.localNombre}
                           </p>
                           <p className="mt-0.5 text-xs text-muted">
-                            {repositor.visitaActual.clienteNombre} ·{" "}
-                            {repositor.visitaActual.tareasCompletadas}/
-                            {repositor.visitaActual.tareasTotal} tareas
+                            {repositor.visitaActual.clienteNombre}
+                            {!gestionaImpulsadores
+                              ? ` · ${repositor.visitaActual.tareasCompletadas}/${repositor.visitaActual.tareasTotal} tareas`
+                              : " · entrada registrada"}
                           </p>
                           <p className="mt-0.5 text-xs text-muted [font-variant-numeric:tabular-nums]">
                             Desde{" "}
@@ -281,8 +286,8 @@ export function EquipoView() {
       {!cargando && filas.length === 0 ? (
         <div className="mt-4 rounded-xl border border-dashed border-line bg-surface-raised px-4 py-10 text-center text-sm text-muted">
           {busquedaAplicada
-            ? "No encontramos repositores con esa búsqueda."
-            : "Todavía no tenés repositores asignados a tu equipo."}
+            ? "No encontramos personas con esa búsqueda."
+            : "Todavía no tenés personas asignadas a tu equipo."}
         </div>
       ) : null}
 

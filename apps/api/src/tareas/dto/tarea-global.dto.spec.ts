@@ -65,4 +65,37 @@ describe('DTO de tareas', () => {
       ),
     ).resolves.toMatchObject({ titulo: 'Nuevo título' });
   });
+
+  it('acepta destinatarios y locales seleccionados sin duplicados', async () => {
+    await expect(
+      PIPE.transform(
+        {
+          titulo: 'Revisar exhibición',
+          descripcion: 'Controlar el local asignado.',
+          alcance: 'SELECCIONADOS',
+          usuarioIds: [11, 12],
+          alcanceLocales: 'SELECCIONADOS',
+          localIds: [21, 22],
+        },
+        metadata(CrearTareaGlobalDto),
+      ),
+    ).resolves.toMatchObject({
+      usuarioIds: [11, 12],
+      localIds: [21, 22],
+    });
+  });
+
+  it('rechaza locales repetidos en una tarea dirigida', async () => {
+    await expect(
+      PIPE.transform(
+        {
+          titulo: 'Revisar exhibición',
+          descripcion: 'Controlar el local asignado.',
+          alcanceLocales: 'SELECCIONADOS',
+          localIds: [21, 21],
+        },
+        metadata(CrearTareaGlobalDto),
+      ),
+    ).rejects.toThrow();
+  });
 });

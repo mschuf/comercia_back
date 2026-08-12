@@ -80,7 +80,7 @@ describe('AccesoOperacionesCampoService', () => {
     });
     expect(acceso.exigirAccesoAlgunaPaginaEnModulos).toHaveBeenCalledWith(
       10,
-      ['teamleader-impulsador', 'supervisor'],
+      ['supervisor-impulsador', 'teamleader-impulsador', 'supervisor'],
       ['equipo'],
     );
   });
@@ -97,7 +97,7 @@ describe('AccesoOperacionesCampoService', () => {
     ).resolves.toMatchObject({ id: 10, empresaId: 20, esGestor: true });
     expect(acceso.exigirAccesoAlgunaPaginaEnModulos).toHaveBeenCalledWith(
       10,
-      ['teamleader-impulsador', 'supervisor'],
+      ['supervisor-impulsador', 'teamleader-impulsador', 'supervisor'],
       ['clientes', 'locales', 'mapa'],
     );
   });
@@ -227,5 +227,40 @@ describe('AccesoOperacionesCampoService', () => {
         [11, 99],
       ),
     ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('da al supervisor de impulsadores alcance sobre team leaders y sus impulsadores', () => {
+    expect(
+      service.filtroEquipoVisible({
+        id: 10,
+        empresaId: 20,
+        rolId: 15,
+        rolDescripcion: 'supervisor.impulsador',
+        esGestor: true,
+        esOperativo: false,
+      }),
+    ).toMatchObject({
+      empresaId: 20,
+      isActive: true,
+      OR: [{ superiorId: 10 }, { superior: { is: { superiorId: 10 } } }],
+    });
+  });
+
+  it('limita al team leader a sus impulsadores directos', () => {
+    expect(
+      service.filtroEquipoVisible({
+        id: 11,
+        empresaId: 20,
+        rolId: 11,
+        rolDescripcion: 'teamleader.impulsador',
+        esGestor: true,
+        esOperativo: true,
+      }),
+    ).toMatchObject({
+      empresaId: 20,
+      isActive: true,
+      superiorId: 11,
+      rol: { is: { descripcion: { in: ['impulsador'] } } },
+    });
   });
 });

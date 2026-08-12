@@ -26,7 +26,13 @@ export class AccesoPlataformaService {
   ): Promise<UsuarioConAcceso> {
     const usuario = await this.prisma.usuario.findUnique({
       where: { id: usuarioId },
-      select: { id: true, empresaId: true, rolId: true, isActive: true },
+      select: {
+        id: true,
+        empresaId: true,
+        rolId: true,
+        isActive: true,
+        rol: { select: { descripcion: true } },
+      },
     });
     if (!usuario || !usuario.isActive) {
       throw new UnauthorizedException();
@@ -84,6 +90,7 @@ export class AccesoPlataformaService {
       id: usuario.id,
       empresaId: usuario.empresaId,
       rolId: usuario.rolId,
+      rolDescripcion: usuario.rol?.descripcion ?? null,
     };
   }
 
@@ -137,7 +144,13 @@ export class AccesoPlataformaService {
   ): Promise<AccesoModulos> {
     const usuario = await this.prisma.usuario.findUnique({
       where: { id: usuarioId },
-      select: { id: true, empresaId: true, rolId: true, isActive: true },
+      select: {
+        id: true,
+        empresaId: true,
+        rolId: true,
+        isActive: true,
+        rol: { select: { descripcion: true } },
+      },
     });
     if (!usuario || !usuario.isActive) {
       throw new UnauthorizedException();
@@ -201,6 +214,7 @@ export class AccesoPlataformaService {
           id: usuario.id,
           empresaId: usuario.empresaId,
           rolId: usuario.rolId,
+          rolDescripcion: usuario.rol?.descripcion ?? null,
         },
         modulosRutas: [...new Set(rutasConAcceso)],
       };

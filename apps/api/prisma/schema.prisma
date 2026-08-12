@@ -257,10 +257,12 @@ model TareaGlobal {
   descripcion  String
   requiereFoto Boolean        @default(false) @map("requiere_foto")
   alcance      AlcanceTarea   @default(TODOS)
+  alcanceLocales AlcanceTarea @default(TODOS) @map("alcance_locales")
   orden        Int            @default(0)
   activo       Boolean        @default(true)
   tareas       TareaCliente[]
   destinatarios TareaGlobalUsuario[]
+  locales      TareaGlobalLocal[]
   creadoPorId  Int            @map("creado_por_id")
   creadoPor    Usuario        @relation("TareasGlobalesCreadas", fields: [creadoPorId], references: [id])
   createdAt    DateTime       @default(now()) @map("created_at")
@@ -291,6 +293,21 @@ model TareaGlobalUsuario {
   @@map("tareas_globales_usuario")
 }
 
+// Locales concretos donde aplica una tarea cuando alcanceLocales es
+// SELECCIONADOS. La asignación por usuario y por local se intersectan.
+model TareaGlobalLocal {
+  id            Int         @id @default(autoincrement())
+  tareaGlobalId Int         @map("tarea_global_id")
+  tareaGlobal   TareaGlobal @relation(fields: [tareaGlobalId], references: [id], onDelete: Cascade)
+  localId       Int         @map("local_id")
+  local         Local       @relation(fields: [localId], references: [id], onDelete: Cascade)
+  createdAt     DateTime    @default(now()) @map("created_at")
+
+  @@unique([tareaGlobalId, localId])
+  @@index([localId, tareaGlobalId])
+  @@map("tareas_globales_local")
+}
+
 // Locales geolocalizados. Los carga un Supervisor y puede asignarlos a un
 // Repositor de su misma empresa.
 model Local {
@@ -319,6 +336,7 @@ model Local {
   creadoPor             Usuario             @relation("LocalesCreados", fields: [creadoPorId], references: [id])
   activo                Boolean             @default(true)
   visitas               Visita[]
+  tareasGlobales        TareaGlobalLocal[]
   programacionVisita    ProgramacionVisita?
   createdAt             DateTime            @default(now()) @map("created_at")
   updatedAt             DateTime            @default(now()) @updatedAt @map("updated_at")

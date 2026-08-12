@@ -157,3 +157,19 @@ export class ActualizarLocalDto {
   @IsBoolean()
   activo?: boolean;
 }
+
+export class TransferirLocalesDto {
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  usuarioAnteriorId!: number;
+
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  usuarioNuevoId!: number;
+
+  @IsOptional()
+  @IsBoolean()
+  inactivarAnterior?: boolean;
+}

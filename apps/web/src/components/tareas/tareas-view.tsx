@@ -17,6 +17,7 @@ import {
 } from "@/components/ui";
 import type { RespuestaPaginada } from "@/types/paginacion";
 import type { TareaGlobal } from "@/types/tarea";
+import type { Local } from "@/types/local";
 import {
   SeguimientoTareasView,
   type FiltrosSeguimientoTareas,
@@ -30,6 +31,8 @@ interface FormTarea {
   activo: boolean;
   alcance: "TODOS" | "SELECCIONADOS";
   destinatarios: { id: number; nombre: string }[];
+  alcanceLocales: "TODOS" | "SELECCIONADOS";
+  locales: { id: number; nombre: string }[];
 }
 
 const FORM_INICIAL: FormTarea = {
@@ -40,6 +43,8 @@ const FORM_INICIAL: FormTarea = {
   activo: true,
   alcance: "TODOS",
   destinatarios: [],
+  alcanceLocales: "TODOS",
+  locales: [],
 };
 
 function ListaTareasGlobalesMovil({
@@ -90,6 +95,13 @@ function ListaTareasGlobalesMovil({
                   {tarea.requiereFoto ? "requerida" : "no requerida"}
                 </strong>
               </p>
+              <p className="col-span-2 rounded-lg bg-surface-soft px-2.5 py-2 text-muted">
+                <strong className="text-foreground">
+                  {tarea.alcanceLocales === "TODOS"
+                    ? "Todos los locales"
+                    : `${tarea.localesAsignados} local${tarea.localesAsignados === 1 ? "" : "es"}`}
+                </strong>
+              </p>
               <p className="rounded-lg bg-surface-soft px-2.5 py-2 text-muted">
                 <strong className="text-foreground">
                   {tarea.alcance === "TODOS"
@@ -101,9 +113,10 @@ function ListaTareasGlobalesMovil({
             <button
               type="button"
               onClick={() => onEditar(tarea)}
-              className={`${btnGhost} mt-3 min-h-11 w-full whitespace-nowrap`}
+              disabled={!tarea.editable}
+              className={`${btnGhost} mt-3 min-h-11 w-full whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50`}
             >
-              Editar tarea
+              {tarea.editable ? "Editar tarea" : "Asignada por supervisión"}
             </button>
           </li>
         );
@@ -137,6 +150,7 @@ function TareasAdministracionView() {
   const [form, setForm] = useState<FormTarea>(FORM_INICIAL);
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
+  const [localesDisponibles, setLocalesDisponibles] = useState<Local[]>([]);
 
   const cargar = useCallback(() => {
     apiFetch<RespuestaPaginada<TareaGlobal>>(
@@ -157,6 +171,38 @@ function TareasAdministracionView() {
 
   useEffect(() => cargar(), [cargar]);
 
+  useEffect(() => {
+    let vigente = true;
+    async function cargarLocales() {
+      try {
+        const primera = await apiFetch<RespuestaPaginada<Local>>(
+          "/locales?page=1&limit=50",
+        );
+        const paginas = await Promise.all(
+          Array.from(
+            { length: Math.min(4, primera.totalPages) - 1 },
+            (_, indice) =>
+              apiFetch<RespuestaPaginada<Local>>(
+                `/locales?page=${indice + 2}&limit=50`,
+              ),
+          ),
+        );
+        if (vigente) {
+          setLocalesDisponibles([
+            ...primera.items,
+            ...paginas.flatMap(({ items }) => items),
+          ]);
+        }
+      } catch {
+        if (vigente) setLocalesDisponibles([]);
+      }
+    }
+    void cargarLocales();
+    return () => {
+      vigente = false;
+    };
+  }, []);
+
   function abrir(tarea: TareaGlobal | "nueva") {
     setForm(
       tarea === "nueva"
@@ -172,6 +218,8 @@ function TareasAdministracionView() {
             activo: tarea.activo,
             alcance: tarea.alcance,
             destinatarios: tarea.destinatarios,
+            alcanceLocales: tarea.alcanceLocales,
+            locales: tarea.locales,
           },
     );
     setError(null);
@@ -182,7 +230,11 @@ function TareasAdministracionView() {
     e.preventDefault();
     if (editando === null) return;
     if (form.alcance === "SELECCIONADOS" && form.destinatarios.length === 0) {
-      setError("Elegí al menos un impulsador para esta tarea.");
+      setError("Elegí al menos una persona para esta tarea.");
+      return;
+    }
+    if (form.alcanceLocales === "SELECCIONADOS" && form.locales.length === 0) {
+      setError("Elegí al menos un local para esta tarea.");
       return;
     }
     setGuardando(true);
@@ -199,6 +251,8 @@ function TareasAdministracionView() {
             orden: form.orden,
             alcance: form.alcance,
             usuarioIds: form.destinatarios.map(({ id }) => id),
+            alcanceLocales: form.alcanceLocales,
+            localIds: form.locales.map(({ id }) => id),
             ...(editando === "nueva" ? {} : { activo: form.activo }),
           }),
         },
@@ -220,9 +274,8 @@ function TareasAdministracionView() {
         <div>
           <h1 className="text-xl font-bold">Tareas</h1>
           <p className="mt-1 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">
-            El mismo checklist se aplica a todos los clientes y sus locales. Al
-            editar una tarea se actualizan las existentes y se crean
-            automáticamente las que falten.
+            Creá tareas globales o dirigilas a personas y locales concretos.
+            Los checklists siguen disponibles para los roles de reposición.
           </p>
         </div>
         <button
@@ -313,6 +366,10 @@ function TareasAdministracionView() {
                           {tarea.alcance === "TODOS"
                             ? "Todo el equipo"
                             : `${tarea.usuariosAsignados} seleccionado${tarea.usuariosAsignados === 1 ? "" : "s"}`}
+                          {" · "}
+                          {tarea.alcanceLocales === "TODOS"
+                            ? "todos los locales"
+                            : `${tarea.localesAsignados} local${tarea.localesAsignados === 1 ? "" : "es"}`}
                         </span>
                         {tarea.alcance === "SELECCIONADOS" ? (
                           <span className="mt-0.5 block max-w-56 truncate">
@@ -326,9 +383,10 @@ function TareasAdministracionView() {
                         <button
                           type="button"
                           onClick={() => abrir(tarea)}
-                          className={`${btnGhost} min-h-11 whitespace-nowrap`}
+                          disabled={!tarea.editable}
+                          className={`${btnGhost} min-h-11 whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-50`}
                         >
-                          Editar
+                          {tarea.editable ? "Editar" : "Solo lectura"}
                         </button>
                       </td>
                     </tr>
@@ -454,7 +512,7 @@ function TareasAdministracionView() {
           </fieldset>
           {form.alcance === "SELECCIONADOS" ? (
             <div>
-              <p className={labelBase}>Agregar impulsador</p>
+              <p className={labelBase}>Agregar persona</p>
               <SelectorUsuario
                 value=""
                 onChange={() => undefined}
@@ -476,7 +534,7 @@ function TareasAdministracionView() {
               {form.destinatarios.length > 0 ? (
                 <ul
                   className="mt-3 flex flex-wrap gap-2"
-                  aria-label="Impulsadores seleccionados"
+                  aria-label="Personas seleccionadas"
                 >
                   {form.destinatarios.map((usuario) => (
                     <li key={usuario.id}>
@@ -504,6 +562,70 @@ function TareasAdministracionView() {
                 </p>
               )}
             </div>
+          ) : null}
+          <fieldset className="space-y-2">
+            <legend className={labelBase}>Aplicar en</legend>
+            <div className="grid grid-cols-2 gap-2">
+              {(
+                [
+                  ["TODOS", "Todos los locales"],
+                  ["SELECCIONADOS", "Elegir locales"],
+                ] as const
+              ).map(([valor, etiqueta]) => (
+                <label
+                  key={valor}
+                  className={`flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium ${
+                    form.alcanceLocales === valor
+                      ? "border-brand-500 bg-brand-50 text-brand-900 dark:bg-brand-950 dark:text-brand-100"
+                      : "border-control-line bg-surface-raised text-foreground"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="alcance-locales-tarea"
+                    checked={form.alcanceLocales === valor}
+                    onChange={() =>
+                      setForm((actual) => ({
+                        ...actual,
+                        alcanceLocales: valor,
+                        locales: valor === "TODOS" ? [] : actual.locales,
+                      }))
+                    }
+                    className="accent-brand-700"
+                  />
+                  {etiqueta}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          {form.alcanceLocales === "SELECCIONADOS" ? (
+            <fieldset className="max-h-52 overflow-y-auto rounded-xl border border-control-line p-2">
+              <legend className="px-2 text-sm font-semibold text-foreground">
+                Locales del equipo
+              </legend>
+              {localesDisponibles.map((local) => {
+                const marcado = form.locales.some(({ id }) => id === local.id);
+                return (
+                  <label key={local.id} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-2 py-2 text-sm hover:bg-surface-soft">
+                    <input
+                      type="checkbox"
+                      checked={marcado}
+                      onChange={() =>
+                        setForm((actual) => ({
+                          ...actual,
+                          locales: marcado
+                            ? actual.locales.filter(({ id }) => id !== local.id)
+                            : [...actual.locales, { id: local.id, nombre: local.nombre }],
+                        }))
+                      }
+                      className="accent-brand-700"
+                    />
+                    <span className="min-w-0"><span className="block truncate font-medium">{local.nombre}</span><span className="block truncate text-xs text-muted">{local.cliente.nombre}</span></span>
+                  </label>
+                );
+              })}
+              {localesDisponibles.length === 0 ? <p className="px-2 py-4 text-sm text-muted">No hay locales disponibles dentro de tu equipo.</p> : null}
+            </fieldset>
           ) : null}
           <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
             <input

@@ -1,4 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import type { Prisma } from '../../generated/prisma/client';
+import {
+  ROL_IMPULSADOR,
+  ROL_SUPERVISOR_IMPULSADOR,
+  ROL_TEAMLEADER_IMPULSADOR,
+} from '../common/constants/roles-negocio';
 import { AccesoPlataformaService } from '../plataforma/acceso-plataforma.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -135,7 +141,7 @@ export class AccesoOperacionesCampoService {
   ): Promise<number[]> {
     const ids = [...new Set(usuarioIds)];
     if (ids.length === 0) return ids;
-    const where = await this.filtroRepositoresDelSupervisor(gestor);
+    const where = await this.filtroDestinatariosTarea(gestor);
     const encontrados = await this.prisma.usuario.findMany({
       where: { ...where, id: { in: ids } },
       select: { id: true },
@@ -180,12 +186,75 @@ export class AccesoOperacionesCampoService {
   }
 
   async filtroRepositoresDelSupervisor(supervisor: UsuarioOperacionesCampo) {
+    if (supervisor.rolDescripcion === ROL_SUPERVISOR_IMPULSADOR) {
+      return this.filtroEquipoImpulsadores(supervisor, true);
+    }
+    if (supervisor.rolDescripcion === ROL_TEAMLEADER_IMPULSADOR) {
+      return this.filtroEquipoImpulsadores(supervisor, false);
+    }
     const roles = await this.restriccionRolesRepositores(supervisor.empresaId);
     return {
       empresaId: supervisor.empresaId,
       isActive: true,
       superiorId: supervisor.id,
       ...(roles === null ? {} : { rolId: { in: roles ?? [] } }),
+    };
+  }
+
+  // Supervisor: team leaders directos e impulsadores de esos team leaders.
+  // Team leader: solo sus impulsadores directos.
+  filtroEquipoVisible(
+    gestor: UsuarioOperacionesCampo,
+  ): Prisma.UsuarioWhereInput {
+    if (gestor.rolDescripcion === ROL_SUPERVISOR_IMPULSADOR) {
+      return this.filtroEquipoImpulsadores(gestor, true);
+    }
+    if (gestor.rolDescripcion === ROL_TEAMLEADER_IMPULSADOR) {
+      return this.filtroEquipoImpulsadores(gestor, false);
+    }
+    return {
+      empresaId: gestor.empresaId,
+      isActive: true,
+      superiorId: gestor.id,
+    };
+  }
+
+  async filtroDestinatariosTarea(
+    gestor: UsuarioOperacionesCampo,
+  ): Promise<Prisma.UsuarioWhereInput> {
+    if (
+      gestor.rolDescripcion === ROL_SUPERVISOR_IMPULSADOR ||
+      gestor.rolDescripcion === ROL_TEAMLEADER_IMPULSADOR
+    ) {
+      return this.filtroEquipoVisible(gestor);
+    }
+    return this.filtroRepositoresDelSupervisor(gestor);
+  }
+
+  private filtroEquipoImpulsadores(
+    gestor: UsuarioOperacionesCampo,
+    incluirTeamleaders: boolean,
+  ): Prisma.UsuarioWhereInput {
+    return {
+      empresaId: gestor.empresaId,
+      isActive: true,
+      rol: {
+        is: {
+          descripcion: {
+            in: incluirTeamleaders
+              ? [ROL_TEAMLEADER_IMPULSADOR, ROL_IMPULSADOR]
+              : [ROL_IMPULSADOR],
+          },
+        },
+      },
+      ...(incluirTeamleaders
+        ? {
+            OR: [
+              { superiorId: gestor.id },
+              { superior: { is: { superiorId: gestor.id } } },
+            ],
+          }
+        : { superiorId: gestor.id }),
     };
   }
 

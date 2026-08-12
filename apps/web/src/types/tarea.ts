@@ -5,9 +5,13 @@ export interface TareaGlobal {
   requiereFoto: boolean;
   orden: number;
   activo: boolean;
+  editable: boolean;
   alcance: "TODOS" | "SELECCIONADOS";
   destinatarios: { id: number; nombre: string }[];
+  alcanceLocales: "TODOS" | "SELECCIONADOS";
+  locales: { id: number; nombre: string }[];
   usuariosAsignados: number;
+  localesAsignados: number;
   clientesAsignados: number;
   clientesEmpresa: number;
   localesEmpresa: number;

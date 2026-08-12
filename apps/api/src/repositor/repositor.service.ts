@@ -18,6 +18,7 @@ import {
   ocurrenciasVisitaEnDia,
 } from '../impulsador/utils/programacion-visita';
 import { PrismaService } from '../prisma/prisma.service';
+import { filtroTareaGlobalVisiblePara } from '../tareas/utils/visibilidad-tarea';
 import { ListarClientesRepositorDto } from './dto/listar-clientes-repositor.dto';
 import { ListarLocalesRepositorDto } from './dto/listar-locales-repositor.dto';
 import { ListarTareasRepositorDto } from './dto/listar-tareas-repositor.dto';
@@ -57,15 +58,17 @@ const MAX_PARADAS_DIARIAS = 50;
 const VENTANA_VISITAS_MS = 36 * 60 * 60 * 1000;
 const CACHE_RESPALDO_MS = 5 * 60 * 1000;
 
-function tareasVisiblesPara(usuarioId: number): Prisma.TareaClienteWhereInput {
+function tareasVisiblesPara(
+  usuarioId: number,
+  rolDescripcion: string | null,
+): Prisma.TareaClienteWhereInput {
   return {
     activo: true,
     OR: [
       { tareaGlobalId: null },
-      { tareaGlobal: { is: { alcance: 'TODOS' } } },
       {
         tareaGlobal: {
-          is: { destinatarios: { some: { usuarioId } } },
+          is: filtroTareaGlobalVisiblePara({ id: usuarioId, rolDescripcion }),
         },
       },
     ],
@@ -106,7 +109,9 @@ export class RepositorService {
           _count: {
             select: {
               locales: { where: { usuarioId: usuario.id, activo: true } },
-              tareas: { where: tareasVisiblesPara(usuario.id) },
+              tareas: {
+                where: tareasVisiblesPara(usuario.id, usuario.rolDescripcion),
+              },
             },
           },
         },
@@ -184,7 +189,14 @@ export class RepositorService {
               id: true,
               nombre: true,
               _count: {
-                select: { tareas: { where: tareasVisiblesPara(usuario.id) } },
+                select: {
+                  tareas: {
+                    where: tareasVisiblesPara(
+                      usuario.id,
+                      usuario.rolDescripcion,
+                    ),
+                  },
+                },
               },
             },
           },
@@ -247,13 +259,22 @@ export class RepositorService {
               id: true,
               nombre: true,
               tareas: {
-                where: tareasVisiblesPara(usuario.id),
+                where: tareasVisiblesPara(usuario.id, usuario.rolDescripcion),
                 select: {
                   id: true,
                   titulo: true,
                   descripcion: true,
                   requiereFoto: true,
                   orden: true,
+                  tareaGlobal: {
+                    select: {
+                      alcanceLocales: true,
+                      locales: {
+                        select: { localId: true },
+                        take: 200,
+                      },
+                    },
+                  },
                 },
                 orderBy: [{ orden: 'asc' }, { id: 'asc' }],
                 take: MAX_TAREAS_POR_LOCAL,
@@ -296,7 +317,22 @@ export class RepositorService {
               : null,
             requiereFotoPresencia: local.requiereFotoPresencia,
           },
-          tareas: local.cliente.tareas,
+          tareas: local.cliente.tareas
+            .filter(
+              (tarea) =>
+                !tarea.tareaGlobal ||
+                tarea.tareaGlobal.alcanceLocales === 'TODOS' ||
+                tarea.tareaGlobal.locales.some(
+                  ({ localId }) => localId === local.id,
+                ),
+            )
+            .map((tarea) => ({
+              id: tarea.id,
+              titulo: tarea.titulo,
+              descripcion: tarea.descripcion,
+              requiereFoto: tarea.requiereFoto,
+              orden: tarea.orden,
+            })),
           completadasEnVisita:
             visitaAbierta?.tareas.filter(({ completada }) => completada)
               .length ?? 0,
@@ -328,6 +364,7 @@ export class RepositorService {
     const agenda = await this.obtenerAgendaDiaria(
       usuario.id,
       usuario.empresaId,
+      usuario.rolDescripcion,
       ahora,
     );
     const { skip, take, page, limit } = rangoPaginacion(query);
@@ -467,6 +504,7 @@ export class RepositorService {
   private async obtenerAgendaDiaria(
     usuarioId: number,
     empresaId: number,
+    rolDescripcion: string | null,
     ahora: Date,
   ): Promise<AgendaDiaria> {
     const locales = await this.prisma.local.findMany({
@@ -490,7 +528,11 @@ export class RepositorService {
             id: true,
             nombre: true,
             _count: {
-              select: { tareas: { where: tareasVisiblesPara(usuarioId) } },
+              select: {
+                tareas: {
+                  where: tareasVisiblesPara(usuarioId, rolDescripcion),
+                },
+              },
             },
           },
         },
@@ -593,6 +635,7 @@ export class RepositorService {
     const agenda = await this.obtenerAgendaDiaria(
       usuario.id,
       usuario.empresaId,
+      usuario.rolDescripcion,
       ahora,
     );
     const { candidatas, totalProgramadas, totalCompletadas } = agenda;

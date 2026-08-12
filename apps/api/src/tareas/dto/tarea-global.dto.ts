@@ -58,6 +58,20 @@ export class CrearTareaGlobalDto {
   @Min(1, { each: true })
   @Max(MAX_INT4, { each: true })
   usuarioIds?: number[];
+
+  @IsOptional()
+  @IsEnum(AlcanceTareaDto)
+  alcanceLocales?: AlcanceTareaDto;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(200)
+  @ArrayUnique()
+  @IsInt({ each: true })
+  @Min(1, { each: true })
+  @Max(MAX_INT4, { each: true })
+  localIds?: number[];
 }
 
 export class ActualizarTareaGlobalDto {
@@ -100,4 +114,18 @@ export class ActualizarTareaGlobalDto {
   @Min(1, { each: true })
   @Max(MAX_INT4, { each: true })
   usuarioIds?: number[];
+
+  @IsOptional()
+  @IsEnum(AlcanceTareaDto)
+  alcanceLocales?: AlcanceTareaDto;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(200)
+  @ArrayUnique()
+  @IsInt({ each: true })
+  @Min(1, { each: true })
+  @Max(MAX_INT4, { each: true })
+  localIds?: number[];
 }

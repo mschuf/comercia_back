@@ -20,6 +20,7 @@ import {
   CrearLocalDto,
   ListarLocalesDto,
   ListarUsuariosAsignablesDto,
+  TransferirLocalesDto,
 } from './dto/local.dto';
 
 // La autorización fina (Supervisor vs Repositor, empresa propia) vive en el service
@@ -54,6 +55,11 @@ export class LocalesController {
   @Post()
   crear(@Req() req: RequestConUsuario, @Body() dto: CrearLocalDto) {
     return this.locales.crear(req.usuarioId, dto);
+  }
+
+  @Post('transferir')
+  transferir(@Req() req: RequestConUsuario, @Body() dto: TransferirLocalesDto) {
+    return this.locales.transferir(req.usuarioId, dto);
   }
 
   @Patch(':id')

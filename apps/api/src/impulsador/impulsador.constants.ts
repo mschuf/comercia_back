@@ -1,10 +1,12 @@
 // Rutas de plataforma para las operaciones de campo. Supervisor y Repositor
 // comparten servicios, pero tienen módulos y menús independientes.
 export const MODULO_SUPERVISOR = 'supervisor';
+export const MODULO_SUPERVISOR_IMPULSADOR = 'supervisor-impulsador';
 export const MODULO_REPOSITOR = 'repositor';
 export const MODULO_TEAMLEADER_IMPULSADOR = 'teamleader-impulsador';
 export const MODULO_IMPULSADOR = 'impulsador';
 export const MODULOS_GESTION_CAMPO = [
+  MODULO_SUPERVISOR_IMPULSADOR,
   MODULO_TEAMLEADER_IMPULSADOR,
   MODULO_SUPERVISOR,
 ];
@@ -23,6 +25,7 @@ export const PAGINA_ENTRADA = 'entrada';
 export const PAGINA_LOCALES = 'locales';
 export const PAGINA_MARCACIONES = 'marcaciones';
 export const PAGINA_RENDIMIENTO = 'rendimiento';
+export const PAGINA_PRESENTISMO = 'presentismo';
 
 export const PAGINAS_REPOSITOR = [
   PAGINA_CLIENTES,

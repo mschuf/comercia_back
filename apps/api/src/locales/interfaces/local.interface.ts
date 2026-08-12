@@ -39,3 +39,9 @@ export interface UsuarioAsignable {
   nombreLogin: string;
   rol: string | null;
 }
+
+export interface TransferenciaLocalesDto {
+  localesTransferidos: number;
+  subordinadosTransferidos: number;
+  usuarioAnteriorInactivado: boolean;
+}

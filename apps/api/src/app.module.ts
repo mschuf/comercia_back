@@ -21,6 +21,7 @@ import { EquipoModule } from './equipo/equipo.module';
 import { NotificacionesModule } from './notificaciones/notificaciones.module';
 import { RolesModule } from './roles/roles.module';
 import { UbicacionesModule } from './ubicaciones/ubicaciones.module';
+import { PresentismoModule } from './presentismo/presentismo.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { UbicacionesModule } from './ubicaciones/ubicaciones.module';
     EquipoModule,
     NotificacionesModule,
     UbicacionesModule,
+    PresentismoModule,
   ],
   controllers: [AppController],
   providers: [

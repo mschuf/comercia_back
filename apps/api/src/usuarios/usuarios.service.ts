@@ -8,6 +8,11 @@ import {
 import { AuthService } from '../auth/auth.service';
 import { hashPassword } from '../auth/utils/password';
 import {
+  ROL_IMPULSADOR,
+  ROL_SUPERVISOR_IMPULSADOR,
+  ROL_TEAMLEADER_IMPULSADOR,
+} from '../common/constants/roles-negocio';
+import {
   rangoPaginacion,
   respuestaPaginada,
   type RespuestaPaginada,
@@ -181,16 +186,32 @@ export class UsuariosService {
     const [rol, superior] = await Promise.all([
       this.prisma.rol.findUnique({
         where: { id: rolId },
-        select: { id: true },
+        select: { id: true, descripcion: true, rolId: true },
       }),
       superiorId
         ? this.prisma.usuario.findUnique({
             where: { id: superiorId },
-            select: { id: true, empresaId: true, isActive: true },
+            select: {
+              id: true,
+              empresaId: true,
+              isActive: true,
+              rolId: true,
+              superiorId: true,
+            },
           })
         : null,
     ]);
     if (!rol) throw new NotFoundException('El rol no existe');
+    const jerarquiaImpulsadores = [
+      ROL_SUPERVISOR_IMPULSADOR,
+      ROL_TEAMLEADER_IMPULSADOR,
+      ROL_IMPULSADOR,
+    ].includes(rol.descripcion);
+    if (jerarquiaImpulsadores && rol.rolId !== null && !superiorId) {
+      throw new BadRequestException(
+        'Este rol necesita un superior de la jerarquía de impulsadores',
+      );
+    }
     if (
       superiorId &&
       (!superior ||
@@ -199,6 +220,23 @@ export class UsuariosService {
         superior.id === usuarioEditadoId)
     ) {
       throw new NotFoundException('El superior no existe');
+    }
+    if (
+      jerarquiaImpulsadores &&
+      superior &&
+      (rol.rolId === null || superior.rolId !== rol.rolId)
+    ) {
+      throw new BadRequestException(
+        'El superior no corresponde al nivel inmediato de este rol',
+      );
+    }
+    if (
+      usuarioEditadoId !== undefined &&
+      superior?.superiorId === usuarioEditadoId
+    ) {
+      throw new BadRequestException(
+        'La jerarquía de usuarios formaría un ciclo',
+      );
     }
   }
 
@@ -238,7 +276,12 @@ export class UsuariosService {
     const actual = await this.contexto(usuarioId);
     const objetivo = await this.prisma.usuario.findUnique({
       where: { id },
-      select: { empresaId: true, rolId: true, esSuperadmin: true },
+      select: {
+        empresaId: true,
+        rolId: true,
+        superiorId: true,
+        esSuperadmin: true,
+      },
     });
     if (
       !objetivo ||
@@ -252,7 +295,7 @@ export class UsuariosService {
     await this.validarAsignaciones(
       objetivo.empresaId,
       rolId,
-      dto.superiorId,
+      dto.superiorId === undefined ? objetivo.superiorId : dto.superiorId,
       id,
     );
     const usuario = await this.prisma.usuario.update({

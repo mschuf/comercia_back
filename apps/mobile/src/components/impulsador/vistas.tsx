@@ -1,12 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useState } from "react";
 import type {
   MarcacionResumen,
-  RendimientoImpulsador,
   RespuestaPaginada,
-  TareaVisita,
   Visita,
   VisitaHoy,
 } from "../../types/impulsador";
@@ -18,72 +16,6 @@ function TituloPantalla({ titulo, detalle }: { titulo: string; detalle: string }
     <View style={styles.tituloPantalla}>
       <Text style={styles.titulo}>{titulo}</Text>
       <Text style={styles.descripcion}>{detalle}</Text>
-    </View>
-  );
-}
-
-export function HomeView({
-  datos,
-  nombre,
-  agenda,
-}: {
-  datos: RendimientoImpulsador | null;
-  nombre: string;
-  agenda: VisitaHoy[];
-}) {
-  const proximo = agenda[0];
-  const porcentajePresentaciones = new Intl.NumberFormat("es-PY", {
-    maximumFractionDigits: 1,
-  }).format(datos?.presentacionesPorcentaje ?? 0);
-  return (
-    <View style={styles.seccion}>
-      <View style={styles.heroHome}>
-        <View style={styles.heroTexto}>
-          <Text style={styles.heroEyebrow}>COMERCIA CAMPO</Text>
-          <Text style={styles.heroTitulo}>Hola, {nombre}</Text>
-          <Text style={styles.heroDetalle}>
-            {proximo
-              ? `Próximo local: ${proximo.local.nombre}`
-              : "Tu jornada está lista para comenzar."}
-          </Text>
-        </View>
-        <Image
-          accessibilityLabel="Repositor verificando tareas en un local"
-          accessibilityIgnoresInvertColors
-          source={require("../../../assets/repositor-comercial-hero.png")}
-          style={styles.heroImagen}
-        />
-        <View pointerEvents="none" style={styles.heroImagenVelo} />
-      </View>
-
-      {datos ? (
-        <View style={styles.kpisHome}>
-          <View style={[styles.kpiHome, styles.kpiPresentaciones]}>
-            <Ionicons color={colores.acentoSuave} name="calendar" size={22} />
-            <Text style={styles.kpiHomeTituloClaro}>Presentaciones</Text>
-            <Text style={styles.kpiHomeValorClaro}>
-              {datos.presentacionesRealizadas}/{datos.presentacionesProgramadas}
-            </Text>
-            <Text style={styles.kpiHomeDetalleClaro}>visitas realizadas hoy</Text>
-            <View style={styles.porcentajePresentaciones}>
-              <Text style={styles.porcentajePresentacionesTexto}>{porcentajePresentaciones}% completado</Text>
-            </View>
-          </View>
-          <View style={[styles.kpiHome, styles.kpiLocales]}>
-            <Ionicons color={colores.advertencia} name="storefront" size={22} />
-            <Text style={styles.kpiHomeTitulo}>Locales</Text>
-            <Text style={styles.kpiHomeValor}>
-              {datos.localesVisitados}/{datos.localesAsignados}
-            </Text>
-            <Text style={styles.kpiHomeDetalle}>locales distintos visitados</Text>
-          </View>
-        </View>
-      ) : (
-        <View style={styles.estadoInfo}>
-          <Ionicons color={colores.primario} name="cloud-offline-outline" size={21} />
-          <Text style={styles.estadoInfoTexto}>Conectate para actualizar tu rendimiento.</Text>
-        </View>
-      )}
     </View>
   );
 }
@@ -140,9 +72,7 @@ export function EntradaView({
             </View>
             <View style={styles.detallesLocal}>
               <Text style={styles.textoSecundario}>Radio permitido: {visita.local.radioMetros} m</Text>
-              <Text style={styles.textoSecundario}>
-                {visita.tareasActivas} tarea{visita.tareasActivas === 1 ? "" : "s"}
-              </Text>
+              <Text style={styles.textoSecundario}>La entrada y salida quedarán verificadas por GPS</Text>
             </View>
             <Pressable
               onPress={() => void alMarcar(visita.local)}
@@ -164,18 +94,12 @@ export function EntradaView({
 export function VisitaActiva({
   visita,
   procesando,
-  alCambiarTarea,
-  alTomarFoto,
   alSalir,
 }: {
   visita: Visita;
   procesando: boolean;
-  alCambiarTarea: (tarea: TareaVisita) => Promise<void>;
-  alTomarFoto: (tarea?: TareaVisita) => Promise<void>;
   alSalir: () => Promise<void>;
 }) {
-  const tareas = visita.tareas ?? [];
-  const completadas = tareas.filter(({ completada }) => completada).length;
   return (
     <View style={styles.seccion}>
       <TituloPantalla
@@ -183,50 +107,9 @@ export function VisitaActiva({
         detalle={`Entrada ${fechaHora(visita.iniciadaEn)} · ${Math.round(visita.distanciaMetros)} m del local`}
       />
       <View style={styles.progresoTarjeta}>
-        <Text style={styles.progresoNumero}>{completadas}/{tareas.length}</Text>
-        <Text style={styles.textoSecundario}>tareas completadas</Text>
+        <Ionicons color={colores.primario} name="checkmark-circle" size={24} />
+        <Text style={styles.textoSecundario}>Tu entrada ya está registrada. Marcá la salida antes de retirarte.</Text>
       </View>
-      {tareas.map((tarea) => (
-        <View key={tarea.id} style={styles.tarea}>
-          <Pressable
-            onPress={() => void alCambiarTarea(tarea)}
-            disabled={procesando || !tarea.activa}
-            style={styles.tareaPrincipal}
-          >
-            <View style={[styles.check, tarea.completada && styles.checkActivo]}>
-              {tarea.completada ? (
-                <Ionicons color={colores.textoSobreOscuro} name="checkmark" size={18} />
-              ) : null}
-            </View>
-            <View style={styles.flexible}>
-              <Text style={[styles.tareaTitulo, !tarea.activa && styles.textoInactivo]}>{tarea.titulo}</Text>
-              <Text style={styles.textoSecundario}>{tarea.descripcion}</Text>
-            </View>
-          </Pressable>
-          {tarea.requiereFoto ? (
-            <Pressable
-              onPress={() => void alTomarFoto(tarea)}
-              disabled={procesando}
-              style={({ pressed }) => [styles.botonFoto, pressed && styles.presionado]}
-            >
-              <Ionicons color={colores.primario} name="camera-outline" size={17} />
-              <Text style={styles.botonFotoTexto}>{tarea.foto ? "Foto lista" : "Tomar foto"}</Text>
-            </Pressable>
-          ) : null}
-        </View>
-      ))}
-      {visita.requiereFotoPresencia ? (
-        <Pressable
-          onPress={() => void alTomarFoto()}
-          disabled={procesando}
-          style={({ pressed }) => [styles.botonSecundario, pressed && styles.presionado]}
-        >
-          <Ionicons color={colores.primario} name="camera-outline" size={18} />
-          <Text style={styles.botonSecundarioTexto}>
-            {visita.fotoPresencia ? "Foto de presencia lista" : "Tomar foto de presencia"}
-          </Text>
-        </Pressable>
-      ) : null}
       <Pressable
         onPress={() => void alSalir()}
         disabled={procesando}
@@ -320,7 +203,7 @@ export function MarcacionesView({
                 <Text style={item.completadaEn ? styles.estadoListo : styles.estadoCurso}>
                   {item.completadaEn ? "Completa" : "En curso"}
                 </Text>
-                <Text style={styles.tareasFila}>{item.tareasCompletadas}/{item.tareasTotal}</Text>
+                <Text style={styles.tareasFila}>{item.completadaEn ? "Entrada y salida" : "Solo entrada"}</Text>
               </View>
             </View>
           ))

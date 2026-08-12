@@ -108,6 +108,7 @@ describe('LocalesService - alcance de Supervisor', () => {
 
     expect(acceso.usuarioSupervisorConAlgunaPagina).toHaveBeenCalledWith(10, [
       'clientes',
+      'locales',
       'equipo',
       'mapa',
       'visitas',

@@ -1,6 +1,5 @@
 /* Hallmark · Workbench amable · C4 navegación inferior segura. */
 import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
 import * as Notifications from "expo-notifications";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -16,13 +15,9 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
-  actualizarTareaVisita,
   obtenerAgendaHoy,
   obtenerMarcaciones,
-  obtenerRendimiento,
   obtenerVisita,
-  subirFotoPresencia,
-  subirFotoTarea,
 } from "../../lib/api";
 import {
   cantidadMarcacionesPendientes,
@@ -38,9 +33,7 @@ import {
 import type { SesionMovil } from "../../lib/sesion";
 import type {
   MarcacionResumen,
-  RendimientoImpulsador,
   RespuestaPaginada,
-  TareaVisita,
   Visita,
   VisitaHoy,
 } from "../../types/impulsador";
@@ -53,18 +46,16 @@ import {
 } from "../../tema";
 import {
   EntradaView,
-  HomeView,
   MarcacionesView,
   VisitaActiva,
 } from "./vistas";
 import { leerUbicacion, mensajeError } from "./utils";
 
-type Seccion = "home" | "entrada" | "marcaciones";
+type Seccion = "entrada" | "marcaciones";
 type IconoNavegacion = keyof typeof Ionicons.glyphMap;
 
 const SECCIONES: { id: Seccion; etiqueta: string; icono: IconoNavegacion; iconoActivo: IconoNavegacion }[] = [
-  { id: "home", etiqueta: "Home", icono: "home-outline", iconoActivo: "home" },
-  { id: "entrada", etiqueta: "Entrada", icono: "location-outline", iconoActivo: "location" },
+  { id: "entrada", etiqueta: "Jornada", icono: "location-outline", iconoActivo: "location" },
   { id: "marcaciones", etiqueta: "Marcaciones", icono: "receipt-outline", iconoActivo: "receipt" },
 ];
 
@@ -87,14 +78,13 @@ export function PanelImpulsador({
 }) {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const [seccion, setSeccion] = useState<Seccion>("home");
+  const [seccion, setSeccion] = useState<Seccion>("entrada");
   const [agenda, setAgenda] = useState<VisitaHoy[]>([]);
   const [visitaActiva, setVisitaActiva] = useState<Visita | null>(null);
   const [entradaClave, setEntradaClave] = useState<string | null>(null);
   const [paginaMarcaciones, setPaginaMarcaciones] =
     useState<RespuestaPaginada<MarcacionResumen>>(PAGINACION_INICIAL);
   const [fechaMarcaciones, setFechaMarcaciones] = useState<string | null>(null);
-  const [rendimiento, setRendimiento] = useState<RendimientoImpulsador | null>(null);
   const [pendientes, setPendientes] = useState(0);
   const [proximidadActiva, setProximidadActiva] = useState(false);
   const [cargando, setCargando] = useState(true);
@@ -145,11 +135,7 @@ export function PanelImpulsador({
       cantidadMarcacionesPendientes(),
     ]);
     setPendientes(totalPendientes);
-    const [, metricas] = await Promise.allSettled([
-      cargarMarcaciones(pagina, fecha),
-      obtenerRendimiento(sesion.token),
-    ]);
-    if (metricas.status === "fulfilled") setRendimiento(metricas.value);
+    await cargarMarcaciones(pagina, fecha);
     return agendaNueva;
   }, [cargarAgenda, cargarMarcaciones, sesion.token]);
 
@@ -231,93 +217,8 @@ export function PanelImpulsador({
     }
   }
 
-  async function cambiarTarea(tarea: TareaVisita) {
-    if (!visitaActiva) return;
-    setProcesando(true);
-    setError(null);
-    try {
-      const actualizada = await actualizarTareaVisita(sesion.token, visitaActiva.id, tarea, !tarea.completada);
-      setVisitaActiva((anterior) =>
-        anterior
-          ? {
-              ...anterior,
-              tareas: (anterior.tareas ?? []).map((item) =>
-                item.id === actualizada.id ? actualizada : item,
-              ),
-            }
-          : anterior,
-      );
-    } catch (causa) {
-      setError(mensajeError(causa));
-    } finally {
-      setProcesando(false);
-    }
-  }
-
-  async function tomarFoto(tarea?: TareaVisita) {
-    if (!visitaActiva) return;
-    setProcesando(true);
-    setError(null);
-    try {
-      const permiso = await ImagePicker.requestCameraPermissionsAsync();
-      if (!permiso.granted) throw new Error("Permití la cámara para adjuntar la evidencia.");
-      const resultado = await ImagePicker.launchCameraAsync({
-        mediaTypes: ["images"],
-        quality: 0.7,
-        allowsEditing: false,
-      });
-      if (resultado.canceled || !resultado.assets[0]) return;
-      if (tarea) {
-        const actualizada = await subirFotoTarea(
-          sesion.token,
-          visitaActiva.id,
-          tarea.id,
-          resultado.assets[0].uri,
-        );
-        setVisitaActiva((anterior) =>
-          anterior
-            ? {
-                ...anterior,
-                tareas: (anterior.tareas ?? []).map((item) =>
-                  item.id === actualizada.id ? actualizada : item,
-                ),
-              }
-            : anterior,
-        );
-      } else {
-        const actualizada = await subirFotoPresencia(
-          sesion.token,
-          visitaActiva.id,
-          resultado.assets[0].uri,
-        );
-        setVisitaActiva(actualizada);
-      }
-      setMensaje("Evidencia guardada.");
-    } catch (causa) {
-      setError(mensajeError(causa));
-    } finally {
-      setProcesando(false);
-    }
-  }
-
   async function marcarSalida() {
     if (!visitaActiva) return;
-    const tareasActivas = visitaActiva.tareas ?? [];
-    const incompletas = tareasActivas.filter(
-      (tarea) => tarea.activa && !tarea.completada && !tarea.novedad,
-    );
-    if (incompletas.length > 0) {
-      setError(`Completá ${incompletas.length} tarea${incompletas.length === 1 ? "" : "s"} antes de marcar la salida.`);
-      return;
-    }
-    if (tareasActivas.some((tarea) => tarea.activa && tarea.completada && tarea.requiereFoto && !tarea.foto)) {
-      setError("Falta una foto requerida en las tareas completadas.");
-      return;
-    }
-    if (visitaActiva.requiereFotoPresencia && !visitaActiva.fotoPresencia) {
-      setError("Tomá la foto de presencia antes de marcar la salida.");
-      return;
-    }
     setProcesando(true);
     setError(null);
     try {
@@ -369,16 +270,13 @@ export function PanelImpulsador({
     void cargarMarcaciones(pagina, fechaMarcaciones).catch((causa) => setError(mensajeError(causa)));
   }
 
-  const enHome = seccion === "home";
   const estadoConexion = `${enLinea ? "Con internet" : "Sin señal · guardado local activo"}${
     pendientes > 0 ? ` · ${pendientes} pendiente${pendientes === 1 ? "" : "s"}` : ""
   }`;
   const contenido =
-    seccion === "home" ? (
-      <HomeView agenda={agenda} datos={rendimiento} nombre={sesion.usuario.nombre} />
-    ) : seccion === "entrada" ? (
+    seccion === "entrada" ? (
       visitaActiva ? (
-        <VisitaActiva visita={visitaActiva} procesando={procesando} alCambiarTarea={cambiarTarea} alTomarFoto={tomarFoto} alSalir={marcarSalida} />
+        <VisitaActiva visita={visitaActiva} procesando={procesando} alSalir={marcarSalida} />
       ) : (
         <EntradaView agenda={agenda} procesando={procesando} proximidadActiva={proximidadActiva} alMarcar={marcarEntrada} />
       )
@@ -398,17 +296,11 @@ export function PanelImpulsador({
 
   return (
     <View style={styles.pantalla}>
-      <View style={[styles.cabecera, enHome && styles.cabeceraHome, { paddingTop: Math.max(insets.top, espacios.sm) + espacios.xs, paddingHorizontal: width < 360 ? espacios.md : espacios.xl }]}>
+      <View style={[styles.cabecera, { paddingTop: Math.max(insets.top, espacios.sm) + espacios.xs, paddingHorizontal: width < 360 ? espacios.md : espacios.xl }]}>
         <View style={styles.cabeceraTexto}>
-          {enHome ? (
-            <Text style={[styles.estadoConexion, styles.estadoConexionHome]}>{estadoConexion}</Text>
-          ) : (
-            <>
-              <Text style={styles.marca}>COMERCIA CAMPO</Text>
-              <Text numberOfLines={1} style={styles.saludo}>Hola, {sesion.usuario.nombre}</Text>
-              <Text style={styles.estadoConexion}>{estadoConexion}</Text>
-            </>
-          )}
+          <Text style={styles.marca}>COMERCIA CAMPO</Text>
+          <Text numberOfLines={1} style={styles.saludo}>Hola, {sesion.usuario.nombre}</Text>
+          <Text style={styles.estadoConexion}>{estadoConexion}</Text>
         </View>
         <Pressable
           accessibilityRole="button"

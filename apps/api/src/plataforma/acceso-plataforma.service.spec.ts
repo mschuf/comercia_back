@@ -24,6 +24,7 @@ describe('AccesoPlataformaService', () => {
       empresaId: 20,
       rolId: 5,
       isActive: true,
+      rol: null,
     });
     prisma.empresaPagina.findMany.mockResolvedValue([]);
   });
@@ -43,7 +44,12 @@ describe('AccesoPlataformaService', () => {
         ['supervisor', 'repositor'],
         ['mapa'],
       ),
-    ).resolves.toEqual({ id: 10, empresaId: 20, rolId: 5 });
+    ).resolves.toEqual({
+      id: 10,
+      empresaId: 20,
+      rolId: 5,
+      rolDescripcion: null,
+    });
   });
 
   it('rechaza una página apagada aunque la empresa tenga todo el módulo', async () => {
@@ -77,7 +83,12 @@ describe('AccesoPlataformaService', () => {
         ['supervisor', 'repositor'],
         ['clientes'],
       ),
-    ).resolves.toEqual({ id: 10, empresaId: 20, rolId: 5 });
+    ).resolves.toEqual({
+      id: 10,
+      empresaId: 20,
+      rolId: 5,
+      rolDescripcion: null,
+    });
   });
 
   it('rechaza cuando el rol no puede ver el módulo', async () => {
@@ -140,7 +151,12 @@ describe('AccesoPlataformaService', () => {
         ['clientes'],
       ),
     ).resolves.toEqual({
-      usuario: { id: 10, empresaId: 20, rolId: 5 },
+      usuario: {
+        id: 10,
+        empresaId: 20,
+        rolId: 5,
+        rolDescripcion: null,
+      },
       modulosRutas: ['supervisor', 'repositor'],
     });
   });

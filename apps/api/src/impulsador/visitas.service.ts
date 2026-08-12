@@ -15,6 +15,12 @@ import {
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
 import { PrismaService } from '../prisma/prisma.service';
+import { filtroTareaGlobalVisiblePara } from '../tareas/utils/visibilidad-tarea';
+import {
+  ROL_SUPERVISOR_IMPULSADOR,
+  ROL_TEAMLEADER_IMPULSADOR,
+  esRolMarcacionSimple,
+} from '../common/constants/roles-negocio';
 import { AccesoOperacionesCampoService } from './acceso-operaciones-campo.service';
 import {
   FrecuenciaVisitaDto,
@@ -384,16 +390,33 @@ function exigirDentroDelRadio(
   return distancia;
 }
 
-function tareasVisiblesPara(usuarioId: number): Prisma.TareaClienteWhereInput {
+function tareasVisiblesPara(
+  usuarioId: number,
+  rolDescripcion: string | null,
+  localId: number,
+): Prisma.TareaClienteWhereInput {
   return {
     activo: true,
-    OR: [
-      { tareaGlobalId: null },
-      { tareaGlobal: { is: { alcance: 'TODOS' } } },
+    AND: [
       {
-        tareaGlobal: {
-          is: { destinatarios: { some: { usuarioId } } },
-        },
+        OR: [
+          { tareaGlobalId: null },
+          {
+            tareaGlobal: {
+              is: filtroTareaGlobalVisiblePara({
+                id: usuarioId,
+                rolDescripcion,
+              }),
+            },
+          },
+        ],
+      },
+      {
+        OR: [
+          { tareaGlobalId: null },
+          { tareaGlobal: { is: { alcanceLocales: 'TODOS' } } },
+          { tareaGlobal: { is: { locales: { some: { localId } } } } },
+        ],
       },
     ],
   };
@@ -509,21 +532,24 @@ export class VisitasService {
       throw new NotFoundException('El local no existe');
     }
     const puedeVisitar =
-      !usuario.esGestor &&
+      (!usuario.esGestor ||
+        usuario.rolDescripcion === ROL_TEAMLEADER_IMPULSADOR) &&
       local.usuarioId === usuario.id &&
       usuario.esOperativo;
     if (!puedeVisitar) {
       throw new ForbiddenException('No tenés permiso para visitar este local');
     }
 
-    const tareasActivas = await this.prisma.tareaCliente.findMany({
-      where: {
-        clienteId: local.clienteId,
-        ...tareasVisiblesPara(usuario.id),
-      },
-      select: { id: true },
-      orderBy: [{ orden: 'asc' }, { id: 'asc' }],
-    });
+    const tareasActivas = esRolMarcacionSimple(usuario.rolDescripcion)
+      ? []
+      : await this.prisma.tareaCliente.findMany({
+          where: {
+            clienteId: local.clienteId,
+            ...tareasVisiblesPara(usuario.id, usuario.rolDescripcion, local.id),
+          },
+          select: { id: true },
+          orderBy: [{ orden: 'asc' }, { id: 'asc' }],
+        });
 
     // Si ya hay una visita abierta se retoma en lugar de duplicar (ej. la app
     // se cerró a mitad del checklist), sumando tareas activadas después.
@@ -609,10 +635,20 @@ export class VisitasService {
       }
     }
 
-    // Gestor: todas las visitas de su empresa. Operativo: solo las propias.
+    const alcanceSupervisorImpulsadores =
+      usuario.rolDescripcion === ROL_SUPERVISOR_IMPULSADOR
+        ? this.accesoCampo.filtroEquipoVisible(usuario)
+        : null;
+    // El team leader usa este endpoint en su APK y recibe solo sus propias
+    // marcaciones; su equipo se consulta en Presentismo.
     const where = {
       local: { empresaId: usuario.empresaId },
-      ...(usuario.esGestor ? {} : { usuarioId: usuario.id }),
+      ...(alcanceSupervisorImpulsadores
+        ? { usuario: { is: alcanceSupervisorImpulsadores } }
+        : usuario.esGestor &&
+            usuario.rolDescripcion !== ROL_TEAMLEADER_IMPULSADOR
+          ? {}
+          : { usuarioId: usuario.id }),
       ...(query.localId !== undefined ? { localId: query.localId } : {}),
       ...(rangoFecha
         ? { iniciadaEn: { gte: rangoFecha.inicio, lt: rangoFecha.fin } }
@@ -1064,7 +1100,10 @@ export class VisitasService {
     );
 
     // Solo exigen completitud las tareas cuyo ítem del checklist sigue activo
-    const activas = visita.tareas.filter((t) => t.tarea.activo);
+    const marcacionSimple = esRolMarcacionSimple(usuario.rolDescripcion);
+    const activas = marcacionSimple
+      ? []
+      : visita.tareas.filter((t) => t.tarea.activo);
     if (activas.some((t) => !t.completada && !t.novedad)) {
       throw new BadRequestException(
         'Faltan tareas del checklist por completar',
@@ -1077,7 +1116,11 @@ export class VisitasService {
     ) {
       throw new BadRequestException('Faltan fotos en tareas que las requieren');
     }
-    if (visita.local.requiereFotoPresencia && visita.fotoPresencia === null) {
+    if (
+      !marcacionSimple &&
+      visita.local.requiereFotoPresencia &&
+      visita.fotoPresencia === null
+    ) {
       throw new BadRequestException('Falta la foto de presencia en el local');
     }
 

@@ -13,7 +13,8 @@ export interface UsuarioSesion {
 }
 
 export function esSesionImpulsador(sesion: SesionMovil): boolean {
-  return sesion.usuario.rol?.descripcion.toLowerCase() === "impulsador";
+  const rol = sesion.usuario.rol?.descripcion.toLowerCase();
+  return rol === "impulsador" || rol === "teamleader.impulsador";
 }
 
 export interface SesionMovil {

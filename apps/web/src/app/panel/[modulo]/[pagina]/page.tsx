@@ -9,25 +9,22 @@ import { TareasView } from "@/components/tareas/tareas-view";
 import { RepositorClientesView } from "@/components/repositor/repositorio-clientes-view";
 import { RepositorTareasView } from "@/components/repositor/repositorio-tareas-view";
 import { RutaDiariaView } from "@/components/repositor/ruta-diaria-view";
-import { KpisVisitas } from "@/components/impulsador/kpis-visitas";
 import { MisMarcacionesView } from "@/components/impulsador/mis-marcaciones-view";
-import { RendimientoImpulsadorView } from "@/components/impulsador/rendimiento-impulsador-view";
+import { AsignacionesLocalesView } from "@/components/impulsadores/asignaciones-locales-view";
+import { PresentismoView } from "@/components/impulsadores/presentismo-view";
 
 // Registro de vistas con interfaz propia: "ruta-modulo/ruta-pagina" → componente.
 // Las páginas que no estén acá muestran el placeholder de "configurada" (su
 // ejecución de datos por ejecutables llega en la próxima etapa).
 const VISTAS: Record<string, ComponentType> = {
   "supervisor/mapa": MapaView,
-  "teamleader-impulsador/mapa": MapaView,
-  "teamleader-impulsador/rendimiento": KpisVisitas,
+  "supervisor-impulsador/presentismo": PresentismoView,
+  "teamleader-impulsador/presentismo": PresentismoView,
   "repositor/clientes": RepositorClientesView,
   "repositor/tareas": RepositorTareasView,
   "repositor/visitas": RutaDiariaView,
-  "impulsador/locales": RepositorClientesView,
-  "impulsador/tareas": RepositorTareasView,
   "impulsador/entrada": RutaDiariaView,
   "impulsador/marcaciones": MisMarcacionesView,
-  "impulsador/rendimiento": RendimientoImpulsadorView,
 };
 
 export default function PaginaModulo({
@@ -57,12 +54,18 @@ export default function PaginaModulo({
   const claveVista = `${modulo}/${pagina}`;
   const Vista = VISTAS[claveVista];
   const esGestorCampo =
-    modulo === "supervisor" || modulo === "teamleader-impulsador";
+    modulo === "supervisor" ||
+    modulo === "supervisor-impulsador" ||
+    modulo === "teamleader-impulsador";
+  const esGestionImpulsadores =
+    modulo === "supervisor-impulsador" ||
+    modulo === "teamleader-impulsador";
   const esOperativoCampo = modulo === "repositor" || modulo === "impulsador";
   const esOperacionCampo = esGestorCampo || esOperativoCampo;
   const usaCabeceraPropia =
     (esOperacionCampo && pagina === "tareas") ||
     (esGestorCampo && pagina === "equipo") ||
+    (esGestionImpulsadores && ["locales", "presentismo"].includes(pagina)) ||
     esOperativoCampo;
   const ocultaNombreModulo =
     esOperacionCampo && ["visitas", "entrada", "marcaciones"].includes(pagina);
@@ -83,7 +86,12 @@ export default function PaginaModulo({
       )}
 
       {esGestorCampo && pagina === "equipo" ? (
-        <EquipoView />
+        <EquipoView modulo={modulo} />
+      ) : esGestionImpulsadores && pagina === "locales" ? (
+        <AsignacionesLocalesView
+          permiteTransferencia={modulo === "supervisor-impulsador"}
+          filtroInicial={filtroRepositor(consulta)}
+        />
       ) : esGestorCampo && pagina === "clientes" ? (
         <div className="mt-6">
           <ClientesLocalesView

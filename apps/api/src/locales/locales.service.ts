@@ -4,11 +4,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import {
+  ROL_SUPERVISOR_IMPULSADOR,
+  ROL_TEAMLEADER_IMPULSADOR,
+} from '../common/constants/roles-negocio';
 import { AccesoOperacionesCampoService } from '../impulsador/acceso-operaciones-campo.service';
 import {
   PAGINA_CLIENTES,
   PAGINA_EQUIPO,
   PAGINA_MAPA,
+  PAGINA_LOCALES,
   PAGINA_VISITAS,
   RADIO_METROS_DEFECTO,
 } from '../impulsador/impulsador.constants';
@@ -26,11 +31,13 @@ import {
   CrearLocalDto,
   ListarLocalesDto,
   ListarUsuariosAsignablesDto,
+  TransferirLocalesDto,
 } from './dto/local.dto';
 import type {
   LocalDetalleDto,
   LocalDto,
   UsuarioAsignable,
+  TransferenciaLocalesDto,
 } from './interfaces/local.interface';
 import { aTareaLocalDto, SELECT_TAREA_LOCAL } from './tareas-local.service';
 
@@ -144,23 +151,24 @@ export class LocalesService {
     query: ListarLocalesDto,
   ): Promise<RespuestaPaginada<LocalDto>> {
     const actual = await this.usuarioActual(usuarioId);
+    const alcanceJerarquico =
+      actual.esGestor &&
+      [ROL_SUPERVISOR_IMPULSADOR, ROL_TEAMLEADER_IMPULSADOR].includes(
+        actual.rolDescripcion ?? '',
+      )
+        ? await this.accesoCampo.filtroRepositoresDelSupervisor(actual)
+        : null;
+    const filtrosUsuario = [
+      ...(alcanceJerarquico ? [alcanceJerarquico] : []),
+      ...(query.usuarioId !== undefined ? [{ id: query.usuarioId }] : []),
+      ...filtrosBusquedaUsuario(query.repositor),
+    ];
     const where = actual.esGestor
       ? {
           empresaId: actual.empresaId,
           clienteId: query.clienteId,
-          ...(query.usuarioId !== undefined || query.repositor
-            ? {
-                usuario: {
-                  is: {
-                    AND: [
-                      ...(query.usuarioId !== undefined
-                        ? [{ id: query.usuarioId }]
-                        : []),
-                      ...filtrosBusquedaUsuario(query.repositor),
-                    ],
-                  },
-                },
-              }
+          ...(filtrosUsuario.length > 0
+            ? { usuario: { is: { AND: filtrosUsuario } } }
             : {}),
         }
       : {
@@ -191,7 +199,13 @@ export class LocalesService {
   ): Promise<RespuestaPaginada<UsuarioAsignable>> {
     const actual = await this.accesoCampo.usuarioSupervisorConAlgunaPagina(
       usuarioId,
-      [PAGINA_CLIENTES, PAGINA_EQUIPO, PAGINA_MAPA, PAGINA_VISITAS],
+      [
+        PAGINA_CLIENTES,
+        PAGINA_LOCALES,
+        PAGINA_EQUIPO,
+        PAGINA_MAPA,
+        PAGINA_VISITAS,
+      ],
     );
     const alcance =
       await this.accesoCampo.filtroRepositoresDelSupervisor(actual);
@@ -270,6 +284,11 @@ export class LocalesService {
     if (!actual.esGestor) {
       throw new ForbiddenException('Solo un gestor puede crear locales');
     }
+    if (actual.rolDescripcion === ROL_TEAMLEADER_IMPULSADOR) {
+      throw new ForbiddenException(
+        'El team leader solo puede reasignar locales de su equipo',
+      );
+    }
     await Promise.all([
       this.clienteDeEmpresa(dto.clienteId, actual.empresaId),
       this.validarAsignado(actual, dto.usuarioId),
@@ -341,6 +360,16 @@ export class LocalesService {
     const actual = await this.usuarioActual(usuarioId);
     if (!actual.esGestor) {
       throw new ForbiddenException('Solo un gestor puede editar locales');
+    }
+    if (actual.rolDescripcion === ROL_TEAMLEADER_IMPULSADOR) {
+      const campos = Object.entries(dto)
+        .filter(([, valor]) => valor !== undefined)
+        .map(([campo]) => campo);
+      if (campos.some((campo) => campo !== 'usuarioId')) {
+        throw new ForbiddenException(
+          'El team leader solo puede cambiar el impulsador asignado',
+        );
+      }
     }
     const existente = await this.localDelEquipo(id, actual);
     const clienteId = dto.clienteId ?? existente.clienteId;
@@ -441,8 +470,87 @@ export class LocalesService {
     if (!actual.esGestor) {
       throw new ForbiddenException('Solo un gestor puede eliminar locales');
     }
+    if (actual.rolDescripcion === ROL_TEAMLEADER_IMPULSADOR) {
+      throw new ForbiddenException('El team leader no puede eliminar locales');
+    }
     await this.localDelEquipo(id, actual);
     await this.prisma.local.delete({ where: { id } });
     return { ok: true };
+  }
+
+  async transferir(
+    usuarioId: number,
+    dto: TransferirLocalesDto,
+  ): Promise<TransferenciaLocalesDto> {
+    const supervisor = await this.accesoCampo.usuarioSupervisorConAlgunaPagina(
+      usuarioId,
+      [PAGINA_LOCALES, PAGINA_CLIENTES, PAGINA_EQUIPO],
+    );
+    if (supervisor.rolDescripcion !== ROL_SUPERVISOR_IMPULSADOR) {
+      throw new ForbiddenException(
+        'Solo el supervisor de impulsadores puede transferir una cartera completa',
+      );
+    }
+    if (dto.usuarioAnteriorId === dto.usuarioNuevoId) {
+      throw new ForbiddenException('Elegí dos usuarios diferentes');
+    }
+    const alcance = this.accesoCampo.filtroEquipoVisible(supervisor);
+    const usuarios = await this.prisma.usuario.findMany({
+      where: {
+        AND: [
+          alcance,
+          { id: { in: [dto.usuarioAnteriorId, dto.usuarioNuevoId] } },
+        ],
+      },
+      select: { id: true, rolId: true },
+      take: 2,
+    });
+    const anterior = usuarios.find(({ id }) => id === dto.usuarioAnteriorId);
+    const nuevo = usuarios.find(({ id }) => id === dto.usuarioNuevoId);
+    if (!anterior || !nuevo || anterior.rolId !== nuevo.rolId) {
+      throw new NotFoundException(
+        'Los usuarios no pertenecen al mismo nivel de tu equipo',
+      );
+    }
+    const abiertas = await this.prisma.visita.count({
+      where: { usuarioId: anterior.id, completadaEn: null },
+    });
+    if (abiertas > 0) {
+      throw new ForbiddenException(
+        'El usuario anterior tiene una marcación abierta; debe registrar su salida primero',
+      );
+    }
+
+    const resultado = await this.prisma.$transaction(async (tx) => {
+      const locales = await tx.local.updateMany({
+        where: {
+          empresaId: supervisor.empresaId,
+          usuarioId: anterior.id,
+        },
+        data: { usuarioId: nuevo.id },
+      });
+      const subordinados = await tx.usuario.updateMany({
+        where: {
+          empresaId: supervisor.empresaId,
+          superiorId: anterior.id,
+          isActive: true,
+        },
+        data: { superiorId: nuevo.id },
+      });
+      if (dto.inactivarAnterior) {
+        await tx.usuario.update({
+          where: { id: anterior.id },
+          data: { isActive: false },
+          select: { id: true },
+        });
+      }
+      return { locales, subordinados };
+    });
+
+    return {
+      localesTransferidos: resultado.locales.count,
+      subordinadosTransferidos: resultado.subordinados.count,
+      usuarioAnteriorInactivado: dto.inactivarAnterior ?? false,
+    };
   }
 }
