@@ -1,5 +1,12 @@
 [
   {
+    "date": "2026-08-12",
+    "macrostructure": "Stat-Led",
+    "theme": "modern-minimal custom teal",
+    "enrichment": "CSS data visualization",
+    "brief": "Home operativo compacto con presentismo, alcance y KPI navegables por rol"
+  },
+  {
     "date": "2026-08-11",
     "macrostructure": "Status-first single screen",
     "theme": "modern-minimal custom teal",

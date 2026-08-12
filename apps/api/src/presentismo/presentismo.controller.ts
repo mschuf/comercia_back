@@ -14,6 +14,11 @@ import { PresentismoService } from './presentismo.service';
 export class PresentismoController {
   constructor(private readonly presentismo: PresentismoService) {}
 
+  @Get('inicio')
+  resumenInicio(@Req() req: RequestConUsuario) {
+    return this.presentismo.resumenInicio(req.usuarioId);
+  }
+
   @Get('resumen')
   resumen(
     @Req() req: RequestConUsuario,

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-12T18:51:14.356361+00:00",
+  "generated_at": "2026-08-12T19:35:54.631463+00:00",
   "nodes": {
     "apps_api_src_auth_auth_controller_authcontroller": {
       "code_fingerprint": "41d1dc8b5a2bb2dbb6ed83c349b139367fd7de34296754d681f14e36d1ed60a0",
@@ -12,8 +12,24 @@
           "q": "el back en api.comercia.pro funciona, hice un login y funciono https://api.comercia.pro/api/v1/auth/login"
         }
       ],
-      "score": 0.891653032,
+      "score": 0.891014165,
       "source_file": "apps/api/src/auth/auth.controller.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_auth_auth_module_authmodule": {
+      "code_fingerprint": "c43237e1fa69cd083fce41d635c6e4fe94caa57a334c7d460f6553a7d5dc4888",
+      "label": "AuthModule",
+      "last": "2026-08-12T18:52:56.603705+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-12T18:52:56.603705+00:00",
+          "outcome": "useful",
+          "q": "En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa"
+        }
+      ],
+      "score": 0.999310827,
+      "source_file": "apps/api/src/auth/auth.module.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -33,10 +49,42 @@
           "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
         }
       ],
-      "score": 1.951101339,
+      "score": 1.949703382,
       "source_file": "apps/api/src/auth/auth.service.ts",
       "status": "preferred",
       "uses": 2
+    },
+    "apps_api_src_auth_jwt_auth_guard_jwtauthguard": {
+      "code_fingerprint": "3072864bb0a9e87e707b646fe41433de6f232fae361753e0c178f28f8e1a0415",
+      "label": "JwtAuthGuard",
+      "last": "2026-08-12T18:52:56.603705+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-12T18:52:56.603705+00:00",
+          "outcome": "useful",
+          "q": "En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa"
+        }
+      ],
+      "score": 0.999310827,
+      "source_file": "apps/api/src/auth/jwt-auth.guard.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_config_env_schema_parsecorsorigins": {
+      "code_fingerprint": "427ca72445bcd61cb7c833aa6fe0929ee11ed494f8ee370fc64799b457e8b58b",
+      "label": "parseCorsOrigins()",
+      "last": "2026-08-12T18:52:56.603705+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-12T18:52:56.603705+00:00",
+          "outcome": "useful",
+          "q": "En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa"
+        }
+      ],
+      "score": 0.999310827,
+      "source_file": "apps/api/src/config/env.schema.ts",
+      "status": "tentative",
+      "uses": 1
     },
     "apps_api_src_impulsador_acceso_operaciones_campo_service_accesooperacionescamposervice": {
       "code_fingerprint": "eea605a94e9bb723347526971f09bba9031d35f10e9b084ea870c6e356e020d0",
@@ -49,7 +97,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.97666053,
+      "score": 0.975960756,
       "source_file": "apps/api/src/impulsador/acceso-operaciones-campo.service.ts",
       "status": "tentative",
       "uses": 1
@@ -65,7 +113,7 @@
           "q": "que significa programacion pausada y como reanudar"
         }
       ],
-      "score": 0.849302731,
+      "score": 0.848694209,
       "source_file": "apps/api/src/impulsador/interfaces/programacion-visita.interface.ts",
       "status": "tentative",
       "uses": 1
@@ -81,8 +129,24 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.97666053,
+      "score": 0.975960756,
       "source_file": "apps/api/src/impulsador/visitas.service.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_src_presentismo_presentismo_module_presentismomodule": {
+      "code_fingerprint": "50f76782b65cea0d74865c0845e171cae35228dcf778543b1e688033fdd4895f",
+      "label": "PresentismoModule",
+      "last": "2026-08-12T18:52:56.603705+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-12T18:52:56.603705+00:00",
+          "outcome": "useful",
+          "q": "En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa"
+        }
+      ],
+      "score": 0.999310827,
+      "source_file": "apps/api/src/presentismo/presentismo.module.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -97,7 +161,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.849369,
+      "score": 0.84876043,
       "source_file": "apps/api/src/repositor/osrm.service.ts",
       "status": "tentative",
       "uses": 1
@@ -113,7 +177,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.97666053,
+      "score": 0.975960756,
       "source_file": "apps/api/src/repositor/repositor.service.ts",
       "status": "tentative",
       "uses": 1
@@ -129,7 +193,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.849369,
+      "score": 0.84876043,
       "source_file": "apps/api/src/repositor/utils/optimizacion-ruta.ts",
       "status": "tentative",
       "uses": 1
@@ -145,7 +209,7 @@
           "q": "Qué significan precision_metros, registrada_en y recibida_en en ubicaciones_usuario"
         }
       ],
-      "score": 0.970687295,
+      "score": 0.969991801,
       "source_file": "apps/api/src/ubicaciones/dto/ubicacion.dto.ts",
       "status": "tentative",
       "uses": 1
@@ -166,7 +230,7 @@
           "q": "en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios"
         }
       ],
-      "score": 1.862300366,
+      "score": 1.860966034,
       "source_file": "apps/api/src/ubicaciones/ubicaciones.service.ts",
       "status": "preferred",
       "uses": 2
@@ -187,7 +251,7 @@
           "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
         }
       ],
-      "score": 1.951101339,
+      "score": 1.949703382,
       "source_file": "apps/mobile/App.tsx",
       "status": "preferred",
       "uses": 2
@@ -203,7 +267,7 @@
           "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
         }
       ],
-      "score": 0.978913973,
+      "score": 0.978212585,
       "source_file": "apps/mobile/plugins/with-sim-phone-numbers.js",
       "status": "tentative",
       "uses": 1
@@ -219,7 +283,7 @@
           "q": "como se llama el store que usa cuando no hay conexion y guarda en el celular, y se borra una vez que se envia al servidor"
         }
       ],
-      "score": 0.976381733,
+      "score": 0.975682159,
       "source_file": "apps/mobile/src/lib/cola-ubicaciones.ts",
       "status": "tentative",
       "uses": 1
@@ -245,7 +309,7 @@
           "q": "en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios"
         }
       ],
-      "score": 2.753953398,
+      "score": 2.751980199,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
       "status": "preferred",
       "uses": 3
@@ -261,7 +325,7 @@
           "q": "como se llama el store que usa cuando no hay conexion y guarda en el celular, y se borra una vez que se envia al servidor"
         }
       ],
-      "score": 0.976381733,
+      "score": 0.975682159,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
       "status": "tentative",
       "uses": 1
@@ -277,7 +341,7 @@
           "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
         }
       ],
-      "score": 0.972187366,
+      "score": 0.971490797,
       "source_file": "apps/mobile/src/lib/sesion.ts",
       "status": "tentative",
       "uses": 1
@@ -293,7 +357,7 @@
           "q": "el back en api.comercia.pro funciona, hice un login y funciono https://api.comercia.pro/api/v1/auth/login"
         }
       ],
-      "score": 0.891653032,
+      "score": 0.891014165,
       "source_file": "apps/mobile/src/lib/sesion.ts",
       "status": "tentative",
       "uses": 1
@@ -309,7 +373,7 @@
           "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
         }
       ],
-      "score": 0.978913973,
+      "score": 0.978212585,
       "source_file": "apps/mobile/src/lib/sim.ts",
       "status": "tentative",
       "uses": 1
@@ -325,7 +389,7 @@
           "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
         }
       ],
-      "score": 0.978913973,
+      "score": 0.978212585,
       "source_file": "apps/mobile/src/lib/sim.ts",
       "status": "tentative",
       "uses": 1
@@ -341,7 +405,7 @@
           "q": "que significa programacion pausada y como reanudar"
         }
       ],
-      "score": 0.849302731,
+      "score": 0.848694209,
       "source_file": "apps/web/src/components/impulsador/editor-programacion-visita.tsx",
       "status": "tentative",
       "uses": 1
@@ -357,7 +421,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.97666053,
+      "score": 0.975960756,
       "source_file": "apps/web/src/types/local.ts",
       "status": "tentative",
       "uses": 1
@@ -373,7 +437,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.97666053,
+      "score": 0.975960756,
       "source_file": "apps/web/src/types/tarea.ts",
       "status": "tentative",
       "uses": 1
@@ -389,7 +453,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.97666053,
+      "score": 0.975960756,
       "source_file": "apps/web/src/types/visita.ts",
       "status": "tentative",
       "uses": 1
@@ -405,7 +469,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.849369,
+      "score": 0.84876043,
       "source_file": "apps/web/package.json",
       "status": "tentative",
       "uses": 1

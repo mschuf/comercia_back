@@ -19,6 +19,7 @@ actualizada
 actualizadas
 actualizador
 actualizar
+acumulado
 adapter
 adaptive
 ademas
@@ -32,6 +33,7 @@ agent
 agentes
 agents
 agrega
+agregar
 agrupacion
 ajustar
 alcance
@@ -87,6 +89,7 @@ author
 auto
 autolinking
 automatic
+automaticamente
 automatizaci
 automatizacion
 autorizar
@@ -107,6 +110,7 @@ based
 batch
 before
 best
+bien
 bind
 bit
 bitacora
@@ -201,6 +205,7 @@ comerciales
 commands
 comments
 common
+community
 como
 comparar
 comparisons
@@ -222,6 +227,7 @@ concurrently
 condition
 conditional
 conditions
+conectar
 conex
 conexi
 conexion
@@ -258,9 +264,11 @@ coordenadas
 copia
 cora
 core
+corregir
 correr
 corrige
 cors
+corta
 cosa
 cov
 coverage
@@ -277,6 +285,7 @@ cuando
 dangerous
 data
 date
+datetimepicker
 datos
 debug
 decimal
@@ -295,6 +304,7 @@ del
 delete
 delimitar
 dentro
+dependencia
 dependencies
 dependency
 deploy
@@ -324,6 +334,7 @@ diaria
 diarias
 diario
 dias
+dice
 dico
 digests
 digo
@@ -353,6 +364,7 @@ during
 dynamic
 early
 eas
+editable
 editar
 editor
 effect
@@ -393,6 +405,7 @@ escritorio
 eslint
 eslintrc
 esnext
+eso
 espacios
 est
 esta
@@ -531,6 +544,7 @@ herramienta
 hice
 hide
 high
+hint
 hints
 historial
 hoist
@@ -603,6 +617,7 @@ json
 jsx
 justifique
 jwt
+keyboard
 know
 kpi
 kpis
@@ -685,6 +700,7 @@ mensajes
 mensuales
 menu
 mero
+mes
 meta
 metadata
 metrica
@@ -710,6 +726,7 @@ mobile
 mod
 modal
 modales
+mode
 modo
 modular
 module
@@ -739,6 +756,7 @@ navegador
 navegar
 nde
 needed
+negocio
 nest
 nested
 nestjs
@@ -760,6 +778,7 @@ notificar
 notifications
 novedad
 novedades
+nros
 nueva
 nuevo
 null
@@ -767,6 +786,7 @@ number
 numbers
 numero
 numeros
+nunca
 object
 objetivo
 obligatoria
@@ -836,6 +856,7 @@ parse
 parser
 partes
 party
+pasa
 pasar
 pasos
 pass
@@ -852,11 +873,14 @@ pendiente
 pendientes
 per
 performance
+periodo
+periodos
 permisos
 permission
 permissions
 persistencia
 persona
+pertenece
 pestana
 phone
 picker
@@ -872,6 +896,7 @@ plugins
 point
 poligono
 por
+porcentaje
 portero
 positive
 positivo
@@ -889,6 +914,7 @@ preload
 preparaci
 preparar
 presencia
+presentismo
 preservadas
 prettier
 prevent
@@ -918,6 +944,7 @@ proxima
 proximidad
 proyecto
 prueba
+pudo
 puede
 puedo
 puerto
@@ -946,6 +973,7 @@ receive
 recharts
 recibida
 recomendado
+reconociendo
 recursos
 redondear
 reestructura
@@ -998,6 +1026,7 @@ resultado
 results
 resumen
 return
+revisar
 revocacion
 robustez
 rol
@@ -1068,6 +1097,7 @@ skill
 skills
 skip
 slug
+software
 sola
 solicitar
 solicitud
@@ -1089,6 +1119,7 @@ stable
 stack
 start
 started
+stat
 state
 states
 static
@@ -1137,6 +1168,7 @@ tarjeta
 tarjetas
 task
 team
+telefono
 tema
 template
 tendencia
@@ -1172,6 +1204,9 @@ tosorted
 touch
 trabajar
 trabajo
+traer
+transferencia
+transferir
 transform
 transformer
 transforms
@@ -1227,11 +1262,13 @@ values
 variable
 variables
 vas
+vector
 vehiculo
 ventas
 ver
 vercel
 verdad
+verificar
 verification
 verify
 verlos

@@ -1130,9 +1130,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/app/panel/page.tsx": {
-    "mtime": 1785762086.8298268,
-    "ast_hash": "1617625626d94244cf7e42a56ce531dd",
-    "semantic_hash": "1617625626d94244cf7e42a56ce531dd"
+    "mtime": 1786564396.2629054,
+    "ast_hash": "7ab7eec7824b736cf3d66a18da856635",
+    "semantic_hash": ""
   },
   "apps/web/src/app/panel/usuarios/page.tsx": {
     "mtime": 1784123047.809059,
@@ -2670,8 +2670,8 @@
     "semantic_hash": ""
   },
   ".hallmark/log.json": {
-    "mtime": 1786474522.533713,
-    "ast_hash": "89024de3be083d7ccbd06f0a0d8e4887",
+    "mtime": 1786563920.083166,
+    "ast_hash": "99aa03d6140fff5bbd32c3f6b166b73d",
     "semantic_hash": ""
   },
   ".hallmark/preflight.json": {
@@ -2820,13 +2820,13 @@
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/interfaces/presentismo.interface.ts": {
-    "mtime": 1786556621.8282437,
-    "ast_hash": "c9d5bbafb39dc1b3b7d4ee8457c91579",
+    "mtime": 1786563962.6094651,
+    "ast_hash": "8e41811e4edd633fcd1ec20adb976f4d",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/presentismo.controller.ts": {
-    "mtime": 1786557421.365741,
-    "ast_hash": "bfa8586e1b211217fce929bff62451a8",
+    "mtime": 1786563725.5587542,
+    "ast_hash": "59dab1da996df4fcc50b713119baaaa5",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/presentismo.module.ts": {
@@ -2835,8 +2835,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/presentismo.service.ts": {
-    "mtime": 1786557421.365741,
-    "ast_hash": "1d37e8ff1306ee2b54e7b511f0d9a3ff",
+    "mtime": 1786563985.7021024,
+    "ast_hash": "4a3c56f3a087d9118529fbd00318a4d8",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/utils/periodos-presentismo.spec.ts": {
@@ -2860,8 +2860,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/types/presentismo.ts": {
-    "mtime": 1786556824.3940606,
-    "ast_hash": "2394744291870eaa78c410ad50337472",
+    "mtime": 1786563788.4769063,
+    "ast_hash": "a03d25f51f15cdf7b057ba3b3628da56",
     "semantic_hash": ""
   },
   "apps/api/src/tareas/utils/visibilidad-tarea.spec.ts": {
@@ -2882,6 +2882,31 @@
   "graphify-out/memory/query_20260812_185256_en_producci\u00f3n_el_login_da_cors_y_el_front_dice_no.md": {
     "mtime": 1786560776.6047025,
     "ast_hash": "036fd3c6ff84d955193e63e06810d1c4",
+    "semantic_hash": ""
+  },
+  "apps/api/src/presentismo/utils/resumen-presentismo.spec.ts": {
+    "mtime": 1786563962.6109686,
+    "ast_hash": "979a1d79fc366ff630f0b32c1202b907",
+    "semantic_hash": ""
+  },
+  "apps/api/src/presentismo/utils/resumen-presentismo.ts": {
+    "mtime": 1786564022.5565205,
+    "ast_hash": "ff0b9a2a18fc7a032e156e45239b936d",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/panel/resumen-inicio-operativo.tsx": {
+    "mtime": 1786564396.9795303,
+    "ast_hash": "b538f04c7097ff0aabdabea8eb712df7",
+    "semantic_hash": ""
+  },
+  "apps/web/src/utils/panel-inicio.ts": {
+    "mtime": 1786563789.1440437,
+    "ast_hash": "2138e33c99fb1225caae46b51de026bf",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260812_195112_c\u00f3mo_qued\u00f3_conectado_el_home_del_panel_con_el_res.md": {
+    "mtime": 1786564272.456052,
+    "ast_hash": "7441347d086eb78434d0e775d6284136",
     "semantic_hash": ""
   }
 }

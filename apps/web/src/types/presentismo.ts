@@ -14,6 +14,26 @@ export interface ResumenPresentismo {
   mes: MetricaPresentismo;
 }
 
+export type PerfilResumenInicio =
+  | "SUPERVISOR"
+  | "TEAMLEADER"
+  | "IMPULSADOR"
+  | "GESTOR"
+  | "OPERATIVO";
+
+export interface ResumenInicioOperativo extends ResumenPresentismo {
+  perfil: PerfilResumenInicio;
+  alcance: {
+    personas: number;
+    teamleaders: number;
+    impulsadores: number;
+    localesAsignados: number;
+  };
+  actividad: {
+    enCurso: number;
+  };
+}
+
 export interface FilaPresentismo extends MetricaPresentismo {
   usuario: { id: number; nombre: string; rol: string | null };
   teamleader: { id: number; nombre: string } | null;

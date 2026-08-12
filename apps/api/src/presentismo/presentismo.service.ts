@@ -1,5 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import type { Prisma } from '../../generated/prisma/client';
+import {
+  ROL_IMPULSADOR,
+  ROL_TEAMLEADER_IMPULSADOR,
+} from '../common/constants/roles-negocio';
 import { filtrosBusquedaUsuario } from '../common/utils/busqueda-usuario';
 import {
   rangoPaginacion,
@@ -7,7 +11,13 @@ import {
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
 import { AccesoOperacionesCampoService } from '../impulsador/acceso-operaciones-campo.service';
-import { PAGINA_PRESENTISMO } from '../impulsador/impulsador.constants';
+import {
+  PAGINA_ENTRADA,
+  PAGINA_EQUIPO,
+  PAGINA_MARCACIONES,
+  PAGINA_PRESENTISMO,
+  PAGINA_VISITAS,
+} from '../impulsador/impulsador.constants';
 import type { UsuarioOperacionesCampo } from '../impulsador/interfaces/usuario-operaciones-campo.interface';
 import {
   fechaEnZonaIso,
@@ -20,33 +30,24 @@ import {
   ResumenPresentismoQueryDto,
 } from './dto/presentismo.dto';
 import type {
+  AcumuladoPresentismo,
   FilaPresentismoDto,
-  MetricaPresentismoDto,
+  ResumenInicioOperativoDto,
   ResumenPresentismoDto,
+  UsuarioFilaPresentismo,
 } from './interfaces/presentismo.interface';
 import {
   diasDelPeriodo,
   periodosPresentismo,
   type PeriodoPresentismo,
 } from './utils/periodos-presentismo';
+import {
+  perfilResumenInicio,
+  porcentajePresentismo,
+  totalPresentismo,
+} from './utils/resumen-presentismo';
 
 const ZONA_HORARIA = 'America/Asuncion';
-
-type UsuarioFila = {
-  id: number;
-  nombre: string;
-  apellido: string;
-  rol: { descripcion: string } | null;
-  superior: { id: number; nombre: string; apellido: string } | null;
-  _count: { localesAsignados: number };
-};
-
-type Acumulado = { programadas: number; entradas: number; salidas: number };
-
-function porcentaje(programadas: number, entradas: number): number {
-  if (programadas === 0) return 0;
-  return Math.round(Math.min(100, (entradas * 1000) / programadas)) / 10;
-}
 
 function nombreCompleto(persona: { nombre: string; apellido: string }): string {
   return `${persona.nombre} ${persona.apellido}`.trim();
@@ -81,11 +82,11 @@ export class PresentismoService {
   }
 
   private async calcular(
-    usuarios: UsuarioFila[],
+    usuarios: UsuarioFilaPresentismo[],
     periodo: PeriodoPresentismo,
-  ): Promise<Map<number, Acumulado>> {
+  ): Promise<Map<number, AcumuladoPresentismo>> {
     const ids = usuarios.map(({ id }) => id);
-    const acumulados = new Map<number, Acumulado>(
+    const acumulados = new Map<number, AcumuladoPresentismo>(
       ids.map((id) => [id, { programadas: 0, entradas: 0, salidas: 0 }]),
     );
     if (ids.length === 0) return acumulados;
@@ -156,6 +157,65 @@ export class PresentismoService {
     };
   }
 
+  async resumenInicio(usuarioId: number): Promise<ResumenInicioOperativoDto> {
+    const actual = await this.accesoCampo.usuario(usuarioId, [
+      PAGINA_PRESENTISMO,
+      PAGINA_MARCACIONES,
+      PAGINA_ENTRADA,
+      PAGINA_EQUIPO,
+      PAGINA_VISITAS,
+    ]);
+    const fechaCorte = new Intl.DateTimeFormat('en-CA', {
+      timeZone: ZONA_HORARIA,
+    }).format(new Date());
+    const periodos = periodosPresentismo(fechaCorte);
+    const filtro: Prisma.UsuarioWhereInput = actual.esGestor
+      ? this.accesoCampo.filtroEquipoVisible(actual)
+      : {
+          id: actual.id,
+          empresaId: actual.empresaId,
+          isActive: true,
+        };
+    const usuarios = (await this.prisma.usuario.findMany({
+      where: filtro,
+      select: this.selectorUsuarios(),
+      orderBy: [{ nombre: 'asc' }, { apellido: 'asc' }],
+      take: 200,
+    })) as UsuarioFilaPresentismo[];
+    const ids = usuarios.map(({ id }) => id);
+    const [dia, semana, mes, enCurso] = await Promise.all([
+      this.calcular(usuarios, periodos.dia),
+      this.calcular(usuarios, periodos.semana),
+      this.calcular(usuarios, periodos.mes),
+      ids.length === 0
+        ? Promise.resolve(0)
+        : this.prisma.visita.count({
+            where: { usuarioId: { in: ids }, completadaEn: null },
+          }),
+    ]);
+    return {
+      fechaCorte,
+      perfil: perfilResumenInicio(actual),
+      alcance: {
+        personas: usuarios.length,
+        teamleaders: usuarios.filter(
+          ({ rol }) => rol?.descripcion === ROL_TEAMLEADER_IMPULSADOR,
+        ).length,
+        impulsadores: usuarios.filter(
+          ({ rol }) => rol?.descripcion === ROL_IMPULSADOR,
+        ).length,
+        localesAsignados: usuarios.reduce(
+          (total, usuario) => total + usuario._count.localesAsignados,
+          0,
+        ),
+      },
+      actividad: { enCurso },
+      dia: totalPresentismo(dia, periodos.dia),
+      semana: totalPresentismo(semana, periodos.semana),
+      mes: totalPresentismo(mes, periodos.mes),
+    };
+  }
+
   async resumen(
     usuarioId: number,
     query: ResumenPresentismoQueryDto,
@@ -172,35 +232,17 @@ export class PresentismoService {
       select: this.selectorUsuarios(),
       orderBy: [{ nombre: 'asc' }, { apellido: 'asc' }],
       take: 200,
-    })) as UsuarioFila[];
+    })) as UsuarioFilaPresentismo[];
     const [dia, semana, mes] = await Promise.all([
       this.calcular(usuarios, periodos.dia),
       this.calcular(usuarios, periodos.semana),
       this.calcular(usuarios, periodos.mes),
     ]);
-    const total = (
-      datos: Map<number, Acumulado>,
-      periodo: PeriodoPresentismo,
-    ) => {
-      const suma = [...datos.values()].reduce(
-        (acc, valor) => ({
-          programadas: acc.programadas + valor.programadas,
-          entradas: acc.entradas + valor.entradas,
-          salidas: acc.salidas + valor.salidas,
-        }),
-        { programadas: 0, entradas: 0, salidas: 0 },
-      );
-      return {
-        ...periodo,
-        ...suma,
-        porcentaje: porcentaje(suma.programadas, suma.entradas),
-      } satisfies MetricaPresentismoDto;
-    };
     return {
       fechaCorte,
-      dia: total(dia, periodos.dia),
-      semana: total(semana, periodos.semana),
-      mes: total(mes, periodos.mes),
+      dia: totalPresentismo(dia, periodos.dia),
+      semana: totalPresentismo(semana, periodos.semana),
+      mes: totalPresentismo(mes, periodos.mes),
     };
   }
 
@@ -240,7 +282,7 @@ export class PresentismoService {
         ],
         skip,
         take,
-      }) as Promise<UsuarioFila[]>,
+      }) as Promise<UsuarioFilaPresentismo[]>,
     ]);
     const periodo = { desde: query.desde, hasta: query.hasta };
     const calculado = await this.calcular(usuarios, periodo);
@@ -266,7 +308,7 @@ export class PresentismoService {
             : null,
           localesAsignados: usuario._count.localesAsignados,
           ...datos,
-          porcentaje: porcentaje(datos.programadas, datos.entradas),
+          porcentaje: porcentajePresentismo(datos.programadas, datos.entradas),
         };
       }),
       total,
