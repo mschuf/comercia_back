@@ -2500,13 +2500,13 @@
     "semantic_hash": ""
   },
   "apps/mobile/App.tsx": {
-    "mtime": 1786474539.58776,
-    "ast_hash": "e2885930ce7a9a25b6a498f6f9778b3b",
+    "mtime": 1786479287.240307,
+    "ast_hash": "22baa9ba5b7f39e78ee3e3a5501a32a0",
     "semantic_hash": ""
   },
   "apps/mobile/app.json": {
-    "mtime": 1786476425.9340255,
-    "ast_hash": "35b07bb68c1e81017c24949490bf92a5",
+    "mtime": 1786479288.2913404,
+    "ast_hash": "ace97de7a72433af3b882226db4ab351",
     "semantic_hash": ""
   },
   "apps/mobile/index.ts": {
@@ -2610,13 +2610,13 @@
     "semantic_hash": ""
   },
   "apps/mobile/plugins/with-sim-phone-numbers.js": {
-    "mtime": 1786450320.244529,
-    "ast_hash": "953aae7d412a5408a36d89172b765afb",
+    "mtime": 1786480744.572238,
+    "ast_hash": "cdc02c2f2fd6c8de1bc6e677e3c78530",
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/sim.ts": {
-    "mtime": 1786130633.9609365,
-    "ast_hash": "7883d0ac051eb162588bbea4a5a2781b",
+    "mtime": 1786479277.4215686,
+    "ast_hash": "c8f6689f4a9c5d46cc5f4b4057097ca7",
     "semantic_hash": ""
   },
   "apps/mobile/scripts/build-local-apk.cjs": {
@@ -2650,7 +2650,7 @@
     "semantic_hash": ""
   },
   "apps/api/src/auth/utils/datos-usuario.spec.ts": {
-    "mtime": 1786450394.275515,
+    "mtime": 1786478495.0298307,
     "ast_hash": "37db21a3024be50cf9ff92f8a595df5e",
     "semantic_hash": ""
   },
@@ -2762,6 +2762,11 @@
   "graphify-out/memory/query_20260811_181922_arquitectura_existente_para_roles_team_leader_impu.md": {
     "mtime": 1786472362.5835397,
     "ast_hash": "3438f5ec20f9e2829a2c809462e917da",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260811_204300_ya_no_me_funciona_bien_el_apk_cuando_inicio_la_app.md": {
+    "mtime": 1786480980.6917486,
+    "ast_hash": "5f3cc3db2844b8c5031ae1abb7752f6a",
     "semantic_hash": ""
   }
 }

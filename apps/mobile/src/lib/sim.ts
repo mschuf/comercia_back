@@ -4,6 +4,7 @@ type NumeroSimNativo = { slotIndex: number; number: string | null };
 
 type ModuloSim = {
   getAvailablePhoneNumbers(): Promise<NumeroSimNativo[]>;
+  requestPhoneNumberHint?(): Promise<string | null>;
 };
 
 export type DiagnosticoSim = {
@@ -125,6 +126,52 @@ export async function leerNumerosSim(
         .filter((numero): numero is string => Boolean(numero)),
     ),
   ];
+}
+
+export async function obtenerNumerosSimParaLogin(): Promise<{
+  telefonos: string[];
+  mensaje: string;
+}> {
+  const diagnostico = await diagnosticarSim(true);
+  const telefonosSilenciosos = [
+    ...new Set(
+      diagnostico.sims
+        .map((sim) => sim.number)
+        .filter((numero): numero is string => Boolean(numero)),
+    ),
+  ];
+  if (telefonosSilenciosos.length > 0) {
+    return {
+      telefonos: telefonosSilenciosos,
+      mensaje: "Android reconoció el número de la SIM.",
+    };
+  }
+
+  if (!moduloSim?.requestPhoneNumberHint) {
+    return { telefonos: [], mensaje: diagnostico.mensaje };
+  }
+
+  try {
+    const numeroSeleccionado = (
+      await moduloSim.requestPhoneNumberHint()
+    )?.trim();
+    if (!numeroSeleccionado) {
+      return {
+        telefonos: [],
+        mensaje:
+          "No se seleccionó ningún número SIM. Podés ingresar con tus credenciales.",
+      };
+    }
+    return {
+      telefonos: [numeroSeleccionado],
+      mensaje: "Android confirmó el número de la SIM.",
+    };
+  } catch (error) {
+    return {
+      telefonos: [],
+      mensaje: `${diagnostico.mensaje} ${mensajeError(error)}`,
+    };
+  }
 }
 
 export function puedeLeerSimEnEsteDispositivo(): boolean {

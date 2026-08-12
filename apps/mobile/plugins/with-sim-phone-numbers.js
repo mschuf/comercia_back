@@ -1,9 +1,11 @@
 const fs = require("fs/promises");
 const path = require("path");
-const { withDangerousMod } = require("expo/config-plugins");
+const { withAppBuildGradle, withDangerousMod } = require("expo/config-plugins");
 
 const NOMBRE_ARCHIVO = "SimPhoneNumbersModule.kt";
 const NOMBRE_PAQUETE = "SimPhoneNumbersPackage";
+const DEPENDENCIA_PHONE_HINT =
+  'implementation("com.google.android.gms:play-services-auth:21.6.0")';
 
 async function buscarArchivo(raiz, nombre) {
   const entradas = await fs.readdir(raiz, { withFileTypes: true });
@@ -22,6 +24,8 @@ function codigoModulo(packageName) {
   return `package ${packageName}.sim
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.telephony.PhoneNumberUtils
@@ -29,18 +33,68 @@ import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.BaseActivityEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.uimanager.ViewManager
+import com.google.android.gms.auth.api.identity.GetPhoneNumberHintIntentRequest
+import com.google.android.gms.auth.api.identity.Identity
 import java.util.Locale
 
 class SimPhoneNumbersModule(
   private val reactContext: ReactApplicationContext,
 ) : ReactContextBaseJavaModule(reactContext) {
   override fun getName(): String = "ComerciaSimPhoneNumbers"
+
+  private var promesaSugerencia: Promise? = null
+
+  private val listenerActividad = object : BaseActivityEventListener() {
+    override fun onActivityResult(
+      activity: Activity,
+      requestCode: Int,
+      resultCode: Int,
+      data: Intent?,
+    ) {
+      if (requestCode != SOLICITUD_NUMERO_TELEFONO) return
+      val promise = promesaSugerencia ?: return
+      promesaSugerencia = null
+
+      if (resultCode != Activity.RESULT_OK || data == null) {
+        promise.resolve(null)
+        return
+      }
+
+      try {
+        val numero = Identity.getSignInClient(activity)
+          .getPhoneNumberFromIntent(data)
+          .trim()
+        promise.resolve(numero.takeIf { it.isNotBlank() })
+      } catch (error: Exception) {
+        promise.reject(
+          "PHONE_HINT_ERROR",
+          "No se pudo obtener el número seleccionado",
+          error,
+        )
+      }
+    }
+  }
+
+  init {
+    reactContext.addActivityEventListener(listenerActividad)
+  }
+
+  override fun invalidate() {
+    promesaSugerencia?.reject(
+      "PHONE_HINT_CANCELLED",
+      "La aplicación se cerró antes de seleccionar un número",
+    )
+    promesaSugerencia = null
+    reactContext.removeActivityEventListener(listenerActividad)
+    super.invalidate()
+  }
 
   private fun tienePermisos(): Boolean {
     if (reactContext.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -104,6 +158,61 @@ class SimPhoneNumbersModule(
       promise.reject("SIM_READ_ERROR", "No se pudo leer la SIM", error)
     }
   }
+
+  @ReactMethod
+  fun requestPhoneNumberHint(promise: Promise) {
+    if (promesaSugerencia != null) {
+      promise.reject(
+        "PHONE_HINT_IN_PROGRESS",
+        "Ya hay una selección de número en curso",
+      )
+      return
+    }
+
+    val activity = reactContext.currentActivity
+    if (activity == null) {
+      promise.reject(
+        "ACTIVITY_UNAVAILABLE",
+        "La pantalla de la aplicación todavía no está disponible",
+      )
+      return
+    }
+
+    val solicitud = GetPhoneNumberHintIntentRequest.builder().build()
+    Identity.getSignInClient(activity)
+      .getPhoneNumberHintIntent(solicitud)
+      .addOnSuccessListener { resultado ->
+        promesaSugerencia = promise
+        try {
+          activity.startIntentSenderForResult(
+            resultado.intentSender,
+            SOLICITUD_NUMERO_TELEFONO,
+            null,
+            0,
+            0,
+            0,
+          )
+        } catch (error: Exception) {
+          promesaSugerencia = null
+          promise.reject(
+            "PHONE_HINT_LAUNCH_ERROR",
+            "No se pudo abrir el selector de números SIM",
+            error,
+          )
+        }
+      }
+      .addOnFailureListener { error ->
+        promise.reject(
+          "PHONE_HINT_UNAVAILABLE",
+          "Android no ofreció números SIM para seleccionar",
+          error,
+        )
+      }
+  }
+
+  companion object {
+    private const val SOLICITUD_NUMERO_TELEFONO = 7216
+  }
 }
 
 class SimPhoneNumbersPackage : ReactPackage {
@@ -140,8 +249,30 @@ function actualizarMainApplication(contenido, packageName) {
   return actualizado;
 }
 
+function agregarDependenciaPhoneHint(contenido) {
+  if (contenido.includes("com.google.android.gms:play-services-auth")) {
+    return contenido;
+  }
+
+  const patron = /dependencies\s*\{\s*/;
+  if (!patron.test(contenido)) {
+    throw new Error("No se encontró dependencies en app/build.gradle");
+  }
+  return contenido.replace(
+    patron,
+    (coincidencia) => `${coincidencia}\n    ${DEPENDENCIA_PHONE_HINT}\n`,
+  );
+}
+
 module.exports = function withSimPhoneNumbers(config) {
-  return withDangerousMod(config, [
+  const configConDependencia = withAppBuildGradle(config, (modConfig) => {
+    modConfig.modResults.contents = agregarDependenciaPhoneHint(
+      modConfig.modResults.contents,
+    );
+    return modConfig;
+  });
+
+  return withDangerousMod(configConDependencia, [
     "android",
     async (modConfig) => {
       if (modConfig.modRequest.introspect) return modConfig;

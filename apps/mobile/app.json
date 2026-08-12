@@ -3,7 +3,7 @@
     "name": "Comercia Campo",
     "description": "Jornada, tareas y marcaciones del equipo de campo de Comercia.",
     "slug": "comercia-mobile",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "orientation": "portrait",
     "icon": "./assets/comercia-ubicacion-icon.png",
     "userInterfaceStyle": "light",
@@ -12,7 +12,7 @@
     },
     "android": {
       "package": "pro.comercia.mobile",
-      "versionCode": 6,
+      "versionCode": 7,
       "permissions": [
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.READ_PHONE_STATE",

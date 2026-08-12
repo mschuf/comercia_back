@@ -34,6 +34,7 @@ agents
 agrega
 agrupacion
 ajustar
+alcance
 algo
 alguna
 all
@@ -71,6 +72,7 @@ array
 arrays
 asignable
 asignables
+asignaci
 asignacion
 asignaciones
 asignada
@@ -98,6 +100,7 @@ backup
 badge
 ban
 bar
+barra
 barrel
 base
 based
@@ -115,6 +118,7 @@ body
 boolean
 boot
 bootstrap
+borra
 borrar
 boton
 botones
@@ -170,12 +174,14 @@ claro
 clase
 class
 claude
+clave
 cli
 clickeables
 clicks
 client
 cliente
 clientes
+cmake
 coarse
 code
 codex
@@ -216,6 +222,7 @@ concurrently
 condition
 conditional
 conditions
+conex
 conexi
 conexion
 conexiones
@@ -302,6 +309,7 @@ description
 desde
 despliegue
 despu
+destinatarios
 destino
 destroy
 detalle
@@ -324,6 +332,7 @@ dir
 direccion
 directorio
 directory
+dirigidas
 dispositivo
 dist
 distancia
@@ -373,10 +382,12 @@ entrada
 entrar
 enum
 env
+envia
 enviar
 envie
 environment
 equipo
+equivalentes
 error
 escritorio
 eslint
@@ -445,6 +456,7 @@ flatmap
 flicker
 flickering
 flujo
+font
 for
 force
 foreground
@@ -460,6 +472,7 @@ from
 front
 frontend
 fuente
+fuentes
 fuerza
 full
 fullstack
@@ -475,8 +488,11 @@ generate
 generico
 gente
 geo
+geocerca
+geocercas
 geolocalizacion
 geometria
+gestion
 gestor
 gesture
 get
@@ -487,12 +503,14 @@ globales
 globals
 google
 gps
+gradle
 grafico
 graphify
 guaranies
 guard
 guarda
 guardada
+guardado
 guardar
 guards
 guia
@@ -541,7 +559,9 @@ immutable
 implicit
 import
 imports
+impu
 impulsador
+impulsadores
 include
 incremental
 independent
@@ -616,6 +636,7 @@ listado
 listar
 listeners
 lists
+llama
 loader
 loading
 local
@@ -645,6 +666,8 @@ map
 mapa
 maps
 marca
+marcacion
+marcaciones
 marcar
 mark
 mas
@@ -661,8 +684,10 @@ mensaje
 mensajes
 mensuales
 menu
+mero
 meta
 metadata
+metrica
 metro
 metros
 migraciones
@@ -676,6 +701,7 @@ min
 minimize
 minutos
 mirar
+mis
 mismatch
 mismatches
 mites
@@ -731,6 +757,7 @@ not
 notificacion
 notificaciones
 notificar
+notifications
 novedad
 novedades
 nueva
@@ -740,6 +767,7 @@ number
 numbers
 numero
 numeros
+object
 objetivo
 obligatoria
 obligatorias
@@ -758,6 +786,7 @@ operaciones
 operation
 operations
 operativo
+operativos
 opt
 optimizacion
 optimizada
@@ -807,6 +836,7 @@ parse
 parser
 partes
 party
+pasar
 pasos
 pass
 passive
@@ -885,6 +915,7 @@ propias
 props
 provider
 proxima
+proximidad
 proyecto
 prueba
 puede
@@ -894,6 +925,7 @@ puertos
 punto
 put
 que
+qued
 queda
 query
 quick
@@ -938,6 +970,7 @@ remove
 render
 rendering
 renders
+rendimiento
 renombra
 repeated
 reportada
@@ -951,6 +984,7 @@ rerender
 res
 resolution
 resolve
+resolver
 resource
 resources
 responsable
@@ -982,6 +1016,7 @@ rutas
 rxjs
 safe
 salen
+salida
 salir
 schema
 schematics
@@ -989,6 +1024,8 @@ script
 scripts
 scrolling
 scrypt
+seccion
+secciones
 secrets
 sections
 secure
@@ -1007,6 +1044,7 @@ service
 servicios
 servidor
 servidores
+sesi
 sesion
 set
 setstate
@@ -1014,6 +1052,7 @@ settings
 setup
 shared
 shell
+short
 show
 side
 significa
@@ -1200,13 +1239,16 @@ versi
 version
 vertice
 vez
+viejo
 view
 viewport
 vigilante
 vil
+viles
 visibilidad
 visibility
 visible
+visibles
 visita
 visitas
 vista
@@ -1218,6 +1260,7 @@ vivo
 vnc
 volver
 vps
+vuelva
 warning
 watch
 waterfall

@@ -45,7 +45,7 @@ import {
   sincronizarUbicacionesPendientes,
   sincronizarRevocacionPendiente,
 } from "./src/lib/seguimiento";
-import { diagnosticarSim } from "./src/lib/sim";
+import { obtenerNumerosSimParaLogin } from "./src/lib/sim";
 import {
   anchoMaximoContenido,
   colores,
@@ -146,20 +146,12 @@ function Aplicacion() {
           setSeguimientoActivo(reanudado || (await estaSeguimientoActivo()));
           await actualizarPendientes();
         } else {
-          const lectura = await diagnosticarSim(true);
+          const lectura = await obtenerNumerosSimParaLogin();
           if (!montada) return;
-          const telefonos = [
-            ...new Set(
-              lectura.sims
-                .map((sim) => sim.number)
-                .filter((numero): numero is string => Boolean(numero)),
-            ),
-          ];
+          const telefonos = lectura.telefonos;
 
           if (telefonos.length === 0) {
-            setEstadoSim(
-              "Android no entregó el número de la SIM. Ingresá con tus credenciales.",
-            );
+            setEstadoSim(lectura.mensaje);
           } else {
             try {
               const nuevaSesion = await iniciarSesionMovilConSim(telefonos);
