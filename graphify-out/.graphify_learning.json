@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-11T20:09:32.911961+00:00",
+  "generated_at": "2026-08-12T18:51:14.356361+00:00",
   "nodes": {
     "apps_api_src_auth_auth_controller_authcontroller": {
       "code_fingerprint": "41d1dc8b5a2bb2dbb6ed83c349b139367fd7de34296754d681f14e36d1ed60a0",
@@ -12,7 +12,7 @@
           "q": "el back en api.comercia.pro funciona, hice un login y funciono https://api.comercia.pro/api/v1/auth/login"
         }
       ],
-      "score": 0.911348624,
+      "score": 0.891653032,
       "source_file": "apps/api/src/auth/auth.controller.ts",
       "status": "tentative",
       "uses": 1
@@ -20,21 +20,26 @@
     "apps_api_src_auth_auth_service_authservice": {
       "code_fingerprint": "6353c1eade1af57b6dd10bb1804450f6cd17e04216649c08277973046c12f7a4",
       "label": "AuthService",
-      "last": "2026-08-11T13:33:16.261843+00:00",
+      "last": "2026-08-11T20:43:00.690748+00:00",
       "provenance": [
+        {
+          "date": "2026-08-11T20:43:00.690748+00:00",
+          "outcome": "useful",
+          "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
+        },
         {
           "date": "2026-08-11T13:33:16.261843+00:00",
           "outcome": "useful",
           "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
         }
       ],
-      "score": 0.99366187,
+      "score": 1.951101339,
       "source_file": "apps/api/src/auth/auth.service.ts",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 2
     },
     "apps_api_src_impulsador_acceso_operaciones_campo_service_accesooperacionescamposervice": {
-      "code_fingerprint": "17de6d072505eb51586869d3ee69816f03f4959e372877999328ca261c4e1836",
+      "code_fingerprint": "eea605a94e9bb723347526971f09bba9031d35f10e9b084ea870c6e356e020d0",
       "label": "AccesoOperacionesCampoService",
       "last": "2026-08-11T18:19:22.582539+00:00",
       "provenance": [
@@ -44,7 +49,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.998233841,
+      "score": 0.97666053,
       "source_file": "apps/api/src/impulsador/acceso-operaciones-campo.service.ts",
       "status": "tentative",
       "uses": 1
@@ -60,13 +65,13 @@
           "q": "que significa programacion pausada y como reanudar"
         }
       ],
-      "score": 0.868062855,
+      "score": 0.849302731,
       "source_file": "apps/api/src/impulsador/interfaces/programacion-visita.interface.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_impulsador_visitas_service_visitasservice": {
-      "code_fingerprint": "d6d27ffd085ef581c27eea06a9bd6e9fbb373b64451f1942d4fdaef5ddf88d0d",
+      "code_fingerprint": "eb0f7a22e30afd5f09a77241b91f5e079d41dba91d5851cf1bcc046e16754226",
       "label": "VisitasService",
       "last": "2026-08-11T18:19:22.582539+00:00",
       "provenance": [
@@ -76,7 +81,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.998233841,
+      "score": 0.97666053,
       "source_file": "apps/api/src/impulsador/visitas.service.ts",
       "status": "tentative",
       "uses": 1
@@ -92,13 +97,13 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.868130587,
+      "score": 0.849369,
       "source_file": "apps/api/src/repositor/osrm.service.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_repositor_repositor_service_repositorservice": {
-      "code_fingerprint": "e9a49a1ff39ad3b033ae7948347f6f76ebe14814e4907ef2a3efdf7431399a04",
+      "code_fingerprint": "7e717ab99eb098eb14a02ef07532dfc2e61a816cb4bb09d404bade7f4a4c884a",
       "label": "RepositorService",
       "last": "2026-08-11T18:19:22.582539+00:00",
       "provenance": [
@@ -108,7 +113,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.998233841,
+      "score": 0.97666053,
       "source_file": "apps/api/src/repositor/repositor.service.ts",
       "status": "tentative",
       "uses": 1
@@ -124,7 +129,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.868130587,
+      "score": 0.849369,
       "source_file": "apps/api/src/repositor/utils/optimizacion-ruta.ts",
       "status": "tentative",
       "uses": 1
@@ -140,7 +145,7 @@
           "q": "Qué significan precision_metros, registrada_en y recibida_en en ubicaciones_usuario"
         }
       ],
-      "score": 0.992128664,
+      "score": 0.970687295,
       "source_file": "apps/api/src/ubicaciones/dto/ubicacion.dto.ts",
       "status": "tentative",
       "uses": 1
@@ -161,24 +166,45 @@
           "q": "en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios"
         }
       ],
-      "score": 1.903436445,
+      "score": 1.862300366,
       "source_file": "apps/api/src/ubicaciones/ubicaciones.service.ts",
       "status": "preferred",
       "uses": 2
     },
     "apps_mobile_app_tsx_apps_mobile_app": {
-      "code_fingerprint": "7cfbbd0d6143e7f97a959270cd3d0388e889aeff045bb80dc6138df9c39025bd",
+      "code_fingerprint": "278a19186dd1309b29bfd133c2471f518315716ab429aaa82f465605b0e095f0",
       "label": "App.tsx",
-      "last": "2026-08-11T13:33:16.261843+00:00",
+      "last": "2026-08-11T20:43:00.690748+00:00",
       "provenance": [
+        {
+          "date": "2026-08-11T20:43:00.690748+00:00",
+          "outcome": "useful",
+          "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
+        },
         {
           "date": "2026-08-11T13:33:16.261843+00:00",
           "outcome": "useful",
           "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
         }
       ],
-      "score": 0.99366187,
+      "score": 1.951101339,
       "source_file": "apps/mobile/App.tsx",
+      "status": "preferred",
+      "uses": 2
+    },
+    "apps_mobile_plugins_with_sim_phone_numbers": {
+      "code_fingerprint": "fc7d6ec1112be9a2d39fbf5a2d3171b586936988ad221c6cbf04435e26f60aa9",
+      "label": "with-sim-phone-numbers.js",
+      "last": "2026-08-11T20:43:00.690748+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-11T20:43:00.690748+00:00",
+          "outcome": "useful",
+          "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
+        }
+      ],
+      "score": 0.978913973,
+      "source_file": "apps/mobile/plugins/with-sim-phone-numbers.js",
       "status": "tentative",
       "uses": 1
     },
@@ -193,7 +219,7 @@
           "q": "como se llama el store que usa cuando no hay conexion y guarda en el celular, y se borra una vez que se envia al servidor"
         }
       ],
-      "score": 0.997948886,
+      "score": 0.976381733,
       "source_file": "apps/mobile/src/lib/cola-ubicaciones.ts",
       "status": "tentative",
       "uses": 1
@@ -219,7 +245,7 @@
           "q": "en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios"
         }
       ],
-      "score": 2.814785069,
+      "score": 2.753953398,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
       "status": "preferred",
       "uses": 3
@@ -235,13 +261,13 @@
           "q": "como se llama el store que usa cuando no hay conexion y guarda en el celular, y se borra una vez que se envia al servidor"
         }
       ],
-      "score": 0.997948886,
+      "score": 0.976381733,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_mobile_src_lib_sesion": {
-      "code_fingerprint": "9427da649f8e1863d94e5409876f37f439bf4f43e4eb757e4857a522eec7bed4",
+      "code_fingerprint": "572e8a8fcda8efede9ff864de177eb20510b46fd85a47e4a73865ed7e3e329b7",
       "label": "sesion.ts",
       "last": "2026-08-11T13:33:16.261843+00:00",
       "provenance": [
@@ -251,13 +277,13 @@
           "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
         }
       ],
-      "score": 0.99366187,
+      "score": 0.972187366,
       "source_file": "apps/mobile/src/lib/sesion.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_mobile_src_lib_sesion_sesionmovil": {
-      "code_fingerprint": "9427da649f8e1863d94e5409876f37f439bf4f43e4eb757e4857a522eec7bed4",
+      "code_fingerprint": "572e8a8fcda8efede9ff864de177eb20510b46fd85a47e4a73865ed7e3e329b7",
       "label": "SesionMovil",
       "last": "2026-08-07T19:43:59.178605+00:00",
       "provenance": [
@@ -267,8 +293,40 @@
           "q": "el back en api.comercia.pro funciona, hice un login y funciono https://api.comercia.pro/api/v1/auth/login"
         }
       ],
-      "score": 0.911348624,
+      "score": 0.891653032,
       "source_file": "apps/mobile/src/lib/sesion.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_mobile_src_lib_sim": {
+      "code_fingerprint": "c2feb6af34668b53ed50713fc6b7b477299775bf41d61f09be705ee390f16986",
+      "label": "sim.ts",
+      "last": "2026-08-11T20:43:00.690748+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-11T20:43:00.690748+00:00",
+          "outcome": "useful",
+          "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
+        }
+      ],
+      "score": 0.978913973,
+      "source_file": "apps/mobile/src/lib/sim.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_mobile_src_lib_sim_numerosimnativo": {
+      "code_fingerprint": "c2feb6af34668b53ed50713fc6b7b477299775bf41d61f09be705ee390f16986",
+      "label": "NumeroSimNativo",
+      "last": "2026-08-11T20:43:00.690748+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-11T20:43:00.690748+00:00",
+          "outcome": "useful",
+          "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
+        }
+      ],
+      "score": 0.978913973,
+      "source_file": "apps/mobile/src/lib/sim.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -283,7 +341,7 @@
           "q": "que significa programacion pausada y como reanudar"
         }
       ],
-      "score": 0.868062855,
+      "score": 0.849302731,
       "source_file": "apps/web/src/components/impulsador/editor-programacion-visita.tsx",
       "status": "tentative",
       "uses": 1
@@ -299,13 +357,13 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.998233841,
+      "score": 0.97666053,
       "source_file": "apps/web/src/types/local.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_web_src_types_tarea_tareaglobal": {
-      "code_fingerprint": "33ea5ebe428dc549fe19b52b6578aae777e2ad0d06d04a13a4446d311476953c",
+      "code_fingerprint": "3d32503537a3952fbf05e27f88bbd6ce2bc35ff3c46230f34168f7bc88c28bc4",
       "label": "TareaGlobal",
       "last": "2026-08-11T18:19:22.582539+00:00",
       "provenance": [
@@ -315,7 +373,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.998233841,
+      "score": 0.97666053,
       "source_file": "apps/web/src/types/tarea.ts",
       "status": "tentative",
       "uses": 1
@@ -331,7 +389,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.998233841,
+      "score": 0.97666053,
       "source_file": "apps/web/src/types/visita.ts",
       "status": "tentative",
       "uses": 1
@@ -347,7 +405,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.868130587,
+      "score": 0.849369,
       "source_file": "apps/web/package.json",
       "status": "tentative",
       "uses": 1

@@ -2830,8 +2830,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/presentismo.module.ts": {
-    "mtime": 1786556624.5882497,
-    "ast_hash": "59e408ee0d75eb63ca02015fecd5fdc5",
+    "mtime": 1786560866.7925148,
+    "ast_hash": "a3e1659001ced521abecdc84cfb88769",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/presentismo.service.ts": {
@@ -2872,6 +2872,16 @@
   "apps/api/src/tareas/utils/visibilidad-tarea.ts": {
     "mtime": 1786558676.9438343,
     "ast_hash": "808f08b7e3bf4457d6c66ec0c77062d5",
+    "semantic_hash": ""
+  },
+  "apps/api/src/presentismo/presentismo.module.spec.ts": {
+    "mtime": 1786560899.2029645,
+    "ast_hash": "72d028163532fd646b073985fba99de7",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260812_185256_en_producci\u00f3n_el_login_da_cors_y_el_front_dice_no.md": {
+    "mtime": 1786560776.6047025,
+    "ast_hash": "036fd3c6ff84d955193e63e06810d1c4",
     "semantic_hash": ""
   }
 }
