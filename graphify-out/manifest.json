@@ -2500,13 +2500,13 @@
     "semantic_hash": ""
   },
   "apps/mobile/App.tsx": {
-    "mtime": 1786479287.240307,
-    "ast_hash": "22baa9ba5b7f39e78ee3e3a5501a32a0",
+    "mtime": 1786536988.9944339,
+    "ast_hash": "d336ae68a24190e62ef849fa25f0ca59",
     "semantic_hash": ""
   },
   "apps/mobile/app.json": {
-    "mtime": 1786479288.2913404,
-    "ast_hash": "ace97de7a72433af3b882226db4ab351",
+    "mtime": 1786536106.5956888,
+    "ast_hash": "5de092610d336d3b9ff1cca89506cab2",
     "semantic_hash": ""
   },
   "apps/mobile/index.ts": {
@@ -2710,18 +2710,13 @@
     "semantic_hash": ""
   },
   "apps/mobile/plugins/with-short-cmake-object-paths.js": {
-    "mtime": 1786476439.042543,
-    "ast_hash": "2d8ff419ff5d199673f1ee3f59f38a0c",
+    "mtime": 1786535669.005739,
+    "ast_hash": "87005aa926a4e040378431e6f1cb24ed",
     "semantic_hash": ""
   },
   "apps/mobile/react-native.config.js": {
     "mtime": 1786477231.113982,
     "ast_hash": "60040348822aa0cc46585a7bfc87959c",
-    "semantic_hash": ""
-  },
-  "apps/mobile/src/components/panel-impulsador.tsx": {
-    "mtime": 1786474497.6047728,
-    "ast_hash": "ee69b138f5168ef9aba2cb351656815a",
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/cola-marcaciones.ts": {
@@ -2767,6 +2762,41 @@
   "graphify-out/memory/query_20260811_204300_ya_no_me_funciona_bien_el_apk_cuando_inicio_la_app.md": {
     "mtime": 1786480980.6917486,
     "ast_hash": "5f3cc3db2844b8c5031ae1abb7752f6a",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/components/acceso/panel-login.tsx": {
+    "mtime": 1786536896.11822,
+    "ast_hash": "6844fe2018d77f453d60df95cf07ae50",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/components/acceso/panel-seguimiento.tsx": {
+    "mtime": 1786536896.8672156,
+    "ast_hash": "1e2dc95f7993940b98ed27edf1eed617",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/components/acceso/pantalla-carga.tsx": {
+    "mtime": 1786536895.3054557,
+    "ast_hash": "fa224fed639cc32719ff0b822fea9d1a",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/components/impulsador/panel-impulsador.tsx": {
+    "mtime": 1786537380.0417306,
+    "ast_hash": "d3aedf86bba1987f7e02de30be2e8c00",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/components/impulsador/utils.ts": {
+    "mtime": 1786537092.0575497,
+    "ast_hash": "34f70b19ab723a2e7daa05d4f66d9371",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/components/impulsador/vistas.tsx": {
+    "mtime": 1786537256.5653307,
+    "ast_hash": "81d1ca329a11b9823cbaf36952ba2279",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/components/ui/boton.tsx": {
+    "mtime": 1786536894.5518498,
+    "ast_hash": "d33867313f46005c348c39db63c3280b",
     "semantic_hash": ""
   }
 }

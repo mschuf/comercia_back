@@ -1,20 +1,15 @@
 /* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 */
-/* Hallmark · contrast: pass (40–41) · nav: C4 · tokens: pass (48) · mobile: pass (34, 49–57) · slop: pass */
 import * as Network from "expo-network";
 import { useFonts } from "expo-font";
 import { StatusBar } from "expo-status-bar";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
   AppState,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -22,6 +17,10 @@ import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { PanelLogin } from "./src/components/acceso/panel-login";
+import { PantallaCarga } from "./src/components/acceso/pantalla-carga";
+import { PanelSeguimiento } from "./src/components/acceso/panel-seguimiento";
+import { PanelImpulsador } from "./src/components/impulsador/panel-impulsador";
 import {
   ErrorApi,
   iniciarSesionMovil,
@@ -35,7 +34,6 @@ import {
   obtenerSesion,
   type SesionMovil,
 } from "./src/lib/sesion";
-import { PanelImpulsador } from "./src/components/panel-impulsador";
 import {
   activarSeguimiento,
   cantidadUbicacionesPendientes,
@@ -46,13 +44,7 @@ import {
   sincronizarRevocacionPendiente,
 } from "./src/lib/seguimiento";
 import { obtenerNumerosSimParaLogin } from "./src/lib/sim";
-import {
-  anchoMaximoContenido,
-  colores,
-  espacios,
-  fuentes,
-  radios,
-} from "./src/tema";
+import { anchoMaximoContenido, colores, espacios, radios } from "./src/tema";
 
 function textoError(error: unknown): string {
   if (error instanceof ErrorApi) return error.message;
@@ -89,6 +81,7 @@ export default function App() {
 function Aplicacion() {
   const insets = useSafeAreaInsets();
   const { height, width } = useWindowDimensions();
+  const scrollLoginRef = useRef<ScrollView>(null);
   const compacto = height < 720 || width < 360;
   const [sesion, setSesion] = useState<SesionMovil | null>(null);
   const [identificador, setIdentificador] = useState("");
@@ -100,14 +93,17 @@ function Aplicacion() {
   const [enLinea, setEnLinea] = useState<boolean | null>(null);
   const [pendientes, setPendientes] = useState(0);
   const [error, setError] = useState<string | null>(null);
-  const [estadoSim, setEstadoSim] = useState(
-    "Buscando una cuenta asociada a la SIM…",
-  );
 
   const actualizarPendientes = useCallback(async () => {
     const total = await cantidadUbicacionesPendientes().catch(() => 0);
     setPendientes(total);
     return total;
+  }, []);
+
+  const mostrarCampoDeLogin = useCallback(() => {
+    requestAnimationFrame(() => {
+      scrollLoginRef.current?.scrollToEnd({ animated: true });
+    });
   }, []);
 
   const sincronizar = useCallback(async () => {
@@ -146,29 +142,17 @@ function Aplicacion() {
           setSeguimientoActivo(reanudado || (await estaSeguimientoActivo()));
           await actualizarPendientes();
         } else {
-          const lectura = await obtenerNumerosSimParaLogin();
-          if (!montada) return;
-          const telefonos = lectura.telefonos;
+          const { telefonos } = await obtenerNumerosSimParaLogin();
+          if (!montada || telefonos.length === 0) return;
 
-          if (telefonos.length === 0) {
-            setEstadoSim(lectura.mensaje);
-          } else {
-            try {
-              const nuevaSesion = await iniciarSesionMovilConSim(telefonos);
-              await guardarSesion(nuevaSesion);
-              if (!montada) return;
-              setSesion(nuevaSesion);
-              setEstadoSim("Cuenta reconocida automáticamente.");
-              await actualizarPendientes();
-            } catch (errorDeSim) {
-              if (!montada) return;
-              setEstadoSim(
-                errorDeSim instanceof ErrorApi &&
-                  [400, 401, 403, 404].includes(errorDeSim.status)
-                  ? "La SIM no coincide con una cuenta activa. Ingresá con tus credenciales."
-                  : "No pudimos comprobar la SIM ahora. Podés ingresar con tus credenciales.",
-              );
-            }
+          try {
+            const nuevaSesion = await iniciarSesionMovilConSim(telefonos);
+            await guardarSesion(nuevaSesion);
+            if (!montada) return;
+            setSesion(nuevaSesion);
+            await actualizarPendientes();
+          } catch {
+            // Sin coincidencia o sin señal: se muestran las credenciales.
           }
         }
       } catch (errorDeInicio) {
@@ -190,16 +174,15 @@ function Aplicacion() {
 
       try {
         const { usuario } = await obtenerUsuarioActual(sesion.token);
-        if (!montada) return;
-        if (JSON.stringify(usuario) === JSON.stringify(sesion.usuario)) return;
+        if (!montada || JSON.stringify(usuario) === JSON.stringify(sesion.usuario)) {
+          return;
+        }
 
         const sesionActualizada: SesionMovil = { ...sesion, usuario };
         await guardarSesion(sesionActualizada);
         if (!montada) return;
         setSesion((sesionVigente) =>
-          sesionVigente?.token === sesion.token
-            ? sesionActualizada
-            : sesionVigente,
+          sesionVigente?.token === sesion.token ? sesionActualizada : sesionVigente,
         );
       } catch (errorDePerfil) {
         if (
@@ -209,7 +192,6 @@ function Aplicacion() {
         ) {
           setError("La sesión venció. Iniciá sesión nuevamente.");
         }
-        // Sin internet se conserva el perfil local y se reintenta al reconectar.
       }
     };
 
@@ -306,19 +288,13 @@ function Aplicacion() {
     }
   }
 
-  if (cargando) {
-    return <PantallaCarga />;
-  }
+  if (cargando) return <PantallaCarga />;
 
   if (sesion && esSesionImpulsador(sesion)) {
     return (
       <>
         <StatusBar style="light" />
-        <PanelImpulsador
-          sesion={sesion}
-          enLinea={enLinea}
-          alCerrar={cerrarSesion}
-        />
+        <PanelImpulsador sesion={sesion} enLinea={enLinea} alCerrar={cerrarSesion} />
       </>
     );
   }
@@ -329,10 +305,11 @@ function Aplicacion() {
     <View style={styles.pantalla}>
       <StatusBar style="light" />
       <KeyboardAvoidingView
-        behavior={Platform.select({ ios: "padding", default: undefined })}
+        behavior={Platform.select({ ios: "padding", android: "height" })}
         style={styles.flex}
       >
         <ScrollView
+          ref={scrollLoginRef}
           contentContainerStyle={[
             styles.contenido,
             {
@@ -344,18 +321,13 @@ function Aplicacion() {
             },
           ]}
           contentInsetAdjustmentBehavior="never"
+          keyboardDismissMode="on-drag"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.columna}>
             <View style={[styles.marca, compacto && styles.marcaCompacta]}>
               <Text style={styles.marcaEyebrow}>COMERCIA</Text>
-              <Text style={[styles.titulo, compacto && styles.tituloCompacto]}>
-                Trabajo de campo
-              </Text>
-              <Text style={styles.subtitulo}>
-                Ubicación segura, incluso cuando te quedás sin señal.
-              </Text>
             </View>
 
             {sesion ? (
@@ -374,9 +346,9 @@ function Aplicacion() {
                 identificador={identificador}
                 password={password}
                 procesando={procesando}
-                estadoSim={estadoSim}
                 alCambiarIdentificador={setIdentificador}
                 alCambiarPassword={setPassword}
+                alEnfocarCampo={mostrarCampoDeLogin}
                 alIngresar={iniciarSesion}
               />
             )}
@@ -394,288 +366,9 @@ function Aplicacion() {
   );
 }
 
-function PantallaCarga() {
-  const insets = useSafeAreaInsets();
-  return (
-    <View
-      style={[
-        styles.pantalla,
-        styles.centrado,
-        { paddingBottom: insets.bottom, paddingTop: insets.top },
-      ]}
-    >
-      <StatusBar style="light" />
-      <ActivityIndicator color={colores.acento} size="large" />
-      <Text style={styles.cargandoTitulo}>Preparando tu cuenta</Text>
-      <Text style={styles.cargandoTexto}>
-        Comprobando la sesión y la SIM de este teléfono…
-      </Text>
-    </View>
-  );
-}
-
-function PanelLogin({
-  identificador,
-  password,
-  procesando,
-  estadoSim,
-  alCambiarIdentificador,
-  alCambiarPassword,
-  alIngresar,
-}: {
-  identificador: string;
-  password: string;
-  procesando: boolean;
-  estadoSim: string;
-  alCambiarIdentificador: (valor: string) => void;
-  alCambiarPassword: (valor: string) => void;
-  alIngresar: () => void;
-}) {
-  return (
-    <View style={styles.tarjeta}>
-      <View>
-        <Text style={styles.encabezadoTarjeta}>Ingresá a Comercia</Text>
-        <Text style={styles.descripcion}>
-          Si Android comparte el número de tu SIM y coincide con tu cuenta, el
-          ingreso ocurre automáticamente. Las credenciales quedan como respaldo.
-        </Text>
-      </View>
-
-      <View style={styles.estadoSim}>
-        <View style={styles.puntoInformativo} />
-        <Text style={styles.estadoSimTexto}>{estadoSim}</Text>
-      </View>
-
-      <View style={styles.formulario}>
-        <View style={styles.campo}>
-          <Text style={styles.etiqueta}>Correo o usuario</Text>
-          <TextInput
-            autoCapitalize="none"
-            autoComplete="username"
-            autoCorrect={false}
-            editable={!procesando}
-            keyboardType="email-address"
-            onChangeText={alCambiarIdentificador}
-            placeholder="usuario@empresa.com"
-            placeholderTextColor={colores.textoPlaceholder}
-            returnKeyType="next"
-            style={styles.input}
-            value={identificador}
-          />
-        </View>
-        <View style={styles.campo}>
-          <Text style={styles.etiqueta}>Contraseña</Text>
-          <TextInput
-            autoCapitalize="none"
-            autoComplete="current-password"
-            editable={!procesando}
-            onChangeText={alCambiarPassword}
-            onSubmitEditing={alIngresar}
-            placeholder="Tu contraseña"
-            placeholderTextColor={colores.textoPlaceholder}
-            returnKeyType="go"
-            secureTextEntry
-            style={styles.input}
-            value={password}
-          />
-        </View>
-      </View>
-
-      <Boton
-        etiqueta={procesando ? "Ingresando…" : "Ingresar"}
-        deshabilitado={procesando}
-        onPress={alIngresar}
-      />
-    </View>
-  );
-}
-
-function PanelSeguimiento({
-  sesion,
-  activo,
-  procesando,
-  sincronizando,
-  enLinea,
-  pendientes,
-  alCambiar,
-  alCerrar,
-}: {
-  sesion: SesionMovil;
-  activo: boolean;
-  procesando: boolean;
-  sincronizando: boolean;
-  enLinea: boolean | null;
-  pendientes: number;
-  alCambiar: () => void;
-  alCerrar: () => void;
-}) {
-  const nombre = `${sesion.usuario.nombre} ${sesion.usuario.apellido}`.trim();
-  const sinInternet = enLinea === false;
-  const tituloSincronizacion = sinInternet
-    ? "Sin conexión"
-    : sincronizando
-      ? "Sincronizando"
-      : pendientes > 0
-        ? `${pendientes} por enviar`
-        : "Ubicaciones al día";
-  const detalleSincronizacion = sinInternet
-    ? pendientes > 0
-      ? `${pendientes} ubicación${pendientes === 1 ? "" : "es"} guardada${pendientes === 1 ? "" : "s"} en este teléfono.`
-      : "Las próximas ubicaciones se guardarán en este teléfono."
-    : pendientes > 0
-      ? "Se enviarán automáticamente cuando el servidor responda."
-      : "No hay ubicaciones pendientes de envío.";
-
-  return (
-    <View style={styles.grupoTarjetas}>
-      <View style={styles.tarjeta}>
-        <View style={styles.identidad}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarTexto}>
-              {(sesion.usuario.nombre[0] ?? "U").toUpperCase()}
-              {(sesion.usuario.apellido[0] ?? "").toUpperCase()}
-            </Text>
-          </View>
-          <View style={styles.identidadTexto}>
-            <Text style={styles.saludo}>{nombre}</Text>
-            <Text style={styles.empresa}>{sesion.usuario.empresa.nombre}</Text>
-            <Text style={styles.celular}>{sesion.usuario.celular}</Text>
-          </View>
-        </View>
-
-        <View style={styles.divisor} />
-
-        <View style={styles.estadoPrincipal}>
-          <View
-            style={[
-              styles.indicadorEstado,
-              activo && styles.indicadorEstadoActivo,
-            ]}
-          />
-          <View style={styles.estadoPrincipalTexto}>
-            <Text style={styles.estadoTitulo}>
-              {activo ? "Seguimiento activo" : "Seguimiento detenido"}
-            </Text>
-            <Text style={styles.estadoDetalle}>
-              {activo
-                ? "Guardando una ubicación aproximadamente cada 3 minutos."
-                : "No se están registrando nuevas ubicaciones."}
-            </Text>
-          </View>
-        </View>
-
-        {!activo ? (
-          <View style={styles.aviso}>
-            <Text style={styles.avisoTexto}>
-              Al activar, Android solicitará ubicación precisa y en segundo
-              plano. Siempre podés detenerla desde acá.
-            </Text>
-          </View>
-        ) : null}
-
-        <Boton
-          variante={activo ? "peligro" : "primario"}
-          etiqueta={
-            procesando
-              ? "Actualizando…"
-              : activo
-                ? "Detener seguimiento"
-                : "Activar seguimiento"
-          }
-          deshabilitado={procesando}
-          onPress={() => {
-            if (activo) {
-              Alert.alert(
-                "¿Detener seguimiento?",
-                "Dejarás de guardar nuevas ubicaciones desde este teléfono.",
-                [
-                  { text: "Cancelar", style: "cancel" },
-                  { text: "Detener", style: "destructive", onPress: alCambiar },
-                ],
-              );
-              return;
-            }
-            void alCambiar();
-          }}
-        />
-      </View>
-
-      <View style={styles.tarjetaSecundaria}>
-        <View style={styles.sincronizacionCabecera}>
-          <View
-            style={[
-              styles.puntoRed,
-              sinInternet
-                ? styles.puntoRedSinConexion
-                : styles.puntoRedConConexion,
-            ]}
-          />
-          <Text style={styles.sincronizacionTitulo}>
-            {tituloSincronizacion}
-          </Text>
-        </View>
-        <Text style={styles.sincronizacionDetalle}>
-          {detalleSincronizacion}
-        </Text>
-      </View>
-
-      <Pressable
-        accessibilityRole="button"
-        disabled={procesando}
-        hitSlop={10}
-        onPress={() => void alCerrar()}
-        style={({ pressed }) => [
-          styles.cerrarSesion,
-          pressed && styles.cerrarSesionPresionado,
-        ]}
-      >
-        <Text style={styles.cerrarSesionTexto}>
-          Cerrar sesión en este teléfono
-        </Text>
-      </Pressable>
-    </View>
-  );
-}
-
-function Boton({
-  etiqueta,
-  onPress,
-  deshabilitado,
-  variante = "primario",
-}: {
-  etiqueta: string;
-  onPress: () => void;
-  deshabilitado: boolean;
-  variante?: "primario" | "peligro";
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      disabled={deshabilitado}
-      onPress={() => void onPress()}
-      style={({ pressed }) => [
-        styles.boton,
-        variante === "peligro" && styles.botonPeligro,
-        pressed &&
-          (variante === "peligro"
-            ? styles.botonPeligroPresionado
-            : styles.botonPresionado),
-        deshabilitado && styles.botonDeshabilitado,
-      ]}
-    >
-      <Text style={styles.botonTexto}>{etiqueta}</Text>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   pantalla: { backgroundColor: colores.fondoElevado, flex: 1 },
-  centrado: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: espacios.xl,
-  },
   contenido: { flexGrow: 1, justifyContent: "center" },
   columna: {
     alignSelf: "center",
@@ -690,98 +383,6 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 1.8,
   },
-  titulo: {
-    color: colores.textoSobreOscuro,
-    fontFamily: fuentes.titulos,
-    fontSize: 30,
-    fontWeight: "800",
-    letterSpacing: -0.6,
-    marginTop: espacios.xs,
-  },
-  tituloCompacto: { fontSize: 25 },
-  subtitulo: {
-    color: colores.textoSobreOscuroSecundario,
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: espacios.xs,
-  },
-  tarjeta: {
-    backgroundColor: colores.tarjeta,
-    borderRadius: radios.grande,
-    gap: espacios.md,
-    padding: espacios.lg,
-  },
-  tarjetaSecundaria: {
-    backgroundColor: colores.fondoElevado,
-    borderColor: colores.bordeSobreOscuro,
-    borderRadius: radios.medio,
-    borderWidth: 1,
-    gap: espacios.xs,
-    padding: espacios.md,
-  },
-  grupoTarjetas: { gap: espacios.sm },
-  encabezadoTarjeta: {
-    color: colores.texto,
-    fontFamily: fuentes.titulos,
-    fontSize: 23,
-    fontWeight: "800",
-    letterSpacing: -0.3,
-  },
-  descripcion: {
-    color: colores.textoSecundario,
-    fontSize: 14,
-    lineHeight: 21,
-    marginTop: espacios.xs,
-  },
-  estadoSim: {
-    alignItems: "flex-start",
-    backgroundColor: colores.tarjetaSuave,
-    borderRadius: radios.medio,
-    flexDirection: "row",
-    gap: espacios.sm,
-    padding: espacios.sm,
-  },
-  puntoInformativo: {
-    backgroundColor: colores.primario,
-    borderRadius: radios.redondo,
-    height: 8,
-    marginTop: 6,
-    width: 8,
-  },
-  estadoSimTexto: {
-    color: colores.textoSecundario,
-    flex: 1,
-    fontSize: 13,
-    lineHeight: 19,
-  },
-  formulario: { gap: espacios.sm },
-  campo: { gap: espacios.xs },
-  etiqueta: { color: colores.texto, fontSize: 13, fontWeight: "700" },
-  input: {
-    backgroundColor: colores.blanco,
-    borderColor: colores.borde,
-    borderRadius: radios.medio,
-    borderWidth: 1,
-    color: colores.texto,
-    fontSize: 16,
-    minHeight: 52,
-    paddingHorizontal: espacios.md,
-    paddingVertical: 12,
-  },
-  boton: {
-    alignItems: "center",
-    backgroundColor: colores.primario,
-    borderRadius: radios.medio,
-    justifyContent: "center",
-    minHeight: 54,
-    paddingHorizontal: espacios.md,
-    paddingVertical: espacios.sm,
-  },
-  botonPresionado: { backgroundColor: colores.primarioPresionado },
-  botonPeligro: { backgroundColor: colores.peligro },
-  botonPeligroPresionado: { backgroundColor: colores.peligroPresionado },
-  botonDeshabilitado: { opacity: 0.58 },
-  botonTexto: { color: colores.blanco, fontSize: 16, fontWeight: "800" },
   error: {
     backgroundColor: colores.errorFondo,
     borderRadius: radios.medio,
@@ -791,100 +392,4 @@ const styles = StyleSheet.create({
   },
   errorTitulo: { color: colores.errorTexto, fontSize: 14, fontWeight: "800" },
   errorTexto: { color: colores.errorTexto, fontSize: 13, lineHeight: 19 },
-  cargandoTitulo: {
-    color: colores.textoSobreOscuro,
-    fontSize: 19,
-    fontWeight: "800",
-    marginTop: espacios.md,
-  },
-  cargandoTexto: {
-    color: colores.textoSobreOscuroSecundario,
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: espacios.xs,
-    textAlign: "center",
-  },
-  identidad: { alignItems: "center", flexDirection: "row", gap: espacios.sm },
-  avatar: {
-    alignItems: "center",
-    backgroundColor: colores.acentoSuave,
-    borderRadius: radios.redondo,
-    height: 48,
-    justifyContent: "center",
-    width: 48,
-  },
-  avatarTexto: { color: colores.exito, fontSize: 16, fontWeight: "900" },
-  identidadTexto: { flex: 1 },
-  saludo: {
-    color: colores.texto,
-    fontFamily: fuentes.titulos,
-    fontSize: 20,
-    fontWeight: "800",
-  },
-  empresa: { color: colores.textoSecundario, fontSize: 13, marginTop: 2 },
-  celular: {
-    color: colores.texto,
-    fontSize: 13,
-    fontWeight: "700",
-    marginTop: 3,
-  },
-  divisor: { backgroundColor: colores.borde, height: StyleSheet.hairlineWidth },
-  estadoPrincipal: {
-    alignItems: "flex-start",
-    flexDirection: "row",
-    gap: espacios.sm,
-  },
-  indicadorEstado: {
-    backgroundColor: colores.inactivo,
-    borderRadius: radios.redondo,
-    height: 11,
-    marginTop: 5,
-    width: 11,
-  },
-  indicadorEstadoActivo: { backgroundColor: colores.exito },
-  estadoPrincipalTexto: { flex: 1 },
-  estadoTitulo: { color: colores.texto, fontSize: 16, fontWeight: "800" },
-  estadoDetalle: {
-    color: colores.textoSecundario,
-    fontSize: 13,
-    lineHeight: 19,
-    marginTop: espacios.xxs,
-  },
-  aviso: {
-    backgroundColor: colores.acentoSuave,
-    borderRadius: radios.medio,
-    padding: espacios.sm,
-  },
-  avisoTexto: { color: colores.textoAviso, fontSize: 13, lineHeight: 19 },
-  sincronizacionCabecera: {
-    alignItems: "center",
-    flexDirection: "row",
-    gap: espacios.xs,
-  },
-  puntoRed: { borderRadius: radios.redondo, height: 9, width: 9 },
-  puntoRedConConexion: { backgroundColor: colores.acento },
-  puntoRedSinConexion: { backgroundColor: colores.indicadorAdvertencia },
-  sincronizacionTitulo: {
-    color: colores.textoSobreOscuro,
-    fontSize: 14,
-    fontWeight: "800",
-  },
-  sincronizacionDetalle: {
-    color: colores.textoSobreOscuroSecundario,
-    fontSize: 13,
-    lineHeight: 19,
-    paddingLeft: 17,
-  },
-  cerrarSesion: {
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 48,
-    paddingHorizontal: espacios.md,
-  },
-  cerrarSesionPresionado: { opacity: 0.65 },
-  cerrarSesionTexto: {
-    color: colores.textoSobreOscuroSecundario,
-    fontSize: 14,
-    fontWeight: "700",
-  },
 });
