@@ -401,6 +401,7 @@ environment
 equipo
 equivalentes
 error
+escenario
 escritorio
 eslint
 eslintrc
@@ -419,6 +420,8 @@ event
 eventos
 events
 exclude
+excluidas
+exclusion
 exigir
 existe
 existente
@@ -959,6 +962,7 @@ queda
 query
 quick
 quiero
+quitadas
 quitar
 radianes
 radio
