@@ -47,3 +47,8 @@ export class ListarPresentismoDto extends PaginacionDto {
   @MaxLength(100)
   buscar?: string;
 }
+
+export class ListarJornadaPresentismoDto extends PaginacionDto {
+  @Matches(FECHA_ISO)
+  fecha!: string;
+}

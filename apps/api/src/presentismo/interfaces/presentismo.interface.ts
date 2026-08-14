@@ -54,3 +54,45 @@ export interface AcumuladoPresentismo {
   entradas: number;
   salidas: number;
 }
+
+export type EstadoJornadaPresentismo =
+  | 'COMPLETADA'
+  | 'EN_CURSO'
+  | 'PENDIENTE'
+  | 'ATRASADA'
+  | 'NO_PROGRAMADA';
+
+export interface LocalJornadaPresentismo {
+  id: number;
+  nombre: string;
+  fechaVisita: Date | null;
+  programacionVisita: {
+    frecuencia: 'UNICA' | 'SEMANAL' | 'MENSUAL';
+    fechaInicio: Date;
+    fechaFin: Date | null;
+    intervalo: number;
+    diasSemana: number[];
+    diasMes: number[];
+    horarios: string[];
+    zonaHoraria: string;
+    activo: boolean;
+  } | null;
+  cliente: { nombre: string };
+}
+
+export interface VisitaJornadaPresentismo {
+  id: number;
+  localId: number;
+  iniciadaEn: Date;
+  completadaEn: Date | null;
+  local: { id: number; nombre: string; cliente: { nombre: string } };
+}
+
+export interface JornadaPresentismoDto {
+  id: string;
+  local: { id: number; nombre: string; clienteNombre: string };
+  programadaEn: string | null;
+  entradaEn: string | null;
+  salidaEn: string | null;
+  estado: EstadoJornadaPresentismo;
+}

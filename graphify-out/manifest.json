@@ -2815,18 +2815,18 @@
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/dto/presentismo.dto.ts": {
-    "mtime": 1786557421.3642366,
-    "ast_hash": "e54724a1b2166d0abafc157989fbb19c",
+    "mtime": 1786730664.4363701,
+    "ast_hash": "7c6d7a6151c202bc4541edb050d0cc89",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/interfaces/presentismo.interface.ts": {
-    "mtime": 1786563962.6094651,
-    "ast_hash": "8e41811e4edd633fcd1ec20adb976f4d",
+    "mtime": 1786730665.3536513,
+    "ast_hash": "ca9522ab8a9f17d9673c7e72dc498bf2",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/presentismo.controller.ts": {
-    "mtime": 1786563725.5587542,
-    "ast_hash": "59dab1da996df4fcc50b713119baaaa5",
+    "mtime": 1786730667.1603727,
+    "ast_hash": "fc4b0809dc4e0af4b89a956d75020b55",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/presentismo.module.ts": {
@@ -2835,8 +2835,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/presentismo.service.ts": {
-    "mtime": 1786563985.7021024,
-    "ast_hash": "4a3c56f3a087d9118529fbd00318a4d8",
+    "mtime": 1786730668.0694597,
+    "ast_hash": "7bc8192ba9a79462abc5716564ad8602",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/utils/periodos-presentismo.spec.ts": {
@@ -2855,13 +2855,13 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/impulsadores/presentismo-view.tsx": {
-    "mtime": 1786557398.6578765,
-    "ast_hash": "5cda6b75a297602c7665b2f8850d1e83",
+    "mtime": 1786731094.341904,
+    "ast_hash": "9c67361c7edb1dd36a7cd6ec88f5c09c",
     "semantic_hash": ""
   },
   "apps/web/src/types/presentismo.ts": {
-    "mtime": 1786563788.4769063,
-    "ast_hash": "a03d25f51f15cdf7b057ba3b3628da56",
+    "mtime": 1786730876.8598735,
+    "ast_hash": "e7053214e62f3ce73d048183451e836e",
     "semantic_hash": ""
   },
   "apps/api/src/tareas/utils/visibilidad-tarea.spec.ts": {
@@ -3002,6 +3002,26 @@
   "apps/mobile/GUIA_BACKDROP_PROCESOS.md": {
     "mtime": 1786728022.208606,
     "ast_hash": "d2673f7409fd5195e20024a74346fca8",
+    "semantic_hash": ""
+  },
+  "apps/api/src/presentismo/presentismo.service.spec.ts": {
+    "mtime": 1786731160.0292957,
+    "ast_hash": "b4b760f0c685a5a7f1a3e7ff0f292e9c",
+    "semantic_hash": ""
+  },
+  "apps/api/src/presentismo/utils/jornada-presentismo.spec.ts": {
+    "mtime": 1786730703.6199965,
+    "ast_hash": "a35d7a61d0fd71ce7cd91394d398f594",
+    "semantic_hash": ""
+  },
+  "apps/api/src/presentismo/utils/jornada-presentismo.ts": {
+    "mtime": 1786730666.2458029,
+    "ast_hash": "e64350cb504f9872c91c74d75f3cbf31",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/impulsadores/jornada-presentismo-detalle.tsx": {
+    "mtime": 1786731093.324719,
+    "ast_hash": "3d20318dec9d872b015bbfa939168b1f",
     "semantic_hash": ""
   }
 }

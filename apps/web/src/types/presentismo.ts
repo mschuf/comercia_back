@@ -39,3 +39,19 @@ export interface FilaPresentismo extends MetricaPresentismo {
   teamleader: { id: number; nombre: string } | null;
   localesAsignados: number;
 }
+
+export type EstadoJornadaPresentismo =
+  | "COMPLETADA"
+  | "EN_CURSO"
+  | "PENDIENTE"
+  | "ATRASADA"
+  | "NO_PROGRAMADA";
+
+export interface JornadaPresentismo {
+  id: string;
+  local: { id: number; nombre: string; clienteNombre: string };
+  programadaEn: string | null;
+  entradaEn: string | null;
+  salidaEn: string | null;
+  estado: EstadoJornadaPresentismo;
+}

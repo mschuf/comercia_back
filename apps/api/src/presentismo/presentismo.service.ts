@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '../../generated/prisma/client';
 import {
   ROL_IMPULSADOR,
@@ -27,15 +27,20 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import {
   ListarPresentismoDto,
+  ListarJornadaPresentismoDto,
   ResumenPresentismoQueryDto,
 } from './dto/presentismo.dto';
 import type {
   AcumuladoPresentismo,
   FilaPresentismoDto,
+  JornadaPresentismoDto,
   ResumenInicioOperativoDto,
   ResumenPresentismoDto,
   UsuarioFilaPresentismo,
 } from './interfaces/presentismo.interface';
+import {
+  construirJornadaPresentismo,
+} from './utils/jornada-presentismo';
 import {
   diasDelPeriodo,
   periodosPresentismo,
@@ -312,6 +317,96 @@ export class PresentismoService {
         };
       }),
       total,
+      page,
+      limit,
+    );
+  }
+
+  async jornada(
+    usuarioId: number,
+    usuarioEquipoId: number,
+    query: ListarJornadaPresentismoDto,
+  ): Promise<RespuestaPaginada<JornadaPresentismoDto>> {
+    const gestor = await this.gestor(usuarioId);
+    const usuario = await this.prisma.usuario.findFirst({
+      where: {
+        AND: [
+          this.accesoCampo.filtroEquipoVisible(gestor),
+          { id: usuarioEquipoId },
+        ],
+      },
+      select: { id: true },
+    });
+    if (!usuario) {
+      throw new NotFoundException('No encontramos a esta persona en tu equipo');
+    }
+
+    const { inicio, fin } = this.rango({
+      desde: query.fecha,
+      hasta: query.fecha,
+    });
+    const [locales, visitas] = await Promise.all([
+      this.prisma.local.findMany({
+        where: {
+          empresaId: gestor.empresaId,
+          usuarioId: usuario.id,
+          activo: true,
+        },
+        select: {
+          id: true,
+          nombre: true,
+          fechaVisita: true,
+          programacionVisita: {
+            select: {
+              frecuencia: true,
+              fechaInicio: true,
+              fechaFin: true,
+              intervalo: true,
+              diasSemana: true,
+              diasMes: true,
+              horarios: true,
+              zonaHoraria: true,
+              activo: true,
+            },
+          },
+          cliente: { select: { nombre: true } },
+        },
+        orderBy: { nombre: 'asc' },
+        take: 2000,
+      }),
+      this.prisma.visita.findMany({
+        where: {
+          usuarioId: usuario.id,
+          iniciadaEn: { gte: inicio, lt: fin },
+          local: { empresaId: gestor.empresaId },
+        },
+        select: {
+          id: true,
+          localId: true,
+          iniciadaEn: true,
+          completadaEn: true,
+          local: {
+            select: {
+              id: true,
+              nombre: true,
+              cliente: { select: { nombre: true } },
+            },
+          },
+        },
+        orderBy: { iniciadaEn: 'asc' },
+        take: 2000,
+      }),
+    ]);
+    const detalle = construirJornadaPresentismo(
+      locales,
+      visitas,
+      query.fecha,
+      new Date(),
+    );
+    const { skip, take, page, limit } = rangoPaginacion(query);
+    return respuestaPaginada(
+      detalle.slice(skip, skip + take),
+      detalle.length,
       page,
       limit,
     );

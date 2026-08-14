@@ -1,8 +1,17 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import type { RequestConUsuario } from '../auth/interfaces/request-con-usuario.interface';
 import {
+  ListarJornadaPresentismoDto,
   ListarPresentismoDto,
   ResumenPresentismoQueryDto,
 } from './dto/presentismo.dto';
@@ -25,6 +34,15 @@ export class PresentismoController {
     @Query() query: ResumenPresentismoQueryDto,
   ) {
     return this.presentismo.resumen(req.usuarioId, query);
+  }
+
+  @Get('jornada/:usuarioId')
+  jornada(
+    @Req() req: RequestConUsuario,
+    @Param('usuarioId', ParseIntPipe) usuarioId: number,
+    @Query() query: ListarJornadaPresentismoDto,
+  ) {
+    return this.presentismo.jornada(req.usuarioId, usuarioId, query);
   }
 
   @Get()
