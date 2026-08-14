@@ -1,7 +1,7 @@
 # Graph Report - COMERCIA  (2026-08-14)
 
 ## Corpus Check
-- 584 files · ~358,734 words
+- 584 files · ~358,745 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `c1d46c99`
+- Built from commit: `0eef7269`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -350,7 +350,7 @@
 - Q: ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso
 - tareas-local.service.ts
 - RutaHoyDto
-- @nestjs/testing
+- eslint-config-prettier
 - RegisterDto
 - @nestjs/cli
 - Q: Como quitar todas las tareas solamente de un usuario respetando la jerarquia
@@ -733,7 +733,7 @@ Nodes (4): Answer, Outcome, Q: Arquitectura existente para roles Team Leader/Imp
 
 ### Community 86 - "devDependencies"
 Cohesion: 0.29
-Nodes (7): devDependencies, eslint, eslint-config-prettier, @types/cookie-parser, eslint, eslint-config-prettier, @types/cookie-parser
+Nodes (7): devDependencies, eslint, @nestjs/testing, @types/cookie-parser, eslint, @nestjs/testing, @types/cookie-parser
 
 ### Community 92 - "jest"
 Cohesion: 0.15

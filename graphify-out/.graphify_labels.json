@@ -357,7 +357,7 @@
   "355": "Q: ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso",
   "356": "tareas-local.service.ts",
   "357": "RutaHoyDto",
-  "358": "@nestjs/testing",
+  "358": "eslint-config-prettier",
   "359": "RegisterDto",
   "360": "@nestjs/cli",
   "361": "Q: Como quitar todas las tareas solamente de un usuario respetando la jerarquia",

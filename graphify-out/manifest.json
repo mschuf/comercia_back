@@ -2855,8 +2855,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/impulsadores/presentismo-view.tsx": {
-    "mtime": 1786733344.1216147,
-    "ast_hash": "1604e84ae64dcbb4cc50a922ddb37855",
+    "mtime": 1786734200.158767,
+    "ast_hash": "e6b32bd0a1f2d526d2a1ddbd9d9dc7fa",
     "semantic_hash": ""
   },
   "apps/web/src/types/presentismo.ts": {

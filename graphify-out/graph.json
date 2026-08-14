@@ -956,8 +956,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "apps_api_package_devdependencies_nestjs_testing",
-      "community": 358,
-      "community_name": "@nestjs/testing",
+      "community": 86,
+      "community_name": "devDependencies",
       "norm_label": "@nestjs/testing"
     },
     {
@@ -967,8 +967,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "nestjs_testing",
-      "community": 358,
-      "community_name": "@nestjs/testing",
+      "community": 86,
+      "community_name": "devDependencies",
       "norm_label": "@nestjs/testing"
     },
     {
@@ -1154,8 +1154,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "apps_api_package_devdependencies_eslint_config_prettier",
-      "community": 86,
-      "community_name": "devDependencies",
+      "community": 358,
+      "community_name": "eslint-config-prettier",
       "norm_label": "eslint-config-prettier"
     },
     {
@@ -1165,8 +1165,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "eslint_config_prettier",
-      "community": 86,
-      "community_name": "devDependencies",
+      "community": 358,
+      "community_name": "eslint-config-prettier",
       "norm_label": "eslint-config-prettier"
     },
     {
@@ -53945,7 +53945,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "apps/web/src/components/impulsadores/presentismo-view.tsx",
-      "source_location": "L182",
+      "source_location": "L171",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_impulsadores_presentismo_view_presentismoview",
@@ -115255,5 +115255,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "c1d46c99ec9e4b35facdf2c4ae5e61fb66b56514"
+  "built_at_commit": "0eef7269c24cc22b84c1f5c8d1528a320671268e"
 }

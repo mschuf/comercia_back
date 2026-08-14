@@ -123,17 +123,6 @@ export function PresentismoView() {
         </p>
       </header>
 
-      {resumen ? (
-        <div
-          className="mt-6 grid overflow-hidden rounded-xl border border-line bg-surface-raised sm:grid-cols-3"
-          aria-label="Resumen de presentismo"
-        >
-          <Stat etiqueta="Día" metrica={resumen.dia} />
-          <Stat etiqueta="Semana" metrica={resumen.semana} />
-          <Stat etiqueta="Mes" metrica={resumen.mes} />
-        </div>
-      ) : null}
-
       <div className="mt-7 grid gap-3 rounded-xl border border-line bg-surface-raised p-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1.3fr_1.5fr]">
         <label className={labelBase}>
           Desde
@@ -268,6 +257,17 @@ export function PresentismoView() {
             setPage(1);
           }}
         />
+      ) : null}
+
+      {resumen ? (
+        <section className="mt-8 border-t border-line pt-6" aria-label="Resumen de presentismo">
+          <h2 className="text-lg font-extrabold text-foreground">Resumen del periodo</h2>
+          <div className="mt-3 grid overflow-hidden rounded-xl border border-line bg-surface-raised sm:grid-cols-3">
+            <Stat etiqueta="Día" metrica={resumen.dia} />
+            <Stat etiqueta="Semana" metrica={resumen.semana} />
+            <Stat etiqueta="Mes" metrica={resumen.mes} />
+          </div>
+        </section>
       ) : null}
     </section>
   );
