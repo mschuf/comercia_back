@@ -20,6 +20,7 @@ import {
 import { PanelLogin } from "./src/components/acceso/panel-login";
 import { PantallaCarga } from "./src/components/acceso/pantalla-carga";
 import { PanelSeguimiento } from "./src/components/acceso/panel-seguimiento";
+import { BackdropProceso } from "./src/components/backdrop-proceso";
 import { PanelImpulsador } from "./src/components/impulsador/panel-impulsador";
 import {
   ErrorApi,
@@ -88,6 +89,7 @@ function Aplicacion() {
   const [password, setPassword] = useState("");
   const [cargando, setCargando] = useState(true);
   const [procesando, setProcesando] = useState(false);
+  const [mensajeProceso, setMensajeProceso] = useState<string | null>(null);
   const [sincronizando, setSincronizando] = useState(false);
   const [seguimientoActivo, setSeguimientoActivo] = useState(false);
   const [enLinea, setEnLinea] = useState<boolean | null>(null);
@@ -236,6 +238,7 @@ function Aplicacion() {
       return;
     }
     setProcesando(true);
+    setMensajeProceso("Iniciando sesion...");
     setError(null);
     try {
       const nuevaSesion = await iniciarSesionMovil(
@@ -250,11 +253,15 @@ function Aplicacion() {
       setError(textoError(errorDeLogin));
     } finally {
       setProcesando(false);
+      setMensajeProceso(null);
     }
   }
 
   async function cambiarSeguimiento() {
     setProcesando(true);
+    setMensajeProceso(
+      seguimientoActivo ? "Deteniendo el seguimiento..." : "Activando el seguimiento...",
+    );
     setError(null);
     try {
       if (seguimientoActivo) {
@@ -270,11 +277,13 @@ function Aplicacion() {
       setError(textoError(errorDeSeguimiento));
     } finally {
       setProcesando(false);
+      setMensajeProceso(null);
     }
   }
 
   async function cerrarSesion() {
     setProcesando(true);
+    setMensajeProceso("Cerrando la sesion en este telefono...");
     setError(null);
     try {
       await detenerSeguimiento();
@@ -285,6 +294,7 @@ function Aplicacion() {
       setSesion(null);
       setSeguimientoActivo(false);
       setProcesando(false);
+      setMensajeProceso(null);
     }
   }
 
@@ -292,10 +302,15 @@ function Aplicacion() {
 
   if (sesion && esSesionImpulsador(sesion)) {
     return (
-      <>
+      <View style={styles.pantalla}>
         <StatusBar style="light" />
         <PanelImpulsador sesion={sesion} enLinea={enLinea} alCerrar={cerrarSesion} />
-      </>
+        <BackdropProceso
+          detalle="No cierres la aplicacion mientras terminamos."
+          titulo={mensajeProceso ?? "Procesando..."}
+          visible={procesando}
+        />
+      </View>
     );
   }
 
@@ -362,13 +377,18 @@ function Aplicacion() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <BackdropProceso
+        detalle="No cierres la aplicacion mientras terminamos."
+        titulo={mensajeProceso ?? "Procesando..."}
+        visible={procesando}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  pantalla: { backgroundColor: colores.fondoElevado, flex: 1 },
+  pantalla: { backgroundColor: colores.fondoElevado, flex: 1, position: "relative" },
   contenido: { flexGrow: 1, justifyContent: "center" },
   columna: {
     alignSelf: "center",

@@ -605,18 +605,18 @@
     "semantic_hash": ""
   },
   "apps/api/src/impulsador/visitas.controller.ts": {
-    "mtime": 1786472936.1408446,
-    "ast_hash": "79952ce8427e4f49b5830e18dbaedac1",
+    "mtime": 1786726187.8142605,
+    "ast_hash": "078f662317455879015945639e31c0ab",
     "semantic_hash": ""
   },
   "apps/api/src/impulsador/visitas.service.spec.ts": {
-    "mtime": 1786711791.0803778,
-    "ast_hash": "8b0ca24722ea2aead06c9a5d243d401a",
+    "mtime": 1786726404.962253,
+    "ast_hash": "dd3bb46014864e47b2f2aec019a0725f",
     "semantic_hash": ""
   },
   "apps/api/src/impulsador/visitas.service.ts": {
-    "mtime": 1786712990.760318,
-    "ast_hash": "c120c88c5928837d6f9b024eefcf93f8",
+    "mtime": 1786726404.28657,
+    "ast_hash": "2f4bc346f6d48b2cb3944dbbc8288bd2",
     "semantic_hash": ""
   },
   "apps/api/src/impulsador/zonas.controller.ts": {
@@ -2500,13 +2500,13 @@
     "semantic_hash": ""
   },
   "apps/mobile/App.tsx": {
-    "mtime": 1786536988.9944339,
-    "ast_hash": "d336ae68a24190e62ef849fa25f0ca59",
+    "mtime": 1786728020.7045898,
+    "ast_hash": "9cfb2e584ffed1a3b18c8fa315f771b5",
     "semantic_hash": ""
   },
   "apps/mobile/app.json": {
-    "mtime": 1786557042.429063,
-    "ast_hash": "b58867fce74f393231dae7941a70c678",
+    "mtime": 1786729644.6838963,
+    "ast_hash": "fa5006b6cd79f4b0e702d6f2212e6de5",
     "semantic_hash": ""
   },
   "apps/mobile/index.ts": {
@@ -2525,8 +2525,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/api.ts": {
-    "mtime": 1786546334.7222204,
-    "ast_hash": "829201c3bea080e7354b7a89b08c3571",
+    "mtime": 1786726203.4917161,
+    "ast_hash": "38219eedd25da96ce2d224a1d44d0494",
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/seguimiento.ts": {
@@ -2555,8 +2555,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/README.md": {
-    "mtime": 1786450346.0201857,
-    "ast_hash": "cad8a599f7a7515855d64c836d555396",
+    "mtime": 1786728022.929939,
+    "ast_hash": "5008cc82f88f7d0806ed10802234b100",
     "semantic_hash": ""
   },
   "apps/mobile/assets/android-icon-background.png": {
@@ -2690,13 +2690,13 @@
     "semantic_hash": ""
   },
   "apps/api/src/impulsador/utils/fecha-marcacion.spec.ts": {
-    "mtime": 1786474609.053518,
-    "ast_hash": "61536dc7ece17529fffa53b6650d1804",
+    "mtime": 1786726170.224141,
+    "ast_hash": "35ee23159dd47c5679be200bb34f7bac",
     "semantic_hash": ""
   },
   "apps/api/src/impulsador/utils/fecha-marcacion.ts": {
-    "mtime": 1786472935.2117825,
-    "ast_hash": "ba695d2a143f438bfa564ad923ab73a9",
+    "mtime": 1786726169.4964335,
+    "ast_hash": "bb6f4b479def8d9e3b728511aa66d670",
     "semantic_hash": ""
   },
   "apps/api/src/repositor/dto/rendimiento-impulsador.dto.ts": {
@@ -2720,13 +2720,13 @@
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/cola-marcaciones.ts": {
-    "mtime": 1786558376.5144997,
-    "ast_hash": "80e9f2d80e08ff2982bbb9694bbdbf16",
+    "mtime": 1786726204.3010273,
+    "ast_hash": "9a899afd887d135ec16f831cee1d62c4",
     "semantic_hash": ""
   },
   "apps/mobile/src/lib/proximidad.ts": {
-    "mtime": 1786540253.735221,
-    "ast_hash": "95956a973eb1fb471d4e2b5563e4e624",
+    "mtime": 1786729641.6273992,
+    "ast_hash": "b0365e48c398dda395fd57a6f924474f",
     "semantic_hash": ""
   },
   "apps/mobile/src/types/impulsador.ts": {
@@ -2780,8 +2780,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/src/components/impulsador/panel-impulsador.tsx": {
-    "mtime": 1786557041.0686884,
-    "ast_hash": "47d6936f261ef50fed9ba231a64b9399",
+    "mtime": 1786729642.6792507,
+    "ast_hash": "d3933eec131d293c001c1cb3a5c09b10",
     "semantic_hash": ""
   },
   "apps/mobile/src/components/impulsador/utils.ts": {
@@ -2790,8 +2790,8 @@
     "semantic_hash": ""
   },
   "apps/mobile/src/components/impulsador/vistas.tsx": {
-    "mtime": 1786557041.7278354,
-    "ast_hash": "8dc8659f0b02441eb0ce15783563db99",
+    "mtime": 1786729643.670186,
+    "ast_hash": "060da6e2a1c6ce32687137b11755d5da",
     "semantic_hash": ""
   },
   "apps/mobile/src/components/ui/boton.tsx": {
@@ -2972,6 +2972,36 @@
   "graphify-out/memory/query_20260814_122306_como_refactorizar_las_tablas_de_tarea_seg\u00fan_alcanc.md": {
     "mtime": 1786710186.0719347,
     "ast_hash": "cda41745b1f64a8b7e55f4f407004d63",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/utils/fecha.ts": {
+    "mtime": 1786727319.1549406,
+    "ast_hash": "24c1849ff01157f8fcd314c43bacf143",
+    "semantic_hash": ""
+  },
+  "graphify-out/memory/query_20260814_131156_c\u00f3mo_refactorizar_las_tablas_de_tareas_para_soport.md": {
+    "mtime": 1786713116.1595783,
+    "ast_hash": "bef00b780812265e1d99c754f8f4055f",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/components/toast-movil.tsx": {
+    "mtime": 1786727318.4356987,
+    "ast_hash": "52f25b788f1f220ffbd2f892c81054b8",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/types/toast.ts": {
+    "mtime": 1786727317.6984625,
+    "ast_hash": "07dd111974c93ff6bf1e12409eb8cb18",
+    "semantic_hash": ""
+  },
+  "apps/mobile/src/components/backdrop-proceso.tsx": {
+    "mtime": 1786728039.8467317,
+    "ast_hash": "3e9abec9088863ebf7d979660bd6ab69",
+    "semantic_hash": ""
+  },
+  "apps/mobile/GUIA_BACKDROP_PROCESOS.md": {
+    "mtime": 1786728022.208606,
+    "ast_hash": "d2673f7409fd5195e20024a74346fca8",
     "semantic_hash": ""
   }
 }

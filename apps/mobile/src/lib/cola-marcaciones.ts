@@ -1,5 +1,10 @@
 import * as SQLite from "expo-sqlite";
-import { finalizarVisita, finalizarVisitaMovil, iniciarVisita } from "./api";
+import {
+  ErrorApi,
+  finalizarVisita,
+  finalizarVisitaMovil,
+  iniciarVisita,
+} from "./api";
 import { obtenerSesion } from "./sesion";
 import type { CoordenadasMarcacion, Visita } from "../types/impulsador";
 
@@ -24,6 +29,7 @@ interface FilaMarcacion {
 
 export interface ResultadoSincronizacionMarcaciones {
   enviadas: number;
+  depuradas: number;
   pendientes: number;
   ultimaVisita?: Visita;
   ultimoError?: string;
@@ -136,7 +142,7 @@ export async function cantidadMarcacionesPendientes(): Promise<number> {
 
 async function ejecutar(): Promise<ResultadoSincronizacionMarcaciones> {
   const sesion = await obtenerSesion();
-  if (!sesion) return { enviadas: 0, pendientes: 0 };
+  if (!sesion) return { enviadas: 0, depuradas: 0, pendientes: 0 };
   const base = await obtenerBase();
   const filas = await base.getAllAsync<FilaMarcacion>(
     `SELECT id, usuario_id, clave, tipo, entrada_clave, visita_id, local_id,
@@ -148,6 +154,7 @@ async function ejecutar(): Promise<ResultadoSincronizacionMarcaciones> {
     { $usuarioId: sesion.usuario.id, $limite: LIMITE_LOTE },
   );
   let enviadas = 0;
+  let depuradas = 0;
   let ultimaVisita: Visita | undefined;
   let ultimoError: string | undefined;
 
@@ -177,6 +184,20 @@ async function ejecutar(): Promise<ResultadoSincronizacionMarcaciones> {
       );
       enviadas += 1;
     } catch (error) {
+      const salidaYaRegistrada =
+        fila.tipo === "SALIDA" &&
+        error instanceof ErrorApi &&
+        error.status === 400 &&
+        error.message === "La visita ya fue registrada";
+      if (salidaYaRegistrada) {
+        await base.runAsync(
+          `DELETE FROM marcaciones_pendientes
+            WHERE id = $id AND usuario_id = $usuarioId`,
+          { $id: fila.id, $usuarioId: sesion.usuario.id },
+        );
+        depuradas += 1;
+        continue;
+      }
       ultimoError =
         error instanceof Error ? error.message : "No se pudo sincronizar";
       await base.runAsync(
@@ -195,6 +216,7 @@ async function ejecutar(): Promise<ResultadoSincronizacionMarcaciones> {
 
   return {
     enviadas,
+    depuradas,
     pendientes: await cantidadMarcacionesPendientes(),
     ultimaVisita,
     ultimoError,

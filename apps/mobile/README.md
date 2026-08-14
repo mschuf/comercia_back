@@ -3,6 +3,9 @@
 La guía operativa para actualizar la app y generar APKs locales está en
 [GUIA_DE_ACTUALIZACIONES_Y_BUILDS.md](./GUIA_DE_ACTUALIZACIONES_Y_BUILDS.md).
 
+La pauta para mostrar el bloqueo visual durante operaciones lentas esta en
+[GUIA_BACKDROP_PROCESOS.md](./GUIA_BACKDROP_PROCESOS.md).
+
 Aplicación de ubicación consentida para usuarios de Comercia. En Android
 intenta leer automáticamente los números que el sistema expone para SIM 1 y
 SIM 2 y los compara con el celular E.164 de los usuarios. Si Android no expone

@@ -1,7 +1,7 @@
 /* Hallmark · Workbench amable · C4 navegación inferior segura. */
 import { Ionicons } from "@expo/vector-icons";
 import * as Notifications from "expo-notifications";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   AppState,
@@ -14,10 +14,12 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { BackdropProceso } from "../../components/backdrop-proceso";
+import { ToastMovil } from "../../components/toast-movil";
 import {
   obtenerAgendaHoy,
   obtenerMarcaciones,
-  obtenerVisita,
+  obtenerVisitaAbierta,
 } from "../../lib/api";
 import {
   cantidadMarcacionesPendientes,
@@ -29,6 +31,7 @@ import {
   detenerGeocercas,
   obtenerAgendaGuardada,
   sincronizarGeocercas,
+  tienePermisosProximidad,
 } from "../../lib/proximidad";
 import type { SesionMovil } from "../../lib/sesion";
 import type {
@@ -37,6 +40,7 @@ import type {
   Visita,
   VisitaHoy,
 } from "../../types/impulsador";
+import type { TipoToastMovil, ToastMovilItem } from "../../types/toast";
 import {
   anchoMaximoContenido,
   colores,
@@ -50,6 +54,7 @@ import {
   VisitaActiva,
 } from "./vistas";
 import { leerUbicacion, mensajeError } from "./utils";
+import { esJornadaDeDiaAnterior, formatoFechaHoraCorta } from "../../utils/fecha";
 
 type Seccion = "entrada" | "marcaciones";
 type IconoNavegacion = keyof typeof Ionicons.glyphMap;
@@ -87,37 +92,64 @@ export function PanelImpulsador({
   const [fechaMarcaciones, setFechaMarcaciones] = useState<string | null>(null);
   const [pendientes, setPendientes] = useState(0);
   const [proximidadActiva, setProximidadActiva] = useState(false);
+  const [faltanPermisosProximidad, setFaltanPermisosProximidad] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [procesando, setProcesando] = useState(false);
+  const [mensajeProceso, setMensajeProceso] = useState<string | null>(null);
   const [cargandoMarcaciones, setCargandoMarcaciones] = useState(false);
   const [refrescando, setRefrescando] = useState(false);
-  const [mensaje, setMensaje] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<ToastMovilItem | null>(null);
+  const [ultimoCierreLocalId, setUltimoCierreLocalId] = useState<number | null>(null);
+  const siguienteToastId = useRef(0);
+
+  const mostrarToast = useCallback(
+    (tipo: TipoToastMovil, titulo: string, detalle?: string) => {
+      siguienteToastId.current += 1;
+      setToast({ id: siguienteToastId.current, tipo, titulo, detalle });
+    },
+    [],
+  );
+  const cerrarToast = useCallback(() => setToast(null), []);
+
+  const actualizarProximidad = useCallback(
+    async (visitas: VisitaHoy[]) => {
+      const activa = await sincronizarGeocercas(sesion, visitas, true).catch(
+        () => false,
+      );
+      const permisosOtorgados = await tienePermisosProximidad().catch(
+        () => null,
+      );
+      setProximidadActiva(activa);
+      setFaltanPermisosProximidad(permisosOtorgados === false);
+    },
+    [sesion],
+  );
 
   const cargarAgenda = useCallback(async () => {
     try {
       const respuesta = await obtenerAgendaHoy(sesion.token);
+      const visitaAbierta = await obtenerVisitaAbierta(sesion.token).catch(
+        () => undefined,
+      );
       setAgenda(respuesta.items);
-      const abierta = respuesta.items.find(({ visitaAbiertaId }) => visitaAbiertaId);
-      if (abierta?.visitaAbiertaId) {
-        const visita = await obtenerVisita(sesion.token, abierta.visitaAbiertaId);
-        setVisitaActiva(visita);
-        setEntradaClave(`visita:${visita.id}`);
-      } else {
-        setVisitaActiva(null);
-        setEntradaClave(null);
+      if (visitaAbierta !== undefined) {
+        if (visitaAbierta) {
+          setVisitaActiva(visitaAbierta);
+          setEntradaClave(`visita:${visitaAbierta.id}`);
+        } else {
+          setVisitaActiva(null);
+          setEntradaClave(null);
+        }
       }
-      const activa = await sincronizarGeocercas(sesion, respuesta.items, true).catch(() => false);
-      setProximidadActiva(activa);
+      await actualizarProximidad(respuesta.items);
       return respuesta.items;
     } catch {
       const guardada = await obtenerAgendaGuardada(sesion.usuario.id);
       setAgenda(guardada);
-      const activa = await sincronizarGeocercas(sesion, guardada, true).catch(() => false);
-      setProximidadActiva(activa);
+      await actualizarProximidad(guardada);
       return guardada;
     }
-  }, [sesion]);
+  }, [actualizarProximidad, sesion]);
 
   const cargarMarcaciones = useCallback(async (pagina: number, fecha: string | null) => {
     setCargandoMarcaciones(true);
@@ -145,21 +177,31 @@ export function PanelImpulsador({
     if (resultado.ultimaVisita) {
       setVisitaActiva(resultado.ultimaVisita.completadaEn ? null : resultado.ultimaVisita);
     }
-    if (resultado.enviadas > 0) {
+    if (resultado.enviadas > 0 || resultado.depuradas > 0) {
       await cargarTodo(paginaMarcaciones.page, fechaMarcaciones);
-      setMensaje(`${resultado.enviadas} marcación${resultado.enviadas === 1 ? "" : "es"} enviada${resultado.enviadas === 1 ? "" : "s"}.`);
+      mostrarToast(
+        "exito",
+        resultado.enviadas > 0 ? "Marcaciones enviadas" : "Marcaciones actualizadas",
+        resultado.enviadas > 0
+          ? `${resultado.enviadas} marcación${resultado.enviadas === 1 ? "" : "es"} enviada${resultado.enviadas === 1 ? "" : "s"}.`
+          : "Quitamos una salida que ya estaba registrada.",
+      );
     }
-  }, [cargarTodo, fechaMarcaciones, paginaMarcaciones.page]);
+  }, [cargarTodo, fechaMarcaciones, mostrarToast, paginaMarcaciones.page]);
 
   useEffect(() => {
     let montado = true;
     void cargarTodo(1, null)
-      .catch((causa) => montado && setError(mensajeError(causa)))
+      .catch((causa) => {
+        if (montado) {
+          mostrarToast("error", "No pudimos cargar la jornada", mensajeError(causa));
+        }
+      })
       .finally(() => montado && setCargando(false));
     return () => {
       montado = false;
     };
-  }, [cargarTodo]);
+  }, [cargarTodo, mostrarToast]);
 
   useEffect(() => {
     if (enLinea) void sincronizar().catch(() => undefined);
@@ -180,12 +222,11 @@ export function PanelImpulsador({
 
   async function refrescar() {
     setRefrescando(true);
-    setError(null);
     try {
       if (enLinea) await sincronizar();
       await cargarTodo(paginaMarcaciones.page, fechaMarcaciones);
     } catch (causa) {
-      setError(mensajeError(causa));
+      mostrarToast("error", "No pudimos actualizar la jornada", mensajeError(causa));
     } finally {
       setRefrescando(false);
     }
@@ -193,34 +234,45 @@ export function PanelImpulsador({
 
   async function marcarEntrada(local: VisitaHoy["local"]) {
     setProcesando(true);
-    setError(null);
-    setMensaje(null);
+    setMensajeProceso("Comprobando tu ubicacion y registrando la entrada...");
+    setUltimoCierreLocalId(null);
     try {
       const ubicacion = await leerUbicacion(sesion.usuario.id, "ENTRADA");
       await guardarEntradaPendiente(sesion.usuario.id, local.id, ubicacion);
       setEntradaClave(ubicacion.claveMovil);
       const resultado = await sincronizarMarcacionesPendientes();
       setPendientes(resultado.pendientes);
-      if (resultado.ultimaVisita) {
+      if (resultado.ultimaVisita && !resultado.ultimaVisita.completadaEn) {
         setVisitaActiva(resultado.ultimaVisita);
-        setMensaje(`Entrada confirmada en ${local.nombre}.`);
+        mostrarToast(
+          "exito",
+          "Entrada confirmada",
+          `${local.nombre} · ${formatoFechaHoraCorta(resultado.ultimaVisita.iniciadaEn)}`,
+        );
         await cargarAgenda();
       } else {
-        setMensaje("Entrada guardada en este teléfono. La enviaremos cuando vuelva internet.");
+        mostrarToast(
+          "advertencia",
+          "Entrada guardada en el teléfono",
+          "La enviaremos cuando vuelva internet.",
+        );
       }
-      if (resultado.ultimoError && enLinea) setError(resultado.ultimoError);
+      if (resultado.ultimoError && enLinea) {
+        mostrarToast("error", "No pudimos confirmar la entrada", resultado.ultimoError);
+      }
     } catch (causa) {
       setPendientes(await cantidadMarcacionesPendientes());
-      setError(mensajeError(causa));
+      mostrarToast("error", "No pudimos marcar la entrada", mensajeError(causa));
     } finally {
       setProcesando(false);
+      setMensajeProceso(null);
     }
   }
 
   async function marcarSalida() {
     if (!visitaActiva) return;
     setProcesando(true);
-    setError(null);
+    setMensajeProceso("Comprobando tu ubicacion y registrando la salida...");
     try {
       const ubicacion = await leerUbicacion(sesion.usuario.id, "SALIDA");
       await guardarSalidaPendiente(
@@ -232,42 +284,62 @@ export function PanelImpulsador({
       );
       const resultado = await sincronizarMarcacionesPendientes();
       setPendientes(resultado.pendientes);
-      if (resultado.ultimaVisita?.completadaEn) {
+      const visitaFinalizada = resultado.ultimaVisita;
+      if (
+        visitaFinalizada?.id === visitaActiva.id &&
+        visitaFinalizada.completadaEn
+      ) {
         setVisitaActiva(null);
         setEntradaClave(null);
-        setMensaje("Salida confirmada. Tu visita quedó registrada.");
+        setUltimoCierreLocalId(visitaActiva.localId);
+        mostrarToast(
+          "exito",
+          "Salida confirmada",
+          `${visitaActiva.localNombre} · Entrada ${formatoFechaHoraCorta(visitaActiva.iniciadaEn)} · Salida ${formatoFechaHoraCorta(visitaFinalizada.completadaEn)}`,
+        );
         await cargarTodo(paginaMarcaciones.page, fechaMarcaciones);
       } else {
-        setMensaje("Salida guardada en el teléfono para sincronizarla luego.");
+        mostrarToast(
+          "advertencia",
+          "Salida guardada en el teléfono",
+          "La enviaremos cuando vuelva internet.",
+        );
       }
-      if (resultado.ultimoError && enLinea) setError(resultado.ultimoError);
+      if (resultado.ultimoError && enLinea) {
+        mostrarToast("error", "No pudimos confirmar la salida", resultado.ultimoError);
+      }
     } catch (causa) {
       setPendientes(await cantidadMarcacionesPendientes());
-      setError(mensajeError(causa));
+      mostrarToast("error", "No pudimos marcar la salida", mensajeError(causa));
     } finally {
       setProcesando(false);
+      setMensajeProceso(null);
     }
   }
 
   async function cerrar() {
     setProcesando(true);
+    setMensajeProceso("Cerrando la sesion en este telefono...");
     try {
       await detenerGeocercas();
       await alCerrar();
     } finally {
       setProcesando(false);
+      setMensajeProceso(null);
     }
   }
 
   function cambiarFechaMarcaciones(fecha: string | null) {
     setFechaMarcaciones(fecha);
-    setError(null);
-    void cargarMarcaciones(1, fecha).catch((causa) => setError(mensajeError(causa)));
+    void cargarMarcaciones(1, fecha).catch((causa) =>
+      mostrarToast("error", "No pudimos cargar las marcaciones", mensajeError(causa)),
+    );
   }
 
   function cambiarPaginaMarcaciones(pagina: number) {
-    setError(null);
-    void cargarMarcaciones(pagina, fechaMarcaciones).catch((causa) => setError(mensajeError(causa)));
+    void cargarMarcaciones(pagina, fechaMarcaciones).catch((causa) =>
+      mostrarToast("error", "No pudimos cargar las marcaciones", mensajeError(causa)),
+    );
   }
 
   const estadoConexion = `${enLinea ? "Con internet" : "Sin señal · guardado local activo"}${
@@ -276,9 +348,21 @@ export function PanelImpulsador({
   const contenido =
     seccion === "entrada" ? (
       visitaActiva ? (
-        <VisitaActiva visita={visitaActiva} procesando={procesando} alSalir={marcarSalida} />
+        <VisitaActiva
+          visita={visitaActiva}
+          jornadaPendiente={esJornadaDeDiaAnterior(visitaActiva.iniciadaEn)}
+          procesando={procesando}
+          alSalir={marcarSalida}
+        />
       ) : (
-        <EntradaView agenda={agenda} procesando={procesando} proximidadActiva={proximidadActiva} alMarcar={marcarEntrada} />
+        <EntradaView
+          agenda={agenda}
+          faltanPermisosProximidad={faltanPermisosProximidad}
+          localCerradoHoyId={ultimoCierreLocalId}
+          procesando={procesando}
+          proximidadActiva={proximidadActiva}
+          alMarcar={marcarEntrada}
+        />
       )
     ) : seccion === "marcaciones" ? (
       <MarcacionesView
@@ -324,10 +408,22 @@ export function PanelImpulsador({
               <Text style={styles.textoSecundario}>Preparando tu jornada…</Text>
             </View>
           ) : contenido}
-          {mensaje ? <View style={styles.mensaje} accessibilityLiveRegion="polite"><Text style={styles.mensajeTexto}>{mensaje}</Text></View> : null}
-          {error ? <View style={styles.error} accessibilityLiveRegion="assertive"><Text style={styles.errorTitulo}>Revisemos esto</Text><Text style={styles.errorTexto}>{error}</Text></View> : null}
         </View>
       </ScrollView>
+
+      {toast ? (
+        <ToastMovil
+          arriba={Math.max(insets.top, espacios.sm) + 72}
+          toast={toast}
+          alCerrar={cerrarToast}
+        />
+      ) : null}
+
+      <BackdropProceso
+        detalle="No cierres la aplicacion mientras terminamos."
+        titulo={mensajeProceso ?? "Procesando..."}
+        visible={procesando}
+      />
 
       <View style={[styles.navegacion, { paddingBottom: Math.max(insets.bottom, espacios.xs), paddingHorizontal: width < 360 ? espacios.xs : espacios.sm }]}>
         {SECCIONES.map((item) => {
@@ -356,7 +452,7 @@ export function PanelImpulsador({
 }
 
 const styles = StyleSheet.create({
-  pantalla: { backgroundColor: colores.fondo, flex: 1 },
+  pantalla: { backgroundColor: colores.fondo, flex: 1, position: "relative" },
   cabecera: { alignItems: "center", backgroundColor: colores.fondoElevado, flexDirection: "row", gap: espacios.md, paddingBottom: espacios.lg },
   cabeceraHome: { paddingBottom: espacios.md },
   cabeceraTexto: { flex: 1, minWidth: 0 },

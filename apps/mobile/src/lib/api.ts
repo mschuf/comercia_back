@@ -144,6 +144,10 @@ export function obtenerVisita(
   return solicitar(`/visitas/${visitaId}`, {}, token);
 }
 
+export function obtenerVisitaAbierta(token: string): Promise<Visita | null> {
+  return solicitar('/visitas/abierta', {}, token);
+}
+
 export function obtenerMarcaciones(
   token: string,
   opciones: { page?: number; fecha?: string | null } = {},

@@ -85,6 +85,11 @@ export class VisitasController {
     return this.visitas.equipo(req.usuarioId, query);
   }
 
+  @Get('abierta')
+  abierta(@Req() req: RequestConUsuario) {
+    return this.visitas.abierta(req.usuarioId);
+  }
+
   @Put('equipo/:localId/programacion')
   guardarProgramacion(
     @Req() req: RequestConUsuario,

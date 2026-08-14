@@ -267,6 +267,20 @@ async function prepararNotificaciones(solicitar: boolean): Promise<boolean> {
   return permiso.granted;
 }
 
+export async function tienePermisosProximidad(): Promise<boolean> {
+  const [permisoPrimerPlano, permisoSegundoPlano, permisoNotificaciones] =
+    await Promise.all([
+      Location.getForegroundPermissionsAsync(),
+      Location.getBackgroundPermissionsAsync(),
+      Notifications.getPermissionsAsync(),
+    ]);
+  return (
+    permisoPrimerPlano.granted &&
+    permisoSegundoPlano.granted &&
+    permisoNotificaciones.granted
+  );
+}
+
 export async function sincronizarGeocercas(
   sesion: SesionMovil,
   agenda: VisitaHoy[],

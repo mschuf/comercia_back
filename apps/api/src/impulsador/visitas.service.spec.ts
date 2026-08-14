@@ -83,6 +83,7 @@ describe('VisitasService - novedades', () => {
   const prisma = {
     visita: {
       findUnique: jest.fn(),
+      findFirst: jest.fn(),
       update: jest.fn(),
     },
     visitaTarea: {
@@ -332,6 +333,28 @@ describe('VisitasService - novedades', () => {
       where: { id: 50 },
       data: { precisionFinMetros: 14.3 },
     });
+  });
+
+  it('recupera la jornada abierta propia aunque haya comenzado otro dia', async () => {
+    prisma.visita.findFirst.mockResolvedValue(
+      visita([], { iniciadaEn: new Date('2026-07-16T12:00:00.000Z') }),
+    );
+
+    await expect(service.abierta(11)).resolves.toMatchObject({
+      id: 50,
+      completadaEn: null,
+      localNombre: 'Local Centro',
+    });
+    expect(prisma.visita.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          usuarioId: 11,
+          completadaEn: null,
+          local: { empresaId: 20 },
+        },
+        orderBy: { iniciadaEn: 'asc' },
+      }),
+    );
   });
 
   it('sigue rechazando finalizar cuando queda una tarea activa pendiente', async () => {

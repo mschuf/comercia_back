@@ -59,7 +59,10 @@ import {
   validarZonaHoraria,
 } from './utils/programacion-visita';
 import { duracionVisitaMinutos } from './utils/duracion-visita';
-import { fechaMarcacionDispositivo } from './utils/fecha-marcacion';
+import {
+  esJornadaDeDiaAnterior,
+  fechaMarcacionDispositivo,
+} from './utils/fecha-marcacion';
 
 type VisitaTareaConTarea = {
   id: number;
@@ -658,6 +661,20 @@ export class VisitasService {
     );
   }
 
+  async abierta(usuarioId: number): Promise<VisitaDto | null> {
+    const usuario = await this.usuarioActual(usuarioId);
+    const visita = await this.prisma.visita.findFirst({
+      where: {
+        usuarioId: usuario.id,
+        completadaEn: null,
+        local: { empresaId: usuario.empresaId },
+      },
+      orderBy: { iniciadaEn: 'asc' },
+      select: SELECT_VISITA,
+    });
+    return visita ? aVisitaDto(visita, RADIO_METROS_DEFECTO) : null;
+  }
+
   async equipo(
     usuarioId: number,
     query: ListarVisitasEquipoDto,
@@ -1076,12 +1093,20 @@ export class VisitasService {
     const visita = await this.visitaAbiertaPropia(usuario, visitaId);
 
     const radio = visita.local.radioMetros ?? RADIO_METROS_DEFECTO;
-    const distancia = exigirDentroDelRadio(
-      dto.latitud,
-      dto.longitud,
-      visita.local,
-      radio,
-    );
+    const cierreTardio = esJornadaDeDiaAnterior(visita.iniciadaEn);
+    const distancia = cierreTardio
+      ? distanciaMetros(
+          dto.latitud,
+          dto.longitud,
+          visita.local.latitud,
+          visita.local.longitud,
+        )
+      : exigirDentroDelRadio(
+          dto.latitud,
+          dto.longitud,
+          visita.local,
+          radio,
+        );
 
     // Solo exigen completitud las tareas cuyo ítem del checklist sigue activo
     const marcacionSimple = esRolMarcacionSimple(usuario.rolDescripcion);

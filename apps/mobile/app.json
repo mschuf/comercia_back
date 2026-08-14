@@ -3,7 +3,7 @@
     "name": "Comercia Campo",
     "description": "Entradas, salidas y marcaciones del equipo de campo de Comercia.",
     "slug": "comercia-mobile",
-    "version": "1.4.0",
+    "version": "1.4.4",
     "orientation": "portrait",
     "icon": "./assets/comercia-ubicacion-icon.png",
     "userInterfaceStyle": "light",
@@ -12,7 +12,7 @@
     },
     "android": {
       "package": "pro.comercia.mobile",
-      "versionCode": 15,
+      "versionCode": 19,
       "softwareKeyboardLayoutMode": "resize",
       "permissions": [
         "android.permission.RECEIVE_BOOT_COMPLETED",

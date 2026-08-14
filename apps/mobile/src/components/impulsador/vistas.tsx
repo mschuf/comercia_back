@@ -10,6 +10,7 @@ import type {
 } from "../../types/impulsador";
 import { colores, espacios, fuentes, radios } from "../../tema";
 import { fechaHora } from "./utils";
+import { formatoFechaHoraCorta } from "../../utils/fecha";
 
 function TituloPantalla({ titulo, detalle }: { titulo: string; detalle: string }) {
   return (
@@ -22,11 +23,15 @@ function TituloPantalla({ titulo, detalle }: { titulo: string; detalle: string }
 
 export function EntradaView({
   agenda,
+  faltanPermisosProximidad,
+  localCerradoHoyId,
   procesando,
   proximidadActiva,
   alMarcar,
 }: {
   agenda: VisitaHoy[];
+  faltanPermisosProximidad: boolean;
+  localCerradoHoyId: number | null;
   procesando: boolean;
   proximidadActiva: boolean;
   alMarcar: (local: VisitaHoy["local"]) => Promise<void>;
@@ -37,18 +42,21 @@ export function EntradaView({
         titulo="Tu jornada de hoy"
         detalle="Elegí el local al llegar. Confirmaremos la distancia antes de guardar la entrada."
       />
-      <View style={proximidadActiva ? styles.proximidadActiva : styles.proximidadPendiente}>
-        <Ionicons
-          color={proximidadActiva ? colores.exito : colores.advertencia}
-          name={proximidadActiva ? "location" : "location-outline"}
-          size={18}
-        />
-        <Text style={proximidadActiva ? styles.proximidadActivaTexto : styles.proximidadPendienteTexto}>
-          {proximidadActiva
-            ? "Cercanía automática activa · te avisaremos al llegar"
-            : "Permití ubicación y notificaciones para recibir avisos al llegar"}
-        </Text>
-      </View>
+      {proximidadActiva ? (
+        <View style={styles.proximidadActiva}>
+          <Ionicons color={colores.exito} name="location" size={18} />
+          <Text style={styles.proximidadActivaTexto}>
+            Cercanía automática activa · te avisaremos al llegar
+          </Text>
+        </View>
+      ) : faltanPermisosProximidad && agenda.length > 0 ? (
+        <View style={styles.proximidadPendiente}>
+          <Ionicons color={colores.advertencia} name="location-outline" size={18} />
+          <Text style={styles.proximidadPendienteTexto}>
+            Permití ubicación y notificaciones para recibir avisos al llegar
+          </Text>
+        </View>
+      ) : null}
       {agenda.length === 0 ? (
         <EstadoVacio
           titulo="No tenés locales programados hoy"
@@ -64,9 +72,7 @@ export function EntradaView({
               </View>
               <View style={styles.horaChip}>
                 <Text style={styles.horaChipTexto}>
-                  {new Intl.DateTimeFormat("es-PY", { hour: "2-digit", minute: "2-digit" }).format(
-                    new Date(visita.programadaEn),
-                  )}
+                  {formatoFechaHoraCorta(visita.programadaEn)}
                 </Text>
               </View>
             </View>
@@ -74,6 +80,17 @@ export function EntradaView({
               <Text style={styles.textoSecundario}>Radio permitido: {visita.local.radioMetros} m</Text>
               <Text style={styles.textoSecundario}>La entrada y salida quedarán verificadas por GPS</Text>
             </View>
+            <Text style={styles.textoSecundario}>
+              Visita programada: {formatoFechaHoraCorta(visita.programadaEn)}
+            </Text>
+            {localCerradoHoyId === visita.local.id ? (
+              <View style={styles.avisoNuevaVisita}>
+                <Ionicons color={colores.exito} name="checkmark-circle" size={18} />
+                <Text style={styles.avisoNuevaVisitaTexto}>
+                  Tu visita anterior en este local ya quedo cerrada. Esta es otra visita programada.
+                </Text>
+              </View>
+            ) : null}
             <Pressable
               onPress={() => void alMarcar(visita.local)}
               disabled={procesando}
@@ -93,10 +110,12 @@ export function EntradaView({
 
 export function VisitaActiva({
   visita,
+  jornadaPendiente,
   procesando,
   alSalir,
 }: {
   visita: Visita;
+  jornadaPendiente: boolean;
   procesando: boolean;
   alSalir: () => Promise<void>;
 }) {
@@ -106,6 +125,14 @@ export function VisitaActiva({
         titulo={`Estás en ${visita.localNombre}`}
         detalle={`Entrada ${fechaHora(visita.iniciadaEn)} · ${Math.round(visita.distanciaMetros)} m del local`}
       />
+      {jornadaPendiente ? (
+        <View style={styles.progresoTarjeta}>
+          <Ionicons color={colores.advertencia} name="time-outline" size={24} />
+          <Text style={styles.textoSecundario}>
+            Esta jornada quedó pendiente desde {fechaHora(visita.iniciadaEn)}. Podés cerrarla ahora; la salida guardará tu ubicación actual.
+          </Text>
+        </View>
+      ) : null}
       <View style={styles.progresoTarjeta}>
         <Ionicons color={colores.primario} name="checkmark-circle" size={24} />
         <Text style={styles.textoSecundario}>Tu entrada ya está registrada. Marcá la salida antes de retirarte.</Text>
@@ -116,7 +143,9 @@ export function VisitaActiva({
         style={({ pressed }) => [styles.botonSalida, pressed && styles.presionado]}
       >
         <Ionicons color={colores.textoSobreOscuro} name="log-out-outline" size={19} />
-        <Text style={styles.botonPrimarioTexto}>Marcar salida</Text>
+        <Text style={styles.botonPrimarioTexto}>
+          {jornadaPendiente ? "Cerrar jornada pendiente" : "Marcar salida"}
+        </Text>
       </Pressable>
     </View>
   );
@@ -309,6 +338,8 @@ const styles = StyleSheet.create({
   horaChip: { backgroundColor: colores.acentoSuave, borderRadius: radios.redondo, paddingHorizontal: espacios.sm, paddingVertical: espacios.xs },
   horaChipTexto: { color: colores.advertencia, fontSize: 13, fontWeight: "800", fontVariant: ["tabular-nums"] },
   detallesLocal: { gap: espacios.xxs },
+  avisoNuevaVisita: { alignItems: "flex-start", backgroundColor: colores.tarjetaSuave, borderRadius: radios.medio, flexDirection: "row", gap: espacios.xs, padding: espacios.sm },
+  avisoNuevaVisitaTexto: { color: colores.textoAviso, flex: 1, fontSize: 13, fontWeight: "700", lineHeight: 19 },
   botonPrimario: { alignItems: "center", backgroundColor: colores.primario, borderRadius: radios.medio, flexDirection: "row", gap: espacios.xs, justifyContent: "center", minHeight: 50, paddingHorizontal: espacios.lg },
   botonSalida: { alignItems: "center", backgroundColor: colores.fondoElevado, borderRadius: radios.medio, flexDirection: "row", gap: espacios.xs, justifyContent: "center", marginTop: espacios.xs, minHeight: 54, paddingHorizontal: espacios.lg },
   botonPrimarioTexto: { color: colores.textoSobreOscuro, fontSize: 15, fontWeight: "800" },
