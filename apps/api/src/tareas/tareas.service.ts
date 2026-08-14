@@ -1,11 +1,10 @@
 import {
   BadRequestException,
-  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '../../generated/prisma/client';
+import type { Prisma } from '../../generated/prisma/client';
 import {
   ROL_SUPERVISOR_IMPULSADOR,
   ROL_TEAMLEADER_IMPULSADOR,
@@ -24,93 +23,21 @@ import type { UsuarioOperacionesCampo } from '../impulsador/interfaces/usuario-o
 import { PrismaService } from '../prisma/prisma.service';
 import {
   ActualizarTareaGlobalDto,
+  AlcanceLocalesTareaDto,
   AlcanceTareaDto,
   CrearTareaGlobalDto,
   ListarTareasGlobalesDto,
 } from './dto/tarea-global.dto';
 import type { TareaGlobalDto } from './interfaces/tarea-global.interface';
+import type {
+  AlcanceLocalesResuelto,
+  AlcanceLocalesTareaValor,
+  AlcanceUsuariosResuelto,
+  AlcanceUsuariosTareaValor,
+} from './interfaces/alcance-tarea.interface';
 import type { TareasQuitadasUsuarioDto } from './interfaces/tareas-quitadas-usuario.interface';
-import { filtroTareaGlobalVisiblePara } from './utils/visibilidad-tarea';
-
-const SELECT_TAREA_GLOBAL = {
-  id: true,
-  creadoPorId: true,
-  titulo: true,
-  descripcion: true,
-  requiereFoto: true,
-  orden: true,
-  activo: true,
-  alcance: true,
-  alcanceLocales: true,
-  createdAt: true,
-  updatedAt: true,
-  destinatarios: {
-    select: {
-      usuario: { select: { id: true, nombre: true, apellido: true } },
-    },
-    orderBy: { usuarioId: 'asc' as const },
-  },
-  locales: {
-    select: { local: { select: { id: true, nombre: true } } },
-    orderBy: { localId: 'asc' as const },
-  },
-  _count: { select: { tareas: true, exclusiones: true } },
-} as const;
-
-type TareaGlobalFila = {
-  id: number;
-  creadoPorId: number;
-  titulo: string;
-  descripcion: string;
-  requiereFoto: boolean;
-  orden: number;
-  activo: boolean;
-  alcance: 'TODOS' | 'SELECCIONADOS';
-  alcanceLocales: 'TODOS' | 'SELECCIONADOS';
-  createdAt: Date;
-  updatedAt: Date;
-  _count: { tareas: number; exclusiones: number };
-  destinatarios: {
-    usuario: { id: number; nombre: string; apellido: string };
-  }[];
-  locales: { local: { id: number; nombre: string } }[];
-};
-
-function aTareaGlobalDto(
-  tarea: TareaGlobalFila,
-  clientesEmpresa: number,
-  localesEmpresa: number,
-  clientesAsignados = tarea._count.tareas,
-  mostrarDestinatarios = true,
-  editable = true,
-): TareaGlobalDto {
-  return {
-    id: tarea.id,
-    titulo: tarea.titulo,
-    descripcion: tarea.descripcion,
-    requiereFoto: tarea.requiereFoto,
-    orden: tarea.orden,
-    activo: tarea.activo,
-    editable,
-    alcance: tarea.alcance,
-    alcanceLocales: tarea.alcanceLocales,
-    destinatarios: mostrarDestinatarios
-      ? tarea.destinatarios.map(({ usuario }) => ({
-          id: usuario.id,
-          nombre: `${usuario.nombre} ${usuario.apellido}`.trim(),
-        }))
-      : [],
-    locales: tarea.locales.map(({ local }) => local),
-    usuariosAsignados: mostrarDestinatarios ? tarea.destinatarios.length : 0,
-    usuariosExcluidos: mostrarDestinatarios ? tarea._count.exclusiones : 0,
-    localesAsignados: tarea.locales.length,
-    clientesAsignados,
-    clientesEmpresa,
-    localesEmpresa,
-    createdAt: tarea.createdAt.toISOString(),
-    updatedAt: tarea.updatedAt.toISOString(),
-  };
-}
+import { aTareaGlobalDto, SELECT_TAREA_ADMIN } from './utils/tarea-dto';
+import { filtroTareaVisiblePara } from './utils/visibilidad-tarea';
 
 @Injectable()
 export class TareasService {
@@ -135,16 +62,6 @@ export class TareasService {
     return usuario;
   }
 
-  private duplicado(error: unknown): never {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === 'P2002'
-    ) {
-      throw new ConflictException('Ya existe una tarea con ese título');
-    }
-    throw error;
-  }
-
   private esGestorImpulsadores(usuario: UsuarioOperacionesCampo): boolean {
     return (
       usuario.rolDescripcion === ROL_SUPERVISOR_IMPULSADOR ||
@@ -154,16 +71,23 @@ export class TareasService {
 
   private filtroListadoGestor(
     usuario: UsuarioOperacionesCampo,
-  ): Prisma.TareaGlobalWhereInput {
+  ): Prisma.TareaWhereInput {
     if (usuario.rolDescripcion === ROL_SUPERVISOR_IMPULSADOR) {
       return {
         OR: [
           { creadoPorId: usuario.id },
           { creadoPor: { is: { superiorId: usuario.id } } },
-          { destinatarios: { some: { usuarioId: usuario.id } } },
+          { equipoRaizId: usuario.id },
+          { equipoRaiz: { is: { superiorId: usuario.id } } },
           {
-            destinatarios: {
+            usuarios: {
+              some: { usuarioId: usuario.id, efecto: 'INCLUIR' },
+            },
+          },
+          {
+            usuarios: {
               some: {
+                efecto: 'INCLUIR',
                 usuario: {
                   OR: [
                     { superiorId: usuario.id },
@@ -180,15 +104,23 @@ export class TareasService {
       return {
         OR: [
           { creadoPorId: usuario.id },
-          { destinatarios: { some: { usuarioId: usuario.id } } },
+          { equipoRaizId: usuario.id },
           {
-            destinatarios: {
-              some: { usuario: { superiorId: usuario.id } },
+            usuarios: {
+              some: { usuarioId: usuario.id, efecto: 'INCLUIR' },
             },
           },
           {
-            alcance: AlcanceTareaDto.TODOS,
-            creadoPor: {
+            usuarios: {
+              some: {
+                efecto: 'INCLUIR',
+                usuario: { superiorId: usuario.id },
+              },
+            },
+          },
+          {
+            alcanceUsuarios: 'EQUIPO_COMPLETO',
+            equipoRaiz: {
               is: { subordinados: { some: { id: usuario.id } } },
             },
           },
@@ -202,7 +134,7 @@ export class TareasService {
     tareaId: number,
     usuario: UsuarioOperacionesCampo,
   ): Promise<void> {
-    const tarea = await this.prisma.tareaGlobal.findFirst({
+    const tarea = await this.prisma.tarea.findFirst({
       where: {
         id: tareaId,
         empresaId: usuario.empresaId,
@@ -212,9 +144,7 @@ export class TareasService {
       },
       select: { id: true },
     });
-    if (!tarea) {
-      throw new NotFoundException('La tarea no existe');
-    }
+    if (!tarea) throw new NotFoundException('La tarea no existe');
   }
 
   async listar(
@@ -222,14 +152,11 @@ export class TareasService {
     query: ListarTareasGlobalesDto,
   ): Promise<RespuestaPaginada<TareaGlobalDto>> {
     const usuario = await this.usuarioActual(usuarioId);
-    const where: Prisma.TareaGlobalWhereInput = {
+    const where: Prisma.TareaWhereInput = {
       empresaId: usuario.empresaId,
       ...(usuario.esGestor
         ? this.filtroListadoGestor(usuario)
-        : {
-            activo: true,
-            ...filtroTareaGlobalVisiblePara(usuario),
-          }),
+        : { activo: true, ...filtroTareaVisiblePara(usuario) }),
     };
     const whereClientes = {
       empresaId: usuario.empresaId,
@@ -237,9 +164,7 @@ export class TareasService {
         ? {}
         : {
             activo: true,
-            locales: {
-              some: { usuarioId: usuario.id, activo: true },
-            },
+            locales: { some: { usuarioId: usuario.id, activo: true } },
           }),
     };
     const whereLocales = {
@@ -248,10 +173,10 @@ export class TareasService {
     };
     const { skip, take, page, limit } = rangoPaginacion(query);
     const [total, tareas, clientesEmpresa, localesEmpresa] = await Promise.all([
-      this.prisma.tareaGlobal.count({ where }),
-      this.prisma.tareaGlobal.findMany({
+      this.prisma.tarea.count({ where }),
+      this.prisma.tarea.findMany({
         where,
-        select: SELECT_TAREA_GLOBAL,
+        select: SELECT_TAREA_ADMIN,
         orderBy: [{ orden: 'asc' }, { id: 'asc' }],
         skip,
         take,
@@ -265,7 +190,6 @@ export class TareasService {
           tarea,
           clientesEmpresa,
           localesEmpresa,
-          usuario.esGestor ? tarea._count.tareas : clientesEmpresa,
           usuario.esGestor,
           !this.esGestorImpulsadores(usuario) ||
             tarea.creadoPorId === usuario.id,
@@ -281,90 +205,67 @@ export class TareasService {
     usuarioId: number,
     dto: CrearTareaGlobalDto,
   ): Promise<TareaGlobalDto> {
-    const usuario = await this.exigirGestor(usuarioId);
-    const alcanceSolicitado = dto.alcance ?? AlcanceTareaDto.TODOS;
-    const { alcance, destinatarios } = await this.resolverDestinatarios(
-      usuario,
-      alcanceSolicitado,
+    const gestor = await this.exigirGestor(usuarioId);
+    const alcanceUsuarios = await this.resolverAlcanceUsuarios(
+      gestor,
+      dto.alcance ?? AlcanceTareaDto.TODOS,
       dto.usuarioIds ?? [],
+      dto.equipoRaizId,
     );
-    const alcanceLocales = dto.alcanceLocales ?? AlcanceTareaDto.TODOS;
-    const locales = await this.resolverLocales(
-      usuario,
-      alcanceLocales,
+    const alcanceLocales = await this.resolverAlcanceLocales(
+      gestor,
+      dto.alcanceLocales ?? AlcanceLocalesTareaDto.TODOS,
       dto.localIds ?? [],
+      dto.clienteId,
     );
-    const cantidad = await this.prisma.tareaGlobal.count({
-      where: { empresaId: usuario.empresaId },
+    const vigencia = this.resolverVigencia(dto.vigenteDesde, dto.vigenteHasta);
+    const cantidad = await this.prisma.tarea.count({
+      where: { empresaId: gestor.empresaId },
     });
     if (cantidad >= MAX_TAREAS_POR_LOCAL) {
       throw new BadRequestException(
-        'El checklist llegó al máximo de 100 tareas',
+        'El catálogo llegó al máximo de 100 tareas activas y archivadas',
       );
     }
 
-    const tareaId = await this.prisma
-      .$transaction(async (tx) => {
-        let orden = dto.orden;
-        if (orden === undefined) {
-          const agregado = await tx.tareaGlobal.aggregate({
-            where: { empresaId: usuario.empresaId },
-            _max: { orden: true },
-          });
-          orden = (agregado._max.orden ?? -1) + 1;
-        }
-        const tarea = await tx.tareaGlobal.create({
-          data: {
-            empresaId: usuario.empresaId,
-            creadoPorId: usuario.id,
-            titulo: dto.titulo,
-            descripcion: dto.descripcion,
-            requiereFoto: dto.requiereFoto ?? false,
-            alcance,
-            alcanceLocales,
-            orden,
-            destinatarios: {
-              create: destinatarios.map((destinatarioId) => ({
-                usuarioId: destinatarioId,
-              })),
-            },
-            locales: {
-              create: locales.map((localId) => ({ localId })),
-            },
-          },
-          select: {
-            id: true,
-            titulo: true,
-            descripcion: true,
-            requiereFoto: true,
-            orden: true,
-            activo: true,
-            alcance: true,
-            alcanceLocales: true,
-          },
+    const tareaId = await this.prisma.$transaction(async (tx) => {
+      let orden = dto.orden;
+      if (orden === undefined) {
+        const agregado = await tx.tarea.aggregate({
+          where: { empresaId: gestor.empresaId },
+          _max: { orden: true },
         });
-        const clientes = await tx.cliente.findMany({
-          where: { empresaId: usuario.empresaId },
-          select: { id: true },
-        });
-        if (clientes.length > 0) {
-          await tx.tareaCliente.createMany({
-            data: clientes.map((cliente) => ({
-              clienteId: cliente.id,
-              tareaGlobalId: tarea.id,
-              titulo: tarea.titulo,
-              descripcion: tarea.descripcion,
-              requiereFoto: tarea.requiereFoto,
-              orden: tarea.orden,
-              activo: tarea.activo,
+        orden = (agregado._max.orden ?? -1) + 1;
+      }
+      const tarea = await tx.tarea.create({
+        data: {
+          empresaId: gestor.empresaId,
+          creadoPorId: gestor.id,
+          titulo: dto.titulo,
+          descripcion: dto.descripcion,
+          requiereFoto: dto.requiereFoto ?? false,
+          orden,
+          alcanceUsuarios: alcanceUsuarios.alcanceUsuarios,
+          equipoRaizId: alcanceUsuarios.equipoRaizId,
+          alcanceLocales: alcanceLocales.alcanceLocales,
+          clienteId: alcanceLocales.clienteId,
+          ...vigencia,
+          usuarios: {
+            create: alcanceUsuarios.destinatarios.map((destinatarioId) => ({
+              usuarioId: destinatarioId,
+              efecto: 'INCLUIR',
+              registradoPorId: gestor.id,
             })),
-            skipDuplicates: true,
-          });
-        }
-        return tarea.id;
-      })
-      .catch((error: unknown) => this.duplicado(error));
-    return this.detalleDto(tareaId, usuario.empresaId);
+          },
+          locales: {
+            create: alcanceLocales.locales.map((localId) => ({ localId })),
+          },
+        },
+        select: { id: true },
+      });
+      return tarea.id;
+    });
+    return this.detalleDto(tareaId, gestor.empresaId);
   }
 
   async actualizar(
@@ -372,127 +273,116 @@ export class TareasService {
     tareaId: number,
     dto: ActualizarTareaGlobalDto,
   ): Promise<TareaGlobalDto> {
-    const usuario = await this.exigirGestor(usuarioId);
-    await this.exigirEditable(tareaId, usuario);
-    const actual = await this.prisma.tareaGlobal.findUnique({
+    const gestor = await this.exigirGestor(usuarioId);
+    await this.exigirEditable(tareaId, gestor);
+    const actual = await this.prisma.tarea.findUnique({
       where: { id: tareaId },
       select: {
-        alcance: true,
+        alcanceUsuarios: true,
+        equipoRaizId: true,
         alcanceLocales: true,
-        destinatarios: { select: { usuarioId: true }, take: 200 },
+        clienteId: true,
+        vigenteDesde: true,
+        vigenteHasta: true,
+        usuarios: {
+          where: { efecto: 'INCLUIR' },
+          select: { usuarioId: true },
+          take: 200,
+        },
         locales: { select: { localId: true }, take: 200 },
       },
     });
     if (!actual) throw new NotFoundException('La tarea no existe');
-    const alcanceSolicitado = dto.alcance ?? actual.alcance;
-    const { alcance, destinatarios } = await this.resolverDestinatarios(
-      usuario,
-      alcanceSolicitado,
-      dto.usuarioIds ?? actual.destinatarios.map(({ usuarioId }) => usuarioId),
+
+    const alcanceUsuarios = await this.resolverAlcanceUsuarios(
+      gestor,
+      dto.alcance ?? actual.alcanceUsuarios,
+      dto.usuarioIds ?? actual.usuarios.map(({ usuarioId }) => usuarioId),
+      dto.equipoRaizId ?? actual.equipoRaizId ?? undefined,
     );
-    const alcanceLocales = dto.alcanceLocales ?? actual.alcanceLocales;
-    const locales = await this.resolverLocales(
-      usuario,
-      alcanceLocales,
+    const alcanceLocales = await this.resolverAlcanceLocales(
+      gestor,
+      dto.alcanceLocales ?? actual.alcanceLocales,
       dto.localIds ?? actual.locales.map(({ localId }) => localId),
+      dto.clienteId ?? actual.clienteId ?? undefined,
     );
-    await this.prisma
-      .$transaction(async (tx) => {
-        const tarea = await tx.tareaGlobal.update({
-          where: { id: tareaId },
-          data: {
-            titulo: dto.titulo,
-            descripcion: dto.descripcion,
-            requiereFoto: dto.requiereFoto,
-            alcance,
-            alcanceLocales,
-            orden: dto.orden,
-            activo: dto.activo,
-          },
-          select: {
-            id: true,
-            titulo: true,
-            descripcion: true,
-            requiereFoto: true,
-            orden: true,
-            activo: true,
-          },
-        });
-        await tx.tareaGlobalUsuario.deleteMany({
-          where: { tareaGlobalId: tarea.id },
-        });
-        if (destinatarios.length > 0) {
-          await tx.tareaGlobalUsuario.createMany({
-            data: destinatarios.map((destinatarioId) => ({
-              tareaGlobalId: tarea.id,
-              usuarioId: destinatarioId,
-            })),
-          });
-          await tx.tareaGlobalExclusionUsuario.deleteMany({
-            where: {
-              tareaGlobalId: tarea.id,
-              usuarioId: { in: destinatarios },
-            },
-          });
-        }
-        await tx.tareaGlobalLocal.deleteMany({
-          where: { tareaGlobalId: tarea.id },
-        });
-        if (locales.length > 0) {
-          await tx.tareaGlobalLocal.createMany({
-            data: locales.map((localId) => ({
-              tareaGlobalId: tarea.id,
-              localId,
-            })),
-          });
-        }
-        await tx.tareaCliente.updateMany({
-          where: { tareaGlobalId: tarea.id },
-          data: {
-            titulo: tarea.titulo,
-            descripcion: tarea.descripcion,
-            requiereFoto: tarea.requiereFoto,
-            orden: tarea.orden,
-            activo: tarea.activo,
+    const vigencia = this.resolverVigencia(
+      Object.hasOwn(dto, 'vigenteDesde')
+        ? (dto.vigenteDesde ?? undefined)
+        : actual.vigenteDesde?.toISOString(),
+      Object.hasOwn(dto, 'vigenteHasta')
+        ? (dto.vigenteHasta ?? undefined)
+        : actual.vigenteHasta?.toISOString(),
+    );
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.tarea.update({
+        where: { id: tareaId },
+        data: {
+          titulo: dto.titulo,
+          descripcion: dto.descripcion,
+          requiereFoto: dto.requiereFoto,
+          orden: dto.orden,
+          activo: dto.activo,
+          alcanceUsuarios: alcanceUsuarios.alcanceUsuarios,
+          equipoRaizId: alcanceUsuarios.equipoRaizId,
+          alcanceLocales: alcanceLocales.alcanceLocales,
+          clienteId: alcanceLocales.clienteId,
+          ...vigencia,
+        },
+        select: { id: true },
+      });
+      await tx.tareaUsuario.deleteMany({
+        where: { tareaId, efecto: 'INCLUIR' },
+      });
+      if (alcanceUsuarios.destinatarios.length > 0) {
+        await tx.tareaUsuario.deleteMany({
+          where: {
+            tareaId,
+            efecto: 'EXCLUIR',
+            usuarioId: { in: alcanceUsuarios.destinatarios },
           },
         });
-        const clientes = await tx.cliente.findMany({
-          where: { empresaId: usuario.empresaId },
-          select: { id: true },
+        await tx.tareaUsuario.createMany({
+          data: alcanceUsuarios.destinatarios.map((destinatarioId) => ({
+            tareaId,
+            usuarioId: destinatarioId,
+            efecto: 'INCLUIR',
+            registradoPorId: gestor.id,
+          })),
         });
-        if (clientes.length > 0) {
-          await tx.tareaCliente.createMany({
-            data: clientes.map((cliente) => ({
-              clienteId: cliente.id,
-              tareaGlobalId: tarea.id,
-              titulo: tarea.titulo,
-              descripcion: tarea.descripcion,
-              requiereFoto: tarea.requiereFoto,
-              orden: tarea.orden,
-              activo: tarea.activo,
-            })),
-            skipDuplicates: true,
-          });
-        }
-      })
-      .catch((error: unknown) => this.duplicado(error));
-    return this.detalleDto(tareaId, usuario.empresaId);
+      }
+      await tx.tareaLocal.deleteMany({ where: { tareaId } });
+      if (alcanceLocales.locales.length > 0) {
+        await tx.tareaLocal.createMany({
+          data: alcanceLocales.locales.map((localId) => ({ tareaId, localId })),
+        });
+      }
+      if (dto.activo !== undefined) {
+        await tx.visitaTarea.updateMany({
+          where: { tareaId, visita: { completadaEn: null } },
+          data: { activa: dto.activo },
+        });
+      }
+    });
+    return this.detalleDto(tareaId, gestor.empresaId);
   }
 
   async eliminar(
     usuarioId: number,
     tareaId: number,
   ): Promise<{ ok: true; desactivada: true }> {
-    const usuario = await this.exigirGestor(usuarioId);
-    await this.exigirEditable(tareaId, usuario);
+    const gestor = await this.exigirGestor(usuarioId);
+    await this.exigirEditable(tareaId, gestor);
     await this.prisma.$transaction([
-      this.prisma.tareaGlobal.update({
+      this.prisma.tarea.update({
         where: { id: tareaId },
         data: { activo: false },
+        select: { id: true },
       }),
-      this.prisma.tareaCliente.updateMany({
-        where: { tareaGlobalId: tareaId },
-        data: { activo: false },
+      this.prisma.visitaTarea.updateMany({
+        where: { tareaId, visita: { completadaEn: null } },
+        data: { activa: false },
       }),
     ]);
     return { ok: true, desactivada: true };
@@ -510,101 +400,85 @@ export class TareasService {
         empresaId: gestor.empresaId,
         isActive: true,
       },
-      select: {
-        id: true,
-        rol: { select: { descripcion: true } },
-      },
+      select: { id: true },
     });
     if (!destinatario) {
       throw new NotFoundException('El usuario no pertenece a tu equipo');
     }
 
-    const tareasQuitadas = await this.prisma.$transaction(async (tx) => {
-      const tareas = await tx.tareaGlobal.findMany({
-        where: {
-          empresaId: gestor.empresaId,
-          ...filtroTareaGlobalVisiblePara({
-            id: destinatario.id,
-            rolDescripcion: destinatario.rol?.descripcion ?? null,
-          }),
-        },
-        select: { id: true },
-        take: MAX_TAREAS_POR_LOCAL,
-      });
-      const tareaIds = tareas.map(({ id }) => id);
-      let tareasGlobalesQuitadas = 0;
-      if (tareaIds.length > 0) {
-        await tx.tareaGlobalUsuario.deleteMany({
+    const tareas = await this.prisma.tarea.findMany({
+      where: {
+        empresaId: gestor.empresaId,
+        activo: true,
+        AND: [
+          filtroTareaVisiblePara(destinatario),
+          {
+            OR: [
+              { alcanceLocales: 'TODOS' },
+              {
+                alcanceLocales: 'CLIENTE',
+                cliente: {
+                  is: {
+                    locales: {
+                      some: { usuarioId: destinatario.id, activo: true },
+                    },
+                  },
+                },
+              },
+              {
+                alcanceLocales: 'SELECCIONADOS',
+                locales: {
+                  some: {
+                    local: {
+                      usuarioId: destinatario.id,
+                      activo: true,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+      select: { id: true },
+      take: 5000,
+    });
+    const tareaIds = tareas.map(({ id }) => id);
+    if (tareaIds.length > 0) {
+      await this.prisma.$transaction(async (tx) => {
+        await tx.tareaUsuario.deleteMany({
           where: {
+            tareaId: { in: tareaIds },
             usuarioId: destinatario.id,
-            tareaGlobalId: { in: tareaIds },
+            efecto: 'INCLUIR',
           },
         });
-        const exclusionesGlobales =
-          await tx.tareaGlobalExclusionUsuario.createMany({
-            data: tareaIds.map((tareaGlobalId) => ({
-              tareaGlobalId,
-              usuarioId: destinatario.id,
-              excluidoPorId: gestor.id,
-            })),
-            skipDuplicates: true,
-          });
-        tareasGlobalesQuitadas = exclusionesGlobales.count;
-      }
-      const tareasLocalesQuitadas = await tx.$executeRaw(Prisma.sql`
-        INSERT INTO "tareas_cliente_exclusion_usuario" (
-          "tarea_cliente_id", "usuario_id", "excluido_por_id", "created_at"
-        )
-        SELECT DISTINCT
-          tarea."id", ${destinatario.id}, ${gestor.id}, CURRENT_TIMESTAMP
-        FROM "tareas_cliente" AS tarea
-        INNER JOIN "clientes" AS cliente
-          ON cliente."id" = tarea."cliente_id"
-        INNER JOIN "locales" AS local
-          ON local."cliente_id" = cliente."id"
-        WHERE tarea."tarea_global_id" IS NULL
-          AND cliente."empresa_id" = ${gestor.empresaId}
-          AND local."usuario_id" = ${destinatario.id}
-          AND local."activo" = true
-        ON CONFLICT ("tarea_cliente_id", "usuario_id") DO NOTHING
-      `);
-      await tx.$executeRaw(Prisma.sql`
-        DELETE FROM "visita_tareas" AS visita_tarea
-        USING "visitas" AS visita, "tareas_cliente" AS tarea
-        WHERE visita_tarea."visita_id" = visita."id"
-          AND visita_tarea."tarea_id" = tarea."id"
-          AND visita."usuario_id" = ${destinatario.id}
-          AND visita."completada_en" IS NULL
-          AND visita_tarea."completada" = false
-          AND visita_tarea."comentario" IS NULL
-          AND visita_tarea."foto" IS NULL
-          AND NOT EXISTS (
-            SELECT 1
-            FROM "novedades_tarea" AS novedad
-            WHERE novedad."visita_tarea_id" = visita_tarea."id"
-          )
-          AND (
-            EXISTS (
-              SELECT 1
-              FROM "tareas_globales_exclusion_usuario" AS exclusion_global
-              WHERE exclusion_global."tarea_global_id" = tarea."tarea_global_id"
-                AND exclusion_global."usuario_id" = ${destinatario.id}
-            )
-            OR EXISTS (
-              SELECT 1
-              FROM "tareas_cliente_exclusion_usuario" AS exclusion_cliente
-              WHERE exclusion_cliente."tarea_cliente_id" = tarea."id"
-                AND exclusion_cliente."usuario_id" = ${destinatario.id}
-            )
-          )
-      `);
-      return tareasGlobalesQuitadas + Number(tareasLocalesQuitadas);
-    });
+        await tx.tareaUsuario.createMany({
+          data: tareaIds.map((tareaId) => ({
+            tareaId,
+            usuarioId: destinatario.id,
+            efecto: 'EXCLUIR',
+            registradoPorId: gestor.id,
+          })),
+          skipDuplicates: true,
+        });
+        await tx.visitaTarea.deleteMany({
+          where: {
+            tareaId: { in: tareaIds },
+            visita: { usuarioId: destinatario.id, completadaEn: null },
+            completada: false,
+            comentario: null,
+            foto: null,
+            novedad: null,
+          },
+        });
+      });
+    }
 
     return {
       ok: true,
       usuarioId: destinatario.id,
-      tareasQuitadas,
+      tareasQuitadas: tareaIds.length,
     };
   }
 
@@ -613,9 +487,9 @@ export class TareasService {
     empresaId: number,
   ): Promise<TareaGlobalDto> {
     const [tarea, clientesEmpresa, localesEmpresa] = await Promise.all([
-      this.prisma.tareaGlobal.findFirst({
+      this.prisma.tarea.findFirst({
         where: { id: tareaId, empresaId },
-        select: SELECT_TAREA_GLOBAL,
+        select: SELECT_TAREA_ADMIN,
       }),
       this.prisma.cliente.count({ where: { empresaId } }),
       this.prisma.local.count({ where: { empresaId } }),
@@ -624,37 +498,94 @@ export class TareasService {
     return aTareaGlobalDto(tarea, clientesEmpresa, localesEmpresa);
   }
 
-  private async resolverDestinatarios(
+  private async resolverAlcanceUsuarios(
     gestor: UsuarioOperacionesCampo,
-    alcance: AlcanceTareaDto | 'TODOS' | 'SELECCIONADOS',
+    solicitado: AlcanceTareaDto | AlcanceUsuariosTareaValor,
     usuarioIds: number[],
-  ): Promise<{
-    alcance: AlcanceTareaDto | 'TODOS' | 'SELECCIONADOS';
-    destinatarios: number[];
-  }> {
-    if (alcance === AlcanceTareaDto.TODOS) {
-      return { alcance, destinatarios: [] };
-    }
-    if (usuarioIds.length === 0) {
-      throw new BadRequestException(
-        'Elegí al menos un impulsador para esta tarea',
+    equipoRaizId?: number,
+  ): Promise<AlcanceUsuariosResuelto> {
+    const alcanceUsuarios: AlcanceUsuariosTareaValor =
+      solicitado === AlcanceTareaDto.TODOS
+        ? this.esGestorImpulsadores(gestor)
+          ? 'EQUIPO_COMPLETO'
+          : 'EMPRESA'
+        : solicitado;
+
+    if (
+      alcanceUsuarios === 'EMPRESA' &&
+      gestor.rolDescripcion === ROL_TEAMLEADER_IMPULSADOR
+    ) {
+      throw new ForbiddenException(
+        'El team leader solo puede asignar tareas dentro de su equipo',
       );
     }
-    return {
-      alcance,
-      destinatarios: await this.accesoCampo.validarOperativosDelGestor(
-        gestor,
-        usuarioIds,
-      ),
-    };
+    if (alcanceUsuarios === 'SELECCIONADOS') {
+      if (usuarioIds.length === 0) {
+        throw new BadRequestException('Elegí al menos una persona');
+      }
+      return {
+        alcanceUsuarios,
+        equipoRaizId: null,
+        destinatarios: await this.accesoCampo.validarOperativosDelGestor(
+          gestor,
+          usuarioIds,
+        ),
+      };
+    }
+    if (
+      alcanceUsuarios === 'EQUIPO_DIRECTO' ||
+      alcanceUsuarios === 'EQUIPO_COMPLETO'
+    ) {
+      return {
+        alcanceUsuarios,
+        equipoRaizId: await this.resolverEquipoRaiz(gestor, equipoRaizId),
+        destinatarios: [],
+      };
+    }
+    return { alcanceUsuarios, equipoRaizId: null, destinatarios: [] };
   }
 
-  private async resolverLocales(
+  private async resolverEquipoRaiz(
     gestor: UsuarioOperacionesCampo,
-    alcance: AlcanceTareaDto | 'TODOS' | 'SELECCIONADOS',
+    solicitado?: number,
+  ): Promise<number> {
+    const equipoRaizId = solicitado ?? gestor.id;
+    if (equipoRaizId === gestor.id) return equipoRaizId;
+    if (gestor.rolDescripcion !== ROL_SUPERVISOR_IMPULSADOR) {
+      throw new ForbiddenException('No podés asignar desde otro equipo');
+    }
+    const teamleader = await this.prisma.usuario.findFirst({
+      where: {
+        id: equipoRaizId,
+        empresaId: gestor.empresaId,
+        superiorId: gestor.id,
+        isActive: true,
+        rol: { is: { descripcion: ROL_TEAMLEADER_IMPULSADOR } },
+      },
+      select: { id: true },
+    });
+    if (!teamleader) {
+      throw new NotFoundException(
+        'El equipo elegido no pertenece al supervisor',
+      );
+    }
+    return teamleader.id;
+  }
+
+  private async resolverAlcanceLocales(
+    gestor: UsuarioOperacionesCampo,
+    alcanceLocales: AlcanceLocalesTareaDto | AlcanceLocalesTareaValor,
     localIds: number[],
-  ): Promise<number[]> {
-    if (alcance === AlcanceTareaDto.TODOS) return [];
+    clienteId?: number,
+  ): Promise<AlcanceLocalesResuelto> {
+    if (alcanceLocales === 'TODOS') {
+      return { alcanceLocales, clienteId: null, locales: [] };
+    }
+    if (alcanceLocales === 'CLIENTE') {
+      if (!clienteId) throw new BadRequestException('Elegí un cliente');
+      await this.validarClienteDelGestor(gestor, clienteId);
+      return { alcanceLocales, clienteId, locales: [] };
+    }
     const ids = [...new Set(localIds)];
     if (ids.length === 0) {
       throw new BadRequestException('Elegí al menos un local para esta tarea');
@@ -676,6 +607,57 @@ export class TareasService {
     if (encontrados.length !== ids.length) {
       throw new NotFoundException('Algún local no pertenece a tu equipo');
     }
-    return ids;
+    return { alcanceLocales, clienteId: null, locales: ids };
+  }
+
+  private async validarClienteDelGestor(
+    gestor: UsuarioOperacionesCampo,
+    clienteId: number,
+  ): Promise<void> {
+    const cliente = await this.prisma.cliente.findFirst({
+      where: { id: clienteId, empresaId: gestor.empresaId },
+      select: { id: true },
+    });
+    if (!cliente) throw new NotFoundException('El cliente no existe');
+    if (!this.esGestorImpulsadores(gestor)) return;
+
+    const alcanceEquipo =
+      await this.accesoCampo.filtroRepositoresDelSupervisor(gestor);
+    const [total, permitidos] = await Promise.all([
+      this.prisma.local.count({
+        where: { clienteId, empresaId: gestor.empresaId, activo: true },
+      }),
+      this.prisma.local.count({
+        where: {
+          clienteId,
+          empresaId: gestor.empresaId,
+          activo: true,
+          usuario: { is: alcanceEquipo },
+        },
+      }),
+    ]);
+    if (total === 0 || total !== permitidos) {
+      throw new NotFoundException(
+        'El cliente tiene locales fuera de tu equipo; elegí locales concretos',
+      );
+    }
+  }
+
+  private resolverVigencia(
+    desde?: string | null,
+    hasta?: string | null,
+  ): { vigenteDesde: Date | null; vigenteHasta: Date | null } {
+    const vigenteDesde = desde ? new Date(desde) : null;
+    const vigenteHasta = hasta ? new Date(hasta) : null;
+    if (
+      vigenteDesde &&
+      vigenteHasta &&
+      vigenteHasta.getTime() < vigenteDesde.getTime()
+    ) {
+      throw new BadRequestException(
+        'La fecha final no puede ser anterior a la fecha inicial',
+      );
+    }
+    return { vigenteDesde, vigenteHasta };
   }
 }

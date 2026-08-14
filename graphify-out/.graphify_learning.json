@@ -1,6 +1,54 @@
 {
-  "generated_at": "2026-08-14T12:10:23.866052+00:00",
+  "generated_at": "2026-08-14T16:40:34.162199+00:00",
   "nodes": {
+    "apps_api_package_scripts_prisma_deploy": {
+      "code_fingerprint": "30cf7a2f7149ec576fd7373682e2611dba42e4f21c2f752f2d94dc008e590efe",
+      "label": "prisma:deploy",
+      "last": "2026-08-14T12:11:05.856179+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-14T12:11:05.856179+00:00",
+          "outcome": "useful",
+          "q": "migration.sql se ejecuta automaticamente cuando hago el commit o yo tengo que hacerlo?"
+        }
+      ],
+      "score": 0.995685639,
+      "source_file": "apps/api/package.json",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_readme_deployment": {
+      "code_fingerprint": "5e87b28bd419d1c83f2f44de2e150d0260da361547fc53d60016d0b64153101d",
+      "label": "Deployment",
+      "last": "2026-08-14T12:11:05.856179+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-14T12:11:05.856179+00:00",
+          "outcome": "useful",
+          "q": "migration.sql se ejecuta automaticamente cuando hago el commit o yo tengo que hacerlo?"
+        }
+      ],
+      "score": 0.995685639,
+      "source_file": "apps/api/README.md",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_api_scripts_guard_migrate": {
+      "code_fingerprint": "6f5a7a3bfd0000f12638b1d467455770b209891468fa3f456f7481177b0f2edd",
+      "label": "guard-migrate.mjs",
+      "last": "2026-08-14T12:11:05.856179+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-14T12:11:05.856179+00:00",
+          "outcome": "useful",
+          "q": "migration.sql se ejecuta automaticamente cuando hago el commit o yo tengo que hacerlo?"
+        }
+      ],
+      "score": 0.995685639,
+      "source_file": "apps/api/scripts/guard-migrate.mjs",
+      "status": "tentative",
+      "uses": 1
+    },
     "apps_api_src_auth_auth_controller_authcontroller": {
       "code_fingerprint": "41d1dc8b5a2bb2dbb6ed83c349b139367fd7de34296754d681f14e36d1ed60a0",
       "label": "AuthController",
@@ -12,7 +60,7 @@
           "q": "el back en api.comercia.pro funciona, hice un login y funciono https://api.comercia.pro/api/v1/auth/login"
         }
       ],
-      "score": 0.856880782,
+      "score": 0.853174309,
       "source_file": "apps/api/src/auth/auth.controller.ts",
       "status": "tentative",
       "uses": 1
@@ -28,7 +76,7 @@
           "q": "En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa"
         }
       ],
-      "score": 0.961028765,
+      "score": 0.956871796,
       "source_file": "apps/api/src/auth/auth.module.ts",
       "status": "tentative",
       "uses": 1
@@ -49,7 +97,7 @@
           "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
         }
       ],
-      "score": 1.875013242,
+      "score": 1.866902796,
       "source_file": "apps/api/src/auth/auth.service.ts",
       "status": "preferred",
       "uses": 2
@@ -65,7 +113,7 @@
           "q": "En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa"
         }
       ],
-      "score": 0.961028765,
+      "score": 0.956871796,
       "source_file": "apps/api/src/auth/jwt-auth.guard.ts",
       "status": "tentative",
       "uses": 1
@@ -81,7 +129,7 @@
           "q": "En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa"
         }
       ],
-      "score": 0.961028765,
+      "score": 0.956871796,
       "source_file": "apps/api/src/config/env.schema.ts",
       "status": "tentative",
       "uses": 1
@@ -97,7 +145,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.9385732,
+      "score": 0.934513363,
       "source_file": "apps/api/src/impulsador/acceso-operaciones-campo.service.ts",
       "status": "tentative",
       "uses": 1
@@ -113,7 +161,7 @@
           "q": "Como quitar todas las tareas solamente de un usuario respetando la jerarquia"
         }
       ],
-      "score": 0.999622625,
+      "score": 0.995298716,
       "source_file": "apps/api/src/impulsador/acceso-operaciones-campo.service.ts",
       "status": "tentative",
       "uses": 1
@@ -129,24 +177,45 @@
           "q": "que significa programacion pausada y como reanudar"
         }
       ],
-      "score": 0.816182038,
+      "score": 0.812651609,
       "source_file": "apps/api/src/impulsador/interfaces/programacion-visita.interface.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_impulsador_visitas_service_visitasservice": {
-      "code_fingerprint": "9955ba305a050c308ae8b481240e294cb5c7c4e38592140b865163b1efaf364a",
+      "code_fingerprint": "d57900c18c792e1148351b98b41a28555c56fb8818d39238cf3c43fcbfed06db",
       "label": "VisitasService",
-      "last": "2026-08-11T18:19:22.582539+00:00",
+      "last": "2026-08-14T12:23:06.071934+00:00",
       "provenance": [
+        {
+          "date": "2026-08-14T12:23:06.071934+00:00",
+          "outcome": "useful",
+          "q": "Como refactorizar las tablas de tarea según alcance global, por equipo, usuario, cliente/local e historial de visitas"
+        },
         {
           "date": "2026-08-11T18:19:22.582539+00:00",
           "outcome": "useful",
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.9385732,
+      "score": 1.930390789,
       "source_file": "apps/api/src/impulsador/visitas.service.ts",
+      "status": "preferred",
+      "uses": 2
+    },
+    "apps_api_src_locales_tareas_local_service_tareaslocalservice": {
+      "code_fingerprint": "41a11cfb5da2b7565c2e00d7a5e62a8f65b14e691bd4775de6649157f9c35fd1",
+      "label": "TareasLocalService",
+      "last": "2026-08-14T12:23:06.071934+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-14T12:23:06.071934+00:00",
+          "outcome": "useful",
+          "q": "Como refactorizar las tablas de tarea según alcance global, por equipo, usuario, cliente/local e historial de visitas"
+        }
+      ],
+      "score": 0.995877425,
+      "source_file": "apps/api/src/locales/tareas-local.service.ts",
       "status": "tentative",
       "uses": 1
     },
@@ -161,7 +230,7 @@
           "q": "En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa"
         }
       ],
-      "score": 0.961028765,
+      "score": 0.956871796,
       "source_file": "apps/api/src/presentismo/presentismo.module.ts",
       "status": "tentative",
       "uses": 1
@@ -177,7 +246,7 @@
           "q": "¿Cómo quedó conectado el home del panel con el resumen de presentismo operativo y sus rutas de detalle?"
         }
       ],
-      "score": 0.961927606,
+      "score": 0.957766749,
       "source_file": "apps/api/src/presentismo/presentismo.service.ts",
       "status": "tentative",
       "uses": 1
@@ -193,13 +262,13 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.816245723,
+      "score": 0.812715018,
       "source_file": "apps/api/src/repositor/osrm.service.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_repositor_repositor_service_repositorservice": {
-      "code_fingerprint": "271a062ace53822af0c68f278e914c1ae920944bceff20c784599873ef1f4f94",
+      "code_fingerprint": "a69c6a5c03aef116a8069ce6e326f6addb3f8ba693d9d1dcd377992c6c9d66cc",
       "label": "RepositorService",
       "last": "2026-08-11T18:19:22.582539+00:00",
       "provenance": [
@@ -209,7 +278,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.9385732,
+      "score": 0.934513363,
       "source_file": "apps/api/src/repositor/repositor.service.ts",
       "status": "tentative",
       "uses": 1
@@ -225,7 +294,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.816245723,
+      "score": 0.812715018,
       "source_file": "apps/api/src/repositor/utils/optimizacion-ruta.ts",
       "status": "tentative",
       "uses": 1
@@ -241,42 +310,31 @@
           "q": "Como quitar todas las tareas solamente de un usuario respetando la jerarquia"
         }
       ],
-      "score": 0.999622625,
+      "score": 0.995298716,
       "source_file": "apps/api/src/tareas/interfaces/tareas-quitadas-usuario.interface.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_tareas_tareas_service_tareasservice": {
-      "code_fingerprint": "9174bb36e4a3c8def61834ab0fab7204e717274791b039255ead9454b2d2929c",
+      "code_fingerprint": "18e4c628b6cda3a1854845e85d54dc562d10439462c9352487ef5b6b98110d15",
       "label": "TareasService",
-      "last": "2026-08-14T11:46:52.417193+00:00",
+      "last": "2026-08-14T12:23:06.071934+00:00",
       "provenance": [
+        {
+          "date": "2026-08-14T12:23:06.071934+00:00",
+          "outcome": "useful",
+          "q": "Como refactorizar las tablas de tarea según alcance global, por equipo, usuario, cliente/local e historial de visitas"
+        },
         {
           "date": "2026-08-14T11:46:52.417193+00:00",
           "outcome": "useful",
           "q": "Como quitar todas las tareas solamente de un usuario respetando la jerarquia"
         }
       ],
-      "score": 0.999622625,
+      "score": 1.991176141,
       "source_file": "apps/api/src/tareas/tareas.service.ts",
-      "status": "tentative",
-      "uses": 1
-    },
-    "apps_api_src_tareas_utils_visibilidad_tarea_filtrotareaglobalvisiblepara": {
-      "code_fingerprint": "39f2295fa39940576ad6312faf50f879ef1097b5be40960bfbe95ab823cf676c",
-      "label": "filtroTareaGlobalVisiblePara()",
-      "last": "2026-08-14T11:46:52.417193+00:00",
-      "provenance": [
-        {
-          "date": "2026-08-14T11:46:52.417193+00:00",
-          "outcome": "useful",
-          "q": "Como quitar todas las tareas solamente de un usuario respetando la jerarquia"
-        }
-      ],
-      "score": 0.999622625,
-      "source_file": "apps/api/src/tareas/utils/visibilidad-tarea.ts",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 2
     },
     "apps_api_src_ubicaciones_dto_ubicacion_dto_registrarubicaciondto": {
       "code_fingerprint": "20a756fa543949ff16556bee35c25d374c390a4b4dd00c9dfe449a553668cd43",
@@ -289,7 +347,7 @@
           "q": "Qué significan precision_metros, registrada_en y recibida_en en ubicaciones_usuario"
         }
       ],
-      "score": 0.932832906,
+      "score": 0.928797899,
       "source_file": "apps/api/src/ubicaciones/dto/ubicacion.dto.ts",
       "status": "tentative",
       "uses": 1
@@ -310,7 +368,7 @@
           "q": "en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios"
         }
       ],
-      "score": 1.789675286,
+      "score": 1.781933972,
       "source_file": "apps/api/src/ubicaciones/ubicaciones.service.ts",
       "status": "preferred",
       "uses": 2
@@ -331,7 +389,7 @@
           "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
         }
       ],
-      "score": 1.875013242,
+      "score": 1.866902796,
       "source_file": "apps/mobile/App.tsx",
       "status": "preferred",
       "uses": 2
@@ -347,7 +405,7 @@
           "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
         }
       ],
-      "score": 0.940738764,
+      "score": 0.93666956,
       "source_file": "apps/mobile/plugins/with-sim-phone-numbers.js",
       "status": "tentative",
       "uses": 1
@@ -363,7 +421,7 @@
           "q": "como se llama el store que usa cuando no hay conexion y guarda en el celular, y se borra una vez que se envia al servidor"
         }
       ],
-      "score": 0.938305275,
+      "score": 0.934246597,
       "source_file": "apps/mobile/src/lib/cola-ubicaciones.ts",
       "status": "tentative",
       "uses": 1
@@ -389,7 +447,7 @@
           "q": "en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios"
         }
       ],
-      "score": 2.646556068,
+      "score": 2.635108281,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
       "status": "preferred",
       "uses": 3
@@ -405,7 +463,7 @@
           "q": "como se llama el store que usa cuando no hay conexion y guarda en el celular, y se borra una vez que se envia al servidor"
         }
       ],
-      "score": 0.938305275,
+      "score": 0.934246597,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
       "status": "tentative",
       "uses": 1
@@ -421,7 +479,7 @@
           "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
         }
       ],
-      "score": 0.934274478,
+      "score": 0.930233235,
       "source_file": "apps/mobile/src/lib/sesion.ts",
       "status": "tentative",
       "uses": 1
@@ -437,7 +495,7 @@
           "q": "el back en api.comercia.pro funciona, hice un login y funciono https://api.comercia.pro/api/v1/auth/login"
         }
       ],
-      "score": 0.856880782,
+      "score": 0.853174309,
       "source_file": "apps/mobile/src/lib/sesion.ts",
       "status": "tentative",
       "uses": 1
@@ -453,7 +511,7 @@
           "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
         }
       ],
-      "score": 0.940738764,
+      "score": 0.93666956,
       "source_file": "apps/mobile/src/lib/sim.ts",
       "status": "tentative",
       "uses": 1
@@ -469,7 +527,7 @@
           "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
         }
       ],
-      "score": 0.940738764,
+      "score": 0.93666956,
       "source_file": "apps/mobile/src/lib/sim.ts",
       "status": "tentative",
       "uses": 1
@@ -485,7 +543,7 @@
           "q": "que significa programacion pausada y como reanudar"
         }
       ],
-      "score": 0.816182038,
+      "score": 0.812651609,
       "source_file": "apps/web/src/components/impulsador/editor-programacion-visita.tsx",
       "status": "tentative",
       "uses": 1
@@ -501,7 +559,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.9385732,
+      "score": 0.934513363,
       "source_file": "apps/web/src/types/local.ts",
       "status": "tentative",
       "uses": 1
@@ -517,26 +575,31 @@
           "q": "¿Cómo quedó conectado el home del panel con el resumen de presentismo operativo y sus rutas de detalle?"
         }
       ],
-      "score": 0.961927606,
+      "score": 0.957766749,
       "source_file": "apps/web/src/types/presentismo.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_web_src_types_tarea_tareaglobal": {
-      "code_fingerprint": "fff39ca97ef0dc556a999137defda07f0c43be7ad31cfaafa178cda5c3364ff3",
+      "code_fingerprint": "7bc9c20cd63f9d0c8822252fe56944989c88ee988d8d348caf6f9a288f951a96",
       "label": "TareaGlobal",
-      "last": "2026-08-11T18:19:22.582539+00:00",
+      "last": "2026-08-14T12:23:06.071934+00:00",
       "provenance": [
+        {
+          "date": "2026-08-14T12:23:06.071934+00:00",
+          "outcome": "useful",
+          "q": "Como refactorizar las tablas de tarea según alcance global, por equipo, usuario, cliente/local e historial de visitas"
+        },
         {
           "date": "2026-08-11T18:19:22.582539+00:00",
           "outcome": "useful",
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.9385732,
+      "score": 1.930390789,
       "source_file": "apps/web/src/types/tarea.ts",
-      "status": "tentative",
-      "uses": 1
+      "status": "preferred",
+      "uses": 2
     },
     "apps_web_src_types_visita_programacionvisita": {
       "code_fingerprint": "cdcfeac830e4d7ba42c7cb22f66f0a6c7708aec029a9f3793d90474c7bbe4553",
@@ -549,8 +612,40 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.9385732,
+      "score": 0.934513363,
       "source_file": "apps/web/src/types/visita.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "apps_web_src_types_visita_visitatarea": {
+      "code_fingerprint": "cdcfeac830e4d7ba42c7cb22f66f0a6c7708aec029a9f3793d90474c7bbe4553",
+      "label": "VisitaTarea",
+      "last": "2026-08-14T12:23:06.071934+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-14T12:23:06.071934+00:00",
+          "outcome": "useful",
+          "q": "Como refactorizar las tablas de tarea según alcance global, por equipo, usuario, cliente/local e historial de visitas"
+        }
+      ],
+      "score": 0.995877425,
+      "source_file": "apps/web/src/types/visita.ts",
+      "status": "tentative",
+      "uses": 1
+    },
+    "deploy": {
+      "code_fingerprint": "9824be31509ad58fa3c737f1c271863c56210301928f1667bb0bc1f700d42bc1",
+      "label": "DEPLOY.md",
+      "last": "2026-08-14T12:11:05.856179+00:00",
+      "provenance": [
+        {
+          "date": "2026-08-14T12:11:05.856179+00:00",
+          "outcome": "useful",
+          "q": "migration.sql se ejecuta automaticamente cuando hago el commit o yo tengo que hacerlo?"
+        }
+      ],
+      "score": 0.995685639,
+      "source_file": "DEPLOY.md",
       "status": "tentative",
       "uses": 1
     },
@@ -565,7 +660,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.816245723,
+      "score": 0.812715018,
       "source_file": "apps/web/package.json",
       "status": "tentative",
       "uses": 1

@@ -15,23 +15,23 @@ datasource db {
 }
 
 model Empresa {
-  id             Int             @id @default(autoincrement())
-  nombre         String          @unique
-  dbName         String?         @map("db_name")
+  id          Int             @id @default(autoincrement())
+  nombre      String          @unique
+  dbName      String?         @map("db_name")
   // Una empresa puede pertenecer a otra (casa matriz → sucursales)
-  empresaId      Int?            @map("empresas_id")
-  padre          Empresa?        @relation("EmpresaJerarquia", fields: [empresaId], references: [id])
-  hijas          Empresa[]       @relation("EmpresaJerarquia")
-  usuarios       Usuario[]
-  modulos        EmpresaModulo[]
-  paginas        EmpresaPagina[]
-  clientes       Cliente[]       @relation("EmpresaClientes")
-  tareasGlobales TareaGlobal[]   @relation("EmpresaTareasGlobales")
-  locales        Local[]         @relation("EmpresaLocales")
-  territorios    Territorio[]    @relation("EmpresaTerritorios")
-  zonas          Zona[]          @relation("EmpresaZonas")
-  createdAt      DateTime        @default(now()) @map("created_at")
-  updatedAt      DateTime        @default(now()) @updatedAt @map("updated_at")
+  empresaId   Int?            @map("empresas_id")
+  padre       Empresa?        @relation("EmpresaJerarquia", fields: [empresaId], references: [id])
+  hijas       Empresa[]       @relation("EmpresaJerarquia")
+  usuarios    Usuario[]
+  modulos     EmpresaModulo[]
+  paginas     EmpresaPagina[]
+  clientes    Cliente[]       @relation("EmpresaClientes")
+  tareas      Tarea[]         @relation("EmpresaTareas")
+  locales     Local[]         @relation("EmpresaLocales")
+  territorios Territorio[]    @relation("EmpresaTerritorios")
+  zonas       Zona[]          @relation("EmpresaZonas")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @default(now()) @updatedAt @map("updated_at")
 
   @@map("empresas")
 }
@@ -229,102 +229,108 @@ model ZonaUsuario {
 
 // Cliente comercial: puede tener varios locales y un checklist global.
 model Cliente {
-  id                Int            @id @default(autoincrement())
-  empresaId         Int            @map("empresa_id")
-  empresa           Empresa        @relation("EmpresaClientes", fields: [empresaId], references: [id], onDelete: Cascade)
+  id                Int      @id @default(autoincrement())
+  empresaId         Int      @map("empresa_id")
+  empresa           Empresa  @relation("EmpresaClientes", fields: [empresaId], references: [id], onDelete: Cascade)
   nombre            String
-  descripcionTareas String         @default("") @map("descripcion_tareas")
-  imagenReferencia  String?        @map("imagen_referencia")
-  activo            Boolean        @default(true)
+  descripcionTareas String   @default("") @map("descripcion_tareas")
+  imagenReferencia  String?  @map("imagen_referencia")
+  activo            Boolean  @default(true)
   locales           Local[]
-  tareas            TareaCliente[]
-  creadoPorId       Int            @map("creado_por_id")
-  creadoPor         Usuario        @relation("ClientesCreados", fields: [creadoPorId], references: [id])
-  createdAt         DateTime       @default(now()) @map("created_at")
-  updatedAt         DateTime       @default(now()) @updatedAt @map("updated_at")
+  tareas            Tarea[]
+  creadoPorId       Int      @map("creado_por_id")
+  creadoPor         Usuario  @relation("ClientesCreados", fields: [creadoPorId], references: [id])
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@unique([empresaId, nombre])
   @@map("clientes")
 }
 
-// Definición maestra del checklist de una empresa. Cada cambio se replica en
-// TareaCliente para conservar IDs estables y el historial de cada visita.
-model TareaGlobal {
-  id             Int                           @id @default(autoincrement())
-  empresaId      Int                           @map("empresa_id")
-  empresa        Empresa                       @relation("EmpresaTareasGlobales", fields: [empresaId], references: [id], onDelete: Cascade)
-  titulo         String
-  descripcion    String
-  requiereFoto   Boolean                       @default(false) @map("requiere_foto")
-  alcance        AlcanceTarea                  @default(TODOS)
-  alcanceLocales AlcanceTarea                  @default(TODOS) @map("alcance_locales")
-  orden          Int                           @default(0)
-  activo         Boolean                       @default(true)
-  tareas         TareaCliente[]
-  destinatarios  TareaGlobalUsuario[]
-  exclusiones    TareaGlobalExclusionUsuario[]
-  locales        TareaGlobalLocal[]
-  creadoPorId    Int                           @map("creado_por_id")
-  creadoPor      Usuario                       @relation("TareasGlobalesCreadas", fields: [creadoPorId], references: [id])
-  createdAt      DateTime                      @default(now()) @map("created_at")
-  updatedAt      DateTime                      @default(now()) @updatedAt @map("updated_at")
+// Definición canónica del checklist. Cada visita conserva una instantánea
+// estable de la tarea aplicada para que el historial no cambie retroactivamente.
+model Tarea {
+  id              Int                  @id @default(autoincrement())
+  empresaId       Int                  @map("empresa_id")
+  empresa         Empresa              @relation("EmpresaTareas", fields: [empresaId], references: [id], onDelete: Cascade)
+  titulo          String
+  descripcion     String
+  requiereFoto    Boolean              @default(false) @map("requiere_foto")
+  alcanceUsuarios AlcanceUsuariosTarea @default(EQUIPO_COMPLETO) @map("alcance_usuarios")
+  equipoRaizId    Int?                 @map("equipo_raiz_id")
+  equipoRaiz      Usuario?             @relation("TareasEquipoRaiz", fields: [equipoRaizId], references: [id], onDelete: Restrict)
+  alcanceLocales  AlcanceLocalesTarea  @default(TODOS) @map("alcance_locales")
+  clienteId       Int?                 @map("cliente_id")
+  cliente         Cliente?             @relation(fields: [clienteId], references: [id], onDelete: Restrict)
+  vigenteDesde    DateTime?            @map("vigente_desde")
+  vigenteHasta    DateTime?            @map("vigente_hasta")
+  orden           Int                  @default(0)
+  activo          Boolean              @default(true)
+  usuarios        TareaUsuario[]
+  locales         TareaLocal[]
+  respuestas      VisitaTarea[]
+  creadoPorId     Int                  @map("creado_por_id")
+  creadoPor       Usuario              @relation("TareasCreadas", fields: [creadoPorId], references: [id], onDelete: Restrict)
+  createdAt       DateTime             @default(now()) @map("created_at")
+  updatedAt       DateTime             @default(now()) @updatedAt @map("updated_at")
 
-  @@unique([empresaId, titulo])
-  @@map("tareas_globales")
+  @@index([empresaId, activo, orden])
+  @@index([equipoRaizId, alcanceUsuarios])
+  @@index([clienteId, alcanceLocales])
+  @@map("tareas")
 }
 
-enum AlcanceTarea {
-  TODOS
+enum AlcanceUsuariosTarea {
+  EMPRESA
+  EQUIPO_DIRECTO
+  EQUIPO_COMPLETO
   SELECCIONADOS
 }
 
-// Destinatarios operativos de una tarea cuando su alcance es SELECCIONADOS.
-// La tarea de cliente sigue existiendo como plantilla estable; este vínculo
-// decide qué impulsadores la reciben en sus visitas.
-model TareaGlobalUsuario {
-  id            Int         @id @default(autoincrement())
-  tareaGlobalId Int         @map("tarea_global_id")
-  tareaGlobal   TareaGlobal @relation(fields: [tareaGlobalId], references: [id], onDelete: Cascade)
-  usuarioId     Int         @map("usuario_id")
-  usuario       Usuario     @relation("TareasGlobalesAsignadas", fields: [usuarioId], references: [id], onDelete: Cascade)
-  createdAt     DateTime    @default(now()) @map("created_at")
-
-  @@unique([tareaGlobalId, usuarioId])
-  @@index([usuarioId, tareaGlobalId])
-  @@map("tareas_globales_usuario")
+enum AlcanceLocalesTarea {
+  TODOS
+  CLIENTE
+  SELECCIONADOS
 }
 
-// Excluye una tarea de una sola persona sin desactivarla para el resto del
-// equipo. Se conserva quién hizo el cambio para poder auditar la asignación.
-model TareaGlobalExclusionUsuario {
-  id            Int         @id @default(autoincrement())
-  tareaGlobalId Int         @map("tarea_global_id")
-  tareaGlobal   TareaGlobal @relation(fields: [tareaGlobalId], references: [id], onDelete: Cascade)
-  usuarioId     Int         @map("usuario_id")
-  usuario       Usuario     @relation("TareasGlobalesExcluidas", fields: [usuarioId], references: [id], onDelete: Cascade)
-  excluidoPorId Int         @map("excluido_por_id")
-  excluidoPor   Usuario     @relation("ExclusionesTareasRegistradas", fields: [excluidoPorId], references: [id], onDelete: Restrict)
-  createdAt     DateTime    @default(now()) @map("created_at")
+enum EfectoTareaUsuario {
+  INCLUIR
+  EXCLUIR
+}
 
-  @@unique([tareaGlobalId, usuarioId])
-  @@index([usuarioId, tareaGlobalId])
-  @@index([excluidoPorId])
-  @@map("tareas_globales_exclusion_usuario")
+// Inclusión o exclusión explícita de una persona. La exclusión tiene
+// precedencia sobre cualquier alcance dinámico de empresa o equipo.
+model TareaUsuario {
+  id              Int                @id @default(autoincrement())
+  tareaId         Int                @map("tarea_id")
+  tarea           Tarea              @relation(fields: [tareaId], references: [id], onDelete: Cascade)
+  usuarioId       Int                @map("usuario_id")
+  usuario         Usuario            @relation("TareasAsignadas", fields: [usuarioId], references: [id], onDelete: Cascade)
+  efecto          EfectoTareaUsuario
+  registradoPorId Int                @map("registrado_por_id")
+  registradoPor   Usuario            @relation("AsignacionesTareasRegistradas", fields: [registradoPorId], references: [id], onDelete: Restrict)
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @default(now()) @updatedAt @map("updated_at")
+
+  @@unique([tareaId, usuarioId])
+  @@index([usuarioId, efecto, tareaId])
+  @@index([registradoPorId])
+  @@map("tarea_usuarios")
 }
 
 // Locales concretos donde aplica una tarea cuando alcanceLocales es
 // SELECCIONADOS. La asignación por usuario y por local se intersectan.
-model TareaGlobalLocal {
-  id            Int         @id @default(autoincrement())
-  tareaGlobalId Int         @map("tarea_global_id")
-  tareaGlobal   TareaGlobal @relation(fields: [tareaGlobalId], references: [id], onDelete: Cascade)
-  localId       Int         @map("local_id")
-  local         Local       @relation(fields: [localId], references: [id], onDelete: Cascade)
-  createdAt     DateTime    @default(now()) @map("created_at")
+model TareaLocal {
+  id        Int      @id @default(autoincrement())
+  tareaId   Int      @map("tarea_id")
+  tarea     Tarea    @relation(fields: [tareaId], references: [id], onDelete: Cascade)
+  localId   Int      @map("local_id")
+  local     Local    @relation(fields: [localId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
 
-  @@unique([tareaGlobalId, localId])
-  @@index([localId, tareaGlobalId])
-  @@map("tareas_globales_local")
+  @@unique([tareaId, localId])
+  @@index([localId, tareaId])
+  @@map("tarea_locales")
 }
 
 // Locales geolocalizados. Los carga un Supervisor y puede asignarlos a un
@@ -355,7 +361,7 @@ model Local {
   creadoPor             Usuario             @relation("LocalesCreados", fields: [creadoPorId], references: [id])
   activo                Boolean             @default(true)
   visitas               Visita[]
-  tareasGlobales        TareaGlobalLocal[]
+  tareas                TareaLocal[]
   programacionVisita    ProgramacionVisita?
   createdAt             DateTime            @default(now()) @map("created_at")
   updatedAt             DateTime            @default(now()) @updatedAt @map("updated_at")
@@ -390,46 +396,6 @@ model ProgramacionVisita {
   updatedAt   DateTime         @default(now()) @updatedAt @map("updated_at")
 
   @@map("programaciones_visita")
-}
-
-// Ítem del checklist de un local. `requiereFoto` habilita la cámara para
-// esa tarea durante la visita.
-model TareaCliente {
-  id            Int                            @id @default(autoincrement())
-  clienteId     Int                            @map("cliente_id")
-  cliente       Cliente                        @relation(fields: [clienteId], references: [id], onDelete: Cascade)
-  tareaGlobalId Int?                           @map("tarea_global_id")
-  tareaGlobal   TareaGlobal?                   @relation(fields: [tareaGlobalId], references: [id], onDelete: SetNull)
-  titulo        String
-  descripcion   String
-  requiereFoto  Boolean                        @default(false) @map("requiere_foto")
-  orden         Int                            @default(0)
-  activo        Boolean                        @default(true)
-  respuestas    VisitaTarea[]
-  exclusiones   TareaClienteExclusionUsuario[]
-  createdAt     DateTime                       @default(now()) @map("created_at")
-  updatedAt     DateTime                       @default(now()) @updatedAt @map("updated_at")
-
-  @@unique([clienteId, tareaGlobalId])
-  @@map("tareas_cliente")
-}
-
-// Exclusión para las tareas específicas de un cliente que no tienen una
-// definición global asociada.
-model TareaClienteExclusionUsuario {
-  id             Int          @id @default(autoincrement())
-  tareaClienteId Int          @map("tarea_cliente_id")
-  tareaCliente   TareaCliente @relation(fields: [tareaClienteId], references: [id], onDelete: Cascade)
-  usuarioId      Int          @map("usuario_id")
-  usuario        Usuario      @relation("TareasClienteExcluidas", fields: [usuarioId], references: [id], onDelete: Cascade)
-  excluidoPorId  Int          @map("excluido_por_id")
-  excluidoPor    Usuario      @relation("ExclusionesTareasClienteRegistradas", fields: [excluidoPorId], references: [id], onDelete: Restrict)
-  createdAt      DateTime     @default(now()) @map("created_at")
-
-  @@unique([tareaClienteId, usuarioId])
-  @@index([usuarioId, tareaClienteId])
-  @@index([excluidoPorId])
-  @@map("tareas_cliente_exclusion_usuario")
 }
 
 // Visita de un usuario a un local. La ubicación reportada se verifica contra
@@ -490,7 +456,12 @@ model VisitaTarea {
   visitaId     Int           @map("visita_id")
   visita       Visita        @relation(fields: [visitaId], references: [id], onDelete: Cascade)
   tareaId      Int           @map("tarea_id")
-  tarea        TareaCliente  @relation(fields: [tareaId], references: [id], onDelete: Cascade)
+  tarea        Tarea         @relation(fields: [tareaId], references: [id], onDelete: Restrict)
+  titulo       String        @map("titulo_snapshot")
+  descripcion  String        @map("descripcion_snapshot")
+  requiereFoto Boolean       @map("requiere_foto_snapshot")
+  orden        Int           @map("orden_snapshot")
+  activa       Boolean       @default(true) @map("activa_snapshot")
   completada   Boolean       @default(false)
   comentario   String?
   // Nombre de archivo de la foto tomada para esta tarea
@@ -499,6 +470,7 @@ model VisitaTarea {
   novedad      NovedadTarea?
 
   @@unique([visitaId, tareaId])
+  @@index([tareaId])
   @@map("visita_tareas")
 }
 
@@ -535,50 +507,48 @@ model Rol {
 }
 
 model Usuario {
-  id                                  Int                            @id @default(autoincrement())
-  empresaId                           Int                            @map("empresa_id")
-  empresa                             Empresa                        @relation(fields: [empresaId], references: [id])
-  nombre                              String
-  apellido                            String
+  id                            Int                      @id @default(autoincrement())
+  empresaId                     Int                      @map("empresa_id")
+  empresa                       Empresa                  @relation(fields: [empresaId], references: [id])
+  nombre                        String
+  apellido                      String
   // Identificadores de login: cualquiera de los dos + contraseña
-  correo                              String                         @unique
-  nombreLogin                         String                         @unique @map("nombre_login")
-  passwordHash                        String                         @map("password_hash")
-  ruc                                 String                         @unique
-  celular                             String
+  correo                        String                   @unique
+  nombreLogin                   String                   @unique @map("nombre_login")
+  passwordHash                  String                   @map("password_hash")
+  ruc                           String                   @unique
+  celular                       String
   // Sin rol al registrarse: un superior se lo asigna después
-  rolId                               Int?                           @map("rol_id")
-  rol                                 Rol?                           @relation(fields: [rolId], references: [id])
+  rolId                         Int?                     @map("rol_id")
+  rol                           Rol?                     @relation(fields: [rolId], references: [id])
   // Jerarquía: el superior es otro usuario (ej. el jefe)
-  superiorId                          Int?                           @map("superior_id")
-  superior                            Usuario?                       @relation("UsuarioJerarquia", fields: [superiorId], references: [id])
-  subordinados                        Usuario[]                      @relation("UsuarioJerarquia")
+  superiorId                    Int?                     @map("superior_id")
+  superior                      Usuario?                 @relation("UsuarioJerarquia", fields: [superiorId], references: [id])
+  subordinados                  Usuario[]                @relation("UsuarioJerarquia")
   // Permiso de administración del sistema (configura el ABM de la plataforma).
   // Independiente del rol de negocio. Se activa a mano en la BD.
-  esSuperadmin                        Boolean                        @default(false) @map("es_superadmin")
-  localesAsignados                    Local[]                        @relation("LocalesAsignados")
-  localesCreados                      Local[]                        @relation("LocalesCreados")
-  clientesCreados                     Cliente[]                      @relation("ClientesCreados")
-  tareasGlobalesCreadas               TareaGlobal[]                  @relation("TareasGlobalesCreadas")
-  tareasGlobalesAsignadas             TareaGlobalUsuario[]           @relation("TareasGlobalesAsignadas")
-  tareasGlobalesExcluidas             TareaGlobalExclusionUsuario[]  @relation("TareasGlobalesExcluidas")
-  exclusionesTareasRegistradas        TareaGlobalExclusionUsuario[]  @relation("ExclusionesTareasRegistradas")
-  tareasClienteExcluidas              TareaClienteExclusionUsuario[] @relation("TareasClienteExcluidas")
-  exclusionesTareasClienteRegistradas TareaClienteExclusionUsuario[] @relation("ExclusionesTareasClienteRegistradas")
-  territoriosCreados                  Territorio[]                   @relation("TerritoriosCreados")
-  territoriosResponsable              Territorio[]                   @relation("TerritoriosResponsable")
-  zonasCreadas                        Zona[]                         @relation("ZonasCreadas")
-  zonasAsignadas                      ZonaUsuario[]                  @relation("ZonasAsignadas")
-  zonasAsignadasPor                   ZonaUsuario[]                  @relation("ZonasAsignadasPor")
-  visitas                             Visita[]                       @relation("VisitasRealizadas")
-  rutasDiarias                        RutaDiariaRepositor[]          @relation("RutasDiariasRepositor")
-  consentimientoUbicacion             ConsentimientoUbicacion?
-  ubicaciones                         UbicacionUsuario[]
-  novedadesReportadas                 NovedadTarea[]                 @relation("NovedadesReportadas")
-  novedadesRecibidas                  NovedadTarea[]                 @relation("NovedadesRecibidas")
-  isActive                            Boolean                        @default(true) @map("is_active")
-  createdAt                           DateTime                       @default(now()) @map("created_at")
-  updatedAt                           DateTime                       @default(now()) @updatedAt @map("updated_at")
+  esSuperadmin                  Boolean                  @default(false) @map("es_superadmin")
+  localesAsignados              Local[]                  @relation("LocalesAsignados")
+  localesCreados                Local[]                  @relation("LocalesCreados")
+  clientesCreados               Cliente[]                @relation("ClientesCreados")
+  tareasCreadas                 Tarea[]                  @relation("TareasCreadas")
+  tareasEquipoRaiz              Tarea[]                  @relation("TareasEquipoRaiz")
+  tareasAsignadas               TareaUsuario[]           @relation("TareasAsignadas")
+  asignacionesTareasRegistradas TareaUsuario[]           @relation("AsignacionesTareasRegistradas")
+  territoriosCreados            Territorio[]             @relation("TerritoriosCreados")
+  territoriosResponsable        Territorio[]             @relation("TerritoriosResponsable")
+  zonasCreadas                  Zona[]                   @relation("ZonasCreadas")
+  zonasAsignadas                ZonaUsuario[]            @relation("ZonasAsignadas")
+  zonasAsignadasPor             ZonaUsuario[]            @relation("ZonasAsignadasPor")
+  visitas                       Visita[]                 @relation("VisitasRealizadas")
+  rutasDiarias                  RutaDiariaRepositor[]    @relation("RutasDiariasRepositor")
+  consentimientoUbicacion       ConsentimientoUbicacion?
+  ubicaciones                   UbicacionUsuario[]
+  novedadesReportadas           NovedadTarea[]           @relation("NovedadesReportadas")
+  novedadesRecibidas            NovedadTarea[]           @relation("NovedadesRecibidas")
+  isActive                      Boolean                  @default(true) @map("is_active")
+  createdAt                     DateTime                 @default(now()) @map("created_at")
+  updatedAt                     DateTime                 @default(now()) @updatedAt @map("updated_at")
 
   @@map("usuarios")
 }

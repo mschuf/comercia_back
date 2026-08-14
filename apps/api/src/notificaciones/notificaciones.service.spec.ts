@@ -59,7 +59,7 @@ describe('NotificacionesService', () => {
         leidaEn: null,
         visitaTarea: {
           id: 80,
-          tarea: { titulo: 'Reponer gondola' },
+          titulo: 'Reponer gondola',
           visita: {
             usuario: { id: 11, nombre: 'Ana', apellido: 'Rojas' },
             local: {

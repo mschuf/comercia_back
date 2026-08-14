@@ -19,6 +19,8 @@ import {
 } from '../impulsador/impulsador.constants';
 import type { UsuarioOperacionesCampo } from '../impulsador/interfaces/usuario-operaciones-campo.interface';
 import type { ProgramacionVisitaCalculo } from '../impulsador/interfaces/programacion-visita.interface';
+import { MAX_TAREAS_POR_LOCAL } from '../impulsador/impulsador.constants';
+import { filtroTareaVisiblePara } from '../tareas/utils/visibilidad-tarea';
 import { aProgramacionVisitaDto } from '../impulsador/utils/programacion-visita';
 import {
   respuestaPaginada,
@@ -39,7 +41,7 @@ import type {
   UsuarioAsignable,
   TransferenciaLocalesDto,
 } from './interfaces/local.interface';
-import { aTareaLocalDto, SELECT_TAREA_LOCAL } from './tareas-local.service';
+import { aTareaLocalDto, SELECT_TAREA_LOCAL } from './utils/tarea-local';
 
 type LocalConRelaciones = {
   id: number;
@@ -49,7 +51,6 @@ type LocalConRelaciones = {
     nombre: string;
     descripcionTareas: string;
     imagenReferencia: string | null;
-    _count: { tareas: number };
   };
   latitud: number;
   longitud: number;
@@ -74,7 +75,6 @@ const SELECT_LOCAL = {
       nombre: true,
       descripcionTareas: true,
       imagenReferencia: true,
-      _count: { select: { tareas: { where: { activo: true } } } },
     },
   },
   latitud: true,
@@ -103,7 +103,7 @@ const SELECT_LOCAL = {
   creadoPor: { select: { id: true, nombre: true, apellido: true } },
 } as const;
 
-function aLocalDto(local: LocalConRelaciones): LocalDto {
+function aLocalDto(local: LocalConRelaciones, tareasCount = 0): LocalDto {
   return {
     id: local.id,
     nombre: local.nombre,
@@ -117,7 +117,7 @@ function aLocalDto(local: LocalConRelaciones): LocalDto {
       ? aProgramacionVisitaDto(local.programacionVisita)
       : null,
     requiereFotoPresencia: local.requiereFotoPresencia,
-    tareasCount: local.cliente._count.tareas,
+    tareasCount,
     activo: local.activo,
     asignadoA: local.usuario
       ? {
@@ -189,7 +189,15 @@ export class LocalesService {
         take,
       }),
     ]);
-    return respuestaPaginada(locales.map(aLocalDto), total, page, limit);
+    const tareasPorLocal = await this.tareasPorLocal(actual, locales, false);
+    return respuestaPaginada(
+      locales.map((local) =>
+        aLocalDto(local, tareasPorLocal.get(local.id)?.length ?? 0),
+      ),
+      total,
+      page,
+      limit,
+    );
   }
 
   // Usuarios activos de la empresa del gestor, para el select "asignar a"
@@ -442,12 +450,6 @@ export class LocalesService {
             nombre: true,
             descripcionTareas: true,
             imagenReferencia: true,
-            _count: { select: { tareas: { where: { activo: true } } } },
-            tareas: {
-              where: actual.esGestor ? {} : { activo: true },
-              select: SELECT_TAREA_LOCAL,
-              orderBy: [{ orden: 'asc' }, { id: 'asc' }],
-            },
           },
         },
       },
@@ -456,13 +458,78 @@ export class LocalesService {
     if (!local) {
       throw new NotFoundException('El local no existe');
     }
+    const tareas =
+      (await this.tareasPorLocal(actual, [local], actual.esGestor)).get(
+        local.id,
+      ) ?? [];
     return {
-      ...aLocalDto(local),
-      tareas: local.cliente.tareas.map(aTareaLocalDto),
+      ...aLocalDto(local, tareas.length),
+      tareas,
       descripcionTareas: local.cliente.descripcionTareas,
       imagenReferencia: local.cliente.imagenReferencia,
       radioMetrosEfectivo: local.radioMetros ?? RADIO_METROS_DEFECTO,
     };
+  }
+
+  private async tareasPorLocal(
+    actual: UsuarioOperacionesCampo,
+    locales: { id: number; cliente: { id: number } }[],
+    incluirInactivas: boolean,
+  ): Promise<Map<number, LocalDetalleDto['tareas']>> {
+    const resultado = new Map<number, LocalDetalleDto['tareas']>();
+    locales.forEach(({ id }) => resultado.set(id, []));
+    if (locales.length === 0) return resultado;
+
+    const localIds = locales.map(({ id }) => id);
+    const clienteIds = [...new Set(locales.map(({ cliente }) => cliente.id))];
+    const tareas = await this.prisma.tarea.findMany({
+      where: {
+        empresaId: actual.empresaId,
+        ...(incluirInactivas ? {} : { activo: true }),
+        AND: [
+          ...(actual.esGestor ? [] : [filtroTareaVisiblePara(actual)]),
+          {
+            OR: [
+              { alcanceLocales: 'TODOS' },
+              { alcanceLocales: 'CLIENTE', clienteId: { in: clienteIds } },
+              {
+                alcanceLocales: 'SELECCIONADOS',
+                locales: { some: { localId: { in: localIds } } },
+              },
+            ],
+          },
+        ],
+      },
+      select: {
+        ...SELECT_TAREA_LOCAL,
+        alcanceLocales: true,
+        clienteId: true,
+        locales: {
+          where: { localId: { in: localIds } },
+          select: { localId: true },
+          take: 200,
+        },
+      },
+      orderBy: [{ orden: 'asc' }, { id: 'asc' }],
+      take: Math.min(5000, MAX_TAREAS_POR_LOCAL * locales.length),
+    });
+    const porCliente = new Map<number, number[]>();
+    locales.forEach((local) => {
+      const ids = porCliente.get(local.cliente.id) ?? [];
+      ids.push(local.id);
+      porCliente.set(local.cliente.id, ids);
+    });
+    for (const tarea of tareas) {
+      const destinos =
+        tarea.alcanceLocales === 'TODOS'
+          ? localIds
+          : tarea.alcanceLocales === 'CLIENTE' && tarea.clienteId !== null
+            ? (porCliente.get(tarea.clienteId) ?? [])
+            : tarea.locales.map(({ localId }) => localId);
+      const dto = aTareaLocalDto(tarea);
+      destinos.forEach((localId) => resultado.get(localId)?.push(dto));
+    }
+    return resultado;
   }
 
   async eliminar(usuarioId: number, id: number): Promise<{ ok: true }> {

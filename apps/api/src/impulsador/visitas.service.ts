@@ -15,7 +15,7 @@ import {
   type RespuestaPaginada,
 } from '../common/utils/paginacion';
 import { PrismaService } from '../prisma/prisma.service';
-import { filtroTareaGlobalVisiblePara } from '../tareas/utils/visibilidad-tarea';
+import { filtroTareaAplicableEnLocal } from '../tareas/utils/visibilidad-tarea';
 import {
   ROL_SUPERVISOR_IMPULSADOR,
   ROL_TEAMLEADER_IMPULSADOR,
@@ -41,6 +41,7 @@ import {
   PAGINA_EQUIPO,
   PAGINA_TAREAS,
   PAGINA_VISITAS,
+  MAX_TAREAS_POR_LOCAL,
   RADIO_METROS_DEFECTO,
 } from './impulsador.constants';
 import type { UsuarioOperacionesCampo } from './interfaces/usuario-operaciones-campo.interface';
@@ -63,6 +64,11 @@ import { fechaMarcacionDispositivo } from './utils/fecha-marcacion';
 type VisitaTareaConTarea = {
   id: number;
   tareaId: number;
+  titulo: string;
+  descripcion: string;
+  requiereFoto: boolean;
+  orden: number;
+  activa: boolean;
   completada: boolean;
   comentario: string | null;
   foto: string | null;
@@ -73,13 +79,6 @@ type VisitaTareaConTarea = {
     reportadaEn: Date;
     leidaEn: Date | null;
   } | null;
-  tarea: {
-    titulo: string;
-    descripcion: string;
-    requiereFoto: boolean;
-    orden: number;
-    activo: boolean;
-  };
 };
 
 type VisitaConRelaciones = {
@@ -143,6 +142,11 @@ const ZONA_HORARIA_LISTADO_MARCACIONES = 'America/Asuncion';
 const SELECT_VISITA_TAREA = {
   id: true,
   tareaId: true,
+  titulo: true,
+  descripcion: true,
+  requiereFoto: true,
+  orden: true,
+  activa: true,
   completada: true,
   comentario: true,
   foto: true,
@@ -153,15 +157,6 @@ const SELECT_VISITA_TAREA = {
       comentario: true,
       reportadaEn: true,
       leidaEn: true,
-    },
-  },
-  tarea: {
-    select: {
-      titulo: true,
-      descripcion: true,
-      requiereFoto: true,
-      orden: true,
-      activo: true,
     },
   },
 } as const;
@@ -264,11 +259,11 @@ function aVisitaTareaDto(tarea: VisitaTareaConTarea): VisitaTareaDto {
   return {
     id: tarea.id,
     tareaId: tarea.tareaId,
-    titulo: tarea.tarea.titulo,
-    descripcion: tarea.tarea.descripcion,
-    requiereFoto: tarea.tarea.requiereFoto,
-    orden: tarea.tarea.orden,
-    activa: tarea.tarea.activo,
+    titulo: tarea.titulo,
+    descripcion: tarea.descripcion,
+    requiereFoto: tarea.requiereFoto,
+    orden: tarea.orden,
+    activa: tarea.activa,
     completada: tarea.completada,
     comentario: tarea.comentario,
     foto: tarea.foto,
@@ -307,7 +302,7 @@ function aVisitaDto(
     radioMetros: visita.local.radioMetros ?? radioMetrosFallback,
     // El checklist se ordena acá porque el select compartido no fija orderBy
     tareas: [...visita.tareas]
-      .sort((a, b) => a.tarea.orden - b.tarea.orden || a.id - b.id)
+      .sort((a, b) => a.orden - b.orden || a.id - b.id)
       .map(aVisitaTareaDto),
   };
 }
@@ -388,39 +383,6 @@ function exigirDentroDelRadio(
     );
   }
   return distancia;
-}
-
-function tareasVisiblesPara(
-  usuarioId: number,
-  rolDescripcion: string | null,
-  localId: number,
-): Prisma.TareaClienteWhereInput {
-  return {
-    activo: true,
-    AND: [
-      { exclusiones: { none: { usuarioId } } },
-      {
-        OR: [
-          { tareaGlobalId: null },
-          {
-            tareaGlobal: {
-              is: filtroTareaGlobalVisiblePara({
-                id: usuarioId,
-                rolDescripcion,
-              }),
-            },
-          },
-        ],
-      },
-      {
-        OR: [
-          { tareaGlobalId: null },
-          { tareaGlobal: { is: { alcanceLocales: 'TODOS' } } },
-          { tareaGlobal: { is: { locales: { some: { localId } } } } },
-        ],
-      },
-    ],
-  };
 }
 
 // Mensaje neutro: no revela tareas de otras visitas
@@ -543,13 +505,20 @@ export class VisitasService {
 
     const tareasActivas = esRolMarcacionSimple(usuario.rolDescripcion)
       ? []
-      : await this.prisma.tareaCliente.findMany({
+      : await this.prisma.tarea.findMany({
           where: {
-            clienteId: local.clienteId,
-            ...tareasVisiblesPara(usuario.id, usuario.rolDescripcion, local.id),
+            empresaId: usuario.empresaId,
+            ...filtroTareaAplicableEnLocal(usuario, local),
           },
-          select: { id: true },
+          select: {
+            id: true,
+            titulo: true,
+            descripcion: true,
+            requiereFoto: true,
+            orden: true,
+          },
           orderBy: [{ orden: 'asc' }, { id: 'asc' }],
+          take: MAX_TAREAS_POR_LOCAL,
         });
 
     // Si ya hay una visita abierta se retoma en lugar de duplicar (ej. la app
@@ -564,6 +533,11 @@ export class VisitasService {
           data: tareasActivas.map((t) => ({
             visitaId: abierta.id,
             tareaId: t.id,
+            titulo: t.titulo,
+            descripcion: t.descripcion,
+            requiereFoto: t.requiereFoto,
+            orden: t.orden,
+            activa: true,
           })),
           skipDuplicates: true,
         });
@@ -608,7 +582,16 @@ export class VisitasService {
             ? undefined
             : redondear1Decimal(dto.precisionMetros),
         tareas: {
-          createMany: { data: tareasActivas.map((t) => ({ tareaId: t.id })) },
+          createMany: {
+            data: tareasActivas.map((t) => ({
+              tareaId: t.id,
+              titulo: t.titulo,
+              descripcion: t.descripcion,
+              requiereFoto: t.requiereFoto,
+              orden: t.orden,
+              activa: true,
+            })),
+          },
         },
       },
       select: SELECT_VISITA,
@@ -959,7 +942,7 @@ export class VisitasService {
     if (tarea.novedad) {
       return aVisitaTareaDto(tarea);
     }
-    if (!tarea.tarea.activo) {
+    if (!tarea.activa) {
       throw new BadRequestException('La tarea ya no está activa');
     }
     if (tarea.completada) {
@@ -1007,7 +990,7 @@ export class VisitasService {
           completada: false,
           novedad: null,
           visita: { completadaEn: null },
-          tarea: { activo: true },
+          activa: true,
         },
         data: {
           completada: false,
@@ -1033,7 +1016,7 @@ export class VisitasService {
       if (existente?.completada) {
         throw new BadRequestException('La tarea ya fue completada');
       }
-      if (existente && !existente.tarea.activo) {
+      if (existente && !existente.activa) {
         throw new BadRequestException('La tarea ya no está activa');
       }
       if (existente?.visita.completadaEn) {
@@ -1104,16 +1087,14 @@ export class VisitasService {
     const marcacionSimple = esRolMarcacionSimple(usuario.rolDescripcion);
     const activas = marcacionSimple
       ? []
-      : visita.tareas.filter((t) => t.tarea.activo);
+      : visita.tareas.filter((t) => t.activa);
     if (activas.some((t) => !t.completada && !t.novedad)) {
       throw new BadRequestException(
         'Faltan tareas del checklist por completar',
       );
     }
     if (
-      activas.some(
-        (t) => t.completada && t.tarea.requiereFoto && t.foto === null,
-      )
+      activas.some((t) => t.completada && t.requiereFoto && t.foto === null)
     ) {
       throw new BadRequestException('Faltan fotos en tareas que las requieren');
     }

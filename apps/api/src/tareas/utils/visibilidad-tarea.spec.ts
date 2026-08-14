@@ -1,31 +1,52 @@
 import {
-  ROL_IMPULSADOR,
-  ROL_REPOSITOR,
-} from '../../common/constants/roles-negocio';
-import { filtroTareaGlobalVisiblePara } from './visibilidad-tarea';
+  filtroAlcanceLocalTarea,
+  filtroTareaAplicableEnLocal,
+  filtroTareaVisiblePara,
+} from './visibilidad-tarea';
 
-describe('filtroTareaGlobalVisiblePara', () => {
-  it('restringe las tareas globales del impulsador a sus superiores', () => {
-    const filtro = filtroTareaGlobalVisiblePara({
-      id: 24,
-      rolDescripcion: ROL_IMPULSADOR,
-    });
+describe('visibilidad de tareas canónicas', () => {
+  it('combina empresa, equipo e inclusión y siempre aplica la exclusión', () => {
+    const filtro = filtroTareaVisiblePara({ id: 24 });
     const serializado = JSON.stringify(filtro);
-    expect(serializado).toContain('"usuarioId":24');
-    expect(serializado).toContain('"alcance":"TODOS"');
+
+    expect(serializado).toContain('"alcanceUsuarios":"EMPRESA"');
+    expect(serializado).toContain('"alcanceUsuarios":"EQUIPO_DIRECTO"');
+    expect(serializado).toContain('"alcanceUsuarios":"EQUIPO_COMPLETO"');
+    expect(serializado).toContain('"efecto":"INCLUIR"');
+    expect(serializado).toContain('"efecto":"EXCLUIR"');
+    expect(serializado).toContain('"none":{"usuarioId":24');
     expect(serializado).toContain('"subordinados"');
-    expect(serializado).toContain('"exclusiones"');
-    expect(serializado).toContain('"none":{"usuarioId":24}');
   });
 
-  it('excluye del alcance global legado a los gestores de impulsadores', () => {
-    const filtro = filtroTareaGlobalVisiblePara({
-      id: 8,
-      rolDescripcion: ROL_REPOSITOR,
+  it('resuelve el alcance por todos, cliente o selección de locales', () => {
+    const filtro = filtroAlcanceLocalTarea({ id: 30, clienteId: 40 });
+
+    expect(filtro).toEqual({
+      OR: [
+        { alcanceLocales: 'TODOS' },
+        { alcanceLocales: 'CLIENTE', clienteId: 40 },
+        {
+          alcanceLocales: 'SELECCIONADOS',
+          locales: { some: { localId: 30 } },
+        },
+      ],
     });
-    expect(JSON.stringify(filtro)).toContain('notIn');
-    expect(JSON.stringify(filtro)).toContain('supervisor.impulsador');
-    expect(JSON.stringify(filtro)).toContain('teamleader.impulsador');
-    expect(JSON.stringify(filtro)).toContain('"exclusiones"');
+  });
+
+  it('agrega actividad y vigencia al filtro operativo', () => {
+    const ahora = new Date('2026-08-14T12:00:00.000Z');
+    const filtro = filtroTareaAplicableEnLocal(
+      { id: 24 },
+      { id: 30, clienteId: 40 },
+      ahora,
+    );
+
+    expect(filtro.activo).toBe(true);
+    expect(JSON.stringify(filtro)).toContain(
+      '"vigenteDesde":{"lte":"2026-08-14T12:00:00.000Z"}',
+    );
+    expect(JSON.stringify(filtro)).toContain(
+      '"vigenteHasta":{"gte":"2026-08-14T12:00:00.000Z"}',
+    );
   });
 });

@@ -1,18 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AccesoOperacionesCampoService } from './acceso-operaciones-campo.service';
-import { PAGINA_MAPA } from './impulsador.constants';
+import { MAX_TAREAS_POR_LOCAL, PAGINA_MAPA } from './impulsador.constants';
 import { aTerritorioDto, SELECT_TERRITORIO } from './territorios.service';
 import { aZonaDto, SELECT_ZONA } from './zonas.service';
 import type { LocalMapaDto, MapaDatosDto } from './interfaces/mapa.interface';
+import { filtroTareaVisiblePara } from '../tareas/utils/visibilidad-tarea';
 
 const SELECT_LOCAL_MAPA = {
   id: true,
   nombre: true,
   cliente: {
     select: {
+      id: true,
       nombre: true,
-      _count: { select: { tareas: { where: { activo: true } } } },
     },
   },
   latitud: true,
@@ -28,7 +29,7 @@ const SELECT_LOCAL_MAPA = {
 type LocalParaMapa = {
   id: number;
   nombre: string;
-  cliente: { nombre: string; _count: { tareas: number } };
+  cliente: { id: number; nombre: string };
   latitud: number;
   longitud: number;
   zonaId: number | null;
@@ -39,7 +40,7 @@ type LocalParaMapa = {
   usuario: { nombre: string; apellido: string } | null;
 };
 
-function aLocalMapaDto(l: LocalParaMapa): LocalMapaDto {
+function aLocalMapaDto(l: LocalParaMapa, tareasCount: number): LocalMapaDto {
   return {
     id: l.id,
     nombre: l.nombre,
@@ -54,7 +55,7 @@ function aLocalMapaDto(l: LocalParaMapa): LocalMapaDto {
       ? `${l.usuario.nombre} ${l.usuario.apellido}`.trim()
       : null,
     activo: l.activo,
-    tareasCount: l.cliente._count.tareas,
+    tareasCount,
   };
 }
 
@@ -117,10 +118,63 @@ export class MapaService {
       }),
     ]);
 
+    const localIds = locales.map(({ id }) => id);
+    const clienteIds = [...new Set(locales.map(({ cliente }) => cliente.id))];
+    const tareas =
+      locales.length === 0
+        ? []
+        : await this.prisma.tarea.findMany({
+            where: {
+              empresaId: usuario.empresaId,
+              activo: true,
+              AND: [
+                ...(usuario.esGestor ? [] : [filtroTareaVisiblePara(usuario)]),
+                {
+                  OR: [
+                    { alcanceLocales: 'TODOS' },
+                    {
+                      alcanceLocales: 'CLIENTE',
+                      clienteId: { in: clienteIds },
+                    },
+                    {
+                      alcanceLocales: 'SELECCIONADOS',
+                      locales: { some: { localId: { in: localIds } } },
+                    },
+                  ],
+                },
+              ],
+            },
+            select: {
+              alcanceLocales: true,
+              clienteId: true,
+              locales: {
+                where: { localId: { in: localIds } },
+                select: { localId: true },
+                take: 2000,
+              },
+            },
+            take: Math.min(5000, MAX_TAREAS_POR_LOCAL * locales.length),
+          });
+    const tareasPorLocal = new Map(localIds.map((id) => [id, 0]));
+    for (const tarea of tareas) {
+      for (const local of locales) {
+        const aplica =
+          tarea.alcanceLocales === 'TODOS' ||
+          (tarea.alcanceLocales === 'CLIENTE' &&
+            tarea.clienteId === local.cliente.id) ||
+          tarea.locales.some(({ localId }) => localId === local.id);
+        if (aplica) {
+          tareasPorLocal.set(local.id, (tareasPorLocal.get(local.id) ?? 0) + 1);
+        }
+      }
+    }
+
     return {
       territorios: territorios.map(aTerritorioDto),
       zonas: zonas.map(aZonaDto),
-      locales: locales.map(aLocalMapaDto),
+      locales: locales.map((local) =>
+        aLocalMapaDto(local, tareasPorLocal.get(local.id) ?? 0),
+      ),
       esGestor: usuario.esGestor,
     };
   }

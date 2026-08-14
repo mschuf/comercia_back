@@ -6,9 +6,11 @@ export interface TareaGlobalDto {
   orden: number;
   activo: boolean;
   editable: boolean;
-  alcance: 'TODOS' | 'SELECCIONADOS';
+  alcance: 'EMPRESA' | 'EQUIPO_DIRECTO' | 'EQUIPO_COMPLETO' | 'SELECCIONADOS';
+  equipoRaiz: { id: number; nombre: string } | null;
   destinatarios: { id: number; nombre: string }[];
-  alcanceLocales: 'TODOS' | 'SELECCIONADOS';
+  alcanceLocales: 'TODOS' | 'CLIENTE' | 'SELECCIONADOS';
+  cliente: { id: number; nombre: string } | null;
   locales: { id: number; nombre: string }[];
   usuariosAsignados: number;
   usuariosExcluidos: number;
@@ -16,6 +18,8 @@ export interface TareaGlobalDto {
   clientesAsignados: number;
   clientesEmpresa: number;
   localesEmpresa: number;
+  vigenteDesde: string | null;
+  vigenteHasta: string | null;
   createdAt: string;
   updatedAt: string;
 }

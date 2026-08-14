@@ -12,6 +12,7 @@ interface SelectorUsuarioProps {
   onSelect?: (usuario: UsuarioAsignable | null) => void;
   seleccionadoInicial?: UsuarioAsignable | null;
   usuariosPermitidos?: UsuarioAsignable[];
+  rolesPermitidos?: string[];
   disabled?: boolean;
 }
 
@@ -24,6 +25,7 @@ export function SelectorUsuario({
   onSelect,
   seleccionadoInicial = null,
   usuariosPermitidos,
+  rolesPermitidos,
   disabled = false,
 }: SelectorUsuarioProps) {
   const [abierto, setAbierto] = useState(false);
@@ -50,6 +52,10 @@ export function SelectorUsuario({
         ? null
         : new Set(usuariosPermitidos.map((usuario) => usuario.id)),
     [usuariosPermitidos],
+  );
+  const rolesPermitidosSet = useMemo(
+    () => (rolesPermitidos ? new Set(rolesPermitidos) : null),
+    [rolesPermitidos],
   );
   const claveSolicitud = `${busquedaAplicada}\u0000${pagina}\u0000${reintento}`;
   const usaBusquedaRemota = abierto && !disabled && idsPermitidos === null;
@@ -83,15 +89,25 @@ export function SelectorUsuario({
       candidatos.set(seleccionado.id, seleccionado);
     }
 
-    const encontrados = [...candidatos.values()].filter((usuario) =>
-      consulta
-        ? normalizarBusqueda(
-            `${usuario.nombre} ${usuario.nombreLogin ?? ""} ${usuario.rol ?? ""}`,
-          ).includes(consulta)
-        : true,
+    const encontrados = [...candidatos.values()].filter(
+      (usuario) =>
+        (rolesPermitidosSet === null ||
+          (usuario.rol !== null && rolesPermitidosSet.has(usuario.rol))) &&
+        (consulta
+          ? normalizarBusqueda(
+              `${usuario.nombre} ${usuario.nombreLogin ?? ""} ${usuario.rol ?? ""}`,
+            ).includes(consulta)
+          : true),
     );
     return consulta ? encontrados : [null, ...encontrados];
-  }, [busqueda, datos, idsPermitidos, seleccionado, usuariosPermitidos]);
+  }, [
+    busqueda,
+    datos,
+    idsPermitidos,
+    rolesPermitidosSet,
+    seleccionado,
+    usuariosPermitidos,
+  ]);
 
   useEffect(() => {
     if (!abierto) return;

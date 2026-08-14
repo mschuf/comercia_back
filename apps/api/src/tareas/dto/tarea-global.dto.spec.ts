@@ -98,4 +98,40 @@ describe('DTO de tareas', () => {
       ),
     ).rejects.toThrow();
   });
+
+  it('acepta alcance por equipo, cliente y una vigencia ISO', async () => {
+    await expect(
+      PIPE.transform(
+        {
+          titulo: 'Control de precios',
+          descripcion: 'Verificar etiquetas durante la promoción.',
+          alcance: 'EQUIPO_COMPLETO',
+          equipoRaizId: 11,
+          alcanceLocales: 'CLIENTE',
+          clienteId: 30,
+          vigenteDesde: '2026-08-14T08:00:00.000-04:00',
+          vigenteHasta: '2026-08-14T18:00:00.000-04:00',
+        },
+        metadata(CrearTareaGlobalDto),
+      ),
+    ).resolves.toMatchObject({
+      alcance: 'EQUIPO_COMPLETO',
+      equipoRaizId: 11,
+      alcanceLocales: 'CLIENTE',
+      clienteId: 30,
+    });
+  });
+
+  it('rechaza fechas de vigencia que no sean ISO', async () => {
+    await expect(
+      PIPE.transform(
+        {
+          titulo: 'Control de precios',
+          descripcion: 'Verificar etiquetas durante la promoción.',
+          vigenteDesde: 'mañana a la mañana',
+        },
+        metadata(CrearTareaGlobalDto),
+      ),
+    ).rejects.toThrow();
+  });
 });

@@ -25,7 +25,7 @@ const SELECT_NOTIFICACION = {
   visitaTarea: {
     select: {
       id: true,
-      tarea: { select: { titulo: true } },
+      titulo: true,
       visita: {
         select: {
           usuario: { select: { id: true, nombre: true, apellido: true } },

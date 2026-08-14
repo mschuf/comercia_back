@@ -1,101 +1,101 @@
 import type { Prisma } from '../../../generated/prisma/client';
-import {
-  ROL_IMPULSADOR,
-  ROL_SUPERVISOR_IMPULSADOR,
-  ROL_TEAMLEADER_IMPULSADOR,
-} from '../../common/constants/roles-negocio';
 
 interface UsuarioVisibilidadTarea {
   id: number;
-  rolDescripcion: string | null;
 }
 
-const ROLES_GESTION_IMPULSADORES = [
-  ROL_SUPERVISOR_IMPULSADOR,
-  ROL_TEAMLEADER_IMPULSADOR,
-] as const;
-
-function perteneceOperacionImpulsadores(rol: string | null): boolean {
-  return rol === ROL_IMPULSADOR || rol === ROL_TEAMLEADER_IMPULSADOR;
+interface LocalVisibilidadTarea {
+  id: number;
+  clienteId: number;
 }
 
 /**
- * Limita "TODOS" al organigrama del creador. Las tareas históricas de los
- * módulos de repositores conservan su alcance global, pero no se filtran hacia
- * impulsadores; las selecciones explícitas se consideran salvo que un
- * superior haya quitado la tarea solamente para esa persona.
+ * Resuelve el alcance de personas sin materializar una copia por integrante.
+ * Una exclusión explícita siempre prevalece sobre empresa/equipo/inclusión.
  */
-export function filtroTareaGlobalVisiblePara(
+export function filtroTareaVisiblePara(
   usuario: UsuarioVisibilidadTarea,
-): Prisma.TareaGlobalWhereInput {
-  const noExcluida: Prisma.TareaGlobalWhereInput = {
-    exclusiones: { none: { usuarioId: usuario.id } },
-  };
-  const seleccionada: Prisma.TareaGlobalWhereInput = {
-    destinatarios: { some: { usuarioId: usuario.id } },
-  };
-
-  if (perteneceOperacionImpulsadores(usuario.rolDescripcion)) {
-    return {
-      AND: [
-        noExcluida,
-        {
-          OR: [
-            seleccionada,
-            {
-              alcance: 'TODOS',
-              OR: [
-                { creadoPorId: usuario.id },
-                {
-                  creadoPor: {
-                    is: { subordinados: { some: { id: usuario.id } } },
-                  },
-                },
-                {
-                  creadoPor: {
-                    is: {
-                      subordinados: {
-                        some: {
-                          subordinados: { some: { id: usuario.id } },
-                        },
-                      },
-                    },
-                  },
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    };
-  }
-
+): Prisma.TareaWhereInput {
   return {
     AND: [
-      noExcluida,
+      {
+        usuarios: {
+          none: { usuarioId: usuario.id, efecto: 'EXCLUIR' },
+        },
+      },
       {
         OR: [
-          seleccionada,
+          { alcanceUsuarios: 'EMPRESA' },
           {
-            alcance: 'TODOS',
-            creadoPor: {
-              is: {
-                OR: [
-                  { rol: { is: null } },
-                  {
-                    rol: {
-                      is: {
-                        descripcion: {
-                          notIn: [...ROLES_GESTION_IMPULSADORES],
-                        },
+            usuarios: {
+              some: { usuarioId: usuario.id, efecto: 'INCLUIR' },
+            },
+          },
+          {
+            alcanceUsuarios: 'EQUIPO_DIRECTO',
+            equipoRaiz: {
+              is: { subordinados: { some: { id: usuario.id } } },
+            },
+          },
+          {
+            alcanceUsuarios: 'EQUIPO_COMPLETO',
+            OR: [
+              { equipoRaizId: usuario.id },
+              {
+                equipoRaiz: {
+                  is: { subordinados: { some: { id: usuario.id } } },
+                },
+              },
+              {
+                equipoRaiz: {
+                  is: {
+                    subordinados: {
+                      some: {
+                        subordinados: { some: { id: usuario.id } },
                       },
                     },
                   },
-                ],
+                },
               },
-            },
+            ],
           },
         ],
+      },
+    ],
+  };
+}
+
+export function filtroAlcanceLocalTarea(
+  local: LocalVisibilidadTarea,
+): Prisma.TareaWhereInput {
+  return {
+    OR: [
+      { alcanceLocales: 'TODOS' },
+      { alcanceLocales: 'CLIENTE', clienteId: local.clienteId },
+      {
+        alcanceLocales: 'SELECCIONADOS',
+        locales: { some: { localId: local.id } },
+      },
+    ],
+  };
+}
+
+/** Alcance operativo completo para construir o consultar un checklist. */
+export function filtroTareaAplicableEnLocal(
+  usuario: UsuarioVisibilidadTarea,
+  local: LocalVisibilidadTarea,
+  ahora = new Date(),
+): Prisma.TareaWhereInput {
+  return {
+    activo: true,
+    AND: [
+      filtroTareaVisiblePara(usuario),
+      filtroAlcanceLocalTarea(local),
+      {
+        OR: [{ vigenteDesde: null }, { vigenteDesde: { lte: ahora } }],
+      },
+      {
+        OR: [{ vigenteHasta: null }, { vigenteHasta: { gte: ahora } }],
       },
     ],
   };

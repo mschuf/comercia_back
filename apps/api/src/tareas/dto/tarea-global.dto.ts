@@ -5,6 +5,7 @@ import {
   ArrayUnique,
   IsArray,
   IsBoolean,
+  IsDateString,
   IsEnum,
   IsInt,
   IsOptional,
@@ -20,7 +21,17 @@ import { trimString } from '../../common/utils/transforms';
 export class ListarTareasGlobalesDto extends PaginacionDto {}
 
 export enum AlcanceTareaDto {
+  // Alias compatible con clientes anteriores: el servicio lo normaliza.
   TODOS = 'TODOS',
+  EMPRESA = 'EMPRESA',
+  EQUIPO_DIRECTO = 'EQUIPO_DIRECTO',
+  EQUIPO_COMPLETO = 'EQUIPO_COMPLETO',
+  SELECCIONADOS = 'SELECCIONADOS',
+}
+
+export enum AlcanceLocalesTareaDto {
+  TODOS = 'TODOS',
+  CLIENTE = 'CLIENTE',
   SELECCIONADOS = 'SELECCIONADOS',
 }
 
@@ -50,6 +61,12 @@ export class CrearTareaGlobalDto {
   alcance?: AlcanceTareaDto;
 
   @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  equipoRaizId?: number;
+
+  @IsOptional()
   @IsArray()
   @ArrayMinSize(1)
   @ArrayMaxSize(200)
@@ -60,8 +77,14 @@ export class CrearTareaGlobalDto {
   usuarioIds?: number[];
 
   @IsOptional()
-  @IsEnum(AlcanceTareaDto)
-  alcanceLocales?: AlcanceTareaDto;
+  @IsEnum(AlcanceLocalesTareaDto)
+  alcanceLocales?: AlcanceLocalesTareaDto;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  clienteId?: number;
 
   @IsOptional()
   @IsArray()
@@ -72,6 +95,14 @@ export class CrearTareaGlobalDto {
   @Min(1, { each: true })
   @Max(MAX_INT4, { each: true })
   localIds?: number[];
+
+  @IsOptional()
+  @IsDateString()
+  vigenteDesde?: string | null;
+
+  @IsOptional()
+  @IsDateString()
+  vigenteHasta?: string | null;
 }
 
 export class ActualizarTareaGlobalDto {
@@ -106,6 +137,12 @@ export class ActualizarTareaGlobalDto {
   alcance?: AlcanceTareaDto;
 
   @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  equipoRaizId?: number;
+
+  @IsOptional()
   @IsArray()
   @ArrayMinSize(1)
   @ArrayMaxSize(200)
@@ -116,8 +153,14 @@ export class ActualizarTareaGlobalDto {
   usuarioIds?: number[];
 
   @IsOptional()
-  @IsEnum(AlcanceTareaDto)
-  alcanceLocales?: AlcanceTareaDto;
+  @IsEnum(AlcanceLocalesTareaDto)
+  alcanceLocales?: AlcanceLocalesTareaDto;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(MAX_INT4)
+  clienteId?: number;
 
   @IsOptional()
   @IsArray()
@@ -128,4 +171,12 @@ export class ActualizarTareaGlobalDto {
   @Min(1, { each: true })
   @Max(MAX_INT4, { each: true })
   localIds?: number[];
+
+  @IsOptional()
+  @IsDateString()
+  vigenteDesde?: string | null;
+
+  @IsOptional()
+  @IsDateString()
+  vigenteHasta?: string | null;
 }

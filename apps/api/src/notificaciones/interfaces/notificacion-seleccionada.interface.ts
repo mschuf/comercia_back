@@ -5,7 +5,7 @@ export interface NotificacionSeleccionada {
   leidaEn: Date | null;
   visitaTarea: {
     id: number;
-    tarea: { titulo: string };
+    titulo: string;
     visita: {
       usuario: { id: number; nombre: string; apellido: string };
       local: {

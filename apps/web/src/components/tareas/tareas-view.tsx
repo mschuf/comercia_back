@@ -2,7 +2,7 @@
 
 /* Hallmark · prioridades y alcance visibles en una lista móvil compacta. */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
 import { IconoMas } from "@/components/icono-mas";
 import { Modal } from "@/components/modal";
@@ -18,36 +18,39 @@ import {
   labelBase,
 } from "@/components/ui";
 import type { RespuestaPaginada } from "@/types/paginacion";
-import type { TareaGlobal, TareasQuitadasUsuario } from "@/types/tarea";
+import type {
+  FormularioTarea,
+  TareaGlobal,
+  TareasQuitadasUsuario,
+} from "@/types/tarea";
 import type { Local, UsuarioAsignable } from "@/types/local";
+import {
+  etiquetaAlcanceLocales,
+  etiquetaAlcanceUsuarios,
+  fechaHoraParaApi,
+  fechaHoraParaInput,
+} from "@/utils/tareas";
 import {
   SeguimientoTareasView,
   type FiltrosSeguimientoTareas,
 } from "@/components/equipo/seguimiento-tareas-view";
 
-interface FormTarea {
-  titulo: string;
-  descripcion: string;
-  requiereFoto: boolean;
-  orden: number;
-  activo: boolean;
-  alcance: "TODOS" | "SELECCIONADOS";
-  destinatarios: { id: number; nombre: string }[];
-  alcanceLocales: "TODOS" | "SELECCIONADOS";
-  locales: { id: number; nombre: string }[];
-}
-
-const FORM_INICIAL: FormTarea = {
+const FORM_INICIAL: FormularioTarea = {
   titulo: "",
   descripcion: "",
   requiereFoto: false,
   orden: 0,
   activo: true,
-  alcance: "TODOS",
+  alcance: "EQUIPO_COMPLETO",
+  equipoRaiz: null,
   destinatarios: [],
   alcanceLocales: "TODOS",
+  cliente: null,
   locales: [],
+  vigenteDesde: "",
+  vigenteHasta: "",
 };
+const ROLES_EQUIPO_RAIZ = ["teamleader.impulsador"];
 
 function ListaTareasGlobalesMovil({
   tareas,
@@ -99,16 +102,18 @@ function ListaTareasGlobalesMovil({
               </p>
               <p className="col-span-2 rounded-lg bg-surface-soft px-2.5 py-2 text-muted">
                 <strong className="text-foreground">
-                  {tarea.alcanceLocales === "TODOS"
-                    ? "Todos los locales"
-                    : `${tarea.localesAsignados} local${tarea.localesAsignados === 1 ? "" : "es"}`}
+                  {tarea.alcanceLocales === "SELECCIONADOS"
+                    ? `${tarea.localesAsignados} local${tarea.localesAsignados === 1 ? "" : "es"}`
+                    : tarea.alcanceLocales === "CLIENTE"
+                      ? tarea.cliente?.nombre ?? "Cliente"
+                      : etiquetaAlcanceLocales(tarea.alcanceLocales)}
                 </strong>
               </p>
               <p className="rounded-lg bg-surface-soft px-2.5 py-2 text-muted">
                 <strong className="text-foreground">
-                  {tarea.alcance === "TODOS"
-                    ? "Todo el equipo"
-                    : `${tarea.usuariosAsignados} impulsador${tarea.usuariosAsignados === 1 ? "" : "es"}`}
+                  {tarea.alcance === "SELECCIONADOS"
+                    ? `${tarea.usuariosAsignados} persona${tarea.usuariosAsignados === 1 ? "" : "s"}`
+                    : etiquetaAlcanceUsuarios(tarea.alcance)}
                   {tarea.usuariosExcluidos > 0
                     ? ` · ${tarea.usuariosExcluidos} excluido${tarea.usuariosExcluidos === 1 ? "" : "s"}`
                     : ""}
@@ -153,7 +158,7 @@ function TareasAdministracionView() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(7);
   const [editando, setEditando] = useState<TareaGlobal | "nueva" | null>(null);
-  const [form, setForm] = useState<FormTarea>(FORM_INICIAL);
+  const [form, setForm] = useState<FormularioTarea>(FORM_INICIAL);
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [localesDisponibles, setLocalesDisponibles] = useState<Local[]>([]);
@@ -162,6 +167,15 @@ function TareasAdministracionView() {
     null,
   );
   const [quitandoTareas, setQuitandoTareas] = useState(false);
+  const clientesDisponibles = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          localesDisponibles.map((local) => [local.cliente.id, local.cliente]),
+        ).values(),
+      ).sort((a, b) => a.nombre.localeCompare(b.nombre)),
+    [localesDisponibles],
+  );
 
   const cargar = useCallback(() => {
     apiFetch<RespuestaPaginada<TareaGlobal>>(
@@ -228,9 +242,13 @@ function TareasAdministracionView() {
             orden: tarea.orden,
             activo: tarea.activo,
             alcance: tarea.alcance,
+            equipoRaiz: tarea.equipoRaiz,
             destinatarios: tarea.destinatarios,
             alcanceLocales: tarea.alcanceLocales,
+            cliente: tarea.cliente,
             locales: tarea.locales,
+            vigenteDesde: fechaHoraParaInput(tarea.vigenteDesde),
+            vigenteHasta: fechaHoraParaInput(tarea.vigenteHasta),
           },
     );
     setError(null);
@@ -248,6 +266,10 @@ function TareasAdministracionView() {
       setError("Elegí al menos un local para esta tarea.");
       return;
     }
+    if (form.alcanceLocales === "CLIENTE" && form.cliente === null) {
+      setError("Elegí un cliente para esta tarea.");
+      return;
+    }
     setGuardando(true);
     setError(null);
     try {
@@ -261,9 +283,13 @@ function TareasAdministracionView() {
             requiereFoto: form.requiereFoto,
             orden: form.orden,
             alcance: form.alcance,
+            equipoRaizId: form.equipoRaiz?.id,
             usuarioIds: form.destinatarios.map(({ id }) => id),
             alcanceLocales: form.alcanceLocales,
+            clienteId: form.cliente?.id,
             localIds: form.locales.map(({ id }) => id),
+            vigenteDesde: fechaHoraParaApi(form.vigenteDesde),
+            vigenteHasta: fechaHoraParaApi(form.vigenteHasta),
             ...(editando === "nueva" ? {} : { activo: form.activo }),
           }),
         },
@@ -433,16 +459,18 @@ function TareasAdministracionView() {
                       </td>
                       <td className="px-4 py-3 text-xs text-muted">
                         <span className="block whitespace-nowrap font-medium text-foreground">
-                          {tarea.alcance === "TODOS"
-                            ? "Todo el equipo"
-                            : `${tarea.usuariosAsignados} seleccionado${tarea.usuariosAsignados === 1 ? "" : "s"}`}
+                          {tarea.alcance === "SELECCIONADOS"
+                            ? `${tarea.usuariosAsignados} seleccionado${tarea.usuariosAsignados === 1 ? "" : "s"}`
+                            : etiquetaAlcanceUsuarios(tarea.alcance)}
                           {tarea.usuariosExcluidos > 0
                             ? ` · ${tarea.usuariosExcluidos} excluido${tarea.usuariosExcluidos === 1 ? "" : "s"}`
                             : ""}
                           {" · "}
-                          {tarea.alcanceLocales === "TODOS"
-                            ? "todos los locales"
-                            : `${tarea.localesAsignados} local${tarea.localesAsignados === 1 ? "" : "es"}`}
+                          {tarea.alcanceLocales === "SELECCIONADOS"
+                            ? `${tarea.localesAsignados} local${tarea.localesAsignados === 1 ? "" : "es"}`
+                            : tarea.alcanceLocales === "CLIENTE"
+                              ? tarea.cliente?.nombre ?? "Cliente"
+                              : "todos los locales"}
                         </span>
                         {tarea.alcance === "SELECCIONADOS" ? (
                           <span className="mt-0.5 block max-w-56 truncate">
@@ -549,11 +577,13 @@ function TareasAdministracionView() {
           </label>
           <fieldset className="space-y-2">
             <legend className={labelBase}>Asignar esta tarea a</legend>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {(
                 [
-                  ["TODOS", "Todo el equipo"],
+                  ["EQUIPO_DIRECTO", "Equipo directo"],
+                  ["EQUIPO_COMPLETO", "Equipo completo"],
                   ["SELECCIONADOS", "Elegir personas"],
+                  ["EMPRESA", "Toda la empresa"],
                 ] as const
               ).map(([valor, etiqueta]) => (
                 <label
@@ -573,7 +603,14 @@ function TareasAdministracionView() {
                         ...actual,
                         alcance: valor,
                         destinatarios:
-                          valor === "TODOS" ? [] : actual.destinatarios,
+                          valor === "SELECCIONADOS"
+                            ? actual.destinatarios
+                            : [],
+                        equipoRaiz:
+                          valor === "EQUIPO_DIRECTO" ||
+                          valor === "EQUIPO_COMPLETO"
+                            ? actual.equipoRaiz
+                            : null,
                       }))
                     }
                     className="accent-brand-700"
@@ -583,6 +620,34 @@ function TareasAdministracionView() {
               ))}
             </div>
           </fieldset>
+          {form.alcance === "EQUIPO_DIRECTO" ||
+          form.alcance === "EQUIPO_COMPLETO" ? (
+            <div>
+              <p className={labelBase}>Equipo base (opcional)</p>
+              <SelectorUsuario
+                value={form.equipoRaiz?.id ?? ""}
+                rolesPermitidos={ROLES_EQUIPO_RAIZ}
+                seleccionadoInicial={
+                  form.equipoRaiz
+                    ? { ...form.equipoRaiz, rol: null }
+                    : null
+                }
+                onChange={() => undefined}
+                onSelect={(usuario) =>
+                  setForm((actual) => ({
+                    ...actual,
+                    equipoRaiz: usuario
+                      ? { id: usuario.id, nombre: usuario.nombre }
+                      : null,
+                  }))
+                }
+              />
+              <p className="mt-1 text-xs text-muted">
+                Si no elegís otro equipo, se usa el tuyo. El supervisor puede
+                elegir un team leader propio.
+              </p>
+            </div>
+          ) : null}
           {form.alcance === "SELECCIONADOS" ? (
             <div>
               <p className={labelBase}>Agregar persona</p>
@@ -638,10 +703,11 @@ function TareasAdministracionView() {
           ) : null}
           <fieldset className="space-y-2">
             <legend className={labelBase}>Aplicar en</legend>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               {(
                 [
                   ["TODOS", "Todos los locales"],
+                  ["CLIENTE", "Todo un cliente"],
                   ["SELECCIONADOS", "Elegir locales"],
                 ] as const
               ).map(([valor, etiqueta]) => (
@@ -661,7 +727,10 @@ function TareasAdministracionView() {
                       setForm((actual) => ({
                         ...actual,
                         alcanceLocales: valor,
-                        locales: valor === "TODOS" ? [] : actual.locales,
+                        locales:
+                          valor === "SELECCIONADOS" ? actual.locales : [],
+                        cliente:
+                          valor === "CLIENTE" ? actual.cliente : null,
                       }))
                     }
                     className="accent-brand-700"
@@ -671,6 +740,32 @@ function TareasAdministracionView() {
               ))}
             </div>
           </fieldset>
+          {form.alcanceLocales === "CLIENTE" ? (
+            <label className={labelBase}>
+              Cliente
+              <select
+                value={form.cliente?.id ?? ""}
+                onChange={(e) => {
+                  const cliente = clientesDisponibles.find(
+                    ({ id }) => id === Number(e.target.value),
+                  );
+                  setForm((actual) => ({
+                    ...actual,
+                    cliente: cliente ?? null,
+                  }));
+                }}
+                required
+                className={inputBase}
+              >
+                <option value="">Elegí un cliente</option>
+                {clientesDisponibles.map((cliente) => (
+                  <option key={cliente.id} value={cliente.id}>
+                    {cliente.nombre}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           {form.alcanceLocales === "SELECCIONADOS" ? (
             <fieldset className="max-h-52 overflow-y-auto rounded-xl border border-control-line p-2">
               <legend className="px-2 text-sm font-semibold text-foreground">
@@ -717,6 +812,37 @@ function TareasAdministracionView() {
               ) : null}
             </fieldset>
           ) : null}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <label className={labelBase}>
+              Vigente desde (opcional)
+              <input
+                type="datetime-local"
+                value={form.vigenteDesde}
+                onChange={(e) =>
+                  setForm((actual) => ({
+                    ...actual,
+                    vigenteDesde: e.target.value,
+                  }))
+                }
+                className={inputBase}
+              />
+            </label>
+            <label className={labelBase}>
+              Vigente hasta (opcional)
+              <input
+                type="datetime-local"
+                value={form.vigenteHasta}
+                min={form.vigenteDesde || undefined}
+                onChange={(e) =>
+                  setForm((actual) => ({
+                    ...actual,
+                    vigenteHasta: e.target.value,
+                  }))
+                }
+                className={inputBase}
+              />
+            </label>
+          </div>
           <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
             <input
               type="checkbox"
@@ -747,18 +873,11 @@ function TareasAdministracionView() {
               Tarea activa
             </label>
           )}
-          <p
-            className={`rounded-lg bg-brand-50 px-3 py-2.5 text-xs text-brand-800 dark:bg-brand-950 dark:text-brand-200 ${form.alcance === "TODOS" ? "hidden" : ""}`}
-          >
-            La tarea aparecerá sólo a las personas elegidas. Las visitas ya
-            registradas conservan su historial.
+          <p className="rounded-lg bg-brand-50 px-3 py-2.5 text-xs text-brand-800 dark:bg-brand-950 dark:text-brand-200">
+            Alcance: {etiquetaAlcanceUsuarios(form.alcance).toLowerCase()} y{" "}
+            {etiquetaAlcanceLocales(form.alcanceLocales).toLowerCase()}. Las
+            visitas ya registradas conservan su versión de la tarea.
           </p>
-          {form.alcance === "TODOS" ? (
-            <p className="rounded-lg bg-brand-50 px-3 py-2.5 text-xs text-brand-800 dark:bg-brand-950 dark:text-brand-200">
-              La tarea aparecer&aacute; para todo el equipo. Las visitas ya
-              registradas conservan su historial.
-            </p>
-          ) : null}
           {error && <p className={errorBox}>{error}</p>}
           <div className="flex justify-end gap-2">
             <button

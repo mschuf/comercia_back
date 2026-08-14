@@ -8,7 +8,7 @@ export interface EmpresaAdminFila {
     clientes: number;
     locales: number;
     hijas: number;
-    tareasGlobales: number;
+    tareas: number;
     territorios: number;
     zonas: number;
   };

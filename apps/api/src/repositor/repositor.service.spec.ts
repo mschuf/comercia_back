@@ -19,6 +19,7 @@ jest.mock('../../generated/prisma/client', () => ({
 describe('RepositorService', () => {
   const prisma = {
     local: { count: jest.fn(), findMany: jest.fn() },
+    tarea: { findMany: jest.fn() },
     visita: { findMany: jest.fn() },
     rutaDiariaRepositor: {
       findUnique: jest.fn(),
@@ -46,6 +47,7 @@ describe('RepositorService', () => {
     prisma.rutaDiariaRepositor.findUnique.mockResolvedValue(null);
     prisma.rutaDiariaRepositor.upsert.mockResolvedValue({ id: 1 });
     prisma.rutaDiariaRepositor.deleteMany.mockResolvedValue({ count: 0 });
+    prisma.tarea.findMany.mockResolvedValue([]);
   });
 
   it('lista las visitas del mapa sin calcular distancias ni consultar OSRM', async () => {
@@ -66,6 +68,18 @@ describe('RepositorService', () => {
       },
     ]);
     prisma.visita.findMany.mockResolvedValue([]);
+    prisma.tarea.findMany.mockResolvedValue(
+      [1, 2, 3].map((id) => ({
+        id,
+        titulo: `Tarea ${id}`,
+        descripcion: '',
+        requiereFoto: false,
+        orden: id,
+        alcanceLocales: 'TODOS',
+        clienteId: null,
+        locales: [],
+      })),
+    );
 
     const respuesta = await service.visitasHoy(1, { page: 1, limit: 7 });
 
@@ -95,7 +109,7 @@ describe('RepositorService', () => {
           tareas: [
             {
               id: 30,
-              titulo: 'Revisar exhibiciÃ³n',
+              titulo: 'Revisar exhibición',
               descripcion: '',
               requiereFoto: false,
               orden: 1,
@@ -109,6 +123,18 @@ describe('RepositorService', () => {
             tareas: [{ completada: true }],
           },
         ],
+      },
+    ]);
+    prisma.tarea.findMany.mockResolvedValue([
+      {
+        id: 30,
+        titulo: 'Revisar exhibición',
+        descripcion: '',
+        requiereFoto: false,
+        orden: 1,
+        alcanceLocales: 'TODOS',
+        clienteId: null,
+        locales: [],
       },
     ]);
 
@@ -164,6 +190,28 @@ describe('RepositorService', () => {
       },
     ]);
     prisma.visita.findMany.mockResolvedValue([]);
+    prisma.tarea.findMany.mockResolvedValue([
+      {
+        id: 30,
+        titulo: 'Tarea general 1',
+        descripcion: '',
+        requiereFoto: false,
+        orden: 1,
+        alcanceLocales: 'TODOS',
+        clienteId: null,
+        locales: [],
+      },
+      {
+        id: 31,
+        titulo: 'Tarea general 2',
+        descripcion: '',
+        requiereFoto: false,
+        orden: 2,
+        alcanceLocales: 'TODOS',
+        clienteId: null,
+        locales: [],
+      },
+    ]);
     osrm.tabla.mockResolvedValue({
       distancias: [
         [0, 80, 9_700],

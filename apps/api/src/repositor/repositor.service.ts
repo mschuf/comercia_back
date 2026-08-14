@@ -18,7 +18,7 @@ import {
   ocurrenciasVisitaEnDia,
 } from '../impulsador/utils/programacion-visita';
 import { PrismaService } from '../prisma/prisma.service';
-import { filtroTareaGlobalVisiblePara } from '../tareas/utils/visibilidad-tarea';
+import { filtroTareaVisiblePara } from '../tareas/utils/visibilidad-tarea';
 import { ListarClientesRepositorDto } from './dto/listar-clientes-repositor.dto';
 import { ListarLocalesRepositorDto } from './dto/listar-locales-repositor.dto';
 import { ListarTareasRepositorDto } from './dto/listar-tareas-repositor.dto';
@@ -34,6 +34,10 @@ import type {
   RutaDiariaDto,
 } from './interfaces/ruta-diaria.interface';
 import type { TareasLocalRepositorDto } from './interfaces/tareas-repositor.interface';
+import type {
+  LocalReferenciaTarea,
+  TareaAplicable,
+} from './interfaces/tarea-aplicable.interface';
 import type { VisitaHoyDto } from './interfaces/visita-hoy.interface';
 import type {
   RendimientoImpulsadorDto,
@@ -58,24 +62,6 @@ const MAX_PARADAS_DIARIAS = 50;
 const VENTANA_VISITAS_MS = 36 * 60 * 60 * 1000;
 const CACHE_RESPALDO_MS = 5 * 60 * 1000;
 
-function tareasVisiblesPara(
-  usuarioId: number,
-  rolDescripcion: string | null,
-): Prisma.TareaClienteWhereInput {
-  return {
-    activo: true,
-    exclusiones: { none: { usuarioId } },
-    OR: [
-      { tareaGlobalId: null },
-      {
-        tareaGlobal: {
-          is: filtroTareaGlobalVisiblePara({ id: usuarioId, rolDescripcion }),
-        },
-      },
-    ],
-  };
-}
-
 @Injectable()
 export class RepositorService {
   private readonly logger = new Logger(RepositorService.name);
@@ -85,6 +71,68 @@ export class RepositorService {
     private readonly accesoCampo: AccesoOperacionesCampoService,
     private readonly osrm: OsrmService,
   ) {}
+
+  private async tareasPorLocal(
+    usuario: { id: number; empresaId: number },
+    locales: LocalReferenciaTarea[],
+  ): Promise<Map<number, TareaAplicable[]>> {
+    const resultado = new Map<number, TareaAplicable[]>();
+    locales.forEach(({ id }) => resultado.set(id, []));
+    if (locales.length === 0) return resultado;
+
+    const ahora = new Date();
+    const localIds = locales.map(({ id }) => id);
+    const clienteIds = [...new Set(locales.map(({ clienteId }) => clienteId))];
+    const tareas = await this.prisma.tarea.findMany({
+      where: {
+        empresaId: usuario.empresaId,
+        activo: true,
+        AND: [
+          filtroTareaVisiblePara(usuario),
+          { OR: [{ vigenteDesde: null }, { vigenteDesde: { lte: ahora } }] },
+          { OR: [{ vigenteHasta: null }, { vigenteHasta: { gte: ahora } }] },
+          {
+            OR: [
+              { alcanceLocales: 'TODOS' },
+              { alcanceLocales: 'CLIENTE', clienteId: { in: clienteIds } },
+              {
+                alcanceLocales: 'SELECCIONADOS',
+                locales: { some: { localId: { in: localIds } } },
+              },
+            ],
+          },
+        ],
+      },
+      select: {
+        id: true,
+        titulo: true,
+        descripcion: true,
+        requiereFoto: true,
+        orden: true,
+        alcanceLocales: true,
+        clienteId: true,
+        locales: {
+          where: { localId: { in: localIds } },
+          select: { localId: true },
+          take: 200,
+        },
+      },
+      orderBy: [{ orden: 'asc' }, { id: 'asc' }],
+      take: Math.min(5000, MAX_TAREAS_POR_LOCAL * locales.length),
+    });
+
+    for (const tarea of tareas) {
+      for (const local of locales) {
+        const aplica =
+          tarea.alcanceLocales === 'TODOS' ||
+          (tarea.alcanceLocales === 'CLIENTE' &&
+            tarea.clienteId === local.clienteId) ||
+          tarea.locales.some(({ localId }) => localId === local.id);
+        if (aplica) resultado.get(local.id)?.push(tarea);
+      }
+    }
+    return resultado;
+  }
 
   async clientes(
     usuarioId: number,
@@ -110,10 +158,12 @@ export class RepositorService {
           _count: {
             select: {
               locales: { where: { usuarioId: usuario.id, activo: true } },
-              tareas: {
-                where: tareasVisiblesPara(usuario.id, usuario.rolDescripcion),
-              },
             },
+          },
+          locales: {
+            where: { usuarioId: usuario.id, activo: true },
+            select: { id: true },
+            take: 200,
           },
         },
         orderBy: [{ nombre: 'asc' }, { id: 'asc' }],
@@ -121,21 +171,24 @@ export class RepositorService {
         take,
       }),
     ]);
-    const proximas =
-      clientes.length === 0
-        ? []
-        : await this.prisma.local.groupBy({
-            by: ['clienteId'],
-            where: {
-              clienteId: { in: clientes.map(({ id }) => id) },
-              usuarioId: usuario.id,
-              activo: true,
-              fechaVisita: { gte: new Date() },
-            },
-            _min: { fechaVisita: true },
-            orderBy: { clienteId: 'asc' },
-            take: 50,
-          });
+    const referencias = clientes.flatMap((cliente) =>
+      cliente.locales.map(({ id }) => ({ id, clienteId: cliente.id })),
+    );
+    const [proximas, tareasPorLocal] = await Promise.all([
+      this.prisma.local.groupBy({
+        by: ['clienteId'],
+        where: {
+          clienteId: { in: clientes.map(({ id }) => id) },
+          usuarioId: usuario.id,
+          activo: true,
+          fechaVisita: { gte: new Date() },
+        },
+        _min: { fechaVisita: true },
+        orderBy: { clienteId: 'asc' },
+        take: 50,
+      }),
+      this.tareasPorLocal(usuario, referencias),
+    ]);
     const proximaPorCliente = new Map(
       proximas.map((fila) => [
         fila.clienteId,
@@ -147,7 +200,11 @@ export class RepositorService {
         id: cliente.id,
         nombre: cliente.nombre,
         localesAsignados: cliente._count.locales,
-        tareasActivas: cliente._count.tareas,
+        tareasActivas: new Set(
+          cliente.locales.flatMap(({ id }) =>
+            (tareasPorLocal.get(id) ?? []).map((tarea) => tarea.id),
+          ),
+        ).size,
         proximaVisita: proximaPorCliente.get(cliente.id) ?? null,
       })),
       total,
@@ -189,16 +246,6 @@ export class RepositorService {
             select: {
               id: true,
               nombre: true,
-              _count: {
-                select: {
-                  tareas: {
-                    where: tareasVisiblesPara(
-                      usuario.id,
-                      usuario.rolDescripcion,
-                    ),
-                  },
-                },
-              },
             },
           },
         },
@@ -207,6 +254,13 @@ export class RepositorService {
         take,
       }),
     ]);
+    const tareasPorLocal = await this.tareasPorLocal(
+      usuario,
+      locales.map((local) => ({
+        id: local.id,
+        clienteId: local.cliente.id,
+      })),
+    );
     return respuestaPaginada(
       locales.map((local) => ({
         id: local.id,
@@ -219,7 +273,7 @@ export class RepositorService {
         programacion: local.programacionVisita
           ? aProgramacionVisitaDto(local.programacionVisita)
           : null,
-        tareasActivas: local.cliente._count.tareas,
+        tareasActivas: tareasPorLocal.get(local.id)?.length ?? 0,
         requiereFotoPresencia: local.requiereFotoPresencia,
       })),
       total,
@@ -259,27 +313,6 @@ export class RepositorService {
             select: {
               id: true,
               nombre: true,
-              tareas: {
-                where: tareasVisiblesPara(usuario.id, usuario.rolDescripcion),
-                select: {
-                  id: true,
-                  titulo: true,
-                  descripcion: true,
-                  requiereFoto: true,
-                  orden: true,
-                  tareaGlobal: {
-                    select: {
-                      alcanceLocales: true,
-                      locales: {
-                        select: { localId: true },
-                        take: 200,
-                      },
-                    },
-                  },
-                },
-                orderBy: [{ orden: 'asc' }, { id: 'asc' }],
-                take: MAX_TAREAS_POR_LOCAL,
-              },
             },
           },
           visitas: {
@@ -301,6 +334,13 @@ export class RepositorService {
         take,
       }),
     ]);
+    const tareasPorLocal = await this.tareasPorLocal(
+      usuario,
+      locales.map((local) => ({
+        id: local.id,
+        clienteId: local.cliente.id,
+      })),
+    );
     return respuestaPaginada(
       locales.map((local) => {
         const visitaAbierta = local.visitas.find(
@@ -318,22 +358,13 @@ export class RepositorService {
               : null,
             requiereFotoPresencia: local.requiereFotoPresencia,
           },
-          tareas: local.cliente.tareas
-            .filter(
-              (tarea) =>
-                !tarea.tareaGlobal ||
-                tarea.tareaGlobal.alcanceLocales === 'TODOS' ||
-                tarea.tareaGlobal.locales.some(
-                  ({ localId }) => localId === local.id,
-                ),
-            )
-            .map((tarea) => ({
-              id: tarea.id,
-              titulo: tarea.titulo,
-              descripcion: tarea.descripcion,
-              requiereFoto: tarea.requiereFoto,
-              orden: tarea.orden,
-            })),
+          tareas: (tareasPorLocal.get(local.id) ?? []).map((tarea) => ({
+            id: tarea.id,
+            titulo: tarea.titulo,
+            descripcion: tarea.descripcion,
+            requiereFoto: tarea.requiereFoto,
+            orden: tarea.orden,
+          })),
           completadasEnVisita:
             visitaAbierta?.tareas.filter(({ completada }) => completada)
               .length ?? 0,
@@ -365,7 +396,6 @@ export class RepositorService {
     const agenda = await this.obtenerAgendaDiaria(
       usuario.id,
       usuario.empresaId,
-      usuario.rolDescripcion,
       ahora,
     );
     const { skip, take, page, limit } = rangoPaginacion(query);
@@ -505,7 +535,6 @@ export class RepositorService {
   private async obtenerAgendaDiaria(
     usuarioId: number,
     empresaId: number,
-    rolDescripcion: string | null,
     ahora: Date,
   ): Promise<AgendaDiaria> {
     const locales = await this.prisma.local.findMany({
@@ -528,39 +557,38 @@ export class RepositorService {
           select: {
             id: true,
             nombre: true,
-            _count: {
-              select: {
-                tareas: {
-                  where: tareasVisiblesPara(usuarioId, rolDescripcion),
-                },
-              },
-            },
           },
         },
       },
       orderBy: [{ fechaVisita: 'asc' }, { id: 'asc' }],
       take: MAX_PARADAS_DIARIAS,
     });
-    const visitas =
-      locales.length === 0
-        ? []
-        : await this.prisma.visita.findMany({
-            where: {
-              usuarioId,
-              localId: { in: locales.map(({ id }) => id) },
-              iniciadaEn: {
-                gte: new Date(ahora.getTime() - VENTANA_VISITAS_MS),
-              },
-            },
-            select: {
-              id: true,
-              localId: true,
-              iniciadaEn: true,
-              completadaEn: true,
-            },
-            orderBy: { iniciadaEn: 'asc' },
-            take: 200,
-          });
+    const [visitas, tareasPorLocal] = await Promise.all([
+      this.prisma.visita.findMany({
+        where: {
+          usuarioId,
+          localId: { in: locales.map(({ id }) => id) },
+          iniciadaEn: {
+            gte: new Date(ahora.getTime() - VENTANA_VISITAS_MS),
+          },
+        },
+        select: {
+          id: true,
+          localId: true,
+          iniciadaEn: true,
+          completadaEn: true,
+        },
+        orderBy: { iniciadaEn: 'asc' },
+        take: 200,
+      }),
+      this.tareasPorLocal(
+        { id: usuarioId, empresaId },
+        locales.map((local) => ({
+          id: local.id,
+          clienteId: local.cliente.id,
+        })),
+      ),
+    ]);
 
     let totalProgramadas = 0;
     let totalCompletadas = 0;
@@ -603,7 +631,7 @@ export class RepositorService {
             latitud: local.latitud,
             longitud: local.longitud,
             radioMetros: local.radioMetros,
-            tareasActivas: local.cliente._count.tareas,
+            tareasActivas: tareasPorLocal.get(local.id)?.length ?? 0,
           },
           programadaEn,
           visitaAbiertaId: indice === 0 ? (abierta?.id ?? null) : null,
@@ -636,7 +664,6 @@ export class RepositorService {
     const agenda = await this.obtenerAgendaDiaria(
       usuario.id,
       usuario.empresaId,
-      usuario.rolDescripcion,
       ahora,
     );
     const { candidatas, totalProgramadas, totalCompletadas } = agenda;

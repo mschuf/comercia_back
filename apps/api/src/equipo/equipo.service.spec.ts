@@ -15,7 +15,7 @@ describe('EquipoService', () => {
     visita: { count: jest.fn(), findFirst: jest.fn() },
     visitaTarea: { count: jest.fn(), findMany: jest.fn() },
     novedadTarea: { count: jest.fn() },
-    tareaCliente: { count: jest.fn(), findMany: jest.fn() },
+    tarea: { count: jest.fn(), findMany: jest.fn() },
   };
   const alcance = {
     empresaId: 20,
@@ -177,7 +177,7 @@ describe('EquipoService', () => {
       empresaId: 20,
       usuario: { is: { AND: [alcance, { id: 40 }] } },
     });
-    expect(prisma.tareaCliente.findMany).not.toHaveBeenCalled();
+    expect(prisma.tarea.findMany).not.toHaveBeenCalled();
   });
 
   it('devuelve checklist pendiente y resumen aunque aún no exista visita', async () => {
@@ -190,8 +190,8 @@ describe('EquipoService', () => {
     prisma.visita.findFirst
       .mockResolvedValueOnce(null)
       .mockResolvedValueOnce(null);
-    prisma.tareaCliente.count.mockResolvedValue(2);
-    prisma.tareaCliente.findMany.mockResolvedValue([
+    prisma.tarea.count.mockResolvedValue(2);
+    prisma.tarea.findMany.mockResolvedValue([
       {
         id: 70,
         titulo: 'Reponer',
@@ -279,18 +279,16 @@ describe('EquipoService', () => {
         completadaEn: null,
         comentario: null,
         foto: null,
+        tareaId: 8,
+        titulo: 'Reponer',
+        descripcion: 'Completar góndola',
+        requiereFoto: true,
+        orden: 1,
         novedad: {
           id: 90,
           comentario: 'El local estaba cerrado',
           reportadaEn: new Date('2026-07-17T14:00:00.000Z'),
           leidaEn: null,
-        },
-        tarea: {
-          id: 8,
-          titulo: 'Reponer',
-          descripcion: 'Completar góndola',
-          requiereFoto: true,
-          orden: 1,
         },
         visita: {
           usuario: { id: 11, nombre: 'Ana', apellido: 'Rojas' },

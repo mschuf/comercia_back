@@ -135,31 +135,6 @@ export class ClientesService {
           },
           select: { id: true },
         });
-        const tareas = await tx.tareaGlobal.findMany({
-          where: { empresaId: usuario.empresaId },
-          select: {
-            id: true,
-            titulo: true,
-            descripcion: true,
-            requiereFoto: true,
-            orden: true,
-            activo: true,
-          },
-        });
-        if (tareas.length > 0) {
-          await tx.tareaCliente.createMany({
-            data: tareas.map((tarea) => ({
-              clienteId: creado.id,
-              tareaGlobalId: tarea.id,
-              titulo: tarea.titulo,
-              descripcion: tarea.descripcion,
-              requiereFoto: tarea.requiereFoto,
-              orden: tarea.orden,
-              activo: tarea.activo,
-            })),
-            skipDuplicates: true,
-          });
-        }
         return tx.cliente.findUniqueOrThrow({
           where: { id: creado.id },
           select: SELECT_CLIENTE,

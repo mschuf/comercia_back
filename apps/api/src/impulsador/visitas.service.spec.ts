@@ -22,26 +22,20 @@ function novedad(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function tarea(
-  overrides: Record<string, unknown> = {},
-  tareaOverrides: Record<string, unknown> = {},
-) {
+function tarea(overrides: Record<string, unknown> = {}) {
   return {
     id: 70,
     tareaId: 8,
+    titulo: 'Reponer gondola',
+    descripcion: 'Completar la exhibicion',
+    requiereFoto: true,
+    orden: 1,
+    activa: true,
     completada: false,
     comentario: null,
     foto: null,
     completadaEn: null,
     novedad: null,
-    tarea: {
-      titulo: 'Reponer gondola',
-      descripcion: 'Completar la exhibicion',
-      requiereFoto: true,
-      orden: 1,
-      activo: true,
-      ...tareaOverrides,
-    },
     ...overrides,
   };
 }
@@ -160,7 +154,7 @@ describe('VisitasService - novedades', () => {
           completada: false,
           novedad: null,
           visita: { completadaEn: null },
-          tarea: { activo: true },
+          activa: true,
         },
         data: {
           completada: false,

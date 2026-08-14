@@ -30,23 +30,22 @@ describe('TareasService.quitarTodasDeUsuario', () => {
 
   function escenario() {
     const tx = {
-      tareaGlobal: {
-        findMany: jest.fn().mockResolvedValue([{ id: 3 }, { id: 8 }]),
-      },
-      tareaGlobalUsuario: {
+      tareaUsuario: {
         deleteMany: jest.fn().mockResolvedValue({ count: 1 }),
-      },
-      tareaGlobalExclusionUsuario: {
         createMany: jest.fn().mockResolvedValue({ count: 2 }),
       },
-      $executeRaw: jest.fn().mockResolvedValue(2),
+      visitaTarea: {
+        deleteMany: jest.fn().mockResolvedValue({ count: 2 }),
+      },
     };
     const prisma = {
       usuario: {
         findFirst: jest.fn().mockResolvedValue({
           id: 24,
-          rol: { descripcion: 'repositor' },
         }),
+      },
+      tarea: {
+        findMany: jest.fn().mockResolvedValue([{ id: 3 }, { id: 8 }]),
       },
       $transaction: jest.fn(
         async (operacion: (cliente: typeof tx) => Promise<number>) =>
@@ -74,38 +73,62 @@ describe('TareasService.quitarTodasDeUsuario', () => {
     await expect(service.quitarTodasDeUsuario(11, 24)).resolves.toEqual({
       ok: true,
       usuarioId: 24,
-      tareasQuitadas: 4,
+      tareasQuitadas: 2,
     });
 
     expect(acceso.validarOperativosDelGestor).toHaveBeenCalledWith(
       gestor,
       [24],
     );
-    expect(tx.tareaGlobalUsuario.deleteMany).toHaveBeenCalledWith({
-      where: { usuarioId: 24, tareaGlobalId: { in: [3, 8] } },
+    expect(tx.tareaUsuario.deleteMany).toHaveBeenCalledWith({
+      where: {
+        tareaId: { in: [3, 8] },
+        usuarioId: 24,
+        efecto: 'INCLUIR',
+      },
     });
-    expect(tx.tareaGlobalExclusionUsuario.createMany).toHaveBeenCalledWith({
+    expect(tx.tareaUsuario.createMany).toHaveBeenCalledWith({
       data: [
-        { tareaGlobalId: 3, usuarioId: 24, excluidoPorId: 11 },
-        { tareaGlobalId: 8, usuarioId: 24, excluidoPorId: 11 },
+        {
+          tareaId: 3,
+          usuarioId: 24,
+          efecto: 'EXCLUIR',
+          registradoPorId: 11,
+        },
+        {
+          tareaId: 8,
+          usuarioId: 24,
+          efecto: 'EXCLUIR',
+          registradoPorId: 11,
+        },
       ],
       skipDuplicates: true,
     });
-    expect(tx.$executeRaw).toHaveBeenCalledTimes(2);
+    expect(tx.visitaTarea.deleteMany).toHaveBeenCalledWith({
+      where: {
+        tareaId: { in: [3, 8] },
+        visita: { usuarioId: 24, completadaEn: null },
+        completada: false,
+        comentario: null,
+        foto: null,
+        novedad: null,
+      },
+    });
   });
 
-  it('también quita tareas locales cuando no hay tareas globales', async () => {
-    const { service, tx } = escenario();
-    tx.tareaGlobal.findMany.mockResolvedValue([]);
+  it('no abre una transacción cuando el usuario no tiene tareas aplicables', async () => {
+    const { prisma, service, tx } = escenario();
+    prisma.tarea.findMany.mockResolvedValue([]);
 
     await expect(service.quitarTodasDeUsuario(11, 24)).resolves.toEqual({
       ok: true,
       usuarioId: 24,
-      tareasQuitadas: 2,
+      tareasQuitadas: 0,
     });
-    expect(tx.tareaGlobalUsuario.deleteMany).not.toHaveBeenCalled();
-    expect(tx.tareaGlobalExclusionUsuario.createMany).not.toHaveBeenCalled();
-    expect(tx.$executeRaw).toHaveBeenCalledTimes(2);
+    expect(prisma.$transaction).not.toHaveBeenCalled();
+    expect(tx.tareaUsuario.deleteMany).not.toHaveBeenCalled();
+    expect(tx.tareaUsuario.createMany).not.toHaveBeenCalled();
+    expect(tx.visitaTarea.deleteMany).not.toHaveBeenCalled();
   });
 
   it('rechaza usuarios que no pertenecen al equipo del gestor', async () => {

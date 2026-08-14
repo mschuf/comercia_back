@@ -12,7 +12,7 @@ export function aNotificacionDto(
     leidaEn: notificacion.leidaEn?.toISOString() ?? null,
     tarea: {
       visitaTareaId: notificacion.visitaTarea.id,
-      titulo: notificacion.visitaTarea.tarea.titulo,
+      titulo: notificacion.visitaTarea.titulo,
     },
     local: {
       id: visita.local.id,

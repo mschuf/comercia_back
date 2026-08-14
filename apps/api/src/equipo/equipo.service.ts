@@ -12,6 +12,10 @@ import {
 } from '../impulsador/impulsador.constants';
 import { PrismaService } from '../prisma/prisma.service';
 import {
+  filtroAlcanceLocalTarea,
+  filtroTareaVisiblePara,
+} from '../tareas/utils/visibilidad-tarea';
+import {
   EstadoTareaEquipoDto,
   ListarRepositoresEquipoDto,
   ListarTareasEquipoDto,
@@ -272,8 +276,15 @@ export class EquipoService {
               }
             : {};
     const whereBase = {
-      clienteId: local.cliente.id,
+      empresaId,
       activo: true,
+      AND: [
+        filtroTareaVisiblePara(repositor),
+        filtroAlcanceLocalTarea({
+          id: local.id,
+          clienteId: local.cliente.id,
+        }),
+      ],
     };
     const where = {
       ...whereBase,
@@ -281,9 +292,9 @@ export class EquipoService {
     };
     const { skip, take, page, limit } = rangoPaginacion(query);
     const [totalChecklist, completadas, novedades, tareas] = await Promise.all([
-      this.prisma.tareaCliente.count({ where: whereBase }),
+      this.prisma.tarea.count({ where: whereBase }),
       visita
-        ? this.prisma.tareaCliente.count({
+        ? this.prisma.tarea.count({
             where: {
               ...whereBase,
               respuestas: {
@@ -297,7 +308,7 @@ export class EquipoService {
           })
         : Promise.resolve(0),
       visita
-        ? this.prisma.tareaCliente.count({
+        ? this.prisma.tarea.count({
             where: {
               ...whereBase,
               respuestas: {
@@ -309,7 +320,7 @@ export class EquipoService {
             },
           })
         : Promise.resolve(0),
-      this.prisma.tareaCliente.findMany({
+      this.prisma.tarea.findMany({
         where,
         select: {
           id: true,
@@ -472,15 +483,11 @@ export class EquipoService {
               leidaEn: true,
             },
           },
-          tarea: {
-            select: {
-              id: true,
-              titulo: true,
-              descripcion: true,
-              requiereFoto: true,
-              orden: true,
-            },
-          },
+          tareaId: true,
+          titulo: true,
+          descripcion: true,
+          requiereFoto: true,
+          orden: true,
           visita: {
             select: {
               usuario: {
@@ -498,7 +505,7 @@ export class EquipoService {
         },
         orderBy: [
           { visita: { iniciadaEn: 'desc' } },
-          { tarea: { orden: 'asc' } },
+          { orden: 'asc' },
           { id: 'desc' },
         ],
         skip,
@@ -506,12 +513,12 @@ export class EquipoService {
       }),
     ]);
     const items: TareaEquipoDto[] = tareas.map((fila) => ({
-      tareaId: fila.tarea.id,
+      tareaId: fila.tareaId,
       visitaTareaId: fila.id,
-      titulo: fila.tarea.titulo,
-      descripcion: fila.tarea.descripcion,
-      requiereFoto: fila.tarea.requiereFoto,
-      orden: fila.tarea.orden,
+      titulo: fila.titulo,
+      descripcion: fila.descripcion,
+      requiereFoto: fila.requiereFoto,
+      orden: fila.orden,
       estado: fila.novedad
         ? 'NOVEDAD'
         : fila.completada
