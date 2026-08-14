@@ -227,6 +227,7 @@ concurrently
 condition
 conditional
 conditions
+conectado
 conectar
 conex
 conexi
@@ -313,8 +314,6 @@ deps
 derived
 desarrollar
 desarrollo
-descripcion
-descripciones
 description
 desde
 despliegue
@@ -344,6 +343,7 @@ direccion
 directorio
 directory
 dirigidas
+disponible
 dispositivo
 dist
 distancia
@@ -556,6 +556,7 @@ hora
 horaria
 how
 hoy
+href
 html
 http
 https
@@ -872,6 +873,7 @@ pedido
 pendiente
 pendientes
 per
+perfil
 performance
 periodo
 periodos
@@ -1144,6 +1146,7 @@ supervisor
 support
 supports
 suppress
+sus
 suspense
 svg
 swagger
@@ -1188,6 +1191,7 @@ throttler
 tica
 tico
 tiempo
+tiene
 tiles
 tipo
 tipos
@@ -1201,6 +1205,7 @@ todos
 token
 tooltip
 tosorted
+total
 touch
 trabajar
 trabajo

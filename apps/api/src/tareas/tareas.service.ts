@@ -29,6 +29,7 @@ import {
   ListarTareasGlobalesDto,
 } from './dto/tarea-global.dto';
 import type { TareaGlobalDto } from './interfaces/tarea-global.interface';
+import type { TareasQuitadasUsuarioDto } from './interfaces/tareas-quitadas-usuario.interface';
 import { filtroTareaGlobalVisiblePara } from './utils/visibilidad-tarea';
 
 const SELECT_TAREA_GLOBAL = {
@@ -53,7 +54,7 @@ const SELECT_TAREA_GLOBAL = {
     select: { local: { select: { id: true, nombre: true } } },
     orderBy: { localId: 'asc' as const },
   },
-  _count: { select: { tareas: true } },
+  _count: { select: { tareas: true, exclusiones: true } },
 } as const;
 
 type TareaGlobalFila = {
@@ -68,7 +69,7 @@ type TareaGlobalFila = {
   alcanceLocales: 'TODOS' | 'SELECCIONADOS';
   createdAt: Date;
   updatedAt: Date;
-  _count: { tareas: number };
+  _count: { tareas: number; exclusiones: number };
   destinatarios: {
     usuario: { id: number; nombre: string; apellido: string };
   }[];
@@ -101,6 +102,7 @@ function aTareaGlobalDto(
       : [],
     locales: tarea.locales.map(({ local }) => local),
     usuariosAsignados: mostrarDestinatarios ? tarea.destinatarios.length : 0,
+    usuariosExcluidos: mostrarDestinatarios ? tarea._count.exclusiones : 0,
     localesAsignados: tarea.locales.length,
     clientesAsignados,
     clientesEmpresa,
@@ -426,6 +428,12 @@ export class TareasService {
               usuarioId: destinatarioId,
             })),
           });
+          await tx.tareaGlobalExclusionUsuario.deleteMany({
+            where: {
+              tareaGlobalId: tarea.id,
+              usuarioId: { in: destinatarios },
+            },
+          });
         }
         await tx.tareaGlobalLocal.deleteMany({
           where: { tareaGlobalId: tarea.id },
@@ -488,6 +496,116 @@ export class TareasService {
       }),
     ]);
     return { ok: true, desactivada: true };
+  }
+
+  async quitarTodasDeUsuario(
+    usuarioId: number,
+    destinatarioId: number,
+  ): Promise<TareasQuitadasUsuarioDto> {
+    const gestor = await this.exigirGestor(usuarioId);
+    await this.accesoCampo.validarOperativosDelGestor(gestor, [destinatarioId]);
+    const destinatario = await this.prisma.usuario.findFirst({
+      where: {
+        id: destinatarioId,
+        empresaId: gestor.empresaId,
+        isActive: true,
+      },
+      select: {
+        id: true,
+        rol: { select: { descripcion: true } },
+      },
+    });
+    if (!destinatario) {
+      throw new NotFoundException('El usuario no pertenece a tu equipo');
+    }
+
+    const tareasQuitadas = await this.prisma.$transaction(async (tx) => {
+      const tareas = await tx.tareaGlobal.findMany({
+        where: {
+          empresaId: gestor.empresaId,
+          ...filtroTareaGlobalVisiblePara({
+            id: destinatario.id,
+            rolDescripcion: destinatario.rol?.descripcion ?? null,
+          }),
+        },
+        select: { id: true },
+        take: MAX_TAREAS_POR_LOCAL,
+      });
+      const tareaIds = tareas.map(({ id }) => id);
+      let tareasGlobalesQuitadas = 0;
+      if (tareaIds.length > 0) {
+        await tx.tareaGlobalUsuario.deleteMany({
+          where: {
+            usuarioId: destinatario.id,
+            tareaGlobalId: { in: tareaIds },
+          },
+        });
+        const exclusionesGlobales =
+          await tx.tareaGlobalExclusionUsuario.createMany({
+            data: tareaIds.map((tareaGlobalId) => ({
+              tareaGlobalId,
+              usuarioId: destinatario.id,
+              excluidoPorId: gestor.id,
+            })),
+            skipDuplicates: true,
+          });
+        tareasGlobalesQuitadas = exclusionesGlobales.count;
+      }
+      const tareasLocalesQuitadas = await tx.$executeRaw(Prisma.sql`
+        INSERT INTO "tareas_cliente_exclusion_usuario" (
+          "tarea_cliente_id", "usuario_id", "excluido_por_id", "created_at"
+        )
+        SELECT DISTINCT
+          tarea."id", ${destinatario.id}, ${gestor.id}, CURRENT_TIMESTAMP
+        FROM "tareas_cliente" AS tarea
+        INNER JOIN "clientes" AS cliente
+          ON cliente."id" = tarea."cliente_id"
+        INNER JOIN "locales" AS local
+          ON local."cliente_id" = cliente."id"
+        WHERE tarea."tarea_global_id" IS NULL
+          AND cliente."empresa_id" = ${gestor.empresaId}
+          AND local."usuario_id" = ${destinatario.id}
+          AND local."activo" = true
+        ON CONFLICT ("tarea_cliente_id", "usuario_id") DO NOTHING
+      `);
+      await tx.$executeRaw(Prisma.sql`
+        DELETE FROM "visita_tareas" AS visita_tarea
+        USING "visitas" AS visita, "tareas_cliente" AS tarea
+        WHERE visita_tarea."visita_id" = visita."id"
+          AND visita_tarea."tarea_id" = tarea."id"
+          AND visita."usuario_id" = ${destinatario.id}
+          AND visita."completada_en" IS NULL
+          AND visita_tarea."completada" = false
+          AND visita_tarea."comentario" IS NULL
+          AND visita_tarea."foto" IS NULL
+          AND NOT EXISTS (
+            SELECT 1
+            FROM "novedades_tarea" AS novedad
+            WHERE novedad."visita_tarea_id" = visita_tarea."id"
+          )
+          AND (
+            EXISTS (
+              SELECT 1
+              FROM "tareas_globales_exclusion_usuario" AS exclusion_global
+              WHERE exclusion_global."tarea_global_id" = tarea."tarea_global_id"
+                AND exclusion_global."usuario_id" = ${destinatario.id}
+            )
+            OR EXISTS (
+              SELECT 1
+              FROM "tareas_cliente_exclusion_usuario" AS exclusion_cliente
+              WHERE exclusion_cliente."tarea_cliente_id" = tarea."id"
+                AND exclusion_cliente."usuario_id" = ${destinatario.id}
+            )
+          )
+      `);
+      return tareasGlobalesQuitadas + Number(tareasLocalesQuitadas);
+    });
+
+    return {
+      ok: true,
+      usuarioId: destinatario.id,
+      tareasQuitadas,
+    };
   }
 
   private async detalleDto(

@@ -1,16 +1,16 @@
-# Graph Report - COMERCIA  (2026-08-12)
+# Graph Report - COMERCIA  (2026-08-14)
 
 ## Corpus Check
-- 561 files · ~350,533 words
+- 564 files · ~351,966 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3219 nodes · 6391 edges · 355 communities (168 shown, 187 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 39 edges (avg confidence: 0.66)
+- 3229 nodes · 6426 edges · 366 communities (177 shown, 189 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 40 edges (avg confidence: 0.67)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5dba5622`
+- Built from commit: `9d8e90ab`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -22,12 +22,12 @@
 - UsuarioOperacionesCampo
 - tareas-view.tsx
 - mapa-editor.tsx
-- ClientesService
+- clientes.service.ts
 - repositorio-tareas-view.tsx
 - mapa-view.tsx
 - admin-empresas.service.ts
 - scripts
-- ActualizarRolDto
+- roles.service.ts
 - compilerOptions
 - visita-activa.tsx
 - seguimiento.ts
@@ -35,17 +35,17 @@
 - modulos-panel.tsx
 - locales-view.tsx
 - Infraestructura Package
-- [pagina]/page.tsx
+- formatoFechaHora
 - dependencies
 - TareasLocalService
 - PaginacionDto
 - kpis-visitas.service.ts
-- ActualizarZonaDto
+- zonas.service.ts
 - AsignarModuloDto
 - VisitasService
 - App.tsx
-- respuestaPaginada
-- AuthController
+- equipo.service.ts
+- locales.service.ts
 - API Tsconfig Json Tsconfig
 - visitas.service.ts
 - dependencies
@@ -56,9 +56,9 @@
 - jwt-auth.guard.ts
 - presentismo.service.ts
 - ModulosService
-- ActualizarTerritorioDto
-- optimizacion-ruta.ts
+- TerritoriosService
 - LocalesService
+- LocalesController
 - vistas.tsx
 - proximidad.ts
 - tablero.tsx
@@ -66,13 +66,13 @@
 - GuardarProgramacionVisitaDto
 - @types/node
 - visitas-view.tsx
-- AuthService
+- ZonasController
 - expo
-- ListarTareasEquipoDto
-- .usuario
+- EquipoController
+- territorios.service.ts
 - 5. Re-render Optimization
 - 5. Re-render Optimization
-- plataforma.controller.ts
+- ActualizarEjecutableDto
 - UsuariosController
 - ReportarNovedadTareaDto
 - ActualizarPaginaDto
@@ -91,7 +91,7 @@
 - Quick Reference
 - API Base de Datos
 - API Base de Datos
-- RutaHoyDto
+- impulsador/utils/programacion-visita.ts
 - Web Components Mapa Picker
 - API Base de Datos
 - Comercia Agent Guide
@@ -323,8 +323,8 @@
 - .codex/skills/vercel-react-best-practices/SKILL.md
 - EjecutablesService
 - metro.config.js
-- LoginSimDto
-- usuarios.service.ts
+- programacion-visita.interface.ts
+- ActualizarUsuarioDto
 - 20260812160000_supervisor_impulsador_presentismo/migration.sql
 - with-short-cmake-object-paths.js
 - mobile/tsconfig.json
@@ -337,21 +337,32 @@
 - @eslint/eslintrc
 - @eslint/js
 - with-sim-phone-numbers.js
+- .usuario
 - auth.service.ts
-- acceso-operaciones-campo.service.ts
+- AppController
+- respuestaPaginada
+- HealthController
 - MapaController
 - RegisterDto
-- @types/express
-- hashPassword
+- ActualizarTerritorioDto
+- AsignacionesService
+- .finalizar
 - Q: ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso
 - EmpresasController
+- .menu
 - @nestjs/testing
+- env.schema.ts
 - @nestjs/cli
+- visitas.service.spec.ts
+- AppModule
+- .datos
+- 20260814170000_tareas_excluidas_por_usuario/migration.sql
+- eslint-config-prettier
 
 ## God Nodes (most connected - your core abstractions)
-1. `RequestConUsuario` - 95 edges
-2. `PrismaService` - 89 edges
-3. `AccesoOperacionesCampoService` - 58 edges
+1. `RequestConUsuario` - 96 edges
+2. `PrismaService` - 91 edges
+3. `AccesoOperacionesCampoService` - 59 edges
 4. `PaginacionDto` - 53 edges
 5. `apiFetch()` - 53 edges
 6. `respuestaPaginada` - 42 edges
@@ -375,7 +386,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (355 total, 187 thin omitted)
+## Communities (366 total, 189 thin omitted)
 
 ### Community 0 - "RequestConUsuario"
 Cohesion: 0.18
@@ -386,28 +397,28 @@ Cohesion: 0.16
 Nodes (12): AdminUsuariosController, ApiTags, Body, Controller, Delete, Get, Param, Patch (+4 more)
 
 ### Community 2 - "app.module.ts"
-Cohesion: 0.06
-Nodes (52): ApiOkResponse, AppController, ApiTags, Controller, Get, AppModule, Module, AppService (+44 more)
+Cohesion: 0.13
+Nodes (30): AuthModule, Module, ClientesModule, Module, EmpresasModule, Module, EquipoModule, Module (+22 more)
 
 ### Community 3 - "repositor.service.ts"
-Cohesion: 0.15
-Nodes (19): AgendaDiaria, CandidataAgendaDiaria, ClienteRepositorDto, RendimientoImpulsadorDto, RendimientoImpulsadorFila, EstadoParadaRuta, FuenteRuta, ParadaOptimizada (+11 more)
+Cohesion: 0.06
+Nodes (43): aRadianes(), distanciaMetros(), RendimientoImpulsadorDto, IsOptional, Matches, RutaHoyDto, METADATA, PIPE (+35 more)
 
 ### Community 4 - "UsuarioOperacionesCampo"
-Cohesion: 0.07
-Nodes (35): UsuarioOperacionesCampo, ActualizarTareaGlobalDto, AlcanceTareaDto, CrearTareaGlobalDto, ListarTareasGlobalesDto, PIPE, ArrayMaxSize, ArrayMinSize (+27 more)
+Cohesion: 0.06
+Nodes (43): UsuarioOperacionesCampo, tareasVisiblesPara(), ActualizarTareaGlobalDto, AlcanceTareaDto, CrearTareaGlobalDto, ListarTareasGlobalesDto, PIPE, ArrayMaxSize (+35 more)
 
 ### Community 5 - "tareas-view.tsx"
 Cohesion: 0.14
-Nodes (21): fechaIso(), inicioMes(), PresentismoView(), OPCIONES_POR_PAGINA, Paginacion(), SelectorUsuario(), SelectorUsuarioProps, FORM_INICIAL (+13 more)
+Nodes (22): fechaIso(), inicioMes(), PresentismoView(), OPCIONES_POR_PAGINA, Paginacion(), SelectorUsuario(), SelectorUsuarioProps, FORM_INICIAL (+14 more)
 
 ### Community 6 - "mapa-editor.tsx"
 Cohesion: 0.11
 Nodes (24): CAPAS_MAPA, CENTRO_DEFECTO, SeleccionMapa, useMapaOscuro(), VisibilidadCapas, cachePines, iconoDestino, iconoPin() (+16 more)
 
-### Community 7 - "ClientesService"
+### Community 7 - "clientes.service.ts"
 Cohesion: 0.09
-Nodes (24): ClientesController, ApiTags, Body, Controller, Delete, Get, Param, Patch (+16 more)
+Nodes (27): ClientesController, ApiTags, Body, Controller, Delete, Get, Param, Patch (+19 more)
 
 ### Community 8 - "repositorio-tareas-view.tsx"
 Cohesion: 0.09
@@ -418,48 +429,48 @@ Cohesion: 0.09
 Nodes (14): Eliminando, FormTerritorio, FormZona, MapaEditor, MapaView(), SelectorPais(), PaisItem, formatoFecha() (+6 more)
 
 ### Community 10 - "admin-empresas.service.ts"
-Cohesion: 0.07
-Nodes (31): SuperadminGuard, Injectable, AdminEmpresasController, ApiTags, Body, Controller, Delete, Get (+23 more)
+Cohesion: 0.08
+Nodes (29): AdminEmpresasController, ApiTags, Body, Controller, Delete, Get, Param, Patch (+21 more)
 
 ### Community 11 - "scripts"
 Cohesion: 0.11
 Nodes (18): scripts, build, format, lint, postinstall, prisma:deploy, prisma:generate, prisma:migrate (+10 more)
 
-### Community 12 - "ActualizarRolDto"
+### Community 12 - "roles.service.ts"
 Cohesion: 0.09
-Nodes (25): ActualizarRolDto, CrearRolDto, IsInt, IsOptional, IsString, Max, MaxLength, Min (+17 more)
+Nodes (27): ActualizarRolDto, CrearRolDto, IsInt, IsOptional, IsString, Max, MaxLength, Min (+19 more)
 
 ### Community 13 - "compilerOptions"
 Cohesion: 0.07
 Nodes (28): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+20 more)
 
 ### Community 14 - "visita-activa.tsx"
-Cohesion: 0.08
-Nodes (31): tarea(), EquipoView(), ListaEquipoMovil(), ListaEquipoMovilProps, FiltroEstado, FiltrosSeguimientoTareas, ListaSeguimientoTareasMovil(), RespuestaSeguimiento (+23 more)
+Cohesion: 0.09
+Nodes (26): tarea(), FiltroEstado, FiltrosSeguimientoTareas, ListaSeguimientoTareasMovil(), RespuestaSeguimiento, SeguimientoTareasView(), EstadoFoto, FOTO_MIMETYPES (+18 more)
 
 ### Community 15 - "seguimiento.ts"
 Cohesion: 0.18
 Nodes (24): actualizarConsentimientoUbicacion(), registrarUbicacion(), contarUbicacionesPendientes(), eliminarUbicacionPendiente(), FilaUbicacion, guardarUbicacionPendiente(), listarUbicacionesPendientes(), marcarIntentoFallido() (+16 more)
 
 ### Community 16 - "AdminPlataformaController"
-Cohesion: 0.13
-Nodes (12): AdminPlataformaController, MiPlataformaController, ApiTags, Body, Controller, Delete, Get, Param (+4 more)
+Cohesion: 0.19
+Nodes (10): AdminPlataformaController, MiPlataformaController, ApiTags, Body, Controller, Delete, Param, Patch (+2 more)
 
 ### Community 17 - "modulos-panel.tsx"
-Cohesion: 0.11
-Nodes (16): notificarPlataformaActualizada(), Empresa, EmpresaAdmin, AsignacionEmpresa, Conexion, Ejecutable, EmpresaModulo, Modulo (+8 more)
+Cohesion: 0.09
+Nodes (21): AdminPage(), Tab, EmpresasPanel(), ModulosPanel(), usePanel(), notificarPlataformaActualizada(), Empresa, EmpresaAdmin (+13 more)
 
 ### Community 18 - "locales-view.tsx"
-Cohesion: 0.10
-Nodes (17): ClientesLocalesView(), Tab, ClientesView(), ClientesViewProps, FormCliente, INICIAL, ListaClientesMovil(), ListaClientesMovilProps (+9 more)
+Cohesion: 0.11
+Nodes (16): ClientesLocalesView(), Tab, ClientesView(), ClientesViewProps, FormCliente, INICIAL, ListaClientesMovil(), ListaClientesMovilProps (+8 more)
 
 ### Community 19 - "Infraestructura Package"
 Cohesion: 0.07
 Nodes (28): concurrently, devDependencies, concurrently, name, multer, postcss, overrides, @nestjs/platform-express (+20 more)
 
-### Community 20 - "[pagina]/page.tsx"
-Cohesion: 0.21
-Nodes (13): enteroPositivo(), filtroRepositor(), filtrosTareas(), PaginaModulo(), textoConsulta(), valorConsulta(), VISTAS, AsignacionesLocalesView() (+5 more)
+### Community 20 - "formatoFechaHora"
+Cohesion: 0.13
+Nodes (21): enteroPositivo(), filtroRepositor(), filtrosTareas(), PaginaModulo(), textoConsulta(), valorConsulta(), VISTAS, EquipoView() (+13 more)
 
 ### Community 21 - "dependencies"
 Cohesion: 0.04
@@ -470,44 +481,44 @@ Cohesion: 0.13
 Nodes (21): ActualizarTareaLocalDto, CrearTareaLocalDto, IsBoolean, IsInt, IsOptional, IsString, Length, Max (+13 more)
 
 ### Community 23 - "PaginacionDto"
-Cohesion: 0.13
-Nodes (18): PaginacionDto, IsInt, IsOptional, Max, Min, Type, ListarClientesRepositorDto, ListarLocalesRepositorDto (+10 more)
+Cohesion: 0.14
+Nodes (17): PaginacionDto, IsInt, IsOptional, Max, Min, Type, ListarNotificacionesDto, ListarClientesRepositorDto (+9 more)
 
 ### Community 24 - "kpis-visitas.service.ts"
-Cohesion: 0.18
+Cohesion: 0.17
 Nodes (14): prisma, AgrupacionKpiVisitaDto, FiltroKpisVisitasDto, ListarKpisVisitasDto, IsEnum, IsOptional, Matches, KpiVisitasDetalleDto (+6 more)
 
-### Community 25 - "ActualizarZonaDto"
-Cohesion: 0.09
-Nodes (28): ActualizarZonaDto, CrearZonaDto, ListarZonasDto, PIPE, ArrayMaxSize, IsArray, IsBoolean, IsInt (+20 more)
+### Community 25 - "zonas.service.ts"
+Cohesion: 0.19
+Nodes (17): ActualizarZonaDto, CrearZonaDto, ListarZonasDto, PIPE, ArrayMaxSize, IsArray, IsBoolean, IsInt (+9 more)
 
 ### Community 26 - "AsignarModuloDto"
-Cohesion: 0.13
-Nodes (16): AsignacionesService, Injectable, AsignarModuloDto, PaginaAsignadaDto, ArrayMaxSize, ArrayUnique, IsArray, IsBoolean (+8 more)
+Cohesion: 0.26
+Nodes (11): AsignarModuloDto, PaginaAsignadaDto, ArrayMaxSize, ArrayUnique, IsArray, IsBoolean, IsInt, IsOptional (+3 more)
 
 ### Community 27 - "VisitasService"
-Cohesion: 0.23
-Nodes (8): VisitaDto, VisitaTareaDto, aVisitaDto(), aVisitaTareaDto(), exigirDentroDelRadio(), tareaDeVisita(), Injectable, VisitasService
+Cohesion: 0.30
+Nodes (6): VisitaTareaDto, aVisitaDto(), aVisitaTareaDto(), tareaDeVisita(), Injectable, VisitasService
 
 ### Community 28 - "App.tsx"
 Cohesion: 0.13
 Nodes (24): Aplicacion(), hayInternet(), styles, textoError(), PanelLogin(), styles, PanelSeguimiento(), styles (+16 more)
 
-### Community 29 - "respuestaPaginada"
-Cohesion: 0.09
-Nodes (20): ClienteFila, SELECT_CLIENTE, ListarClientesDto, filtrosBusquedaUsuario(), rangoPaginacion(), respuestaPaginada, EstadoTareaEquipoDto, EquipoService (+12 more)
+### Community 29 - "equipo.service.ts"
+Cohesion: 0.12
+Nodes (19): filtrosBusquedaUsuario(), ListarRepositoresEquipoDto, ListarTareasEquipoDto, IsEnum, IsInt, IsOptional, IsString, Max (+11 more)
 
-### Community 30 - "AuthController"
-Cohesion: 0.18
-Nodes (14): AuthController, ApiOperation, ApiTags, Body, Controller, Post, Res, LoginDto (+6 more)
+### Community 30 - "locales.service.ts"
+Cohesion: 0.23
+Nodes (20): ActualizarLocalDto, CrearLocalDto, ListarLocalesDto, ListarUsuariosAsignablesDto, TransferirLocalesDto, IsBoolean, IsInt, IsISO8601 (+12 more)
 
 ### Community 31 - "API Tsconfig Json Tsconfig"
 Cohesion: 0.09
 Nodes (21): compilerOptions, allowSyntheticDefaultImports, declaration, emitDecoratorMetadata, esModuleInterop, experimentalDecorators, forceConsistentCasingInFileNames, incremental (+13 more)
 
 ### Community 32 - "visitas.service.ts"
-Cohesion: 0.09
-Nodes (24): esRolMarcacionSimple(), ROLES_MARCACION_SIMPLE, redondear1Decimal(), NovedadVisitaTareaDto, VisitaEquipoLocalDto, VisitaEquipoUltimaVisitaDto, VisitaResumenDto, duracionVisitaMinutos() (+16 more)
+Cohesion: 0.14
+Nodes (17): redondear1Decimal(), VisitaEquipoLocalDto, VisitaResumenDto, duracionVisitaMinutos(), aProgramacionVisitaDto(), fechaSoloIso(), validarZonaHoraria(), aVisitaEquipoLocalDto() (+9 more)
 
 ### Community 33 - "dependencies"
 Cohesion: 0.04
@@ -529,25 +540,29 @@ Nodes (13): manrope, metadata, viewport, ActualizadorDespliegue(), deploymentIdD
 Cohesion: 0.09
 Nodes (23): dependencies, class-transformer, class-validator, cookie-parser, dotenv, @nestjs/common, @nestjs/config, @nestjs/core (+15 more)
 
+### Community 38 - "jwt-auth.guard.ts"
+Cohesion: 0.19
+Nodes (4): JwtAuthGuard, Injectable, SuperadminGuard, Injectable
+
 ### Community 39 - "presentismo.service.ts"
-Cohesion: 0.05
-Nodes (57): FrecuenciaProgramacionVisita, ProgramacionVisitaCalculo, ProgramacionVisitaDto, coincideFrecuencia(), compararFecha(), diaIso(), fechaLocalAUtc(), fechaSolo() (+49 more)
+Cohesion: 0.08
+Nodes (38): ListarPresentismoDto, ResumenPresentismoQueryDto, IsInt, IsOptional, IsString, Matches, Max, MaxLength (+30 more)
 
 ### Community 40 - "ModulosService"
-Cohesion: 0.26
-Nodes (4): ModuloDto, PaginaDto, ModulosService, Injectable
+Cohesion: 0.23
+Nodes (5): ModuloDto, PaginaDto, PaginaMenu, ModulosService, Injectable
 
-### Community 41 - "ActualizarTerritorioDto"
-Cohesion: 0.10
-Nodes (24): ActualizarTerritorioDto, CrearTerritorioDto, IsArray, IsBoolean, IsInt, IsOptional, IsString, Length (+16 more)
+### Community 41 - "TerritoriosService"
+Cohesion: 0.11
+Nodes (14): TerritoriosController, ApiTags, Body, Controller, Delete, Get, Param, Patch (+6 more)
 
-### Community 42 - "optimizacion-ruta.ts"
-Cohesion: 0.19
-Nodes (12): aRadianes(), distanciaMetros(), CoordenadaRuta, MatrizRuta, OsrmRouteResponse, OsrmTableResponse, ResultadoGeometriaRuta, OsrmService (+4 more)
+### Community 42 - "LocalesService"
+Cohesion: 0.20
+Nodes (7): LocalDetalleDto, LocalDto, TransferenciaLocalesDto, UsuarioAsignable, aLocalDto(), LocalesService, Injectable
 
-### Community 43 - "LocalesService"
-Cohesion: 0.09
-Nodes (34): ActualizarLocalDto, CrearLocalDto, ListarLocalesDto, ListarUsuariosAsignablesDto, TransferirLocalesDto, IsBoolean, IsInt, IsISO8601 (+26 more)
+### Community 43 - "LocalesController"
+Cohesion: 0.17
+Nodes (12): LocalesController, ApiTags, Body, Controller, Delete, Get, Param, Patch (+4 more)
 
 ### Community 44 - "vistas.tsx"
 Cohesion: 0.16
@@ -563,31 +578,31 @@ Nodes (9): aparecer, CHIPS, KPIS, PropsTooltip, Tablero(), TENDENCIA_VENTAS, VEN
 
 ### Community 47 - "panel/layout.tsx"
 Cohesion: 0.06
-Nodes (30): AdminPage(), PanelLayout(), PanelInicioPage(), AuthShell(), BrandMark(), BotonTema(), LoginForm(), PanelContext (+22 more)
+Nodes (30): PanelLayout(), PanelInicioPage(), AuthShell(), BrandMark(), BotonTema(), LoginForm(), CampanaNotificaciones(), CampanaNotificacionesProps (+22 more)
 
 ### Community 48 - "GuardarProgramacionVisitaDto"
-Cohesion: 0.10
-Nodes (18): FrecuenciaVisitaDto, GuardarProgramacionVisitaDto, ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsDateString (+10 more)
+Cohesion: 0.13
+Nodes (15): GuardarProgramacionVisitaDto, ArrayMaxSize, ArrayMinSize, ArrayUnique, IsArray, IsBoolean, IsDateString, IsEnum (+7 more)
 
 ### Community 50 - "visitas-view.tsx"
-Cohesion: 0.10
-Nodes (31): DIAS, EditorProgramacionVisita(), fechaHoy(), programacionInicial(), consultaFechas(), KpisVisitas(), ListaKpisMovil(), MisMarcacionesView() (+23 more)
+Cohesion: 0.11
+Nodes (29): DIAS, EditorProgramacionVisita(), fechaHoy(), programacionInicial(), consultaFechas(), KpisVisitas(), ListaKpisMovil(), MisMarcacionesView() (+21 more)
 
-### Community 51 - "AuthService"
-Cohesion: 0.24
-Nodes (6): Get, Req, UseGuards, AuthService, Injectable, UsuarioSesion
+### Community 51 - "ZonasController"
+Cohesion: 0.16
+Nodes (12): ApiTags, Body, Controller, Delete, Get, Param, Patch, Post (+4 more)
 
 ### Community 52 - "expo"
 Cohesion: 0.06
 Nodes (35): backgroundColor, foregroundImage, adaptiveIcon, package, permissions, predictiveBackGestureEnabled, softwareKeyboardLayoutMode, versionCode (+27 more)
 
-### Community 53 - "ListarTareasEquipoDto"
-Cohesion: 0.12
-Nodes (18): ListarRepositoresEquipoDto, ListarTareasEquipoDto, IsEnum, IsInt, IsOptional, IsString, Max, MaxLength (+10 more)
+### Community 53 - "EquipoController"
+Cohesion: 0.27
+Nodes (7): EquipoController, ApiTags, Controller, Get, Query, Req, UseGuards
 
-### Community 54 - ".usuario"
-Cohesion: 0.10
-Nodes (20): LocalMapaDto, MapaDatosDto, TerritorioDto, ZonaDto, aLocalMapaDto(), LocalParaMapa, SELECT_LOCAL_MAPA, aTerritorioDto() (+12 more)
+### Community 54 - "territorios.service.ts"
+Cohesion: 0.16
+Nodes (13): LocalMapaDto, MapaDatosDto, TerritorioDto, aLocalMapaDto(), LocalParaMapa, SELECT_LOCAL_MAPA, aTerritorioDto(), poligonoParaGuardar() (+5 more)
 
 ### Community 55 - "5. Re-render Optimization"
 Cohesion: 0.12
@@ -597,8 +612,8 @@ Nodes (16): 5.10 Subscribe to Derived State, 5.11 Use Functional setState Update
 Cohesion: 0.12
 Nodes (16): 5.10 Subscribe to Derived State, 5.11 Use Functional setState Updates, 5.12 Use Lazy State Initialization, 5.13 Use Transitions for Non-Urgent Updates, 5.14 Use useDeferredValue for Expensive Derived Renders, 5.15 Use useRef for Transient Values, 5.1 Calculate Derived State During Rendering, 5.2 Defer State Reads to Usage Point (+8 more)
 
-### Community 57 - "plataforma.controller.ts"
-Cohesion: 0.27
+### Community 57 - "ActualizarEjecutableDto"
+Cohesion: 0.26
 Nodes (11): ActualizarEjecutableDto, CrearEjecutableDto, IsBoolean, IsEnum, IsInt, IsOptional, IsString, Length (+3 more)
 
 ### Community 58 - "UsuariosController"
@@ -625,13 +640,17 @@ Nodes (43): IconoNavegacion, PAGINACION_INICIAL, PanelImpulsador(), Seccion, SEC
 Cohesion: 0.31
 Nodes (8): diagnosticarSim(), DiagnosticoSim, estadoPermisos(), leerNumerosSim(), mensajeError(), ModuloSim, NumeroSimNativo, obtenerNumerosSimParaLogin()
 
+### Community 64 - "numeros.ts"
+Cohesion: 0.34
+Nodes (3): lowerTrimString(), trimString(), EstadoTareaEquipoDto
+
 ### Community 65 - "ActualizarModuloDto"
 Cohesion: 0.30
 Nodes (11): ActualizarModuloDto, CrearModuloDto, IsBoolean, IsInt, IsOptional, IsString, Length, Matches (+3 more)
 
 ### Community 66 - "ubicaciones.service.ts"
-Cohesion: 0.10
-Nodes (25): ActualizarConsentimientoUbicacionDto, ListarUbicacionesDto, RegistrarUbicacionDto, IsBoolean, IsDateString, IsNumber, IsOptional, IsString (+17 more)
+Cohesion: 0.09
+Nodes (24): ActualizarConsentimientoUbicacionDto, RegistrarUbicacionDto, IsBoolean, IsDateString, IsNumber, IsOptional, IsString, Length (+16 more)
 
 ### Community 67 - "7. JavaScript Performance"
 Cohesion: 0.13
@@ -646,8 +665,8 @@ Cohesion: 0.13
 Nodes (14): 1. Eliminating Waterfalls (CRITICAL), 2. Bundle Size Optimization (CRITICAL), 3. Server-Side Performance (HIGH), 4. Client-Side Data Fetching (MEDIUM-HIGH), 5. Re-render Optimization (MEDIUM), 6. Rendering Performance (MEDIUM), 7. JavaScript Performance (LOW-MEDIUM), 8. Advanced Patterns (LOW) (+6 more)
 
 ### Community 70 - "apiFetch"
-Cohesion: 0.07
-Nodes (29): Tab, EmpresasAbmPanel(), FORM_INICIAL, FormEmpresa, EmpresasPanel(), ModulosPanel(), FORM_INICIAL, FormRol (+21 more)
+Cohesion: 0.09
+Nodes (23): EmpresasAbmPanel(), FORM_INICIAL, FormEmpresa, FORM_INICIAL, FormRol, RolesPanel(), IconoMas(), RendimientoImpulsadorView() (+15 more)
 
 ### Community 71 - "Q: El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
 Cohesion: 0.40
@@ -669,9 +688,9 @@ Nodes (7): "config_impulsador", "locales", "tareas_local", "territorios", "visit
 Cohesion: 0.32
 Nodes (7): "clientes", "config_impulsador", "locales", "tareas_cliente", "tareas_local", "territorios", "zona_usuarios"
 
-### Community 76 - "RutaHoyDto"
-Cohesion: 0.20
-Nodes (9): RutaHoyDto, METADATA, PIPE, IsNumber, IsOptional, Max, Min, Type (+1 more)
+### Community 76 - "impulsador/utils/programacion-visita.ts"
+Cohesion: 0.33
+Nodes (14): coincideFrecuencia(), compararFecha(), diaIso(), fechaEnZonaIso(), fechaLocalAUtc(), fechaSolo(), fechaSoloAValor(), ocurrenciasVisitaEnDia() (+6 more)
 
 ### Community 77 - "Web Components Mapa Picker"
 Cohesion: 0.29
@@ -711,7 +730,7 @@ Nodes (4): Answer, Outcome, Q: Arquitectura existente para roles Team Leader/Imp
 
 ### Community 86 - "devDependencies"
 Cohesion: 0.29
-Nodes (7): devDependencies, eslint, eslint-config-prettier, @types/cookie-parser, eslint, eslint-config-prettier, @types/cookie-parser
+Nodes (7): devDependencies, eslint, @types/cookie-parser, @types/express, eslint, @types/cookie-parser, @types/express
 
 ### Community 92 - "jest"
 Cohesion: 0.15
@@ -722,8 +741,8 @@ Cohesion: 0.10
 Nodes (18): androidHome, androidRoot, apkDestino, apkOrigen, buscarJavaHome(), carpetaBuild, carpetaDestino, entorno (+10 more)
 
 ### Community 95 - "acceso-plataforma.service.ts"
-Cohesion: 0.19
-Nodes (5): AccesoPlataformaService, Injectable, AccesoModulos, UsuarioConAcceso, rolVe()
+Cohesion: 0.16
+Nodes (8): AccesoPlataformaService, Injectable, AccesoModulos, ModuloMenu, UsuarioConAcceso, MiPlataformaService, Injectable, rolVe()
 
 ### Community 98 - "20260811190000_impulsadores_tareas_dirigidas/migration.sql"
 Cohesion: 0.67
@@ -742,8 +761,8 @@ Cohesion: 0.15
 Nodes (13): Cambios de estructura (migraciones): cómo funciona el control, Comandos útiles en el servidor (`ssh comercia`), Desarrollar en local usando la base de PRODUCCIÓN (avanzado), Escritorio remoto del servidor (VNC), Flujo diario de trabajo, Mirar el proceso en vivo (opcional), Más documentación, Pendientes (no bloquean nada) (+5 more)
 
 ### Community 110 - "PrismaService"
-Cohesion: 0.09
-Nodes (9): AccesoOperacionesCampoService, Injectable, UsuarioAsignableOperacionesDto, MapaService, Injectable, PrismaService, Injectable, RolAdminFila (+1 more)
+Cohesion: 0.08
+Nodes (13): AccesoOperacionesCampoService, Injectable, MODULOS_GESTION_CAMPO, MODULOS_OPERACION_CAMPO, MODULOS_OPERATIVOS_CAMPO, PAGINAS_REPOSITOR, UsuarioAsignableOperacionesDto, TareaLocalFila (+5 more)
 
 ### Community 115 - "6. Rendering Performance"
 Cohesion: 0.17
@@ -894,24 +913,24 @@ Cohesion: 0.40
 Nodes (4): Answer, Outcome, Q: cuales son las librerias que usa para el calculo de ruta, Source Nodes
 
 ### Community 252 - "notificaciones.service.ts"
-Cohesion: 0.10
-Nodes (13): EXTENSION_POR_MIMETYPE, FotosService, Injectable, FOTO_MIMETYPES, ListarNotificacionesDto, NotificacionTareaDto, NotificacionLeidaDto, NotificacionSeleccionada (+5 more)
+Cohesion: 0.12
+Nodes (12): EXTENSION_POR_MIMETYPE, FotosService, Injectable, FOTO_MIMETYPES, NotificacionTareaDto, NotificacionLeidaDto, NotificacionSeleccionada, NotificacionesNoLeidasDto (+4 more)
 
 ### Community 327 - "EjecutablesService"
-Cohesion: 0.16
-Nodes (7): EjecutablesService, Injectable, EjecutableDto, ModuloMenu, PaginaMenu, MiPlataformaService, Injectable
+Cohesion: 0.38
+Nodes (3): EjecutablesService, Injectable, EjecutableDto
 
 ### Community 328 - "metro.config.js"
 Cohesion: 0.50
 Nodes (3): config, { getDefaultConfig }, path
 
-### Community 329 - "LoginSimDto"
-Cohesion: 0.25
-Nodes (7): LoginSimDto, ArrayMaxSize, ArrayMinSize, IsArray, IsString, MaxLength, Transform
+### Community 329 - "programacion-visita.interface.ts"
+Cohesion: 0.20
+Nodes (8): NovedadVisitaTareaDto, FrecuenciaProgramacionVisita, ProgramacionVisitaCalculo, ProgramacionVisitaDto, VisitaEquipoUltimaVisitaDto, LocalRepositorDto, TareaRepositorDto, TareasLocalRepositorDto
 
-### Community 330 - "usuarios.service.ts"
-Cohesion: 0.22
-Nodes (15): ActualizarUsuarioDto, CrearUsuarioDto, ListarUsuariosDto, IsBoolean, IsInt, IsOptional, IsString, Max (+7 more)
+### Community 330 - "ActualizarUsuarioDto"
+Cohesion: 0.27
+Nodes (12): ActualizarUsuarioDto, CrearUsuarioDto, ListarUsuariosDto, IsBoolean, IsInt, IsOptional, IsString, Max (+4 more)
 
 ### Community 333 - "mobile/tsconfig.json"
 Cohesion: 0.40
@@ -929,61 +948,89 @@ Nodes (4): Answer, Outcome, Q: En producción el login da CORS y el front dice N
 Cohesion: 0.25
 Nodes (3): fs, path, { withAppBuildGradle, withDangerousMod }
 
-### Community 345 - "auth.service.ts"
-Cohesion: 0.17
-Nodes (11): MENSAJES_DUPLICADO, AsignacionUsuario, TokenPayload, normalizarCelular(), normalizarNumeroSim(), normalizarRucUsuario(), TIPOS_CELULAR_VALIDOS, calcularDvRucPy() (+3 more)
+### Community 344 - ".usuario"
+Cohesion: 0.31
+Nodes (5): ZonaDto, aZonaDto(), Injectable, ZonasService, ListaUsuariosMovil()
 
-### Community 348 - "acceso-operaciones-campo.service.ts"
-Cohesion: 0.14
-Nodes (13): MODULOS_GESTION_CAMPO, MODULOS_OPERACION_CAMPO, MODULOS_OPERATIVOS_CAMPO, PAGINAS_REPOSITOR, paginasOperacionEquivalentes(), TransferenciaLocalesDto, UsuarioAsignable, LocalConRelaciones (+5 more)
+### Community 345 - "auth.service.ts"
+Cohesion: 0.06
+Nodes (41): AuthController, ApiOperation, ApiTags, Body, Controller, Get, Post, Req (+33 more)
+
+### Community 346 - "AppController"
+Cohesion: 0.23
+Nodes (7): ApiOkResponse, AppController, ApiTags, Controller, Get, AppService, Injectable
+
+### Community 348 - "respuestaPaginada"
+Cohesion: 0.15
+Nodes (9): rangoPaginacion(), respuestaPaginada, ApiOperation, Get, Query, paginasOperacionEquivalentes(), RepositorService, tareasVisiblesPara() (+1 more)
+
+### Community 349 - "HealthController"
+Cohesion: 0.18
+Nodes (8): HealthController, ApiOperation, ApiTags, Controller, Get, HealthModule, Module, HealthCheck
 
 ### Community 350 - "MapaController"
-Cohesion: 0.32
-Nodes (6): MapaController, ApiTags, Controller, Get, Req, UseGuards
+Cohesion: 0.29
+Nodes (6): MapaController, ApiTags, Controller, UseGuards, MapaService, Injectable
 
 ### Community 351 - "RegisterDto"
 Cohesion: 0.20
 Nodes (10): RegisterDto, IsInt, IsString, Length, Matches, MaxLength, MinLength, Transform (+2 more)
 
-### Community 354 - "hashPassword"
-Cohesion: 0.80
-Nodes (3): hashPassword(), scrypt, verifyPassword()
+### Community 352 - "ActualizarTerritorioDto"
+Cohesion: 0.29
+Nodes (12): ActualizarTerritorioDto, CrearTerritorioDto, IsArray, IsBoolean, IsInt, IsOptional, IsString, Length (+4 more)
+
+### Community 353 - "AsignacionesService"
+Cohesion: 0.25
+Nodes (5): AsignacionesService, Injectable, AsignacionEmpresaDto, EmpresaModuloDto, PaginaAsignada
+
+### Community 354 - ".finalizar"
+Cohesion: 0.31
+Nodes (5): esRolMarcacionSimple(), ROLES_MARCACION_SIMPLE, VisitaDto, fechaMarcacionDispositivo(), exigirDentroDelRadio()
 
 ### Community 355 - "Q: ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
 Cohesion: 0.40
 Nodes (4): Answer, Outcome, Q: ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso, Source Nodes
 
 ### Community 356 - "EmpresasController"
-Cohesion: 0.22
-Nodes (7): EmpresasController, ApiOperation, ApiTags, Controller, Get, Query, UseGuards
+Cohesion: 0.40
+Nodes (4): EmpresasController, ApiTags, Controller, UseGuards
+
+### Community 359 - "env.schema.ts"
+Cohesion: 0.33
+Nodes (5): booleanFromString, Env, parseCorsOrigins(), rawEnvSchema, validateEnv()
+
+### Community 361 - "visitas.service.spec.ts"
+Cohesion: 0.40
+Nodes (3): FrecuenciaVisitaDto, FECHA_INICIO, visita()
 
 ## Knowledge Gaps
-- **924 isolated node(s):** `$schema`, `collection`, `sourceRoot`, `deleteOutDir`, `name` (+919 more)
+- **926 isolated node(s):** `$schema`, `collection`, `sourceRoot`, `deleteOutDir`, `name` (+921 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **187 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **189 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Work-memory lessons
 
 **Preferred sources** — corroborated by past sessions; start here.
-- `seguimiento.ts` (3× useful, score=2.751980199)
-- `AuthService` (2× useful, score=1.949703382)
-- `App.tsx` (2× useful, score=1.949703382)
-- `UbicacionesService` (2× useful, score=1.860966034)
+- `seguimiento.ts` (3× useful, score=2.648046217)
+- `AuthService` (2× useful, score=1.876068972)
+- `App.tsx` (2× useful, score=1.876068972)
+- `UbicacionesService` (2× useful, score=1.790682966)
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `PrismaService` connect `PrismaService` to `app.module.ts`, `repositor.service.ts`, `UsuarioOperacionesCampo`, `ClientesService`, `admin-empresas.service.ts`, `ActualizarRolDto`, `kpis-visitas.service.ts`, `AsignarModuloDto`, `VisitasService`, `respuestaPaginada`, `visitas.service.ts`, `jwt-auth.guard.ts`, `presentismo.service.ts`, `ModulosService`, `GuardarProgramacionVisitaDto`, `AuthService`, `.usuario`, `plataforma.controller.ts`, `ActualizarModuloDto`, `ubicaciones.service.ts`, `EjecutablesService`, `usuarios.service.ts`, `auth.service.ts`, `acceso-operaciones-campo.service.ts`, `acceso-plataforma.service.ts`, `EmpresasController`, `notificaciones.service.ts`?**
-  _High betweenness centrality (0.066) - this node is a cross-community bridge._
+- **Why does `PrismaService` connect `PrismaService` to `app.module.ts`, `repositor.service.ts`, `UsuarioOperacionesCampo`, `clientes.service.ts`, `admin-empresas.service.ts`, `roles.service.ts`, `kpis-visitas.service.ts`, `zonas.service.ts`, `equipo.service.ts`, `locales.service.ts`, `visitas.service.ts`, `jwt-auth.guard.ts`, `presentismo.service.ts`, `ModulosService`, `TerritoriosService`, `LocalesService`, `territorios.service.ts`, `ActualizarEjecutableDto`, `ActualizarModuloDto`, `ubicaciones.service.ts`, `EjecutablesService`, `impulsador/utils/programacion-visita.ts`, `auth.service.ts`, `respuestaPaginada`, `HealthController`, `acceso-plataforma.service.ts`, `AsignacionesService`, `.finalizar`, `EmpresasController`, `visitas.service.spec.ts`, `notificaciones.service.ts`?**
+  _High betweenness centrality (0.073) - this node is a cross-community bridge._
 - **Why does `dependencies` connect `dependencies` to `API Package Json Package`, `API Package Json Package`, `API Package Json Package`, `API Package Json Package`, `API Package Json Package`, `compression`, `kpis-visitas.service.ts`, `libphonenumber-js`, `@prisma/client`, `api/package.json`, `API Package Json Package`, `@nestjs/swagger`?**
   _High betweenness centrality (0.058) - this node is a cross-community bridge._
-- **Why does `prisma` connect `kpis-visitas.service.ts` to `respuestaPaginada`, `dependencies`?**
+- **Why does `prisma` connect `kpis-visitas.service.ts` to `UsuarioOperacionesCampo`, `impulsador/utils/programacion-visita.ts`, `dependencies`?**
   _High betweenness centrality (0.058) - this node is a cross-community bridge._
 - **What connects `$schema`, `collection`, `sourceRoot` to the rest of the system?**
-  _924 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _926 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `app.module.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.05570611261668172 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.12753623188405797 - nodes in this community are weakly interconnected._
 - **Should `repositor.service.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.14623655913978495 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.0629399585921325 - nodes in this community are weakly interconnected._
 - **Should `UsuarioOperacionesCampo` be split into smaller, more focused modules?**
-  _Cohesion score 0.07062146892655367 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05997778600518327 - nodes in this community are weakly interconnected._

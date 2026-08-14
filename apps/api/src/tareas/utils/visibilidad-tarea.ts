@@ -22,38 +22,47 @@ function perteneceOperacionImpulsadores(rol: string | null): boolean {
 /**
  * Limita "TODOS" al organigrama del creador. Las tareas históricas de los
  * módulos de repositores conservan su alcance global, pero no se filtran hacia
- * impulsadores; las selecciones explícitas siempre prevalecen.
+ * impulsadores; las selecciones explícitas se consideran salvo que un
+ * superior haya quitado la tarea solamente para esa persona.
  */
 export function filtroTareaGlobalVisiblePara(
   usuario: UsuarioVisibilidadTarea,
 ): Prisma.TareaGlobalWhereInput {
+  const noExcluida: Prisma.TareaGlobalWhereInput = {
+    exclusiones: { none: { usuarioId: usuario.id } },
+  };
   const seleccionada: Prisma.TareaGlobalWhereInput = {
     destinatarios: { some: { usuarioId: usuario.id } },
   };
 
   if (perteneceOperacionImpulsadores(usuario.rolDescripcion)) {
     return {
-      OR: [
-        seleccionada,
+      AND: [
+        noExcluida,
         {
-          alcance: 'TODOS',
           OR: [
-            { creadoPorId: usuario.id },
+            seleccionada,
             {
-              creadoPor: {
-                is: { subordinados: { some: { id: usuario.id } } },
-              },
-            },
-            {
-              creadoPor: {
-                is: {
-                  subordinados: {
-                    some: {
-                      subordinados: { some: { id: usuario.id } },
+              alcance: 'TODOS',
+              OR: [
+                { creadoPorId: usuario.id },
+                {
+                  creadoPor: {
+                    is: { subordinados: { some: { id: usuario.id } } },
+                  },
+                },
+                {
+                  creadoPor: {
+                    is: {
+                      subordinados: {
+                        some: {
+                          subordinados: { some: { id: usuario.id } },
+                        },
+                      },
                     },
                   },
                 },
-              },
+              ],
             },
           ],
         },
@@ -62,26 +71,31 @@ export function filtroTareaGlobalVisiblePara(
   }
 
   return {
-    OR: [
-      seleccionada,
+    AND: [
+      noExcluida,
       {
-        alcance: 'TODOS',
-        creadoPor: {
-          is: {
-            OR: [
-              { rol: { is: null } },
-              {
-                rol: {
-                  is: {
-                    descripcion: {
-                      notIn: [...ROLES_GESTION_IMPULSADORES],
+        OR: [
+          seleccionada,
+          {
+            alcance: 'TODOS',
+            creadoPor: {
+              is: {
+                OR: [
+                  { rol: { is: null } },
+                  {
+                    rol: {
+                      is: {
+                        descripcion: {
+                          notIn: [...ROLES_GESTION_IMPULSADORES],
+                        },
+                      },
                     },
                   },
-                },
+                ],
               },
-            ],
+            },
           },
-        },
+        ],
       },
     ],
   };

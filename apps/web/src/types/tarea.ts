@@ -11,10 +11,17 @@ export interface TareaGlobal {
   alcanceLocales: "TODOS" | "SELECCIONADOS";
   locales: { id: number; nombre: string }[];
   usuariosAsignados: number;
+  usuariosExcluidos: number;
   localesAsignados: number;
   clientesAsignados: number;
   clientesEmpresa: number;
   localesEmpresa: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface TareasQuitadasUsuario {
+  ok: true;
+  usuarioId: number;
+  tareasQuitadas: number;
 }

@@ -85,7 +85,13 @@ export class TareasLocalService {
       }
     }
     const tareas = await this.prisma.tareaCliente.findMany({
-      where: actual.esGestor ? { clienteId } : { clienteId, activo: true },
+      where: actual.esGestor
+        ? { clienteId }
+        : {
+            clienteId,
+            activo: true,
+            exclusiones: { none: { usuarioId: actual.id } },
+          },
       select: SELECT_TAREA_LOCAL,
       orderBy: [{ orden: 'asc' }, { id: 'asc' }],
       take: MAX_TAREAS_POR_LOCAL,
@@ -229,7 +235,11 @@ export class TareasLocalService {
     const tareas = await this.prisma.tareaCliente.findMany({
       where: actual.esGestor
         ? { clienteId: local.clienteId }
-        : { clienteId: local.clienteId, activo: true },
+        : {
+            clienteId: local.clienteId,
+            activo: true,
+            exclusiones: { none: { usuarioId: actual.id } },
+          },
       select: SELECT_TAREA_LOCAL,
       orderBy: [{ orden: 'asc' }, { id: 'asc' }],
       take: MAX_TAREAS_POR_LOCAL,

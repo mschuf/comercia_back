@@ -64,6 +64,7 @@ function tareasVisiblesPara(
 ): Prisma.TareaClienteWhereInput {
   return {
     activo: true,
+    exclusiones: { none: { usuarioId } },
     OR: [
       { tareaGlobalId: null },
       {

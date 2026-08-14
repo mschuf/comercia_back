@@ -398,6 +398,7 @@ function tareasVisiblesPara(
   return {
     activo: true,
     AND: [
+      { exclusiones: { none: { usuarioId } } },
       {
         OR: [
           { tareaGlobalId: null },

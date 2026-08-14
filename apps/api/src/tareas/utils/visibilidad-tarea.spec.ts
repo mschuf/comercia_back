@@ -14,6 +14,8 @@ describe('filtroTareaGlobalVisiblePara', () => {
     expect(serializado).toContain('"usuarioId":24');
     expect(serializado).toContain('"alcance":"TODOS"');
     expect(serializado).toContain('"subordinados"');
+    expect(serializado).toContain('"exclusiones"');
+    expect(serializado).toContain('"none":{"usuarioId":24}');
   });
 
   it('excluye del alcance global legado a los gestores de impulsadores', () => {
@@ -24,5 +26,6 @@ describe('filtroTareaGlobalVisiblePara', () => {
     expect(JSON.stringify(filtro)).toContain('notIn');
     expect(JSON.stringify(filtro)).toContain('supervisor.impulsador');
     expect(JSON.stringify(filtro)).toContain('teamleader.impulsador');
+    expect(JSON.stringify(filtro)).toContain('"exclusiones"');
   });
 });

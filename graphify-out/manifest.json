@@ -615,8 +615,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/impulsador/visitas.service.ts": {
-    "mtime": 1786558757.2760048,
-    "ast_hash": "a6ab2c24ac444f44b8c2fbb6257bdf66",
+    "mtime": 1786707730.3472216,
+    "ast_hash": "26c7c24e62411840774395f017858f5c",
     "semantic_hash": ""
   },
   "apps/api/src/impulsador/zonas.controller.ts": {
@@ -675,9 +675,9 @@
     "semantic_hash": "a9d40ba1383b1a7a8bcfbbfb7c552de4"
   },
   "apps/api/src/locales/tareas-local.service.ts": {
-    "mtime": 1784212699.8094273,
-    "ast_hash": "2643d0b402e613bb6176b701e7b481a3",
-    "semantic_hash": "2643d0b402e613bb6176b701e7b481a3"
+    "mtime": 1786707730.9411983,
+    "ast_hash": "5b81e24d14d1d5473aeecc48b5861660",
+    "semantic_hash": ""
   },
   "apps/api/src/main.ts": {
     "mtime": 1782998571.5212164,
@@ -935,8 +935,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/repositor/repositor.service.ts": {
-    "mtime": 1786558757.2760048,
-    "ast_hash": "547d7ae8343fad65a19334c1def94268",
+    "mtime": 1786707729.7635942,
+    "ast_hash": "6166f5beea302e74348dcd83029c82cf",
     "semantic_hash": ""
   },
   "apps/api/src/repositor/utils/cache-ruta-diaria.spec.ts": {
@@ -1010,14 +1010,14 @@
     "semantic_hash": ""
   },
   "apps/api/src/tareas/interfaces/tarea-global.interface.ts": {
-    "mtime": 1786557246.2735152,
-    "ast_hash": "1b6b5f3bf16e27f08ac73e8d2b4c1193",
+    "mtime": 1786707549.5286348,
+    "ast_hash": "b2f7612ce96fce3ea6b77d550c3ed95c",
     "semantic_hash": ""
   },
   "apps/api/src/tareas/tareas.controller.ts": {
-    "mtime": 1784124771.539414,
-    "ast_hash": "d0a930c63a6b57d8328e4600712b583c",
-    "semantic_hash": "d0a930c63a6b57d8328e4600712b583c"
+    "mtime": 1786707550.151957,
+    "ast_hash": "50dc578d56bd478004f69f8c221d013a",
+    "semantic_hash": ""
   },
   "apps/api/src/tareas/tareas.module.ts": {
     "mtime": 1784124772.7136624,
@@ -1025,8 +1025,8 @@
     "semantic_hash": "9ce84bc41d14fc8596b11cb485f138de"
   },
   "apps/api/src/tareas/tareas.service.ts": {
-    "mtime": 1786558704.4077973,
-    "ast_hash": "6fcb9bdd6f7600427e559a4dfb3c2c57",
+    "mtime": 1786707933.9761412,
+    "ast_hash": "7f960451e9e4ec480097446f667d97dd",
     "semantic_hash": ""
   },
   "apps/api/src/usuarios/admin-usuarios.controller.ts": {
@@ -1330,8 +1330,8 @@
     "semantic_hash": "2842f690fd1aef00ca279d54cce79265"
   },
   "apps/web/src/components/tareas/tareas-view.tsx": {
-    "mtime": 1786557248.1799605,
-    "ast_hash": "625fa745840bba00b7d712971a447423",
+    "mtime": 1786707933.9881713,
+    "ast_hash": "bec8d763df775fb5d6e19fa3421df1af",
     "semantic_hash": ""
   },
   "apps/web/src/components/toast/toast-provider.tsx": {
@@ -1435,8 +1435,8 @@
     "semantic_hash": "5e0c3517ca1b83261f58b63562cff45c"
   },
   "apps/web/src/types/tarea.ts": {
-    "mtime": 1786557247.535606,
-    "ast_hash": "5de8ae404dd0da2d0877309ae6dde1d8",
+    "mtime": 1786707608.6068892,
+    "ast_hash": "7f5653585a66bad239aeb6691398fac8",
     "semantic_hash": ""
   },
   "apps/web/src/types/territorio.ts": {
@@ -2865,13 +2865,13 @@
     "semantic_hash": ""
   },
   "apps/api/src/tareas/utils/visibilidad-tarea.spec.ts": {
-    "mtime": 1786558770.421865,
-    "ast_hash": "3d6d84e430d72e13d6f53a0afbd6bca8",
+    "mtime": 1786707514.549443,
+    "ast_hash": "d76a10f111ab5be9370ec6d3ee8703a9",
     "semantic_hash": ""
   },
   "apps/api/src/tareas/utils/visibilidad-tarea.ts": {
-    "mtime": 1786558676.9438343,
-    "ast_hash": "808f08b7e3bf4457d6c66ec0c77062d5",
+    "mtime": 1786707902.570259,
+    "ast_hash": "906bdeccbd12a7175da2d36f8862eaaf",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/presentismo.module.spec.ts": {
@@ -2907,6 +2907,21 @@
   "graphify-out/memory/query_20260812_195112_c\u00f3mo_qued\u00f3_conectado_el_home_del_panel_con_el_res.md": {
     "mtime": 1786564272.456052,
     "ast_hash": "7441347d086eb78434d0e775d6284136",
+    "semantic_hash": ""
+  },
+  "apps/api/prisma/migrations/20260814170000_tareas_excluidas_por_usuario/migration.sql": {
+    "mtime": 1786707729.1728134,
+    "ast_hash": "cce0c2fbdba8db313ada8d9e6adf79ea",
+    "semantic_hash": ""
+  },
+  "apps/api/src/tareas/interfaces/tareas-quitadas-usuario.interface.ts": {
+    "mtime": 1786707513.3004405,
+    "ast_hash": "12a4bb7be1bb0be4a9357e344275c24b",
+    "semantic_hash": ""
+  },
+  "apps/api/src/tareas/tareas.service.spec.ts": {
+    "mtime": 1786707933.9971902,
+    "ast_hash": "5bce0d1e1f748223059e2598afcc139d",
     "semantic_hash": ""
   }
 }

@@ -6,8 +6,10 @@ import { useCallback, useEffect, useState } from "react";
 import { apiFetch, ApiError } from "@/lib/api";
 import { IconoMas } from "@/components/icono-mas";
 import { Modal } from "@/components/modal";
+import { PantallaCarga } from "@/components/pantalla-carga";
 import { Paginacion } from "@/components/paginacion";
 import { SelectorUsuario } from "@/components/selector-usuario";
+import { useToast } from "@/components/toast/toast-provider";
 import {
   btnGhost,
   btnPrimary,
@@ -16,8 +18,8 @@ import {
   labelBase,
 } from "@/components/ui";
 import type { RespuestaPaginada } from "@/types/paginacion";
-import type { TareaGlobal } from "@/types/tarea";
-import type { Local } from "@/types/local";
+import type { TareaGlobal, TareasQuitadasUsuario } from "@/types/tarea";
+import type { Local, UsuarioAsignable } from "@/types/local";
 import {
   SeguimientoTareasView,
   type FiltrosSeguimientoTareas,
@@ -107,6 +109,9 @@ function ListaTareasGlobalesMovil({
                   {tarea.alcance === "TODOS"
                     ? "Todo el equipo"
                     : `${tarea.usuariosAsignados} impulsador${tarea.usuariosAsignados === 1 ? "" : "es"}`}
+                  {tarea.usuariosExcluidos > 0
+                    ? ` · ${tarea.usuariosExcluidos} excluido${tarea.usuariosExcluidos === 1 ? "" : "s"}`
+                    : ""}
                 </strong>
               </p>
             </div>
@@ -141,6 +146,7 @@ export function TareasView({
 }
 
 function TareasAdministracionView() {
+  const { mostrarToast } = useToast();
   const [datos, setDatos] = useState<RespuestaPaginada<TareaGlobal> | null>(
     null,
   );
@@ -151,6 +157,11 @@ function TareasAdministracionView() {
   const [error, setError] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [localesDisponibles, setLocalesDisponibles] = useState<Local[]>([]);
+  const [modalQuitarAbierto, setModalQuitarAbierto] = useState(false);
+  const [usuarioAQuitar, setUsuarioAQuitar] = useState<UsuarioAsignable | null>(
+    null,
+  );
+  const [quitandoTareas, setQuitandoTareas] = useState(false);
 
   const cargar = useCallback(() => {
     apiFetch<RespuestaPaginada<TareaGlobal>>(
@@ -268,28 +279,87 @@ function TareasAdministracionView() {
     }
   }
 
+  async function quitarTodasDeUsuario() {
+    if (!usuarioAQuitar) {
+      setError("Elegí una persona para quitarle sus tareas.");
+      return;
+    }
+    const usuario = usuarioAQuitar;
+    setQuitandoTareas(true);
+    setError(null);
+    try {
+      const resultado = await apiFetch<TareasQuitadasUsuario>(
+        `/tareas/usuarios/${usuario.id}`,
+        { method: "DELETE" },
+      );
+      setModalQuitarAbierto(false);
+      setUsuarioAQuitar(null);
+      cargar();
+      mostrarToast({
+        tipo: "exito",
+        mensaje:
+          resultado.tareasQuitadas === 0
+            ? `${usuario.nombre} ya no tenía tareas asignadas.`
+            : `Se quitaron ${resultado.tareasQuitadas} tarea${resultado.tareasQuitadas === 1 ? "" : "s"} de ${usuario.nombre}. El resto del equipo no fue afectado.`,
+      });
+    } catch (e) {
+      setError(
+        e instanceof ApiError
+          ? e.message
+          : "No se pudieron quitar las tareas de esta persona",
+      );
+    } finally {
+      setQuitandoTareas(false);
+    }
+  }
+
   return (
     <div className="w-full min-w-0">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-xl font-bold">Tareas</h1>
           <p className="mt-1 max-w-2xl text-sm text-zinc-500 dark:text-zinc-400">
-            Creá tareas globales o dirigilas a personas y locales concretos.
-            Los checklists siguen disponibles para los roles de reposición.
+            Creá tareas globales o dirigilas a personas y locales concretos. Los
+            checklists siguen disponibles para los roles de reposición.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => abrir("nueva")}
-          aria-label="Crear tarea"
-          title="Crear tarea"
-          className={`${btnPrimary} h-11 w-11 shrink-0 p-0`}
-        >
-          <IconoMas className="h-5 w-5" />
-        </button>
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <button
+            type="button"
+            onClick={() => {
+              setError(null);
+              setUsuarioAQuitar(null);
+              setModalQuitarAbierto(true);
+            }}
+            className={`${btnGhost} flex-1 gap-2 sm:flex-none`}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              className="h-5 w-5"
+              aria-hidden
+            >
+              <path d="M16 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2" />
+              <circle cx="9.5" cy="7" r="4" />
+              <path d="M17 11h5" />
+            </svg>
+            Quitar tareas a una persona
+          </button>
+          <button
+            type="button"
+            onClick={() => abrir("nueva")}
+            aria-label="Crear tarea"
+            title="Crear tarea"
+            className={`${btnPrimary} h-11 w-11 shrink-0 p-0`}
+          >
+            <IconoMas className="h-5 w-5" />
+          </button>
+        </div>
       </div>
 
-      {error && editando === null && (
+      {error && editando === null && !modalQuitarAbierto && (
         <p className={`${errorBox} mt-4`}>{error}</p>
       )}
 
@@ -366,6 +436,9 @@ function TareasAdministracionView() {
                           {tarea.alcance === "TODOS"
                             ? "Todo el equipo"
                             : `${tarea.usuariosAsignados} seleccionado${tarea.usuariosAsignados === 1 ? "" : "s"}`}
+                          {tarea.usuariosExcluidos > 0
+                            ? ` · ${tarea.usuariosExcluidos} excluido${tarea.usuariosExcluidos === 1 ? "" : "s"}`
+                            : ""}
                           {" · "}
                           {tarea.alcanceLocales === "TODOS"
                             ? "todos los locales"
@@ -606,7 +679,10 @@ function TareasAdministracionView() {
               {localesDisponibles.map((local) => {
                 const marcado = form.locales.some(({ id }) => id === local.id);
                 return (
-                  <label key={local.id} className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-2 py-2 text-sm hover:bg-surface-soft">
+                  <label
+                    key={local.id}
+                    className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg px-2 py-2 text-sm hover:bg-surface-soft"
+                  >
                     <input
                       type="checkbox"
                       checked={marcado}
@@ -615,16 +691,30 @@ function TareasAdministracionView() {
                           ...actual,
                           locales: marcado
                             ? actual.locales.filter(({ id }) => id !== local.id)
-                            : [...actual.locales, { id: local.id, nombre: local.nombre }],
+                            : [
+                                ...actual.locales,
+                                { id: local.id, nombre: local.nombre },
+                              ],
                         }))
                       }
                       className="accent-brand-700"
                     />
-                    <span className="min-w-0"><span className="block truncate font-medium">{local.nombre}</span><span className="block truncate text-xs text-muted">{local.cliente.nombre}</span></span>
+                    <span className="min-w-0">
+                      <span className="block truncate font-medium">
+                        {local.nombre}
+                      </span>
+                      <span className="block truncate text-xs text-muted">
+                        {local.cliente.nombre}
+                      </span>
+                    </span>
                   </label>
                 );
               })}
-              {localesDisponibles.length === 0 ? <p className="px-2 py-4 text-sm text-muted">No hay locales disponibles dentro de tu equipo.</p> : null}
+              {localesDisponibles.length === 0 ? (
+                <p className="px-2 py-4 text-sm text-muted">
+                  No hay locales disponibles dentro de tu equipo.
+                </p>
+              ) : null}
             </fieldset>
           ) : null}
           <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
@@ -684,6 +774,73 @@ function TareasAdministracionView() {
           </div>
         </form>
       </Modal>
+
+      <Modal
+        titulo="Quitar todas las tareas"
+        abierto={modalQuitarAbierto}
+        onCerrar={() => {
+          if (quitandoTareas) return;
+          setModalQuitarAbierto(false);
+          setUsuarioAQuitar(null);
+          setError(null);
+        }}
+      >
+        <div className="flex flex-col gap-4">
+          <div className="rounded-xl border border-amber-300 bg-amber-50 px-3.5 py-3 text-sm leading-relaxed text-amber-950 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
+            Esta acción quita las tareas solamente de la persona que elijas. No
+            desactiva las tareas del resto del equipo y conserva el historial de
+            visitas ya realizadas.
+          </div>
+          <div>
+            <p className={labelBase}>Persona</p>
+            <SelectorUsuario
+              value={usuarioAQuitar?.id ?? ""}
+              seleccionadoInicial={usuarioAQuitar}
+              onChange={() => undefined}
+              onSelect={setUsuarioAQuitar}
+              disabled={quitandoTareas}
+            />
+          </div>
+          {usuarioAQuitar ? (
+            <p className="rounded-xl bg-surface-soft px-3.5 py-3 text-sm text-muted">
+              Vas a quitar todas las tareas de{" "}
+              <strong className="text-foreground">
+                {usuarioAQuitar.nombre}
+              </strong>
+              .
+            </p>
+          ) : null}
+          {error ? <p className={errorBox}>{error}</p> : null}
+          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+            <button
+              type="button"
+              onClick={() => {
+                setModalQuitarAbierto(false);
+                setUsuarioAQuitar(null);
+                setError(null);
+              }}
+              disabled={quitandoTareas}
+              className={btnGhost}
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={() => void quitarTodasDeUsuario()}
+              disabled={!usuarioAQuitar || quitandoTareas}
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-600/45 focus-visible:ring-offset-2 focus-visible:ring-offset-surface disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Quitar todas sus tareas
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      <PantallaCarga
+        visible={quitandoTareas}
+        mensaje="Quitando tareas"
+        detalle="Estamos actualizando solamente las asignaciones de esta persona."
+      />
     </div>
   );
 }

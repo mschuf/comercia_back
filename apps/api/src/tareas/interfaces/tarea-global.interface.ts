@@ -11,6 +11,7 @@ export interface TareaGlobalDto {
   alcanceLocales: 'TODOS' | 'SELECCIONADOS';
   locales: { id: number; nombre: string }[];
   usuariosAsignados: number;
+  usuariosExcluidos: number;
   localesAsignados: number;
   clientesAsignados: number;
   clientesEmpresa: number;

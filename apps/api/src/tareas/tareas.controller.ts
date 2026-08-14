@@ -49,6 +49,14 @@ export class TareasController {
     return this.tareas.actualizar(req.usuarioId, id, dto);
   }
 
+  @Delete('usuarios/:usuarioId')
+  quitarTodasDeUsuario(
+    @Req() req: RequestConUsuario,
+    @Param('usuarioId', ParseIntPipe) usuarioId: number,
+  ) {
+    return this.tareas.quitarTodasDeUsuario(req.usuarioId, usuarioId);
+  }
+
   @Delete(':id')
   eliminar(
     @Req() req: RequestConUsuario,
