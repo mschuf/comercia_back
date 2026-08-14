@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import type { Prisma } from '../../generated/prisma/client';
 import {
   ROL_IMPULSADOR,
@@ -38,9 +42,7 @@ import type {
   ResumenPresentismoDto,
   UsuarioFilaPresentismo,
 } from './interfaces/presentismo.interface';
-import {
-  construirJornadaPresentismo,
-} from './utils/jornada-presentismo';
+import { construirJornadaPresentismo } from './utils/jornada-presentismo';
 import {
   diasDelPeriodo,
   periodosPresentismo,

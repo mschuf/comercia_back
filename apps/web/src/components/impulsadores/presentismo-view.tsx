@@ -207,7 +207,11 @@ export function PresentismoView() {
               <p><strong className="block text-base text-foreground">{fila.entradas}</strong><span className="text-muted">Entradas</span></p>
               <p><strong className="block text-base text-foreground">{fila.salidas}</strong><span className="text-muted">Salidas</span></p>
             </div>
-            <JornadaPresentismoDetalle fecha={hasta} usuarioId={fila.usuario.id} />
+            <JornadaPresentismoDetalle
+              key={`${fila.usuario.id}:${hasta}`}
+              fecha={hasta}
+              usuarioId={fila.usuario.id}
+            />
           </li>
         ))}
       </ul>
@@ -237,7 +241,7 @@ export function PresentismoView() {
                   <td className="px-3 py-4 text-right">{fila.entradas}</td>
                   <td className="px-3 py-4 text-right">{fila.salidas}</td>
                   <td className="px-3 py-4 text-right font-extrabold text-brand-800 dark:text-brand-300">{fila.porcentaje}%</td>
-                  <td className="px-3 py-1 text-right"><JornadaPresentismoDetalle fecha={hasta} usuarioId={fila.usuario.id} /></td>
+                  <td className="px-3 py-1 text-right"><JornadaPresentismoDetalle key={`${fila.usuario.id}:${hasta}`} fecha={hasta} usuarioId={fila.usuario.id} /></td>
                 </tr>
               ))}
             </tbody>

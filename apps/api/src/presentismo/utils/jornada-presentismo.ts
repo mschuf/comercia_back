@@ -83,7 +83,12 @@ export function construirJornadaPresentismo(
     );
     for (const programadaEn of programadas) {
       detalles.push(
-        aDetalle(localDto, programadaEn, visitasDelLocal.shift() ?? null, ahora),
+        aDetalle(
+          localDto,
+          programadaEn,
+          visitasDelLocal.shift() ?? null,
+          ahora,
+        ),
       );
     }
     for (const visita of visitasDelLocal) {
@@ -112,6 +117,9 @@ export function construirJornadaPresentismo(
   return detalles.sort((a, b) => {
     const momentoA = a.programadaEn ?? a.entradaEn ?? '';
     const momentoB = b.programadaEn ?? b.entradaEn ?? '';
-    return momentoA.localeCompare(momentoB) || a.local.nombre.localeCompare(b.local.nombre);
+    return (
+      momentoA.localeCompare(momentoB) ||
+      a.local.nombre.localeCompare(b.local.nombre)
+    );
   });
 }

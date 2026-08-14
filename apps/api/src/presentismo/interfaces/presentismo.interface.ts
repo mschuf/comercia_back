@@ -56,11 +56,7 @@ export interface AcumuladoPresentismo {
 }
 
 export type EstadoJornadaPresentismo =
-  | 'COMPLETADA'
-  | 'EN_CURSO'
-  | 'PENDIENTE'
-  | 'ATRASADA'
-  | 'NO_PROGRAMADA';
+  'COMPLETADA' | 'EN_CURSO' | 'PENDIENTE' | 'ATRASADA' | 'NO_PROGRAMADA';
 
 export interface LocalJornadaPresentismo {
   id: number;

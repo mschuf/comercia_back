@@ -4,10 +4,7 @@ import type {
 } from '../interfaces/presentismo.interface';
 import { construirJornadaPresentismo } from './jornada-presentismo';
 
-function local(
-  id: number,
-  fechaVisita: Date | null,
-): LocalJornadaPresentismo {
+function local(id: number, fechaVisita: Date | null): LocalJornadaPresentismo {
   return {
     id,
     nombre: `Local ${id}`,
@@ -57,29 +54,29 @@ describe('jornada de presentismo', () => {
       new Date('2026-08-17T14:30:00.000Z'),
     );
 
-    expect(detalle).toEqual([
-      expect.objectContaining({
-        local: expect.objectContaining({ id: 1 }),
-        entradaEn: '2026-08-17T12:10:00.000Z',
-        salidaEn: '2026-08-17T12:45:00.000Z',
-        estado: 'COMPLETADA',
-      }),
-      expect.objectContaining({
-        local: expect.objectContaining({ id: 2 }),
-        entradaEn: null,
-        estado: 'ATRASADA',
-      }),
-      expect.objectContaining({
-        local: expect.objectContaining({ id: 4 }),
-        programadaEn: null,
-        entradaEn: '2026-08-17T14:00:00.000Z',
-        estado: 'EN_CURSO',
-      }),
-      expect.objectContaining({
-        local: expect.objectContaining({ id: 3 }),
-        entradaEn: null,
-        estado: 'PENDIENTE',
-      }),
-    ]);
+    expect(detalle).toHaveLength(4);
+
+    expect(detalle[0]).toMatchObject({
+      local: { id: 1 },
+      entradaEn: '2026-08-17T12:10:00.000Z',
+      salidaEn: '2026-08-17T12:45:00.000Z',
+      estado: 'COMPLETADA',
+    });
+    expect(detalle[1]).toMatchObject({
+      local: { id: 2 },
+      entradaEn: null,
+      estado: 'ATRASADA',
+    });
+    expect(detalle[2]).toMatchObject({
+      local: { id: 4 },
+      programadaEn: null,
+      entradaEn: '2026-08-17T14:00:00.000Z',
+      estado: 'EN_CURSO',
+    });
+    expect(detalle[3]).toMatchObject({
+      local: { id: 3 },
+      entradaEn: null,
+      estado: 'PENDIENTE',
+    });
   });
 });

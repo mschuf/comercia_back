@@ -615,7 +615,7 @@
     "semantic_hash": ""
   },
   "apps/api/src/impulsador/visitas.service.ts": {
-    "mtime": 1786726404.28657,
+    "mtime": 1786733403.2697587,
     "ast_hash": "2f4bc346f6d48b2cb3944dbbc8288bd2",
     "semantic_hash": ""
   },
@@ -2820,8 +2820,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/interfaces/presentismo.interface.ts": {
-    "mtime": 1786730665.3536513,
-    "ast_hash": "ca9522ab8a9f17d9673c7e72dc498bf2",
+    "mtime": 1786733237.342385,
+    "ast_hash": "24c96e9f294a99aaab0403daf933aff4",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/presentismo.controller.ts": {
@@ -2835,8 +2835,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/presentismo.service.ts": {
-    "mtime": 1786730668.0694597,
-    "ast_hash": "7bc8192ba9a79462abc5716564ad8602",
+    "mtime": 1786733237.342385,
+    "ast_hash": "70bed1b90e92e2d18e27f6fae3a1cb02",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/utils/periodos-presentismo.spec.ts": {
@@ -2855,8 +2855,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/impulsadores/presentismo-view.tsx": {
-    "mtime": 1786731094.341904,
-    "ast_hash": "9c67361c7edb1dd36a7cd6ec88f5c09c",
+    "mtime": 1786733344.1216147,
+    "ast_hash": "1604e84ae64dcbb4cc50a922ddb37855",
     "semantic_hash": ""
   },
   "apps/web/src/types/presentismo.ts": {
@@ -3005,23 +3005,23 @@
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/presentismo.service.spec.ts": {
-    "mtime": 1786731160.0292957,
-    "ast_hash": "b4b760f0c685a5a7f1a3e7ff0f292e9c",
+    "mtime": 1786733237.343484,
+    "ast_hash": "d4b55a90c7ea5cc345649486352df854",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/utils/jornada-presentismo.spec.ts": {
-    "mtime": 1786730703.6199965,
-    "ast_hash": "a35d7a61d0fd71ce7cd91394d398f594",
+    "mtime": 1786733253.960013,
+    "ast_hash": "e21612f261327d26187e517fa86e25b2",
     "semantic_hash": ""
   },
   "apps/api/src/presentismo/utils/jornada-presentismo.ts": {
-    "mtime": 1786730666.2458029,
-    "ast_hash": "e64350cb504f9872c91c74d75f3cbf31",
+    "mtime": 1786733237.343484,
+    "ast_hash": "cb2a72555a9c9905f98e657a404a34e5",
     "semantic_hash": ""
   },
   "apps/web/src/components/impulsadores/jornada-presentismo-detalle.tsx": {
-    "mtime": 1786731093.324719,
-    "ast_hash": "3d20318dec9d872b015bbfa939168b1f",
+    "mtime": 1786733343.272834,
+    "ast_hash": "7c94f8cc26a597543bc7cd7d47d657ba",
     "semantic_hash": ""
   }
 }

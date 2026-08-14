@@ -35,6 +35,16 @@ const ESTADOS: Record<
   },
 };
 
+interface ResultadoJornada {
+  consultaId: string;
+  datos: RespuestaPaginada<JornadaPresentismo>;
+}
+
+interface ErrorJornada {
+  consultaId: string;
+  mensaje: string;
+}
+
 function formatoFecha(fecha: string): string {
   return new Intl.DateTimeFormat("es-PY", {
     day: "2-digit",
@@ -81,18 +91,16 @@ export function JornadaPresentismoDetalle({
 }) {
   const detalleId = useId();
   const [abierto, setAbierto] = useState(false);
-  const [datos, setDatos] =
-    useState<RespuestaPaginada<JornadaPresentismo> | null>(null);
+  const [resultado, setResultado] = useState<ResultadoJornada | null>(null);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(7);
-  const [cargando, setCargando] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setDatos(null);
-    setPage(1);
-    setError(null);
-  }, [fecha]);
+  const [error, setError] = useState<ErrorJornada | null>(null);
+  const consultaId = `${usuarioId}:${fecha}:${page}:${limit}`;
+  const datos =
+    resultado?.consultaId === consultaId ? resultado.datos : null;
+  const mensajeError =
+    error?.consultaId === consultaId ? error.mensaje : null;
+  const cargando = abierto && !datos && !mensajeError;
 
   useEffect(() => {
     if (!abierto) return;
@@ -102,30 +110,28 @@ export function JornadaPresentismoDetalle({
       page: String(page),
       limit: String(limit),
     });
-    setCargando(true);
     void apiFetch<RespuestaPaginada<JornadaPresentismo>>(
       `/presentismo/jornada/${usuarioId}?${params.toString()}`,
     )
       .then((respuesta) => {
         if (!vigente) return;
-        setDatos(respuesta);
+        setResultado({ consultaId, datos: respuesta });
         setError(null);
       })
       .catch((causa) => {
         if (!vigente) return;
-        setError(
-          causa instanceof ApiError
-            ? causa.message
-            : "No se pudo cargar la jornada",
-        );
-      })
-      .finally(() => {
-        if (vigente) setCargando(false);
+        setError({
+          consultaId,
+          mensaje:
+            causa instanceof ApiError
+              ? causa.message
+              : "No se pudo cargar la jornada",
+        });
       });
     return () => {
       vigente = false;
     };
-  }, [abierto, fecha, limit, page, usuarioId]);
+  }, [abierto, consultaId, fecha, limit, page, usuarioId]);
 
   return (
     <div className="mt-3 min-w-0">
@@ -146,7 +152,7 @@ export function JornadaPresentismoDetalle({
           {cargando && !datos ? (
             <p className="text-sm text-muted">Cargando jornada...</p>
           ) : null}
-          {error ? <p className="text-sm text-rose-800 dark:text-rose-300">{error}</p> : null}
+          {mensajeError ? <p className="text-sm text-rose-800 dark:text-rose-300">{mensajeError}</p> : null}
           {datos?.items.length === 0 ? (
             <p className="text-sm text-muted">
               No tiene locales programados ni marcaciones para esta fecha.

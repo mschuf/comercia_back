@@ -83,7 +83,11 @@ describe('PresentismoService - jornada', () => {
         total: 1,
         items: [
           expect.objectContaining({
-            local: { id: 30, nombre: 'Local Centro', clienteNombre: 'Cliente SA' },
+            local: {
+              id: 30,
+              nombre: 'Local Centro',
+              clienteNombre: 'Cliente SA',
+            },
             estado: 'COMPLETADA',
           }),
         ],
