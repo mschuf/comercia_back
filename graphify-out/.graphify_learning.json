@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-14T16:40:34.162199+00:00",
+  "generated_at": "2026-08-18T12:01:28.552488+00:00",
   "nodes": {
     "apps_api_package_scripts_prisma_deploy": {
       "code_fingerprint": "30cf7a2f7149ec576fd7373682e2611dba42e4f21c2f752f2d94dc008e590efe",
@@ -12,7 +12,7 @@
           "q": "migration.sql se ejecuta automaticamente cuando hago el commit o yo tengo que hacerlo?"
         }
       ],
-      "score": 0.995685639,
+      "score": 0.911863252,
       "source_file": "apps/api/package.json",
       "status": "tentative",
       "uses": 1
@@ -28,7 +28,7 @@
           "q": "migration.sql se ejecuta automaticamente cuando hago el commit o yo tengo que hacerlo?"
         }
       ],
-      "score": 0.995685639,
+      "score": 0.911863252,
       "source_file": "apps/api/README.md",
       "status": "tentative",
       "uses": 1
@@ -44,7 +44,7 @@
           "q": "migration.sql se ejecuta automaticamente cuando hago el commit o yo tengo que hacerlo?"
         }
       ],
-      "score": 0.995685639,
+      "score": 0.911863252,
       "source_file": "apps/api/scripts/guard-migrate.mjs",
       "status": "tentative",
       "uses": 1
@@ -60,7 +60,7 @@
           "q": "el back en api.comercia.pro funciona, hice un login y funciono https://api.comercia.pro/api/v1/auth/login"
         }
       ],
-      "score": 0.853174309,
+      "score": 0.781349323,
       "source_file": "apps/api/src/auth/auth.controller.ts",
       "status": "tentative",
       "uses": 1
@@ -76,7 +76,7 @@
           "q": "En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa"
         }
       ],
-      "score": 0.956871796,
+      "score": 0.876316975,
       "source_file": "apps/api/src/auth/auth.module.ts",
       "status": "tentative",
       "uses": 1
@@ -97,7 +97,7 @@
           "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
         }
       ],
-      "score": 1.866902796,
+      "score": 1.709736475,
       "source_file": "apps/api/src/auth/auth.service.ts",
       "status": "preferred",
       "uses": 2
@@ -113,7 +113,7 @@
           "q": "En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa"
         }
       ],
-      "score": 0.956871796,
+      "score": 0.876316975,
       "source_file": "apps/api/src/auth/jwt-auth.guard.ts",
       "status": "tentative",
       "uses": 1
@@ -129,7 +129,7 @@
           "q": "En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa"
         }
       ],
-      "score": 0.956871796,
+      "score": 0.876316975,
       "source_file": "apps/api/src/config/env.schema.ts",
       "status": "tentative",
       "uses": 1
@@ -145,7 +145,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.934513363,
+      "score": 0.855840801,
       "source_file": "apps/api/src/impulsador/acceso-operaciones-campo.service.ts",
       "status": "tentative",
       "uses": 1
@@ -161,7 +161,7 @@
           "q": "Como quitar todas las tareas solamente de un usuario respetando la jerarquia"
         }
       ],
-      "score": 0.995298716,
+      "score": 0.911508902,
       "source_file": "apps/api/src/impulsador/acceso-operaciones-campo.service.ts",
       "status": "tentative",
       "uses": 1
@@ -177,13 +177,13 @@
           "q": "que significa programacion pausada y como reanudar"
         }
       ],
-      "score": 0.812651609,
+      "score": 0.744238051,
       "source_file": "apps/api/src/impulsador/interfaces/programacion-visita.interface.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_impulsador_visitas_service_visitasservice": {
-      "code_fingerprint": "d57900c18c792e1148351b98b41a28555c56fb8818d39238cf3c43fcbfed06db",
+      "code_fingerprint": "2972df27d22dd10666304a11c15946b2dd2620f2b5c2b8552b8a4f73e8e83db6",
       "label": "VisitasService",
       "last": "2026-08-14T12:23:06.071934+00:00",
       "provenance": [
@@ -198,7 +198,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 1.930390789,
+      "score": 1.767879693,
       "source_file": "apps/api/src/impulsador/visitas.service.ts",
       "status": "preferred",
       "uses": 2
@@ -214,7 +214,7 @@
           "q": "Como refactorizar las tablas de tarea según alcance global, por equipo, usuario, cliente/local e historial de visitas"
         }
       ],
-      "score": 0.995877425,
+      "score": 0.912038893,
       "source_file": "apps/api/src/locales/tareas-local.service.ts",
       "status": "tentative",
       "uses": 1
@@ -230,13 +230,13 @@
           "q": "En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa"
         }
       ],
-      "score": 0.956871796,
+      "score": 0.876316975,
       "source_file": "apps/api/src/presentismo/presentismo.module.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_api_src_presentismo_presentismo_service_presentismoservice": {
-      "code_fingerprint": "91878790d7e523e270898d81508a458be617fb2764204b5f7b31cd3c7e840c45",
+      "code_fingerprint": "9767e538b9bc62dddf0a341ca443d86c21b85b5d3481fbcd01a4771f1744873f",
       "label": "PresentismoService",
       "last": "2026-08-12T19:51:12.455547+00:00",
       "provenance": [
@@ -246,7 +246,7 @@
           "q": "¿Cómo quedó conectado el home del panel con el resumen de presentismo operativo y sus rutas de detalle?"
         }
       ],
-      "score": 0.957766749,
+      "score": 0.877136586,
       "source_file": "apps/api/src/presentismo/presentismo.service.ts",
       "status": "tentative",
       "uses": 1
@@ -262,7 +262,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.812715018,
+      "score": 0.744296122,
       "source_file": "apps/api/src/repositor/osrm.service.ts",
       "status": "tentative",
       "uses": 1
@@ -278,7 +278,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.934513363,
+      "score": 0.855840801,
       "source_file": "apps/api/src/repositor/repositor.service.ts",
       "status": "tentative",
       "uses": 1
@@ -294,7 +294,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.812715018,
+      "score": 0.744296122,
       "source_file": "apps/api/src/repositor/utils/optimizacion-ruta.ts",
       "status": "tentative",
       "uses": 1
@@ -310,7 +310,7 @@
           "q": "Como quitar todas las tareas solamente de un usuario respetando la jerarquia"
         }
       ],
-      "score": 0.995298716,
+      "score": 0.911508902,
       "source_file": "apps/api/src/tareas/interfaces/tareas-quitadas-usuario.interface.ts",
       "status": "tentative",
       "uses": 1
@@ -331,7 +331,7 @@
           "q": "Como quitar todas las tareas solamente de un usuario respetando la jerarquia"
         }
       ],
-      "score": 1.991176141,
+      "score": 1.823547795,
       "source_file": "apps/api/src/tareas/tareas.service.ts",
       "status": "preferred",
       "uses": 2
@@ -347,7 +347,7 @@
           "q": "Qué significan precision_metros, registrada_en y recibida_en en ubicaciones_usuario"
         }
       ],
-      "score": 0.928797899,
+      "score": 0.850606496,
       "source_file": "apps/api/src/ubicaciones/dto/ubicacion.dto.ts",
       "status": "tentative",
       "uses": 1
@@ -368,13 +368,13 @@
           "q": "en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios"
         }
       ],
-      "score": 1.781933972,
+      "score": 1.631920802,
       "source_file": "apps/api/src/ubicaciones/ubicaciones.service.ts",
       "status": "preferred",
       "uses": 2
     },
     "apps_mobile_app_tsx_apps_mobile_app": {
-      "code_fingerprint": "278a19186dd1309b29bfd133c2471f518315716ab429aaa82f465605b0e095f0",
+      "code_fingerprint": "c199e6cdd65cb5c90ba6f89dc13a88df9b7de09d37d20e2a5659fd32c47bc593",
       "label": "App.tsx",
       "last": "2026-08-11T20:43:00.690748+00:00",
       "provenance": [
@@ -389,7 +389,7 @@
           "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
         }
       ],
-      "score": 1.866902796,
+      "score": 1.709736475,
       "source_file": "apps/mobile/App.tsx",
       "status": "preferred",
       "uses": 2
@@ -405,7 +405,7 @@
           "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
         }
       ],
-      "score": 0.93666956,
+      "score": 0.857815477,
       "source_file": "apps/mobile/plugins/with-sim-phone-numbers.js",
       "status": "tentative",
       "uses": 1
@@ -421,7 +421,7 @@
           "q": "como se llama el store que usa cuando no hay conexion y guarda en el celular, y se borra una vez que se envia al servidor"
         }
       ],
-      "score": 0.934246597,
+      "score": 0.855596493,
       "source_file": "apps/mobile/src/lib/cola-ubicaciones.ts",
       "status": "tentative",
       "uses": 1
@@ -447,7 +447,7 @@
           "q": "en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios"
         }
       ],
-      "score": 2.635108281,
+      "score": 2.413270125,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
       "status": "preferred",
       "uses": 3
@@ -463,7 +463,7 @@
           "q": "como se llama el store que usa cuando no hay conexion y guarda en el celular, y se borra una vez que se envia al servidor"
         }
       ],
-      "score": 0.934246597,
+      "score": 0.855596493,
       "source_file": "apps/mobile/src/lib/seguimiento.ts",
       "status": "tentative",
       "uses": 1
@@ -479,7 +479,7 @@
           "q": "El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
         }
       ],
-      "score": 0.930233235,
+      "score": 0.851920998,
       "source_file": "apps/mobile/src/lib/sesion.ts",
       "status": "tentative",
       "uses": 1
@@ -495,7 +495,7 @@
           "q": "el back en api.comercia.pro funciona, hice un login y funciono https://api.comercia.pro/api/v1/auth/login"
         }
       ],
-      "score": 0.853174309,
+      "score": 0.781349323,
       "source_file": "apps/mobile/src/lib/sesion.ts",
       "status": "tentative",
       "uses": 1
@@ -511,7 +511,7 @@
           "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
         }
       ],
-      "score": 0.93666956,
+      "score": 0.857815477,
       "source_file": "apps/mobile/src/lib/sim.ts",
       "status": "tentative",
       "uses": 1
@@ -527,7 +527,7 @@
           "q": "ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso"
         }
       ],
-      "score": 0.93666956,
+      "score": 0.857815477,
       "source_file": "apps/mobile/src/lib/sim.ts",
       "status": "tentative",
       "uses": 1
@@ -543,7 +543,7 @@
           "q": "que significa programacion pausada y como reanudar"
         }
       ],
-      "score": 0.812651609,
+      "score": 0.744238051,
       "source_file": "apps/web/src/components/impulsador/editor-programacion-visita.tsx",
       "status": "tentative",
       "uses": 1
@@ -559,13 +559,13 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.934513363,
+      "score": 0.855840801,
       "source_file": "apps/web/src/types/local.ts",
       "status": "tentative",
       "uses": 1
     },
     "apps_web_src_types_presentismo_resumeniniciooperativo": {
-      "code_fingerprint": "286ab9e20be3f2a95288fae66c69baf4cc9dbf6186069c01771426ba44daa04a",
+      "code_fingerprint": "021d8128c07f0a4f831d5d3b925bde55c97152f2b986bdb122fa0117cfd5bbab",
       "label": "ResumenInicioOperativo",
       "last": "2026-08-12T19:51:12.455547+00:00",
       "provenance": [
@@ -575,7 +575,7 @@
           "q": "¿Cómo quedó conectado el home del panel con el resumen de presentismo operativo y sus rutas de detalle?"
         }
       ],
-      "score": 0.957766749,
+      "score": 0.877136586,
       "source_file": "apps/web/src/types/presentismo.ts",
       "status": "tentative",
       "uses": 1
@@ -596,7 +596,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 1.930390789,
+      "score": 1.767879693,
       "source_file": "apps/web/src/types/tarea.ts",
       "status": "preferred",
       "uses": 2
@@ -612,7 +612,7 @@
           "q": "Arquitectura existente para roles Team Leader/Impulsador, asignación de locales, tareas dirigidas, visitas, rendimiento y notificaciones móviles"
         }
       ],
-      "score": 0.934513363,
+      "score": 0.855840801,
       "source_file": "apps/web/src/types/visita.ts",
       "status": "tentative",
       "uses": 1
@@ -628,7 +628,7 @@
           "q": "Como refactorizar las tablas de tarea según alcance global, por equipo, usuario, cliente/local e historial de visitas"
         }
       ],
-      "score": 0.995877425,
+      "score": 0.912038893,
       "source_file": "apps/web/src/types/visita.ts",
       "status": "tentative",
       "uses": 1
@@ -644,7 +644,7 @@
           "q": "migration.sql se ejecuta automaticamente cuando hago el commit o yo tengo que hacerlo?"
         }
       ],
-      "score": 0.995685639,
+      "score": 0.911863252,
       "source_file": "DEPLOY.md",
       "status": "tentative",
       "uses": 1
@@ -660,7 +660,7 @@
           "q": "cuales son las librerias que usa para el calculo de ruta"
         }
       ],
-      "score": 0.812715018,
+      "score": 0.744296122,
       "source_file": "apps/web/package.json",
       "status": "tentative",
       "uses": 1
