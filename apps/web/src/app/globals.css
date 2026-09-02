@@ -152,34 +152,6 @@ body {
   outline-offset: 3px;
 }
 
-.leaflet-control-attribution,
-.leaflet-control-layers,
-.leaflet-bar a,
-.leaflet-tooltip,
-.leaflet-popup-content-wrapper,
-.leaflet-popup-tip {
-  border-color: var(--control-border) !important;
-  background: var(--surface-raised) !important;
-  color: var(--foreground) !important;
-}
-
-.leaflet-control-attribution a,
-.leaflet-popup-content a {
-  color: var(--accent-ink) !important;
-}
-
-.leaflet-bar a:hover,
-.leaflet-bar a:focus-visible {
-  background: var(--surface-soft) !important;
-  color: var(--foreground) !important;
-}
-
-.leaflet-touch .leaflet-bar a {
-  width: 44px !important;
-  height: 44px !important;
-  line-height: 44px !important;
-}
-
 ::selection {
   background: var(--accent-soft);
   color: var(--foreground);

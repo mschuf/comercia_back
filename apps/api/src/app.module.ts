@@ -9,19 +9,10 @@ import configuration from './config/configuration';
 import { validateEnv } from './config/env.schema';
 import { EmpresasModule } from './empresas/empresas.module';
 import { HealthModule } from './health/health.module';
-import { ImpulsadorModule } from './impulsador/impulsador.module';
-import { LocalesModule } from './locales/locales.module';
-import { ClientesModule } from './clientes/clientes.module';
 import { PlataformaModule } from './plataforma/plataforma.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
-import { TareasModule } from './tareas/tareas.module';
-import { RepositorModule } from './repositor/repositor.module';
-import { EquipoModule } from './equipo/equipo.module';
-import { NotificacionesModule } from './notificaciones/notificaciones.module';
 import { RolesModule } from './roles/roles.module';
-import { UbicacionesModule } from './ubicaciones/ubicaciones.module';
-import { PresentismoModule } from './presentismo/presentismo.module';
 
 @Module({
   imports: [
@@ -47,16 +38,7 @@ import { PresentismoModule } from './presentismo/presentismo.module';
     EmpresasModule,
     RolesModule,
     PlataformaModule,
-    ImpulsadorModule,
-    LocalesModule,
-    ClientesModule,
     UsuariosModule,
-    TareasModule,
-    RepositorModule,
-    EquipoModule,
-    NotificacionesModule,
-    UbicacionesModule,
-    PresentismoModule,
   ],
   controllers: [AppController],
   providers: [

@@ -8,7 +8,6 @@ export interface EmpresaAdmin extends Empresa {
   dbName: string | null;
   padre: { id: number; nombre: string } | null;
   usuariosCount: number;
-  clientesCount: number;
-  localesCount: number;
   hijasCount: number;
+  configuracionCount: number;
 }

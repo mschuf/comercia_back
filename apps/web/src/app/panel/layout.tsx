@@ -15,8 +15,6 @@ import { PanelProvider } from "@/components/panel/contexto";
 import { IconoModulo } from "@/components/panel/iconos";
 import { btnGhost } from "@/components/ui";
 import { EVENTO_PLATAFORMA_ACTUALIZADA } from "@/lib/eventos-plataforma";
-import { CampanaNotificaciones } from "@/components/notificaciones/campana-notificaciones";
-import { RutaDiariaProvider } from "@/components/repositor/ruta-diaria-contexto";
 
 export default function PanelLayout({
   children,
@@ -114,18 +112,11 @@ export default function PanelLayout({
       })),
     ),
   ];
-  const puedeRecibirNovedades = modulos.some(
-    (modulo) =>
-      ["supervisor", "teamleader-impulsador"].includes(modulo.ruta) &&
-      modulo.paginas.some((pagina) => pagina.ruta === "tareas"),
-  );
-
   const activo = (href: string) =>
     href === "/panel" ? pathname === "/panel" : pathname === href;
 
   return (
     <PanelProvider value={valorPanel}>
-      <RutaDiariaProvider>
         <div className="relative isolate flex min-h-dvh w-full max-w-full flex-col overflow-x-clip bg-background">
           <div
             aria-hidden
@@ -160,7 +151,6 @@ export default function PanelLayout({
             </div>
 
             <div className="flex shrink-0 items-center gap-1 sm:gap-1.5">
-              <CampanaNotificaciones habilitada={puedeRecibirNovedades} />
               <BotonTema />
               <div ref={menuRef} className="relative">
                 <button
@@ -389,7 +379,6 @@ export default function PanelLayout({
             detalle="Finalizamos tu sesión de forma segura."
           />
         </div>
-      </RutaDiariaProvider>
     </PanelProvider>
   );
 }

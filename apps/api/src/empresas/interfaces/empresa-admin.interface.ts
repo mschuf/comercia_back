@@ -5,12 +5,9 @@ export interface EmpresaAdminFila {
   padre: { id: number; nombre: string } | null;
   _count: {
     usuarios: number;
-    clientes: number;
-    locales: number;
     hijas: number;
-    tareas: number;
-    territorios: number;
-    zonas: number;
+    modulos: number;
+    paginas: number;
   };
 }
 
@@ -20,9 +17,8 @@ export interface EmpresaAdminDto {
   dbName: string | null;
   padre: { id: number; nombre: string } | null;
   usuariosCount: number;
-  clientesCount: number;
-  localesCount: number;
   hijasCount: number;
+  configuracionCount: number;
 }
 
 export interface EmpresaJerarquiaFila {

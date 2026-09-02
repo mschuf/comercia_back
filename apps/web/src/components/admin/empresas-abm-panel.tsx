@@ -37,8 +37,7 @@ function ListaEmpresasMovil({
       {empresas.map((empresa) => {
         const tieneDatos =
           empresa.usuariosCount > 0 ||
-          empresa.clientesCount > 0 ||
-          empresa.localesCount > 0 ||
+          empresa.configuracionCount > 0 ||
           empresa.hijasCount > 0;
         return (
           <li
@@ -52,7 +51,7 @@ function ListaEmpresasMovil({
             {empresa.dbName ? (
               <p className="mt-1 text-xs text-muted">Base: {empresa.dbName}</p>
             ) : null}
-            <div className="mt-3 grid grid-cols-3 gap-2 border-t border-line pt-3 text-center text-xs">
+            <div className="mt-3 grid grid-cols-2 gap-2 border-t border-line pt-3 text-center text-xs">
               <p className="rounded-lg bg-surface-soft px-2 py-2 text-muted">
                 <strong className="block text-sm text-foreground">
                   {empresa.usuariosCount}
@@ -61,15 +60,9 @@ function ListaEmpresasMovil({
               </p>
               <p className="rounded-lg bg-surface-soft px-2 py-2 text-muted">
                 <strong className="block text-sm text-foreground">
-                  {empresa.clientesCount}
+                  {empresa.configuracionCount}
                 </strong>
-                clientes
-              </p>
-              <p className="rounded-lg bg-surface-soft px-2 py-2 text-muted">
-                <strong className="block text-sm text-foreground">
-                  {empresa.localesCount}
-                </strong>
-                locales
+                accesos
               </p>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2">
@@ -217,7 +210,7 @@ export function EmpresasAbmPanel() {
         <div>
           <h2 className="text-xl font-bold tracking-tight">Empresas</h2>
           <p className="mt-1 text-sm text-muted">
-            Administrá empresas y su jerarquía sin exponer datos operativos.
+            Administrá empresas y su jerarquía.
           </p>
         </div>
         <button
@@ -250,7 +243,7 @@ export function EmpresasAbmPanel() {
             }}
           />
           <div className="mt-5 hidden overflow-x-auto rounded-xl border border-line bg-surface-raised md:block">
-            <table className="w-full min-w-[860px] text-left text-sm">
+            <table className="w-full min-w-[700px] text-left text-sm">
               <thead className="bg-surface-soft">
                 <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
                   <th className="px-4 py-3 font-medium">Empresa</th>
@@ -258,10 +251,7 @@ export function EmpresasAbmPanel() {
                   <th className="px-4 py-3 text-center font-medium">
                     Usuarios
                   </th>
-                  <th className="px-4 py-3 text-center font-medium">
-                    Clientes
-                  </th>
-                  <th className="px-4 py-3 text-center font-medium">Locales</th>
+                  <th className="px-4 py-3 text-center font-medium">Accesos</th>
                   <th className="px-4 py-3 text-right font-medium">Acciones</th>
                 </tr>
               </thead>
@@ -269,8 +259,7 @@ export function EmpresasAbmPanel() {
                 {empresas.map((empresa) => {
                   const tieneDatos =
                     empresa.usuariosCount > 0 ||
-                    empresa.clientesCount > 0 ||
-                    empresa.localesCount > 0 ||
+                    empresa.configuracionCount > 0 ||
                     empresa.hijasCount > 0;
                   return (
                     <tr
@@ -294,10 +283,7 @@ export function EmpresasAbmPanel() {
                         {empresa.usuariosCount}
                       </td>
                       <td className="px-4 py-3 text-center [font-variant-numeric:tabular-nums]">
-                        {empresa.clientesCount}
-                      </td>
-                      <td className="px-4 py-3 text-center [font-variant-numeric:tabular-nums]">
-                        {empresa.localesCount}
+                        {empresa.configuracionCount}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-2">

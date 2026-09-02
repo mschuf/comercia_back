@@ -8,11 +8,6 @@ import {
 import { AuthService } from '../auth/auth.service';
 import { hashPassword } from '../auth/utils/password';
 import {
-  ROL_IMPULSADOR,
-  ROL_SUPERVISOR_IMPULSADOR,
-  ROL_TEAMLEADER_IMPULSADOR,
-} from '../common/constants/roles-negocio';
-import {
   rangoPaginacion,
   respuestaPaginada,
   type RespuestaPaginada,
@@ -202,16 +197,6 @@ export class UsuariosService {
         : null,
     ]);
     if (!rol) throw new NotFoundException('El rol no existe');
-    const jerarquiaImpulsadores = [
-      ROL_SUPERVISOR_IMPULSADOR,
-      ROL_TEAMLEADER_IMPULSADOR,
-      ROL_IMPULSADOR,
-    ].includes(rol.descripcion);
-    if (jerarquiaImpulsadores && rol.rolId !== null && !superiorId) {
-      throw new BadRequestException(
-        'Este rol necesita un superior de la jerarquía de impulsadores',
-      );
-    }
     if (
       superiorId &&
       (!superior ||
@@ -220,15 +205,6 @@ export class UsuariosService {
         superior.id === usuarioEditadoId)
     ) {
       throw new NotFoundException('El superior no existe');
-    }
-    if (
-      jerarquiaImpulsadores &&
-      superior &&
-      (rol.rolId === null || superior.rolId !== rol.rolId)
-    ) {
-      throw new BadRequestException(
-        'El superior no corresponde al nivel inmediato de este rol',
-      );
     }
     if (
       usuarioEditadoId !== undefined &&
@@ -313,8 +289,7 @@ export class UsuariosService {
     return aUsuarioDto(usuario);
   }
 
-  // Conserva el historial operacional y bloquea inmediatamente el acceso del
-  // usuario. Un usuario con visitas, locales o subordinados no se borra de BD.
+  // Conserva el registro de la cuenta y bloquea inmediatamente el acceso.
   async eliminar(usuarioId: number, id: number): Promise<{ ok: true }> {
     const actual = await this.contexto(usuarioId);
     const objetivo = await this.prisma.usuario.findUnique({

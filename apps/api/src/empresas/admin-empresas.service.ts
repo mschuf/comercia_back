@@ -29,12 +29,9 @@ const SELECT_EMPRESA_ADMIN = {
   _count: {
     select: {
       usuarios: true,
-      clientes: true,
-      locales: true,
       hijas: true,
-      tareas: true,
-      territorios: true,
-      zonas: true,
+      modulos: true,
+      paginas: true,
     },
   },
 } as const;
@@ -46,9 +43,8 @@ function aEmpresaAdminDto(empresa: EmpresaAdminFila): EmpresaAdminDto {
     dbName: empresa.dbName,
     padre: empresa.padre,
     usuariosCount: empresa._count.usuarios,
-    clientesCount: empresa._count.clientes,
-    localesCount: empresa._count.locales,
     hijasCount: empresa._count.hijas,
+    configuracionCount: empresa._count.modulos + empresa._count.paginas,
   };
 }
 
@@ -176,12 +172,9 @@ export class AdminEmpresasService {
         _count: {
           select: {
             usuarios: true,
-            clientes: true,
-            locales: true,
             hijas: true,
-            tareas: true,
-            territorios: true,
-            zonas: true,
+            modulos: true,
+            paginas: true,
           },
         },
       },
