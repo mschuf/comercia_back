@@ -1,132 +1,126 @@
-# Guía de los archivos `.env` del proyecto
+# Entornos local y producción
 
-Hay varios `.env` porque cada pieza del stack (Docker, NestJS, Next.js, Prisma) lee
-su configuración desde un lugar distinto. Esta es la regla general:
+El desarrollo normal separa por completo las conexiones locales de las de
+producción. La única excepción intencional es `npm run prod`, que ejecuta la
+API y la web en tu PC contra PostgreSQL de producción mediante un túnel SSH.
 
-> **En desarrollo** la configuración vive en archivos `.env` de tu máquina.
-> **En producción** ningún archivo `.env` con secretos viaja dentro de las imágenes
-> Docker: los contenedores reciben las variables desde `docker-compose.prod.yml`,
-> que a su vez las lee del único `.env` del servidor (`/opt/comercia/.env`).
-> La única excepción son los `.env` del front (`apps/web/.env.development` y
-> `.env.production`), que solo llevan variables públicas y se commitean a propósito.
+## Desarrollo local
 
-## Mapa rápido
+Usá solamente:
 
-| Archivo | ¿Existe en git? | Quién lo lee | Para qué |
-|---|---|---|---|
-| `.env` (raíz) | No (ignorado) | Docker Compose de desarrollo, la API NestJS y el CLI de Prisma | **El único `.env` local**: backend + base de datos |
-| `.env.example` (raíz) | Sí | Nadie (es plantilla) | Base para crear tu `.env` de la raíz |
-| `apps/api/.env` | No (ignorado) | La API y Prisma, **solo si lo creás** | Override opcional; pisa al de la raíz |
-| `apps/web/.env.development` | **Sí** | Next.js en `next dev` (automático) | Variables públicas del front en desarrollo |
-| `apps/web/.env.production` | **Sí** | Next.js en `next build` (automático) | Variables públicas del front en producción |
-| `deploy/.env.production.example` | Sí | Nadie (es plantilla) | Base para crear el `/opt/comercia/.env` **del servidor** |
-| `/opt/comercia/.env` (servidor) | No (solo en el VPS) | `docker compose -f docker-compose.prod.yml` | Toda la config de producción |
+```bash
+npm run dev
+```
 
-## Cada archivo en detalle
+El comando:
 
-### 1. `.env` de la raíz — EL archivo de desarrollo
+1. Levanta y espera PostgreSQL de Comercia en `localhost:5434`.
+2. Aplica las migraciones existentes a esa base local.
+3. Inicia NestJS en `:3001` y Next.js en `:3000`.
 
-Se crea copiando la plantilla (`copy .env.example .env`). Es el **único** `.env`
-local del proyecto y lo leen **tres** cosas:
+La configuración vive en [`.env.development`](.env.development). Es versionada
+porque contiene exclusivamente valores seguros de desarrollo: el usuario local
+de PostgreSQL es `postgres` y la contraseña es `postgres`.
 
-- **Docker Compose de desarrollo** (`npm run db:up`): interpola `POSTGRES_USER`,
-  `POSTGRES_PASSWORD`, `POSTGRES_DB` y `POSTGRES_PORT` para el contenedor de
-  Postgres local. Si el archivo no existe, usa los defaults (`postgres`/`postgres`/`comercia`/`5432`).
-- **La API NestJS**: carga `['.env', '../../.env']`
-  ([app.module.ts:17](apps/api/src/app.module.ts#L17)); como `apps/api/.env` no
-  existe por defecto, este es el que manda.
-- **El CLI de Prisma** (migraciones, studio): [prisma.config.ts](apps/api/prisma.config.ts)
-  también lo carga.
+Los comandos relacionados usan la misma configuración:
 
-Las variables que falten toman los defaults seguros definidos en
-[env.schema.ts](apps/api/src/config/env.schema.ts) (validados con Zod al arrancar:
-si algo está mal formado, la API no arranca y te dice exactamente qué).
+```bash
+npm run db:up       # levanta PostgreSQL local y espera su healthcheck
+npm run db:down     # detiene PostgreSQL local
+npm run db:logs     # muestra logs de PostgreSQL local
+npm run prisma:migrate
+npm run prisma:studio
+```
 
-Next.js **no** lee este archivo (solo mira dentro de `apps/web/`).
+Si preferís abrirlos en terminales distintas:
 
-### 2. `apps/api/.env` — override opcional (por defecto no existe)
+```bash
+# Terminal 1: PostgreSQL local + NestJS local
+npm run dev:api
 
-Si algún día necesitás pisar una variable **solo para la API** sin tocar el `.env`
-de la raíz, podés crear este archivo: tanto NestJS como el CLI de Prisma lo cargan
-con prioridad sobre el de la raíz. Es un arma de doble filo: si te olvidás de que
-existe, vas a editar la raíz y preguntarte por qué no cambia nada — por eso el
-proyecto ya no lo trae por defecto.
+# Terminal 2: Next.js local
+npm run dev:web
+```
 
-### 3. `apps/web/.env.development` y `.env.production` — el frontend
+Al actualizar el esquema, generá una migración con `npm run prisma:migrate`.
+Ese comando usa la misma base local de `localhost:5434`.
 
-Next.js **elige el archivo solo**, según el comando:
+El archivo raíz `.env` queda ignorado por Git para overrides personales, pero
+no decide el entorno de `npm run dev`. Esto evita que un puerto o URL de otro
+proyecto redirija Prisma a la base equivocada.
 
-- `next dev` (desarrollo local) → carga `.env.development` (`http://localhost:3001/api/v1`)
-- `next build` (el build de la imagen Docker) → carga `.env.production` (tu dominio real)
+## API y web locales con base de producción
 
-Por eso estos dos **sí se commitean**: solo contienen variables `NEXT_PUBLIC_*`,
-que son públicas por definición. Cuando tengas el dominio real, editás
-`.env.production` una vez, hacés push, y el pipeline reconstruye el front con esa URL.
+`npm run prod` **no despliega** ni ejecuta NestJS/Next.js en el servidor.
+Abre un túnel SSH privado hacia PostgreSQL de producción y después inicia los
+dos procesos en tu PC:
 
-Si algún día necesitás un override personal en tu máquina, podés crear
-`apps/web/.env.local` (ignorado por git): pisa a los otros dos en desarrollo.
+```text
+Next.js local :3000 → NestJS local :3001 → túnel local :5435 → PostgreSQL de producción
+```
 
-⚠️ Regla de oro: todo lo que empiece con `NEXT_PUBLIC_` **se incrusta en el bundle
-de JavaScript que se envía al navegador**. Cualquiera puede verlo. En estos archivos
-jamás va un secreto, una contraseña ni una URL interna.
+Preparación única:
 
-### 4. `/opt/comercia/.env` — el único `.env` de producción (en el servidor)
+```powershell
+Copy-Item .env.production.local.example .env.production.local
+```
 
-Se crea una sola vez en el VPS copiando [deploy/.env.production.example](deploy/.env.production.example)
-(pasos en [DEPLOY.md](DEPLOY.md)). Lo lee `docker compose` en el servidor para
-interpolar `docker-compose.prod.yml`, y de ahí cada contenedor recibe sus variables:
+Editá `.env.production.local` con el usuario y contraseña de PostgreSQL de
+producción, manteniendo el host `127.0.0.1:5435`; agregá el valor exacto de
+confirmación que indica el archivo. El archivo está ignorado por Git. Nunca
+copies allí el `COOKIE_SECRET` de producción: usá un secreto local distinto.
 
-- `postgres` recibe `POSTGRES_USER/PASSWORD/DB`
-- `api` y `migrate` reciben `DATABASE_URL` (armada apuntando al contenedor `postgres`),
-  `COOKIE_SECRET`, `CORS_ORIGINS`, etc.
-- `caddy` recibe `DOMAIN` (con dominio real emite HTTPS solo)
-- `API_TAG` / `WEB_TAG` eligen qué versión de las imágenes correr (rollback)
+Luego ejecutá:
 
-Los `.env` con secretos **nunca** llegan a producción: el [.dockerignore](.dockerignore)
-los excluye del build de las imágenes y el `.gitignore` los excluye de git. (Los dos
-`.env` públicos del front son la excepción deliberada: entran al build justamente
-para que Next hornee sus `NEXT_PUBLIC_*` en el bundle.)
+```bash
+npm run prod
+```
 
-**Caso especial**: `NEXT_PUBLIC_API_URL` en producción NO está en el `.env` del
-servidor. Como se incrusta en el bundle durante el *build*, vive commiteada en
-`apps/web/.env.production` y Next la carga sola cuando el pipeline construye la
-imagen del front. Si cambiás el dominio: editás ese archivo, push, y listo.
+También podés abrir cada proceso por separado:
 
-## Qué variable hace qué
+```bash
+# Terminal 1: túnel seguro hacia PostgreSQL de producción
+npm run prod:tunnel
 
-| Variable | La usa | Para qué | Dev | Prod |
-|---|---|---|---|---|
-| `DATABASE_URL` | API + Prisma CLI | Conexión a Postgres | `localhost:5432` | La arma el compose apuntando a `postgres:5432` |
-| `PORT` | API | Puerto de NestJS | `3001` | `3001` (interno del contenedor) |
-| `NODE_ENV` | API | Modo de ejecución | `development` | `production` (fijado en la imagen) |
-| `FRONTEND_URL` | API | URL pública del front | `http://localhost:3000` | `https://tudominio.com` |
-| `CORS_ORIGINS` | API | Orígenes permitidos (separados por coma) | `http://localhost:3000` | `https://tudominio.com` |
-| `COOKIE_SECRET` | API | Firma de cookies (mín. 32 chars) | valor de ejemplo | **obligatorio**, aleatorio (`openssl rand -hex 32`) |
-| `THROTTLE_TTL` / `THROTTLE_LIMIT` | API | Rate limiting | 100 req/min | igual (ajustable) |
-| `SWAGGER_ENABLED` | API | Docs en `/api/docs` | `true` | `false` |
-| `NEXT_PUBLIC_API_URL` | Front (navegador) | Adónde llama el browser | `apps/web/.env.development` | `apps/web/.env.production` (horneada en el build) |
-| `POSTGRES_USER/PASSWORD/DB/PORT` | Contenedor Postgres | Credenciales de la base | `postgres`/`postgres` | **obligatorias**, aleatorias |
-| `DOMAIN` | Caddy (solo perfil `domain`) | Dominio público + HTTPS | — | `tudominio.com` (cuando haya dominio) |
-| `API_PORT` / `WEB_PORT` | Compose prod (modo LAN) | Puertos publicados de api y web | — | `1001` / `1002` |
-| `API_TAG` / `WEB_TAG` | Compose prod | Versión de imagen a correr | — | `latest`, o un SHA para rollback |
+# Terminal 2: NestJS local usando la base de producción a través del túnel
+npm run prod:api
 
-## Precedencia (cuando una variable está en dos lados)
+# Terminal 3: Next.js local (siempre consume la API local :3001)
+npm run prod:web
+```
 
-Para la API, de mayor a menor prioridad:
+No combines `npm run prod` con los tres comandos separados: ambos intentan usar
+los puertos `3000`, `3001` y `5435`. Si un puerto quedó ocupado por una ejecución
+anterior, detené ese proceso con `Ctrl+C` antes de volver a iniciar.
 
-1. Variable de entorno real del proceso (lo que inyecta Docker en producción)
-2. `apps/api/.env` (solo si lo creaste — por defecto no existe)
-3. `.env` de la raíz
-4. Defaults del esquema Zod ([env.schema.ts](apps/api/src/config/env.schema.ts))
+El comando usa `PROD_SSH_HOST`, `PROD_SSH_USER` y `PROD_SSH_PORT` de ese
+archivo (o el alias SSH `comercia` si no se configuran). El túnel se cierra
+automáticamente cuando detengas el comando con `Ctrl+C`. La API local puede
+leer y escribir producción, por eso no se ejecutan migraciones ni se expone
+PostgreSQL directamente a Internet.
 
-En producción los pasos 2 y 3 no existen (no hay archivos), así que manda siempre
-lo que definas en `/opt/comercia/.env` → `docker-compose.prod.yml`.
+Para operar el stack que ya está desplegado en el servidor (sin iniciar nada
+local), usá:
 
-## Reglas de seguridad
+```bash
+npm run server:up
+npm run server:status
+npm run server:logs
+```
 
-- Nunca commitear un `.env` real (el `.gitignore` cubre `**/.env` y `.env.*`; las
-  plantillas `.example` son la única excepción).
-- Nunca poner secretos en variables `NEXT_PUBLIC_*` (van al navegador).
-- En producción, `COOKIE_SECRET` y `POSTGRES_PASSWORD` se generan con
-  `openssl rand -hex 32` — las plantillas los dejan vacíos a propósito para que el
-  stack se niegue a arrancar si te olvidás de completarlos.
+El despliegue normal sigue siendo `git push origin main`: GitHub Actions
+publica las imágenes y el servidor las instala.
+
+## Archivos de configuración
+
+| Archivo | Entorno | Uso |
+|---|---|---|
+| [`.env.development`](.env.development) | Local | API, Prisma y Docker de desarrollo. |
+| `.env` | Local, opcional | Overrides personales; ignorado por Git. |
+| `.env.production.local` | Local con BD de producción | Credenciales de producción a través del túnel SSH; ignorado por Git. |
+| [`apps/web/.env.development`](apps/web/.env.development) | Local | URL pública de la API para el navegador. |
+| [`apps/web/.env.production`](apps/web/.env.production) | Producción | URL pública horneada en el build de Next.js. |
+| `/opt/comercia/.env` | Producción | Secretos y configuración privada del servidor. |
+
+Nunca pongas una URL, contraseña o túnel de producción en
+`.env.development`, `apps/web/.env.development` o `.env`.

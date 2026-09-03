@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const defaultDatabaseUrl =
-  'postgresql://postgres:postgres@localhost:5432/comercia?schema=public';
+  'postgresql://postgres:postgres@localhost:5434/comercia?schema=public';
 
 const booleanFromString = z.preprocess((value) => {
   if (typeof value !== 'string') {

@@ -2,6 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { config as cargarEnv } from 'dotenv';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -14,12 +17,26 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { RolesModule } from './roles/roles.module';
 
+const usaBaseProduccion = process.env.COMERCIA_DATABASE_TARGET === 'production';
+
+if (process.env.NODE_ENV !== 'production' && !usaBaseProduccion) {
+  const rutasEntornoLocal = [
+    resolve(process.cwd(), '.env.development'),
+    resolve(process.cwd(), '../../.env.development'),
+  ];
+  const entornoLocal = rutasEntornoLocal.find(existsSync);
+  if (entornoLocal) cargarEnv({ path: entornoLocal, override: true });
+}
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       cache: true,
-      envFilePath: ['.env', '../../.env'],
+      envFilePath:
+        process.env.NODE_ENV === 'production' || usaBaseProduccion
+          ? ['.env', '../../.env']
+          : ['../../.env.development', '.env', '../../.env'],
       validate: validateEnv,
       load: [configuration],
     }),

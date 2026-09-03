@@ -25,9 +25,9 @@
     "semantic_hash": "9e1d4e49b38ee1d08eb1868f6abc8fa8"
   },
   "apps/api/prisma.config.ts": {
-    "mtime": 1782998561.246377,
-    "ast_hash": "793fb399c6af90500f3d414af293b708",
-    "semantic_hash": "793fb399c6af90500f3d414af293b708"
+    "mtime": 1788445349.0154104,
+    "ast_hash": "c4f04432ec18bf562b2e5056c92caecb",
+    "semantic_hash": ""
   },
   "apps/api/prisma/migrations/20260702120000_init/migration.sql": {
     "mtime": 1783004571.9131556,
@@ -160,8 +160,8 @@
     "semantic_hash": "7eee3d8be686734a7d02be67c7555852"
   },
   "apps/api/src/app.module.ts": {
-    "mtime": 1788368114.3553329,
-    "ast_hash": "72b6106c3879aae5bc98d9b420974969",
+    "mtime": 1788453471.9642704,
+    "ast_hash": "7ad36d7eb24992d849cbb364f82a9c6e",
     "semantic_hash": ""
   },
   "apps/api/src/app.service.ts": {
@@ -310,8 +310,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/config/env.schema.ts": {
-    "mtime": 1788368415.2815087,
-    "ast_hash": "63d133ee2cbe7138217f681bd5320df5",
+    "mtime": 1788445352.8499634,
+    "ast_hash": "09f38d148e2d6f7c4c195d221ddd7e2b",
     "semantic_hash": ""
   },
   "apps/api/src/empresas/admin-empresas.controller.ts": {
@@ -810,9 +810,9 @@
     "semantic_hash": "3d49e207de4f2cf6035a2317c1838b05"
   },
   "package.json": {
-    "mtime": 1786450836.860649,
-    "ast_hash": "21318fbaa2df14f72ce8a1672f85f7d6",
-    "semantic_hash": "21318fbaa2df14f72ce8a1672f85f7d6"
+    "mtime": 1788453471.2014837,
+    "ast_hash": "5abdc9b922c65168474a07e4a45d36a1",
+    "semantic_hash": ""
   },
   "skills-lock.json": {
     "mtime": 1782997875.4307513,
@@ -1620,8 +1620,8 @@
     "semantic_hash": ""
   },
   "ENV.md": {
-    "mtime": 1783082567.484543,
-    "ast_hash": "91e5755b163f7ea0ec663ec829312885",
+    "mtime": 1788453499.3763669,
+    "ast_hash": "b26ae5eda89f88c0eca23c2537344212",
     "semantic_hash": ""
   },
   "FLUJO-DIARIO.md": {
@@ -1690,8 +1690,8 @@
     "semantic_hash": ""
   },
   "docker-compose.yml": {
-    "mtime": 1782998493.8789005,
-    "ast_hash": "c1251527c544bcb92c8a8fbd5548c7d1",
+    "mtime": 1788445347.4256473,
+    "ast_hash": "fe4028c2001bf7717615c4d14b1e2da9",
     "semantic_hash": ""
   },
   "sql/README.md": {
@@ -1857,6 +1857,11 @@
   "apps/api/prisma/migrations/20260902120000_base_plataforma_limpia/migration.sql": {
     "mtime": 1788368218.4369576,
     "ast_hash": "df52242085df09ed4d0a91e36f406afa",
+    "semantic_hash": ""
+  },
+  "scripts/start-production-db-local.mjs": {
+    "mtime": 1788453622.6889172,
+    "ast_hash": "db1013cf812b6e55d50b6dcabe6c0aa6",
     "semantic_hash": ""
   }
 }

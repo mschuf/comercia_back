@@ -6,18 +6,26 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "concurrently -n api,web -c green,cyan \"npm --prefix apps/api run start:dev\" \"npm --prefix apps/web run dev\"",
-    "dev:api": "npm --prefix apps/api run start:dev",
+    "dev": "docker compose --env-file .env.development up -d --wait postgres && npm --prefix apps/api run prisma:deploy && concurrently -n api,web -c green,cyan \"npm --prefix apps/api run start:dev\" \"npm --prefix apps/web run dev\"",
+    "dev:api": "npm run db:up && npm --prefix apps/api run prisma:deploy && npm --prefix apps/api run start:dev",
     "dev:web": "npm --prefix apps/web run dev",
     "build": "npm --prefix apps/api run build && npm --prefix apps/web run build",
     "lint": "npm --prefix apps/api run lint && npm --prefix apps/web run lint",
     "test": "npm --prefix apps/api run test",
-    "db:up": "docker compose up -d postgres",
-    "db:down": "docker compose down",
-    "db:logs": "docker compose logs -f postgres",
+    "db:up": "docker compose --env-file .env.development up -d --wait postgres",
+    "db:down": "docker compose --env-file .env.development down",
+    "db:logs": "docker compose --env-file .env.development logs -f postgres",
     "prisma:generate": "npm --prefix apps/api run prisma:generate",
     "prisma:migrate": "npm --prefix apps/api run prisma:migrate",
-    "prisma:studio": "npm --prefix apps/api run prisma:studio"
+    "prisma:studio": "npm --prefix apps/api run prisma:studio",
+    "prod": "node scripts/start-production-db-local.mjs",
+    "prod:local": "node scripts/start-production-db-local.mjs",
+    "prod:tunnel": "node scripts/start-production-db-local.mjs tunnel",
+    "prod:api": "node scripts/start-production-db-local.mjs api",
+    "prod:web": "node scripts/start-production-db-local.mjs web",
+    "server:up": "ssh comercia \"cd /opt/comercia && docker compose -f docker-compose.prod.yml up -d --wait\"",
+    "server:status": "ssh comercia \"cd /opt/comercia && docker compose -f docker-compose.prod.yml ps\"",
+    "server:logs": "ssh comercia \"cd /opt/comercia && docker compose -f docker-compose.prod.yml logs -f api web migrate\""
   },
   "overrides": {
     "@nestjs/platform-express": {

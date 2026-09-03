@@ -868,8 +868,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "apps_api_package_devdependencies_eslint_eslintrc",
-      "community": 23,
-      "community_name": "@eslint/eslintrc",
+      "community": 86,
+      "community_name": "devDependencies",
       "norm_label": "@eslint/eslintrc"
     },
     {
@@ -879,8 +879,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "eslint_eslintrc",
-      "community": 23,
-      "community_name": "@eslint/eslintrc",
+      "community": 86,
+      "community_name": "devDependencies",
       "norm_label": "@eslint/eslintrc"
     },
     {
@@ -1198,8 +1198,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "apps_api_package_devdependencies_globals",
-      "community": 86,
-      "community_name": "devDependencies",
+      "community": 35,
+      "community_name": "globals",
       "norm_label": "globals"
     },
     {
@@ -1209,8 +1209,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "globals",
-      "community": 86,
-      "community_name": "devDependencies",
+      "community": 35,
+      "community_name": "globals",
       "norm_label": "globals"
     },
     {
@@ -2507,8 +2507,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_app_controller_spec",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "app.controller.spec.ts"
     },
     {
@@ -2518,8 +2518,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_app_controller",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "app.controller.ts"
     },
     {
@@ -2529,8 +2529,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "apps_api_src_app_controller_appcontroller",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "appcontroller"
     },
     {
@@ -2540,8 +2540,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_app_controller_ts_apitags",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "apitags"
     },
     {
@@ -2551,8 +2551,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_app_controller_ts_controller",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "controller"
     },
     {
@@ -2562,8 +2562,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_app_controller_ts_get",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "get"
     },
     {
@@ -2573,8 +2573,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apiokresponse",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "apiokresponse"
     },
     {
@@ -2584,8 +2584,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "apps_api_src_app_controller_appcontroller_constructor",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -2595,8 +2595,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "apps_api_src_app_controller_appcontroller_getstatus",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": ".getstatus()"
     },
     {
@@ -2614,7 +2614,7 @@
       "label": "AppModule",
       "file_type": "code",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L52",
+      "source_location": "L69",
       "_origin": "ast",
       "id": "apps_api_src_app_module_appmodule",
       "community": 2,
@@ -2639,8 +2639,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_app_service",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "app.service.ts"
     },
     {
@@ -2650,8 +2650,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "apps_api_src_app_service_appservice",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "appservice"
     },
     {
@@ -2661,8 +2661,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_app_service_ts_injectable",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "injectable"
     },
     {
@@ -2672,8 +2672,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "apps_api_src_app_service_appservice_getstatus",
-      "community": 0,
-      "community_name": "AppController",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": ".getstatus()"
     },
     {
@@ -2683,8 +2683,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_constants",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "auth.constants.ts"
     },
     {
@@ -2694,8 +2694,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "auth.controller.ts"
     },
     {
@@ -2706,7 +2706,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "authcontroller"
     },
     {
@@ -2717,7 +2717,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_apitags",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "apitags"
     },
     {
@@ -2728,7 +2728,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_controller",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "controller"
     },
     {
@@ -2739,7 +2739,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_post",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "post"
     },
     {
@@ -2750,7 +2750,7 @@
       "_origin": "ast",
       "id": "httpcode",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "httpcode"
     },
     {
@@ -2761,7 +2761,7 @@
       "_origin": "ast",
       "id": "throttle",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "throttle"
     },
     {
@@ -2772,7 +2772,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_apioperation",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "apioperation"
     },
     {
@@ -2783,7 +2783,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_body",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "body"
     },
     {
@@ -2794,7 +2794,7 @@
       "_origin": "ast",
       "id": "res",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "res"
     },
     {
@@ -2805,7 +2805,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_get",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "get"
     },
     {
@@ -2816,7 +2816,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_useguards",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "useguards"
     },
     {
@@ -2827,7 +2827,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_req",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "req"
     },
     {
@@ -2838,7 +2838,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_constructor",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -2849,7 +2849,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_login",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".login()"
     },
     {
@@ -2860,7 +2860,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_loginmovil",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".loginmovil()"
     },
     {
@@ -2871,7 +2871,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_loginmovilconsim",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".loginmovilconsim()"
     },
     {
@@ -2882,7 +2882,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_logout",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".logout()"
     },
     {
@@ -2893,7 +2893,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_me",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".me()"
     },
     {
@@ -2904,7 +2904,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_setauthcookie",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".setauthcookie()"
     },
     {
@@ -2947,8 +2947,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_spec",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "auth.service.spec.ts"
     },
     {
@@ -2958,8 +2958,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "auth.service.ts"
     },
     {
@@ -2969,8 +2969,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_mensajes_duplicado",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "mensajes_duplicado"
     },
     {
@@ -2981,7 +2981,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "authservice"
     },
     {
@@ -2992,7 +2992,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_ts_injectable",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "injectable"
     },
     {
@@ -3002,8 +3002,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_constructor",
-      "community": 345,
-      "community_name": "AuthService",
+      "community": 5,
+      "community_name": "PrismaService",
       "norm_label": ".constructor()"
     },
     {
@@ -3014,7 +3014,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_crearusuario",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".crearusuario()"
     },
     {
@@ -3025,7 +3025,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_login",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".login()"
     },
     {
@@ -3036,7 +3036,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_loginmovilconsim",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".loginmovilconsim()"
     },
     {
@@ -3047,7 +3047,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_me",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".me()"
     },
     {
@@ -3058,7 +3058,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_firmartoken",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".firmartoken()"
     },
     {
@@ -3069,7 +3069,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_asesion",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": ".asesion()"
     },
     {
@@ -3079,8 +3079,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto",
-      "community": 7,
-      "community_name": "LoginSimDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "login-sim.dto.ts"
     },
     {
@@ -3090,8 +3090,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto_loginsimdto",
-      "community": 7,
-      "community_name": "LoginSimDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "loginsimdto"
     },
     {
@@ -3101,8 +3101,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto_ts_isarray",
-      "community": 7,
-      "community_name": "LoginSimDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "isarray"
     },
     {
@@ -3112,8 +3112,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "arrayminsize",
-      "community": 7,
-      "community_name": "LoginSimDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "arrayminsize"
     },
     {
@@ -3123,8 +3123,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto_ts_arraymaxsize",
-      "community": 7,
-      "community_name": "LoginSimDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "arraymaxsize"
     },
     {
@@ -3134,8 +3134,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto_ts_isstring",
-      "community": 7,
-      "community_name": "LoginSimDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "isstring"
     },
     {
@@ -3145,8 +3145,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto_ts_maxlength",
-      "community": 7,
-      "community_name": "LoginSimDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "maxlength"
     },
     {
@@ -3156,8 +3156,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto_ts_transform",
-      "community": 7,
-      "community_name": "LoginSimDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "transform"
     },
     {
@@ -3167,8 +3167,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_dto",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "login.dto.ts"
     },
     {
@@ -3179,7 +3179,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_dto_logindto",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "logindto"
     },
     {
@@ -3190,7 +3190,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_dto_ts_isstring",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "isstring"
     },
     {
@@ -3201,7 +3201,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_dto_ts_transform",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "transform"
     },
     {
@@ -3212,7 +3212,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_dto_ts_length",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "length"
     },
     {
@@ -3223,7 +3223,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_dto_ts_maxlength",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "maxlength"
     },
     {
@@ -3233,8 +3233,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 28,
+      "community_name": "numeros.ts",
       "norm_label": "register.dto.ts"
     },
     {
@@ -3244,8 +3244,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_registerdto",
-      "community": 359,
-      "community_name": "RegisterDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "registerdto"
     },
     {
@@ -3255,8 +3255,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_isstring",
-      "community": 359,
-      "community_name": "RegisterDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "isstring"
     },
     {
@@ -3266,8 +3266,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_transform",
-      "community": 359,
-      "community_name": "RegisterDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "transform"
     },
     {
@@ -3277,8 +3277,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_length",
-      "community": 359,
-      "community_name": "RegisterDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "length"
     },
     {
@@ -3288,8 +3288,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "isemail",
-      "community": 359,
-      "community_name": "RegisterDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "isemail"
     },
     {
@@ -3299,8 +3299,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_maxlength",
-      "community": 359,
-      "community_name": "RegisterDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "maxlength"
     },
     {
@@ -3310,8 +3310,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_matches",
-      "community": 359,
-      "community_name": "RegisterDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "matches"
     },
     {
@@ -3321,8 +3321,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_isint",
-      "community": 359,
-      "community_name": "RegisterDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "isint"
     },
     {
@@ -3332,8 +3332,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "ispositive",
-      "community": 359,
-      "community_name": "RegisterDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "ispositive"
     },
     {
@@ -3343,8 +3343,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_minlength",
-      "community": 359,
-      "community_name": "RegisterDto",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "minlength"
     },
     {
@@ -3354,8 +3354,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_asignacion_usuario_interface",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "asignacion-usuario.interface.ts"
     },
     {
@@ -3365,8 +3365,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_asignacion_usuario_interface_asignacionusuario",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "asignacionusuario"
     },
     {
@@ -3376,8 +3376,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_request_con_usuario_interface",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "request-con-usuario.interface.ts"
     },
     {
@@ -3387,8 +3387,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_request_con_usuario_interface_requestconusuario",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "requestconusuario"
     },
     {
@@ -3398,8 +3398,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_token_payload_interface",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "token-payload.interface.ts"
     },
     {
@@ -3409,8 +3409,8 @@
       "source_location": "L2",
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_token_payload_interface_tokenpayload",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "tokenpayload"
     },
     {
@@ -3421,7 +3421,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_usuario_sesion_interface",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "usuario-sesion.interface.ts"
     },
     {
@@ -3432,7 +3432,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_usuario_sesion_interface_usuariosesion",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "usuariosesion"
     },
     {
@@ -3442,8 +3442,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_jwt_auth_guard_spec",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 5,
+      "community_name": "PrismaService",
       "norm_label": "jwt-auth.guard.spec.ts"
     },
     {
@@ -3453,8 +3453,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_jwt_auth_guard",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "jwt-auth.guard.ts"
     },
     {
@@ -3464,8 +3464,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "apps_api_src_auth_jwt_auth_guard_jwtauthguard",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 5,
+      "community_name": "PrismaService",
       "norm_label": "jwtauthguard"
     },
     {
@@ -3475,8 +3475,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_jwt_auth_guard_ts_injectable",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 5,
+      "community_name": "PrismaService",
       "norm_label": "injectable"
     },
     {
@@ -3486,7 +3486,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "apps_api_src_auth_jwt_auth_guard_jwtauthguard_constructor",
-      "community": 110,
+      "community": 5,
       "community_name": "PrismaService",
       "norm_label": ".constructor()"
     },
@@ -3497,8 +3497,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "apps_api_src_auth_jwt_auth_guard_jwtauthguard_canactivate",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 5,
+      "community_name": "PrismaService",
       "norm_label": ".canactivate()"
     },
     {
@@ -3508,8 +3508,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_superadmin_guard",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "superadmin.guard.ts"
     },
     {
@@ -3520,7 +3520,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_superadmin_guard_superadminguard",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "superadminguard"
     },
     {
@@ -3531,7 +3531,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_superadmin_guard_ts_injectable",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "injectable"
     },
     {
@@ -3541,8 +3541,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "apps_api_src_auth_superadmin_guard_superadminguard_constructor",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 38,
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -3553,7 +3553,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_superadmin_guard_superadminguard_canactivate",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": ".canactivate()"
     },
     {
@@ -3564,7 +3564,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_datos_usuario_spec",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "datos-usuario.spec.ts"
     },
     {
@@ -3575,7 +3575,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_datos_usuario",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "datos-usuario.ts"
     },
     {
@@ -3586,7 +3586,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_datos_usuario_tipos_celular_validos",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "tipos_celular_validos"
     },
     {
@@ -3597,7 +3597,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_datos_usuario_normalizarcelular",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "normalizarcelular()"
     },
     {
@@ -3608,7 +3608,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_datos_usuario_normalizarnumerosim",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "normalizarnumerosim()"
     },
     {
@@ -3619,7 +3619,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_datos_usuario_normalizarrucusuario",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "normalizarrucusuario()"
     },
     {
@@ -3629,8 +3629,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_password_spec",
-      "community": 15,
-      "community_name": "hashPassword",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "password.spec.ts"
     },
     {
@@ -3640,8 +3640,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_password",
-      "community": 15,
-      "community_name": "hashPassword",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "password.ts"
     },
     {
@@ -3651,8 +3651,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_password_scrypt",
-      "community": 15,
-      "community_name": "hashPassword",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "scrypt"
     },
     {
@@ -3662,8 +3662,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_password_hashpassword",
-      "community": 15,
-      "community_name": "hashPassword",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "hashpassword()"
     },
     {
@@ -3673,8 +3673,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_password_verifypassword",
-      "community": 15,
-      "community_name": "hashPassword",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "verifypassword()"
     },
     {
@@ -3685,7 +3685,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_ruc_spec",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "ruc.spec.ts"
     },
     {
@@ -3696,7 +3696,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_ruc",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "auth/utils/ruc.ts"
     },
     {
@@ -3707,7 +3707,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_ruc_calculardvrucpy",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "calculardvrucpy()"
     },
     {
@@ -3718,7 +3718,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_ruc_normalizarrucpy",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "normalizarrucpy()"
     },
     {
@@ -3729,7 +3729,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_ruc_esrucparaguayovalido",
       "community": 345,
-      "community_name": "AuthService",
+      "community_name": "auth.service.ts",
       "norm_label": "esrucparaguayovalido()"
     },
     {
@@ -3816,8 +3816,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_numeros",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 28,
+      "community_name": "numeros.ts",
       "norm_label": "numeros.ts"
     },
     {
@@ -3827,8 +3827,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_numeros_redondear1decimal",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 28,
+      "community_name": "numeros.ts",
       "norm_label": "redondear1decimal()"
     },
     {
@@ -3937,8 +3937,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_permisos_usuario_spec",
-      "community": 4,
-      "community_name": "usuarios.service.ts",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "permisos-usuario.spec.ts"
     },
     {
@@ -3948,8 +3948,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_permisos_usuario",
-      "community": 4,
-      "community_name": "usuarios.service.ts",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "permisos-usuario.ts"
     },
     {
@@ -3959,8 +3959,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_permisos_usuario_puedeadministrarusuarios",
-      "community": 4,
-      "community_name": "usuarios.service.ts",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "puedeadministrarusuarios()"
     },
     {
@@ -4003,8 +4003,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_transforms",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 28,
+      "community_name": "numeros.ts",
       "norm_label": "transforms.ts"
     },
     {
@@ -4014,8 +4014,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_transforms_trimstring",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 28,
+      "community_name": "numeros.ts",
       "norm_label": "trimstring()"
     },
     {
@@ -4025,8 +4025,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_transforms_lowertrimstring",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 28,
+      "community_name": "numeros.ts",
       "norm_label": "lowertrimstring()"
     },
     {
@@ -4036,8 +4036,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_config_configuration",
-      "community": 14,
-      "community_name": "env.schema.ts",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "configuration.ts"
     },
     {
@@ -4047,8 +4047,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_config_env_schema",
-      "community": 14,
-      "community_name": "env.schema.ts",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "env.schema.ts"
     },
     {
@@ -4058,8 +4058,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "apps_api_src_config_env_schema_booleanfromstring",
-      "community": 14,
-      "community_name": "env.schema.ts",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "booleanfromstring"
     },
     {
@@ -4069,8 +4069,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "apps_api_src_config_env_schema_rawenvschema",
-      "community": 14,
-      "community_name": "env.schema.ts",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "rawenvschema"
     },
     {
@@ -4080,8 +4080,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "apps_api_src_config_env_schema_env",
-      "community": 14,
-      "community_name": "env.schema.ts",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "env"
     },
     {
@@ -4091,8 +4091,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "apps_api_src_config_env_schema_parsecorsorigins",
-      "community": 14,
-      "community_name": "env.schema.ts",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "parsecorsorigins()"
     },
     {
@@ -4102,8 +4102,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "apps_api_src_config_env_schema_validateenv",
-      "community": 14,
-      "community_name": "env.schema.ts",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "validateenv()"
     },
     {
@@ -4114,7 +4114,7 @@
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "admin-empresas.controller.ts"
     },
     {
@@ -4124,8 +4124,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_adminempresascontroller",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": "adminempresascontroller"
     },
     {
@@ -4135,8 +4135,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_ts_apitags",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": "apitags"
     },
     {
@@ -4146,8 +4146,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_ts_controller",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": "controller"
     },
     {
@@ -4157,8 +4157,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_ts_useguards",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": "useguards"
     },
     {
@@ -4190,8 +4190,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_ts_post",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": "post"
     },
     {
@@ -4201,8 +4201,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_ts_body",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": "body"
     },
     {
@@ -4212,8 +4212,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_ts_patch",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": "patch"
     },
     {
@@ -4223,8 +4223,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_ts_param",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": "param"
     },
     {
@@ -4234,8 +4234,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_ts_delete",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": "delete"
     },
     {
@@ -4245,8 +4245,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_adminempresascontroller_constructor",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": ".constructor()"
     },
     {
@@ -4267,8 +4267,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_adminempresascontroller_crear",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": ".crear()"
     },
     {
@@ -4278,8 +4278,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_adminempresascontroller_actualizar",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": ".actualizar()"
     },
     {
@@ -4289,8 +4289,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller_adminempresascontroller_eliminar",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": ".eliminar()"
     },
     {
@@ -4300,7 +4300,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_service_spec",
-      "community": 110,
+      "community": 5,
       "community_name": "PrismaService",
       "norm_label": "admin-empresas.service.spec.ts"
     },
@@ -4421,8 +4421,8 @@
       "source_location": "L167",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_service_adminempresasservice_eliminar",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 7,
+      "community_name": "AdminEmpresasController",
       "norm_label": ".eliminar()"
     },
     {
@@ -4432,8 +4432,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_empresas_dto_empresa_admin_dto",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 38,
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "empresa-admin.dto.ts"
     },
     {
@@ -4443,8 +4443,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "apps_api_src_empresas_dto_empresa_admin_dto_crearempresaadmindto",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 38,
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "crearempresaadmindto"
     },
     {
@@ -4454,8 +4454,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_dto_empresa_admin_dto_ts_isstring",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 38,
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "isstring"
     },
     {
@@ -4465,8 +4465,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_dto_empresa_admin_dto_ts_minlength",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 38,
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "minlength"
     },
     {
@@ -4476,8 +4476,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_dto_empresa_admin_dto_ts_maxlength",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 38,
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "maxlength"
     },
     {
@@ -4487,8 +4487,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_dto_empresa_admin_dto_ts_isoptional",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 38,
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "isoptional"
     },
     {
@@ -4498,8 +4498,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_dto_empresa_admin_dto_ts_type",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 38,
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "type"
     },
     {
@@ -4509,8 +4509,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_dto_empresa_admin_dto_ts_isint",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 38,
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "isint"
     },
     {
@@ -4520,8 +4520,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_dto_empresa_admin_dto_ts_min",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 38,
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "min"
     },
     {
@@ -4531,8 +4531,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_dto_empresa_admin_dto_ts_max",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 38,
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "max"
     },
     {
@@ -4542,8 +4542,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "apps_api_src_empresas_dto_empresa_admin_dto_actualizarempresaadmindto",
-      "community": 10,
-      "community_name": "admin-empresas.service.ts",
+      "community": 38,
+      "community_name": "admin-empresas.controller.ts",
       "norm_label": "actualizarempresaadmindto"
     },
     {
@@ -4763,7 +4763,7 @@
       "_origin": "ast",
       "id": "apps_api_src_health_health_controller",
       "community": 5,
-      "community_name": "HealthController",
+      "community_name": "PrismaService",
       "norm_label": "health.controller.ts"
     },
     {
@@ -4774,7 +4774,7 @@
       "_origin": "ast",
       "id": "apps_api_src_health_health_controller_healthcontroller",
       "community": 5,
-      "community_name": "HealthController",
+      "community_name": "PrismaService",
       "norm_label": "healthcontroller"
     },
     {
@@ -4785,7 +4785,7 @@
       "_origin": "ast",
       "id": "apps_api_src_health_health_controller_ts_apitags",
       "community": 5,
-      "community_name": "HealthController",
+      "community_name": "PrismaService",
       "norm_label": "apitags"
     },
     {
@@ -4796,7 +4796,7 @@
       "_origin": "ast",
       "id": "apps_api_src_health_health_controller_ts_controller",
       "community": 5,
-      "community_name": "HealthController",
+      "community_name": "PrismaService",
       "norm_label": "controller"
     },
     {
@@ -4807,7 +4807,7 @@
       "_origin": "ast",
       "id": "apps_api_src_health_health_controller_ts_get",
       "community": 5,
-      "community_name": "HealthController",
+      "community_name": "PrismaService",
       "norm_label": "get"
     },
     {
@@ -4818,7 +4818,7 @@
       "_origin": "ast",
       "id": "healthcheck",
       "community": 5,
-      "community_name": "HealthController",
+      "community_name": "PrismaService",
       "norm_label": "healthcheck"
     },
     {
@@ -4829,7 +4829,7 @@
       "_origin": "ast",
       "id": "apps_api_src_health_health_controller_ts_apioperation",
       "community": 5,
-      "community_name": "HealthController",
+      "community_name": "PrismaService",
       "norm_label": "apioperation"
     },
     {
@@ -4840,7 +4840,7 @@
       "_origin": "ast",
       "id": "apps_api_src_health_health_controller_healthcontroller_constructor",
       "community": 5,
-      "community_name": "HealthController",
+      "community_name": "PrismaService",
       "norm_label": ".constructor()"
     },
     {
@@ -4851,7 +4851,7 @@
       "_origin": "ast",
       "id": "apps_api_src_health_health_controller_healthcontroller_check",
       "community": 5,
-      "community_name": "HealthController",
+      "community_name": "PrismaService",
       "norm_label": ".check()"
     },
     {
@@ -5016,7 +5016,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "asignaciones.service.ts"
     },
     {
@@ -5027,7 +5027,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_asignacionesservice",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "asignacionesservice"
     },
     {
@@ -5038,7 +5038,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_ts_injectable",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "injectable"
     },
     {
@@ -5049,7 +5049,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_asignacionesservice_constructor",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -5060,7 +5060,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_asignacionesservice_deempresa",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": ".deempresa()"
     },
     {
@@ -5071,7 +5071,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_asignacionesservice_asignarmodulo",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": ".asignarmodulo()"
     },
     {
@@ -5082,7 +5082,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_asignacionesservice_quitarmodulo",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": ".quitarmodulo()"
     },
     {
@@ -5093,7 +5093,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_asignacion_dto",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "asignacion.dto.ts"
     },
     {
@@ -5104,7 +5104,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_asignacion_dto_paginaasignadadto",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "paginaasignadadto"
     },
     {
@@ -5115,7 +5115,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_asignacion_dto_ts_isint",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "isint"
     },
     {
@@ -5126,7 +5126,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_asignacion_dto_ts_max",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "max"
     },
     {
@@ -5137,7 +5137,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_asignacion_dto_ts_isoptional",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "isoptional"
     },
     {
@@ -5148,7 +5148,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_asignacion_dto_ts_isarray",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "isarray"
     },
     {
@@ -5159,7 +5159,7 @@
       "_origin": "ast",
       "id": "arrayunique",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "arrayunique"
     },
     {
@@ -5170,7 +5170,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_asignacion_dto_ts_arraymaxsize",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "arraymaxsize"
     },
     {
@@ -5181,7 +5181,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_asignacion_dto_asignarmodulodto",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "asignarmodulodto"
     },
     {
@@ -5192,7 +5192,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_asignacion_dto_ts_isboolean",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "isboolean"
     },
     {
@@ -5203,7 +5203,7 @@
       "_origin": "ast",
       "id": "validatenested",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "validatenested"
     },
     {
@@ -5214,7 +5214,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_asignacion_dto_ts_type",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "type"
     },
     {
@@ -5367,8 +5367,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 28,
+      "community_name": "numeros.ts",
       "norm_label": "modulo.dto.ts"
     },
     {
@@ -5378,8 +5378,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto_crearmodulodto",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 15,
+      "community_name": "ActualizarModuloDto",
       "norm_label": "crearmodulodto"
     },
     {
@@ -5389,8 +5389,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto_ts_isstring",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 15,
+      "community_name": "ActualizarModuloDto",
       "norm_label": "isstring"
     },
     {
@@ -5400,8 +5400,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto_ts_transform",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 15,
+      "community_name": "ActualizarModuloDto",
       "norm_label": "transform"
     },
     {
@@ -5411,8 +5411,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto_ts_length",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 15,
+      "community_name": "ActualizarModuloDto",
       "norm_label": "length"
     },
     {
@@ -5422,8 +5422,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto_ts_matches",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 15,
+      "community_name": "ActualizarModuloDto",
       "norm_label": "matches"
     },
     {
@@ -5433,8 +5433,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto_ts_isoptional",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 15,
+      "community_name": "ActualizarModuloDto",
       "norm_label": "isoptional"
     },
     {
@@ -5444,8 +5444,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto_ts_isint",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 15,
+      "community_name": "ActualizarModuloDto",
       "norm_label": "isint"
     },
     {
@@ -5455,8 +5455,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto_ts_min",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 15,
+      "community_name": "ActualizarModuloDto",
       "norm_label": "min"
     },
     {
@@ -5466,8 +5466,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto_ts_max",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 15,
+      "community_name": "ActualizarModuloDto",
       "norm_label": "max"
     },
     {
@@ -5477,8 +5477,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto_ts_isboolean",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 15,
+      "community_name": "ActualizarModuloDto",
       "norm_label": "isboolean"
     },
     {
@@ -5488,8 +5488,8 @@
       "source_location": "L48",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto_actualizarmodulodto",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 15,
+      "community_name": "ActualizarModuloDto",
       "norm_label": "actualizarmodulodto"
     },
     {
@@ -5499,8 +5499,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 28,
+      "community_name": "numeros.ts",
       "norm_label": "pagina.dto.ts"
     },
     {
@@ -5510,8 +5510,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto_crearpaginadto",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 23,
+      "community_name": "ActualizarPaginaDto",
       "norm_label": "crearpaginadto"
     },
     {
@@ -5521,8 +5521,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto_ts_isint",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 23,
+      "community_name": "ActualizarPaginaDto",
       "norm_label": "isint"
     },
     {
@@ -5532,8 +5532,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto_ts_max",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 23,
+      "community_name": "ActualizarPaginaDto",
       "norm_label": "max"
     },
     {
@@ -5543,8 +5543,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto_ts_isstring",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 23,
+      "community_name": "ActualizarPaginaDto",
       "norm_label": "isstring"
     },
     {
@@ -5554,8 +5554,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto_ts_transform",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 23,
+      "community_name": "ActualizarPaginaDto",
       "norm_label": "transform"
     },
     {
@@ -5565,8 +5565,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto_ts_length",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 23,
+      "community_name": "ActualizarPaginaDto",
       "norm_label": "length"
     },
     {
@@ -5576,8 +5576,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto_ts_matches",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 23,
+      "community_name": "ActualizarPaginaDto",
       "norm_label": "matches"
     },
     {
@@ -5587,8 +5587,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto_ts_isoptional",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 23,
+      "community_name": "ActualizarPaginaDto",
       "norm_label": "isoptional"
     },
     {
@@ -5598,8 +5598,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto_ts_min",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 23,
+      "community_name": "ActualizarPaginaDto",
       "norm_label": "min"
     },
     {
@@ -5609,8 +5609,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto_ts_isboolean",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 23,
+      "community_name": "ActualizarPaginaDto",
       "norm_label": "isboolean"
     },
     {
@@ -5620,8 +5620,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto_actualizarpaginadto",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 23,
+      "community_name": "ActualizarPaginaDto",
       "norm_label": "actualizarpaginadto"
     },
     {
@@ -5631,8 +5631,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_ejecutables_service",
-      "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": "ejecutables.service.ts"
     },
     {
@@ -5642,8 +5642,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_ejecutables_service_ejecutablesservice",
-      "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": "ejecutablesservice"
     },
     {
@@ -5653,8 +5653,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_ejecutables_service_ts_injectable",
-      "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": "injectable"
     },
     {
@@ -5664,8 +5664,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_ejecutables_service_ejecutablesservice_constructor",
-      "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": ".constructor()"
     },
     {
@@ -5686,8 +5686,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_ejecutables_service_ejecutablesservice_crear",
-      "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": ".crear()"
     },
     {
@@ -5697,8 +5697,8 @@
       "source_location": "L51",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_ejecutables_service_ejecutablesservice_actualizar",
-      "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": ".actualizar()"
     },
     {
@@ -5708,8 +5708,8 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_ejecutables_service_ejecutablesservice_eliminar",
-      "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": ".eliminar()"
     },
     {
@@ -5719,8 +5719,8 @@
       "source_location": "L80",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_ejecutables_service_ejecutablesservice_obtener",
-      "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": ".obtener()"
     },
     {
@@ -5730,8 +5730,8 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_ejecutables_service_ejecutablesservice_validarconexion",
-      "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": ".validarconexion()"
     },
     {
@@ -5741,8 +5741,8 @@
       "source_location": "L103",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_ejecutables_service_ejecutablesservice_adto",
-      "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": ".adto()"
     },
     {
@@ -5775,7 +5775,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_asignacion_interface",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "asignacion.interface.ts"
     },
     {
@@ -5786,7 +5786,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_asignacion_interface_paginaasignada",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "paginaasignada"
     },
     {
@@ -5797,7 +5797,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_asignacion_interface_empresamodulodto",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "empresamodulodto"
     },
     {
@@ -5808,7 +5808,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_asignacion_interface_asignacionempresadto",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "asignacionempresadto"
     },
     {
@@ -5818,8 +5818,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_plataforma_interface",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": "plataforma.interface.ts"
     },
     {
@@ -5829,8 +5829,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_plataforma_interface_ejecutabledto",
-      "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": "ejecutabledto"
     },
     {
@@ -5840,8 +5840,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_plataforma_interface_paginadto",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": "paginadto"
     },
     {
@@ -5851,8 +5851,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_plataforma_interface_modulodto",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": "modulodto"
     },
     {
@@ -5862,8 +5862,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_plataforma_interface_paginamenu",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 14,
+      "community_name": "EjecutablesService",
       "norm_label": "paginamenu"
     },
     {
@@ -5873,8 +5873,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_plataforma_interface_modulomenu",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 95,
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": "modulomenu"
     },
     {
@@ -5906,8 +5906,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_mi_plataforma_service_spec",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 95,
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": "mi-plataforma.service.spec.ts"
     },
     {
@@ -5928,8 +5928,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_mi_plataforma_service_miplataformaservice",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 95,
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": "miplataformaservice"
     },
     {
@@ -5939,8 +5939,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_mi_plataforma_service_ts_injectable",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 95,
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": "injectable"
     },
     {
@@ -5950,8 +5950,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_mi_plataforma_service_miplataformaservice_constructor",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 95,
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -5961,8 +5961,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_mi_plataforma_service_miplataformaservice_menu",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 95,
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": ".menu()"
     },
     {
@@ -5972,8 +5972,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": "modulos.service.ts"
     },
     {
@@ -5983,8 +5983,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": "modulosservice"
     },
     {
@@ -5994,8 +5994,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_ts_injectable",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": "injectable"
     },
     {
@@ -6005,8 +6005,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_constructor",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 5,
+      "community_name": "PrismaService",
       "norm_label": ".constructor()"
     },
     {
@@ -6027,8 +6027,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_listar",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": ".listar()"
     },
     {
@@ -6038,8 +6038,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_crearmodulo",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": ".crearmodulo()"
     },
     {
@@ -6049,8 +6049,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_actualizarmodulo",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": ".actualizarmodulo()"
     },
     {
@@ -6060,8 +6060,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_eliminarmodulo",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": ".eliminarmodulo()"
     },
     {
@@ -6071,8 +6071,8 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_crearpagina",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": ".crearpagina()"
     },
     {
@@ -6082,8 +6082,8 @@
       "source_location": "L120",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_actualizarpagina",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": ".actualizarpagina()"
     },
     {
@@ -6093,8 +6093,8 @@
       "source_location": "L146",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_eliminarpagina",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": ".eliminarpagina()"
     },
     {
@@ -6104,8 +6104,8 @@
       "source_location": "L152",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_obtenermodulo",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": ".obtenermodulo()"
     },
     {
@@ -6115,8 +6115,8 @@
       "source_location": "L160",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_obtenerpagina",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": ".obtenerpagina()"
     },
     {
@@ -6126,8 +6126,8 @@
       "source_location": "L168",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_maperrorruta",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": ".maperrorruta()"
     },
     {
@@ -6137,8 +6137,8 @@
       "source_location": "L178",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_amodulodto",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": ".amodulodto()"
     },
     {
@@ -6148,8 +6148,8 @@
       "source_location": "L192",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service_modulosservice_apaginadto",
-      "community": 16,
-      "community_name": "AdminPlataformaController",
+      "community": 4,
+      "community_name": "ModulosService",
       "norm_label": ".apaginadto()"
     },
     {
@@ -6159,7 +6159,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_plataforma_controller",
-      "community": 38,
+      "community": 26,
       "community_name": "plataforma.controller.ts",
       "norm_label": "plataforma.controller.ts"
     },
@@ -6236,8 +6236,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_plataforma_controller_miplataformacontroller_constructor",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 16,
+      "community_name": "AdminPlataformaController",
       "norm_label": ".constructor()"
     },
     {
@@ -6325,7 +6325,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_plataforma_controller_adminplataformacontroller_constructor",
       "community": 26,
-      "community_name": "AsignarModuloDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -6599,7 +6599,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_prisma_prisma_service",
-      "community": 110,
+      "community": 5,
       "community_name": "PrismaService",
       "norm_label": "prisma.service.ts"
     },
@@ -6610,7 +6610,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "apps_api_src_prisma_prisma_service_prismaservice",
-      "community": 110,
+      "community": 5,
       "community_name": "PrismaService",
       "norm_label": "prismaservice"
     },
@@ -6621,7 +6621,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_prisma_prisma_service_ts_injectable",
-      "community": 110,
+      "community": 5,
       "community_name": "PrismaService",
       "norm_label": "injectable"
     },
@@ -6632,7 +6632,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "apps_api_src_prisma_prisma_service_prismaservice_constructor",
-      "community": 110,
+      "community": 5,
       "community_name": "PrismaService",
       "norm_label": ".constructor()"
     },
@@ -6643,7 +6643,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "apps_api_src_prisma_prisma_service_prismaservice_onmoduleinit",
-      "community": 110,
+      "community": 5,
       "community_name": "PrismaService",
       "norm_label": ".onmoduleinit()"
     },
@@ -6654,7 +6654,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "apps_api_src_prisma_prisma_service_prismaservice_onmoduledestroy",
-      "community": 110,
+      "community": 5,
       "community_name": "PrismaService",
       "norm_label": ".onmoduledestroy()"
     },
@@ -6665,8 +6665,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_roles_dto_rol_dto",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "rol.dto.ts"
     },
     {
@@ -6676,8 +6676,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "apps_api_src_roles_dto_rol_dto_crearroldto",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "crearroldto"
     },
     {
@@ -6687,8 +6687,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_dto_rol_dto_ts_isstring",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "isstring"
     },
     {
@@ -6698,8 +6698,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_dto_rol_dto_ts_minlength",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "minlength"
     },
     {
@@ -6709,8 +6709,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_dto_rol_dto_ts_maxlength",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "maxlength"
     },
     {
@@ -6720,8 +6720,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_dto_rol_dto_ts_isoptional",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "isoptional"
     },
     {
@@ -6731,8 +6731,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_dto_rol_dto_ts_type",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "type"
     },
     {
@@ -6742,8 +6742,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_dto_rol_dto_ts_isint",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "isint"
     },
     {
@@ -6753,8 +6753,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_dto_rol_dto_ts_min",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "min"
     },
     {
@@ -6764,8 +6764,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_dto_rol_dto_ts_max",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "max"
     },
     {
@@ -6775,8 +6775,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "apps_api_src_roles_dto_rol_dto_actualizarroldto",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "actualizarroldto"
     },
     {
@@ -6786,8 +6786,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_roles_interfaces_rol_admin_interface",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "rol-admin.interface.ts"
     },
     {
@@ -6797,8 +6797,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_roles_interfaces_rol_admin_interface_roladminfila",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "roladminfila"
     },
     {
@@ -6808,8 +6808,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "apps_api_src_roles_interfaces_rol_admin_interface_roladmindto",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "roladmindto"
     },
     {
@@ -6819,8 +6819,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "roles.controller.ts"
     },
     {
@@ -6830,8 +6830,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_rolescontroller",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": "rolescontroller"
     },
     {
@@ -6841,8 +6841,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_ts_apitags",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": "apitags"
     },
     {
@@ -6852,8 +6852,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_ts_controller",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": "controller"
     },
     {
@@ -6863,8 +6863,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_ts_useguards",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": "useguards"
     },
     {
@@ -6896,8 +6896,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_ts_post",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": "post"
     },
     {
@@ -6907,8 +6907,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_ts_body",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": "body"
     },
     {
@@ -6918,8 +6918,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_ts_patch",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": "patch"
     },
     {
@@ -6929,8 +6929,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_ts_param",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": "param"
     },
     {
@@ -6940,8 +6940,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_ts_delete",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": "delete"
     },
     {
@@ -6951,8 +6951,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_rolescontroller_constructor",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": ".constructor()"
     },
     {
@@ -6973,8 +6973,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_rolescontroller_crear",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": ".crear()"
     },
     {
@@ -6984,8 +6984,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_rolescontroller_actualizar",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": ".actualizar()"
     },
     {
@@ -6995,8 +6995,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller_rolescontroller_eliminar",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": ".eliminar()"
     },
     {
@@ -7039,7 +7039,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_service_spec",
-      "community": 110,
+      "community": 5,
       "community_name": "PrismaService",
       "norm_label": "roles.service.spec.ts"
     },
@@ -7050,8 +7050,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_service",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "roles.service.ts"
     },
     {
@@ -7061,8 +7061,8 @@
       "source_location": "L20",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_service_select_rol_admin",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "select_rol_admin"
     },
     {
@@ -7072,8 +7072,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_service_aroladmindto",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "aroladmindto()"
     },
     {
@@ -7083,8 +7083,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_service_rolesservice",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "rolesservice"
     },
     {
@@ -7094,8 +7094,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_service_ts_injectable",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "injectable"
     },
     {
@@ -7105,8 +7105,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_service_rolesservice_constructor",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -7127,8 +7127,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_service_rolesservice_validarpadre",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": ".validarpadre()"
     },
     {
@@ -7138,8 +7138,8 @@
       "source_location": "L72",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_service_rolesservice_crear",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": ".crear()"
     },
     {
@@ -7149,8 +7149,8 @@
       "source_location": "L94",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_service_rolesservice_actualizar",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": ".actualizar()"
     },
     {
@@ -7160,8 +7160,8 @@
       "source_location": "L124",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_service_rolesservice_eliminar",
-      "community": 12,
-      "community_name": "PaginacionDto",
+      "community": 9,
+      "community_name": "RolesController",
       "norm_label": ".eliminar()"
     },
     {
@@ -7171,8 +7171,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "admin-usuarios.controller.ts"
     },
     {
@@ -7183,7 +7183,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_adminusuarioscontroller",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": "adminusuarioscontroller"
     },
     {
@@ -7194,7 +7194,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_ts_apitags",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": "apitags"
     },
     {
@@ -7205,7 +7205,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_ts_controller",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": "controller"
     },
     {
@@ -7216,7 +7216,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_ts_useguards",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": "useguards"
     },
     {
@@ -7227,7 +7227,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_ts_get",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": "get"
     },
     {
@@ -7238,7 +7238,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_ts_req",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": "req"
     },
     {
@@ -7249,7 +7249,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_ts_query",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": "query"
     },
     {
@@ -7260,7 +7260,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_ts_post",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": "post"
     },
     {
@@ -7271,7 +7271,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_ts_body",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": "body"
     },
     {
@@ -7282,7 +7282,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_ts_patch",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": "patch"
     },
     {
@@ -7293,7 +7293,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_ts_param",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": "param"
     },
     {
@@ -7304,7 +7304,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_ts_delete",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": "delete"
     },
     {
@@ -7315,7 +7315,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_adminusuarioscontroller_constructor",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -7326,7 +7326,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_adminusuarioscontroller_meta",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": ".meta()"
     },
     {
@@ -7337,7 +7337,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_adminusuarioscontroller_listar",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": ".listar()"
     },
     {
@@ -7348,7 +7348,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_adminusuarioscontroller_crear",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": ".crear()"
     },
     {
@@ -7359,7 +7359,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_adminusuarioscontroller_actualizar",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": ".actualizar()"
     },
     {
@@ -7370,7 +7370,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller_adminusuarioscontroller_eliminar",
       "community": 1,
-      "community_name": "AdminUsuariosController",
+      "community_name": "usuarios.service.ts",
       "norm_label": ".eliminar()"
     },
     {
@@ -7380,8 +7380,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "usuario.dto.ts"
     },
     {
@@ -7391,8 +7391,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_listarusuariosdto",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "listarusuariosdto"
     },
     {
@@ -7402,8 +7402,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_isoptional",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "isoptional"
     },
     {
@@ -7413,8 +7413,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_type",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "type"
     },
     {
@@ -7424,8 +7424,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_isint",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "isint"
     },
     {
@@ -7435,8 +7435,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_min",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "min"
     },
     {
@@ -7446,8 +7446,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_max",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "max"
     },
     {
@@ -7457,8 +7457,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_crearusuariodto",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "crearusuariodto"
     },
     {
@@ -7468,8 +7468,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_isboolean",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "isboolean"
     },
     {
@@ -7479,8 +7479,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_actualizarusuariodto",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "actualizarusuariodto"
     },
     {
@@ -7490,8 +7490,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_isstring",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "isstring"
     },
     {
@@ -7501,8 +7501,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_minlength",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "minlength"
     },
     {
@@ -7512,8 +7512,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_maxlength",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "maxlength"
     },
     {
@@ -7523,7 +7523,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_interfaces_usuario_admin_interface",
-      "community": 4,
+      "community": 1,
       "community_name": "usuarios.service.ts",
       "norm_label": "usuario-admin.interface.ts"
     },
@@ -7534,8 +7534,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_interfaces_usuario_admin_interface_usuarioadmindto",
-      "community": 9,
-      "community_name": "UsuariosService",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "usuarioadmindto"
     },
     {
@@ -7545,7 +7545,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_interfaces_usuario_admin_interface_metausuariosdto",
-      "community": 4,
+      "community": 1,
       "community_name": "usuarios.service.ts",
       "norm_label": "metausuariosdto"
     },
@@ -7556,8 +7556,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller",
-      "community": 142,
-      "community_name": "ActualizarUsuarioDto",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "usuarios.controller.ts"
     },
     {
@@ -7567,8 +7567,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "usuarioscontroller"
     },
     {
@@ -7578,8 +7578,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_apitags",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "apitags"
     },
     {
@@ -7589,8 +7589,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_controller",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "controller"
     },
     {
@@ -7600,8 +7600,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_useguards",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "useguards"
     },
     {
@@ -7611,8 +7611,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_get",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "get"
     },
     {
@@ -7622,8 +7622,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_req",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "req"
     },
     {
@@ -7633,8 +7633,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_query",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "query"
     },
     {
@@ -7644,8 +7644,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_post",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "post"
     },
     {
@@ -7655,8 +7655,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_body",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "body"
     },
     {
@@ -7666,8 +7666,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_patch",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "patch"
     },
     {
@@ -7677,8 +7677,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_param",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "param"
     },
     {
@@ -7688,8 +7688,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_delete",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "delete"
     },
     {
@@ -7699,8 +7699,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_constructor",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -7710,8 +7710,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_meta",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".meta()"
     },
     {
@@ -7721,8 +7721,8 @@
       "source_location": "L36",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_listar",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".listar()"
     },
     {
@@ -7732,8 +7732,8 @@
       "source_location": "L41",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_crear",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".crear()"
     },
     {
@@ -7743,8 +7743,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_actualizar",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".actualizar()"
     },
     {
@@ -7754,8 +7754,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_eliminar",
-      "community": 58,
-      "community_name": "UsuariosController",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".eliminar()"
     },
     {
@@ -7798,8 +7798,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_spec",
-      "community": 110,
-      "community_name": "PrismaService",
+      "community": 345,
+      "community_name": "auth.service.ts",
       "norm_label": "usuarios.service.spec.ts"
     },
     {
@@ -7809,7 +7809,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service",
-      "community": 4,
+      "community": 1,
       "community_name": "usuarios.service.ts",
       "norm_label": "usuarios.service.ts"
     },
@@ -7820,7 +7820,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_select_usuario_admin",
-      "community": 4,
+      "community": 1,
       "community_name": "usuarios.service.ts",
       "norm_label": "select_usuario_admin"
     },
@@ -7831,7 +7831,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariofila",
-      "community": 4,
+      "community": 1,
       "community_name": "usuarios.service.ts",
       "norm_label": "usuariofila"
     },
@@ -7842,7 +7842,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_contextoadmin",
-      "community": 4,
+      "community": 1,
       "community_name": "usuarios.service.ts",
       "norm_label": "contextoadmin"
     },
@@ -7853,8 +7853,8 @@
       "source_location": "L65",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_ausuariodto",
-      "community": 9,
-      "community_name": "UsuariosService",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "ausuariodto()"
     },
     {
@@ -7864,8 +7864,8 @@
       "source_location": "L90",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice",
-      "community": 9,
-      "community_name": "UsuariosService",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "usuariosservice"
     },
     {
@@ -7875,8 +7875,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_ts_injectable",
-      "community": 9,
-      "community_name": "UsuariosService",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": "injectable"
     },
     {
@@ -7886,8 +7886,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_constructor",
-      "community": 345,
-      "community_name": "AuthService",
+      "community": 5,
+      "community_name": "PrismaService",
       "norm_label": ".constructor()"
     },
     {
@@ -7897,8 +7897,8 @@
       "source_location": "L96",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_contexto",
-      "community": 9,
-      "community_name": "UsuariosService",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".contexto()"
     },
     {
@@ -7908,8 +7908,8 @@
       "source_location": "L126",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_empresaobjetivo",
-      "community": 9,
-      "community_name": "UsuariosService",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".empresaobjetivo()"
     },
     {
@@ -7919,8 +7919,8 @@
       "source_location": "L134",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_listar",
-      "community": 9,
-      "community_name": "UsuariosService",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".listar()"
     },
     {
@@ -7930,8 +7930,8 @@
       "source_location": "L157",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_meta",
-      "community": 9,
-      "community_name": "UsuariosService",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".meta()"
     },
     {
@@ -7941,8 +7941,8 @@
       "source_location": "L175",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_validarasignaciones",
-      "community": 9,
-      "community_name": "UsuariosService",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".validarasignaciones()"
     },
     {
@@ -7952,8 +7952,8 @@
       "source_location": "L219",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_crear",
-      "community": 9,
-      "community_name": "UsuariosService",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".crear()"
     },
     {
@@ -7963,8 +7963,8 @@
       "source_location": "L247",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_actualizar",
-      "community": 9,
-      "community_name": "UsuariosService",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".actualizar()"
     },
     {
@@ -7974,8 +7974,8 @@
       "source_location": "L293",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_eliminar",
-      "community": 9,
-      "community_name": "UsuariosService",
+      "community": 1,
+      "community_name": "usuarios.service.ts",
       "norm_label": ".eliminar()"
     },
     {
@@ -11086,7 +11086,7 @@
       "_origin": "ast",
       "id": "package",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "package.json"
     },
     {
@@ -11097,7 +11097,7 @@
       "_origin": "ast",
       "id": "package_name",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "name"
     },
     {
@@ -11108,7 +11108,7 @@
       "_origin": "ast",
       "id": "package_version",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "version"
     },
     {
@@ -11119,7 +11119,7 @@
       "_origin": "ast",
       "id": "package_private",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "private"
     },
     {
@@ -11130,7 +11130,7 @@
       "_origin": "ast",
       "id": "package_workspaces",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "workspaces"
     },
     {
@@ -11141,7 +11141,7 @@
       "_origin": "ast",
       "id": "ref_apps",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "apps/*"
     },
     {
@@ -11152,7 +11152,7 @@
       "_origin": "ast",
       "id": "package_scripts",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "scripts"
     },
     {
@@ -11163,7 +11163,7 @@
       "_origin": "ast",
       "id": "package_scripts_dev",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "dev"
     },
     {
@@ -11174,7 +11174,7 @@
       "_origin": "ast",
       "id": "package_scripts_dev_api",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "dev:api"
     },
     {
@@ -11185,7 +11185,7 @@
       "_origin": "ast",
       "id": "package_scripts_dev_web",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "dev:web"
     },
     {
@@ -11196,7 +11196,7 @@
       "_origin": "ast",
       "id": "package_scripts_build",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "build"
     },
     {
@@ -11207,7 +11207,7 @@
       "_origin": "ast",
       "id": "package_scripts_lint",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "lint"
     },
     {
@@ -11218,7 +11218,7 @@
       "_origin": "ast",
       "id": "package_scripts_test",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "test"
     },
     {
@@ -11229,7 +11229,7 @@
       "_origin": "ast",
       "id": "package_scripts_db_up",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "db:up"
     },
     {
@@ -11240,7 +11240,7 @@
       "_origin": "ast",
       "id": "package_scripts_db_down",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "db:down"
     },
     {
@@ -11251,7 +11251,7 @@
       "_origin": "ast",
       "id": "package_scripts_db_logs",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "db:logs"
     },
     {
@@ -11262,7 +11262,7 @@
       "_origin": "ast",
       "id": "package_scripts_prisma_generate",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "prisma:generate"
     },
     {
@@ -11273,7 +11273,7 @@
       "_origin": "ast",
       "id": "package_scripts_prisma_migrate",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "prisma:migrate"
     },
     {
@@ -11284,118 +11284,272 @@
       "_origin": "ast",
       "id": "package_scripts_prisma_studio",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "prisma:studio"
+    },
+    {
+      "label": "prod",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "package_scripts_prod",
+      "community": 19,
+      "community_name": "scripts",
+      "norm_label": "prod"
+    },
+    {
+      "label": "prod:local",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "package_scripts_prod_local",
+      "community": 19,
+      "community_name": "scripts",
+      "norm_label": "prod:local"
+    },
+    {
+      "label": "server:up",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "package_scripts_server_up",
+      "community": 19,
+      "community_name": "scripts",
+      "norm_label": "server:up"
+    },
+    {
+      "label": "server:status",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L24",
+      "_origin": "ast",
+      "id": "package_scripts_server_status",
+      "community": 19,
+      "community_name": "scripts",
+      "norm_label": "server:status"
+    },
+    {
+      "label": "server:logs",
+      "file_type": "code",
+      "source_file": "package.json",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "package_scripts_server_logs",
+      "community": 19,
+      "community_name": "scripts",
+      "norm_label": "server:logs"
     },
     {
       "label": "overrides",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L22",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "package_overrides",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "overrides"
     },
     {
       "label": "@nestjs/platform-express",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L23",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "package_overrides_nestjs_platform_express",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "@nestjs/platform-express"
     },
     {
       "label": "multer",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L24",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "package_nestjs_platform_express_multer",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "multer"
     },
     {
       "label": "@prisma/dev",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L26",
+      "source_location": "L31",
       "_origin": "ast",
       "id": "package_overrides_prisma_dev",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "@prisma/dev"
     },
     {
       "label": "@hono/node-server",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L27",
+      "source_location": "L32",
       "_origin": "ast",
       "id": "package_prisma_dev_hono_node_server",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "@hono/node-server"
     },
     {
       "label": "next",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L29",
+      "source_location": "L34",
       "_origin": "ast",
       "id": "package_overrides_next",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "next"
     },
     {
       "label": "postcss",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L30",
+      "source_location": "L35",
       "_origin": "ast",
       "id": "package_next_postcss",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "postcss"
     },
     {
       "label": "devDependencies",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L33",
+      "source_location": "L38",
       "_origin": "ast",
       "id": "package_devdependencies",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "devdependencies"
     },
     {
       "label": "concurrently",
       "file_type": "code",
       "source_file": "package.json",
-      "source_location": "L34",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "package_devdependencies_concurrently",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "concurrently"
     },
     {
       "label": "concurrently",
       "file_type": "concept",
       "source_file": "package.json",
-      "source_location": "L34",
+      "source_location": "L39",
       "_origin": "ast",
       "id": "concurrently",
       "community": 19,
-      "community_name": "Infraestructura Package",
+      "community_name": "scripts",
       "norm_label": "concurrently"
+    },
+    {
+      "label": "start-production-db-local.mjs",
+      "file_type": "code",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "scripts_start_production_db_local",
+      "community": 27,
+      "community_name": "start-production-db-local.mjs",
+      "norm_label": "start-production-db-local.mjs"
+    },
+    {
+      "label": "environmentPath",
+      "file_type": "code",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "scripts_start_production_db_local_environmentpath",
+      "community": 27,
+      "community_name": "start-production-db-local.mjs",
+      "norm_label": "environmentpath"
+    },
+    {
+      "label": "tunnelPort",
+      "file_type": "code",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "scripts_start_production_db_local_tunnelport",
+      "community": 27,
+      "community_name": "start-production-db-local.mjs",
+      "norm_label": "tunnelport"
+    },
+    {
+      "label": "allowedHosts",
+      "file_type": "code",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L39",
+      "_origin": "ast",
+      "id": "scripts_start_production_db_local_allowedhosts",
+      "community": 27,
+      "community_name": "start-production-db-local.mjs",
+      "norm_label": "allowedhosts"
+    },
+    {
+      "label": "localEnvironment",
+      "file_type": "code",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "scripts_start_production_db_local_localenvironment",
+      "community": 27,
+      "community_name": "start-production-db-local.mjs",
+      "norm_label": "localenvironment"
+    },
+    {
+      "label": "stop()",
+      "file_type": "code",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L62",
+      "_origin": "ast",
+      "id": "scripts_start_production_db_local_stop",
+      "community": 27,
+      "community_name": "start-production-db-local.mjs",
+      "norm_label": "stop()"
+    },
+    {
+      "label": "finish()",
+      "file_type": "code",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L66",
+      "_origin": "ast",
+      "id": "scripts_start_production_db_local_finish",
+      "community": 27,
+      "community_name": "start-production-db-local.mjs",
+      "norm_label": "finish()"
+    },
+    {
+      "label": "waitForTunnel()",
+      "file_type": "code",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L75",
+      "_origin": "ast",
+      "id": "scripts_start_production_db_local_waitfortunnel",
+      "community": 27,
+      "community_name": "start-production-db-local.mjs",
+      "norm_label": "waitfortunnel()"
+    },
+    {
+      "label": "main()",
+      "file_type": "code",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L97",
+      "_origin": "ast",
+      "id": "scripts_start_production_db_local_main",
+      "community": 27,
+      "community_name": "start-production-db-local.mjs",
+      "norm_label": "main()"
     },
     {
       "label": ".agents/skills/vercel-react-best-practices/AGENTS.md",
@@ -17367,7 +17521,7 @@
       "_origin": "ast",
       "id": "deploy",
       "community": 162,
-      "community_name": "DEPLOY.md",
+      "community_name": "FLUJO-DIARIO.md",
       "norm_label": "deploy.md"
     },
     {
@@ -17488,118 +17642,52 @@
       "_origin": "ast",
       "id": "env",
       "community": 162,
-      "community_name": "DEPLOY.md",
+      "community_name": "FLUJO-DIARIO.md",
       "norm_label": "env.md"
     },
     {
-      "label": "Gu\u00eda de los archivos `.env` del proyecto",
+      "label": "Entornos local y producci\u00f3n",
       "file_type": "document",
       "source_file": "ENV.md",
       "source_location": "L1",
       "_origin": "ast",
-      "id": "env_gu\u00eda_de_los_archivos_env_del_proyecto",
-      "community": 154,
-      "community_name": "Gu\u00eda de los archivos `.env` del proyecto",
-      "norm_label": "guia de los archivos `.env` del proyecto"
+      "id": "env_entornos_local_y_producci\u00f3n",
+      "community": 32,
+      "community_name": "Entornos local y producci\u00f3n",
+      "norm_label": "entornos local y produccion"
     },
     {
-      "label": "Mapa r\u00e1pido",
+      "label": "Desarrollo local",
       "file_type": "document",
       "source_file": "ENV.md",
-      "source_location": "L13",
+      "source_location": "L6",
       "_origin": "ast",
-      "id": "env_mapa_r\u00e1pido",
-      "community": 154,
-      "community_name": "Gu\u00eda de los archivos `.env` del proyecto",
-      "norm_label": "mapa rapido"
+      "id": "env_desarrollo_local",
+      "community": 32,
+      "community_name": "Entornos local y producci\u00f3n",
+      "norm_label": "desarrollo local"
     },
     {
-      "label": "Cada archivo en detalle",
+      "label": "API y web locales con base de producci\u00f3n",
       "file_type": "document",
       "source_file": "ENV.md",
-      "source_location": "L25",
+      "source_location": "L40",
       "_origin": "ast",
-      "id": "env_cada_archivo_en_detalle",
-      "community": 154,
-      "community_name": "Gu\u00eda de los archivos `.env` del proyecto",
-      "norm_label": "cada archivo en detalle"
+      "id": "env_api_y_web_locales_con_base_de_producci\u00f3n",
+      "community": 32,
+      "community_name": "Entornos local y producci\u00f3n",
+      "norm_label": "api y web locales con base de produccion"
     },
     {
-      "label": "1. `.env` de la ra\u00edz \u2014 EL archivo de desarrollo",
+      "label": "Archivos de configuraci\u00f3n",
       "file_type": "document",
       "source_file": "ENV.md",
-      "source_location": "L27",
+      "source_location": "L84",
       "_origin": "ast",
-      "id": "env_1_env_de_la_ra\u00edz_el_archivo_de_desarrollo",
-      "community": 154,
-      "community_name": "Gu\u00eda de los archivos `.env` del proyecto",
-      "norm_label": "1. `.env` de la raiz \u2014 el archivo de desarrollo"
-    },
-    {
-      "label": "2. `apps/api/.env` \u2014 override opcional (por defecto no existe)",
-      "file_type": "document",
-      "source_file": "ENV.md",
-      "source_location": "L47",
-      "_origin": "ast",
-      "id": "env_2_apps_api_env_override_opcional_por_defecto_no_existe",
-      "community": 154,
-      "community_name": "Gu\u00eda de los archivos `.env` del proyecto",
-      "norm_label": "2. `apps/api/.env` \u2014 override opcional (por defecto no existe)"
-    },
-    {
-      "label": "3. `apps/web/.env.development` y `.env.production` \u2014 el frontend",
-      "file_type": "document",
-      "source_file": "ENV.md",
-      "source_location": "L55",
-      "_origin": "ast",
-      "id": "env_3_apps_web_env_development_y_env_production_el_frontend",
-      "community": 154,
-      "community_name": "Gu\u00eda de los archivos `.env` del proyecto",
-      "norm_label": "3. `apps/web/.env.development` y `.env.production` \u2014 el frontend"
-    },
-    {
-      "label": "4. `/opt/comercia/.env` \u2014 el \u00fanico `.env` de producci\u00f3n (en el servidor)",
-      "file_type": "document",
-      "source_file": "ENV.md",
-      "source_location": "L73",
-      "_origin": "ast",
-      "id": "env_4_opt_comercia_env_el_\u00fanico_env_de_producci\u00f3n_en_el_servidor",
-      "community": 154,
-      "community_name": "Gu\u00eda de los archivos `.env` del proyecto",
-      "norm_label": "4. `/opt/comercia/.env` \u2014 el unico `.env` de produccion (en el servidor)"
-    },
-    {
-      "label": "Qu\u00e9 variable hace qu\u00e9",
-      "file_type": "document",
-      "source_file": "ENV.md",
-      "source_location": "L95",
-      "_origin": "ast",
-      "id": "env_qu\u00e9_variable_hace_qu\u00e9",
-      "community": 154,
-      "community_name": "Gu\u00eda de los archivos `.env` del proyecto",
-      "norm_label": "que variable hace que"
-    },
-    {
-      "label": "Precedencia (cuando una variable est\u00e1 en dos lados)",
-      "file_type": "document",
-      "source_file": "ENV.md",
-      "source_location": "L113",
-      "_origin": "ast",
-      "id": "env_precedencia_cuando_una_variable_est\u00e1_en_dos_lados",
-      "community": 154,
-      "community_name": "Gu\u00eda de los archivos `.env` del proyecto",
-      "norm_label": "precedencia (cuando una variable esta en dos lados)"
-    },
-    {
-      "label": "Reglas de seguridad",
-      "file_type": "document",
-      "source_file": "ENV.md",
-      "source_location": "L125",
-      "_origin": "ast",
-      "id": "env_reglas_de_seguridad",
-      "community": 154,
-      "community_name": "Gu\u00eda de los archivos `.env` del proyecto",
-      "norm_label": "reglas de seguridad"
+      "id": "env_archivos_de_configuraci\u00f3n",
+      "community": 32,
+      "community_name": "Entornos local y producci\u00f3n",
+      "norm_label": "archivos de configuracion"
     },
     {
       "label": "FLUJO-DIARIO.md",
@@ -17609,7 +17697,7 @@
       "_origin": "ast",
       "id": "flujo_diario",
       "community": 162,
-      "community_name": "DEPLOY.md",
+      "community_name": "FLUJO-DIARIO.md",
       "norm_label": "flujo-diario.md"
     },
     {
@@ -17763,7 +17851,7 @@
       "_origin": "ast",
       "id": "readme",
       "community": 162,
-      "community_name": "DEPLOY.md",
+      "community_name": "FLUJO-DIARIO.md",
       "norm_label": "readme.md"
     },
     {
@@ -17839,8 +17927,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "servicios_servidor",
-      "community": 144,
-      "community_name": "Servicios en el servidor: d\u00f3nde est\u00e1n y c\u00f3mo verlos",
+      "community": 162,
+      "community_name": "FLUJO-DIARIO.md",
       "norm_label": "servicios-servidor.md"
     },
     {
@@ -17972,7 +18060,7 @@
       "_origin": "ast",
       "id": "setup",
       "community": 162,
-      "community_name": "DEPLOY.md",
+      "community_name": "FLUJO-DIARIO.md",
       "norm_label": "setup.md"
     },
     {
@@ -18445,7 +18533,7 @@
       "_origin": "ast",
       "id": "deploy_automatizacion_servidor",
       "community": 162,
-      "community_name": "DEPLOY.md",
+      "community_name": "FLUJO-DIARIO.md",
       "norm_label": "automatizacion-servidor.md"
     },
     {
@@ -18511,7 +18599,7 @@
       "_origin": "ast",
       "id": "deploy_bitacora_servidor",
       "community": 162,
-      "community_name": "DEPLOY.md",
+      "community_name": "FLUJO-DIARIO.md",
       "norm_label": "bitacora-servidor.md"
     },
     {
@@ -21923,7 +22011,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L5",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -21981,7 +22069,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L5",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22040,7 +22128,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L52",
+      "source_location": "L69",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22052,7 +22140,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L6",
+      "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22064,7 +22152,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L6",
+      "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22076,7 +22164,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L7",
+      "source_location": "L10",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22088,7 +22176,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L7",
+      "source_location": "L10",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22100,7 +22188,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L8",
+      "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22112,7 +22200,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L9",
+      "source_location": "L12",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22124,7 +22212,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L9",
+      "source_location": "L12",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22136,7 +22224,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L10",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22148,7 +22236,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L10",
+      "source_location": "L13",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22160,7 +22248,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L11",
+      "source_location": "L14",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22172,7 +22260,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L11",
+      "source_location": "L14",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22184,7 +22272,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L12",
+      "source_location": "L15",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22196,7 +22284,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L12",
+      "source_location": "L15",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22208,7 +22296,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L13",
+      "source_location": "L16",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22220,7 +22308,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L13",
+      "source_location": "L16",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22232,7 +22320,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L15",
+      "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22244,7 +22332,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L15",
+      "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22256,7 +22344,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L14",
+      "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22268,7 +22356,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L14",
+      "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_api_src_app_module",
@@ -22303,7 +22391,7 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "source_file": "apps/api/src/app.module.ts",
-      "source_location": "L17",
+      "source_location": "L31",
       "weight": 1.0,
       "context": "decorator",
       "_origin": "ast",
@@ -40082,7 +40170,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L33",
+      "source_location": "L38",
       "weight": 1.0,
       "_origin": "ast",
       "source": "package",
@@ -40104,7 +40192,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L22",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
       "source": "package",
@@ -40292,6 +40380,61 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "package_scripts",
+      "target": "package_scripts_prod",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L22",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "package_scripts",
+      "target": "package_scripts_prod_local",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "package_scripts",
+      "target": "package_scripts_server_logs",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "package_scripts",
+      "target": "package_scripts_server_status",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "package_scripts",
+      "target": "package_scripts_server_up",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "package.json",
       "source_location": "L14",
       "weight": 1.0,
       "_origin": "ast",
@@ -40303,7 +40446,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L23",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast",
       "source": "package_overrides",
@@ -40314,7 +40457,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L29",
+      "source_location": "L34",
       "weight": 1.0,
       "_origin": "ast",
       "source": "package_overrides",
@@ -40325,7 +40468,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L26",
+      "source_location": "L31",
       "weight": 1.0,
       "_origin": "ast",
       "source": "package_overrides",
@@ -40336,7 +40479,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L24",
+      "source_location": "L29",
       "weight": 1.0,
       "_origin": "ast",
       "source": "package_overrides_nestjs_platform_express",
@@ -40347,7 +40490,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L27",
+      "source_location": "L32",
       "weight": 1.0,
       "_origin": "ast",
       "source": "package_overrides_prisma_dev",
@@ -40358,7 +40501,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L30",
+      "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast",
       "source": "package_overrides_next",
@@ -40369,7 +40512,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L34",
+      "source_location": "L39",
       "weight": 1.0,
       "_origin": "ast",
       "source": "package_devdependencies",
@@ -40380,12 +40523,136 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "package.json",
-      "source_location": "L34",
+      "source_location": "L39",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
       "source": "package_devdependencies_concurrently",
       "target": "concurrently",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L39",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_start_production_db_local",
+      "target": "scripts_start_production_db_local_allowedhosts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L7",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_start_production_db_local",
+      "target": "scripts_start_production_db_local_environmentpath",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L66",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_start_production_db_local",
+      "target": "scripts_start_production_db_local_finish",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L52",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_start_production_db_local",
+      "target": "scripts_start_production_db_local_localenvironment",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L97",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_start_production_db_local",
+      "target": "scripts_start_production_db_local_main",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L62",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_start_production_db_local",
+      "target": "scripts_start_production_db_local_stop",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L19",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_start_production_db_local",
+      "target": "scripts_start_production_db_local_tunnelport",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L75",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_start_production_db_local",
+      "target": "scripts_start_production_db_local_waitfortunnel",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L69",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_start_production_db_local_finish",
+      "target": "scripts_start_production_db_local_stop",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L115",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_start_production_db_local_main",
+      "target": "scripts_start_production_db_local_finish",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/start-production-db-local.mjs",
+      "source_location": "L124",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "scripts_start_production_db_local_main",
+      "target": "scripts_start_production_db_local_waitfortunnel",
       "confidence_score": 1.0
     },
     {
@@ -44725,17 +44992,6 @@
     {
       "relation": "references",
       "confidence": "EXTRACTED",
-      "source_file": "ENV.md",
-      "source_location": "L76",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "env",
-      "target": "deploy",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
       "source_file": "FLUJO-DIARIO.md",
       "source_location": "L185",
       "weight": 1.0,
@@ -44873,7 +45129,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "env",
-      "target": "env_gu\u00eda_de_los_archivos_env_del_proyecto",
+      "target": "env_entornos_local_y_producci\u00f3n",
       "confidence_score": 1.0
     },
     {
@@ -44913,99 +45169,33 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "ENV.md",
-      "source_location": "L25",
+      "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "env_gu\u00eda_de_los_archivos_env_del_proyecto",
-      "target": "env_cada_archivo_en_detalle",
+      "source": "env_entornos_local_y_producci\u00f3n",
+      "target": "env_api_y_web_locales_con_base_de_producci\u00f3n",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "ENV.md",
-      "source_location": "L13",
+      "source_location": "L84",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "env_gu\u00eda_de_los_archivos_env_del_proyecto",
-      "target": "env_mapa_r\u00e1pido",
+      "source": "env_entornos_local_y_producci\u00f3n",
+      "target": "env_archivos_de_configuraci\u00f3n",
       "confidence_score": 1.0
     },
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "ENV.md",
-      "source_location": "L113",
+      "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
-      "source": "env_gu\u00eda_de_los_archivos_env_del_proyecto",
-      "target": "env_precedencia_cuando_una_variable_est\u00e1_en_dos_lados",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "ENV.md",
-      "source_location": "L95",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "env_gu\u00eda_de_los_archivos_env_del_proyecto",
-      "target": "env_qu\u00e9_variable_hace_qu\u00e9",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "ENV.md",
-      "source_location": "L125",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "env_gu\u00eda_de_los_archivos_env_del_proyecto",
-      "target": "env_reglas_de_seguridad",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "ENV.md",
-      "source_location": "L27",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "env_cada_archivo_en_detalle",
-      "target": "env_1_env_de_la_ra\u00edz_el_archivo_de_desarrollo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "ENV.md",
-      "source_location": "L47",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "env_cada_archivo_en_detalle",
-      "target": "env_2_apps_api_env_override_opcional_por_defecto_no_existe",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "ENV.md",
-      "source_location": "L55",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "env_cada_archivo_en_detalle",
-      "target": "env_3_apps_web_env_development_y_env_production_el_frontend",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "ENV.md",
-      "source_location": "L73",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "env_cada_archivo_en_detalle",
-      "target": "env_4_opt_comercia_env_el_\u00fanico_env_de_producci\u00f3n_en_el_servidor",
+      "source": "env_entornos_local_y_producci\u00f3n",
+      "target": "env_desarrollo_local",
       "confidence_score": 1.0
     },
     {
@@ -46616,5 +46806,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "625f84f465cf9d5c66c709e80027cffeb6eecd14"
+  "built_at_commit": "e9dcfda48a7ba437bbee8297db8569a639e7601e"
 }
