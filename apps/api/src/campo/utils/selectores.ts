@@ -1,0 +1,87 @@
+export const CLIENTE_CAMPO_SELECT = {
+  id: true,
+  nombre: true,
+  ruc: true,
+  contacto: true,
+  telefono: true,
+  activo: true,
+} as const;
+export const LOCAL_CAMPO_SELECT = {
+  id: true,
+  clienteId: true,
+  nombre: true,
+  direccion: true,
+  contacto: true,
+  telefono: true,
+  latitud: true,
+  longitud: true,
+  notas: true,
+  activo: true,
+  cliente: { select: { id: true, nombre: true } },
+} as const;
+export const HORARIO_CAMPO_SELECT = {
+  id: true,
+  localId: true,
+  frecuencia: true,
+  intervalo: true,
+  diasSemana: true,
+  diasMes: true,
+  fechaDesde: true,
+  fechaHasta: true,
+  entrada: true,
+  salida: true,
+  activo: true,
+} as const;
+export const ASIGNACION_CAMPO_SELECT = {
+  id: true,
+  localId: true,
+  usuarioId: true,
+  fechaDesde: true,
+  fechaHasta: true,
+  activo: true,
+  usuario: { select: { id: true, nombre: true, apellido: true } },
+} as const;
+export const BACKUP_CAMPO_SELECT = {
+  id: true,
+  asignacionId: true,
+  usuarioId: true,
+  fechaDesde: true,
+  fechaHasta: true,
+  motivo: true,
+  activo: true,
+  usuario: { select: { id: true, nombre: true, apellido: true } },
+} as const;
+export const TAREA_CAMPO_SELECT = {
+  id: true,
+  nombre: true,
+  descripcion: true,
+  todosLocales: true,
+  activo: true,
+  fechaDesde: true,
+  fechaHasta: true,
+  locales: {
+    take: 50,
+    select: { local: { select: { id: true, nombre: true } } },
+  },
+} as const;
+export const VISITA_CAMPO_SELECT = {
+  id: true,
+  asignacionId: true,
+  horarioId: true,
+  fecha: true,
+  entrada: true,
+  salida: true,
+  esBackup: true,
+  notaEntrada: true,
+  notaSalida: true,
+  entradaLat: true,
+  entradaLng: true,
+  salidaLat: true,
+  salidaLng: true,
+  local: { select: { id: true, nombre: true } },
+  usuario: { select: { id: true, nombre: true, apellido: true } },
+  asignacion: {
+    select: { usuario: { select: { id: true, nombre: true, apellido: true } } },
+  },
+  _count: { select: { cumplimientos: true } },
+} as const;

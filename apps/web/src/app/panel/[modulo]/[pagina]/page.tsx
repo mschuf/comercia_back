@@ -1,7 +1,24 @@
 "use client";
 
 import { use } from "react";
+import dynamic from "next/dynamic";
 import { usePanel } from "@/components/panel/contexto";
+
+const ClientesPanel = dynamic(() =>
+  import("@/components/campo/catalogo-panel").then((m) => m.ClientesPanel),
+);
+const LocalesPanel = dynamic(() =>
+  import("@/components/campo/catalogo-panel").then((m) => m.LocalesPanel),
+);
+const TareasPanel = dynamic(() =>
+  import("@/components/campo/tareas-panel").then((m) => m.TareasPanel),
+);
+const JornadaPanel = dynamic(() =>
+  import("@/components/campo/jornada-panel").then((m) => m.JornadaPanel),
+);
+const VisitasPanel = dynamic(() =>
+  import("@/components/campo/jornada-panel").then((m) => m.VisitasPanel),
+);
 
 export default function PaginaModulo({
   params,
@@ -23,6 +40,15 @@ export default function PaginaModulo({
     );
   }
 
+  if (modulo === "gestion-campo") {
+    if (pagina === "clientes") return <ClientesPanel />;
+    if (pagina === "locales") return <LocalesPanel />;
+    if (pagina === "tareas") return <TareasPanel />;
+    if (pagina === "visitas") return <VisitasPanel />;
+  }
+  if (modulo === "mi-jornada" && (pagina === "locales" || pagina === "tareas"))
+    return <JornadaPanel tareas={pagina === "tareas"} />;
+
   return (
     <div>
       <p className="text-xs font-medium uppercase tracking-wide text-brand-700 dark:text-brand-400">
@@ -32,7 +58,12 @@ export default function PaginaModulo({
       <div className="mt-8 grid place-items-center rounded-xl border border-dashed border-line bg-surface-raised p-12 text-center">
         <div className="max-w-sm">
           <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-brand-100 text-brand-700 dark:bg-brand-950 dark:text-brand-300">
-            <svg viewBox="0 0 20 20" fill="currentColor" className="h-6 w-6" aria-hidden>
+            <svg
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              className="h-6 w-6"
+              aria-hidden
+            >
               <path d="M15.98 1.804a1 1 0 00-1.96 0l-.24 1.192a1 1 0 01-.784.785l-1.192.238a1 1 0 000 1.962l1.192.238a1 1 0 01.785.785l.238 1.192a1 1 0 001.962 0l.238-1.192a1 1 0 01.785-.785l1.192-.238a1 1 0 000-1.962l-1.192-.238a1 1 0 01-.785-.785l-.238-1.192zM6.949 5.684a1 1 0 00-1.898 0l-.683 2.051a1 1 0 01-.633.633l-2.051.683a1 1 0 000 1.898l2.051.684a1 1 0 01.633.632l.683 2.051a1 1 0 001.898 0l.683-2.051a1 1 0 01.633-.633l2.051-.683a1 1 0 000-1.898l-2.051-.683a1 1 0 01-.633-.633L6.95 5.684z" />
             </svg>
           </div>

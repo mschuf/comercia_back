@@ -160,8 +160,8 @@
     "semantic_hash": "7eee3d8be686734a7d02be67c7555852"
   },
   "apps/api/src/app.module.ts": {
-    "mtime": 1788453471.9642704,
-    "ast_hash": "7ad36d7eb24992d849cbb364f82a9c6e",
+    "mtime": 1788875699.623899,
+    "ast_hash": "94ed8f2ad8f57ee3771429c309311c9a",
     "semantic_hash": ""
   },
   "apps/api/src/app.service.ts": {
@@ -325,8 +325,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/empresas/admin-empresas.service.ts": {
-    "mtime": 1788871867.0741656,
-    "ast_hash": "4832e4352ac73c25e32f758fc86493f6",
+    "mtime": 1788876354.1682026,
+    "ast_hash": "9c3bf53d2844e7f69ba067cc11cd7f85",
     "semantic_hash": ""
   },
   "apps/api/src/empresas/dto/empresa-admin.dto.ts": {
@@ -590,8 +590,8 @@
     "semantic_hash": "d9f771f7f9842dc2363d611826f66eb7"
   },
   "apps/web/src/app/panel/[modulo]/[pagina]/page.tsx": {
-    "mtime": 1788368153.5921748,
-    "ast_hash": "fd031d44cd24f0663e9a3af653b46c1b",
+    "mtime": 1788876460.1348667,
+    "ast_hash": "62b2ecc6cd9eb72919d09de525ec5174",
     "semantic_hash": ""
   },
   "apps/web/src/app/panel/admin/page.tsx": {
@@ -1897,6 +1897,126 @@
   "apps/web/src/types/opcion-selector.ts": {
     "mtime": 1788871490.668038,
     "ast_hash": "365a50d5c6a860eb2793b4c1856076e0",
+    "semantic_hash": ""
+  },
+  "apps/api/prisma/migrations/20260908140000_operaciones_campo/migration.sql": {
+    "mtime": 1788875830.027151,
+    "ast_hash": "a900f620ae128061c91b0bb0d6349795",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/campo-acceso.service.spec.ts": {
+    "mtime": 1788876459.7694046,
+    "ast_hash": "f1c966f52c86ad6cc365f1bbefc87114",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/campo-acceso.service.ts": {
+    "mtime": 1788876459.780656,
+    "ast_hash": "583f9d1aae257310ca4f3a0a1b65b2bf",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/campo.controller.ts": {
+    "mtime": 1788876459.8079875,
+    "ast_hash": "66a56e06e11aab8bfd49fca2a348745e",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/campo.module.ts": {
+    "mtime": 1788876459.8146598,
+    "ast_hash": "01ab6cae50f82744e7616eb255d3a9af",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/catalogo-campo.service.ts": {
+    "mtime": 1788876459.848094,
+    "ast_hash": "7810385e59fa989ac9599bebc3c934a5",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/dto/campo.dto.ts": {
+    "mtime": 1788876459.873753,
+    "ast_hash": "bbdc0aabd108c1419f8948e3da03e79c",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/interfaces/calendario.interface.ts": {
+    "mtime": 1788876459.8788114,
+    "ast_hash": "520536fb1e1bc3b98620028fa43c1299",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/jornada-campo.service.ts": {
+    "mtime": 1788876459.9135778,
+    "ast_hash": "4d72ef0a3c842132ab65addff8270d8f",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/planificacion-campo.service.ts": {
+    "mtime": 1788876459.9356139,
+    "ast_hash": "93a3eb680801b38a404824af5b72a3d5",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/utils/agenda-sql.ts": {
+    "mtime": 1788876459.9417815,
+    "ast_hash": "4b15f1a2c70c1dd4b7d08c71e78b9294",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/utils/calendario.spec.ts": {
+    "mtime": 1788876459.9483838,
+    "ast_hash": "c7331d7e2d32c13cb309b80c5868bf58",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/utils/calendario.ts": {
+    "mtime": 1788876459.9584599,
+    "ast_hash": "b2a0d241bb6d4e106809f6d3450282d8",
+    "semantic_hash": ""
+  },
+  "apps/api/src/campo/utils/selectores.ts": {
+    "mtime": 1788876459.96688,
+    "ast_hash": "4c634c006b0b984c0087f253779f2e5b",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/campo/catalogo-panel.tsx": {
+    "mtime": 1788876499.009365,
+    "ast_hash": "a2ef37a15f2ca9b7735a7efba7093c77",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/campo/form-campo.tsx": {
+    "mtime": 1788876460.01739,
+    "ast_hash": "56ee5fc61bf5367e377bba6ba7808619",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/campo/jornada-panel.tsx": {
+    "mtime": 1788876460.0440004,
+    "ast_hash": "612f7f99dea61d243d8c568f66eb7d82",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/campo/mapa-local.tsx": {
+    "mtime": 1788876460.0495036,
+    "ast_hash": "5912fe249c8afd327ed93b642a197775",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/campo/plan-local.tsx": {
+    "mtime": 1788876460.0775049,
+    "ast_hash": "f003a6d32e26d1cff9a6bc81dbffdc26",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/campo/tabla-campo.tsx": {
+    "mtime": 1788876460.0855322,
+    "ast_hash": "ada728f6a1b438ac43e5a868f620e5d4",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/campo/tareas-panel.tsx": {
+    "mtime": 1788876460.0967424,
+    "ast_hash": "4f3bf1bdcbd85e00c64688a963596a67",
+    "semantic_hash": ""
+  },
+  "apps/web/src/hooks/use-lista-campo.ts": {
+    "mtime": 1788876498.124457,
+    "ast_hash": "5db6c10290564beb4c9825f2c460c4a0",
+    "semantic_hash": ""
+  },
+  "apps/web/src/types/campo.ts": {
+    "mtime": 1788876460.11932,
+    "ast_hash": "8e3b4f8eff1632e879d6b0a7ae6ea5f9",
+    "semantic_hash": ""
+  },
+  "docs/operaciones-campo.md": {
+    "mtime": 1788876432.7529411,
+    "ast_hash": "ddde3b995f2e54d3f709c8f2844183d1",
     "semantic_hash": ""
   }
 }

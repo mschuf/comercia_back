@@ -20,6 +20,8 @@ model Empresa {
   hijas     Empresa[]       @relation("EmpresaJerarquia")
   usuarios  Usuario[]
   roles     Rol[]
+  clientesCampo ClienteCampo[]
+  tareasCampo TareaCampo[]
   modulos   EmpresaModulo[]
   paginas   EmpresaPagina[]
   createdAt DateTime        @default(now()) @map("created_at")
@@ -167,10 +169,166 @@ model Usuario {
   superiorId   Int?      @map("superior_id")
   superior     Usuario?  @relation("UsuarioJerarquia", fields: [superiorId], references: [id])
   subordinados Usuario[] @relation("UsuarioJerarquia")
+  asignacionesCampo AsignacionCampo[] @relation("CampoTitular")
+  backupsCampo BackupCampo[] @relation("CampoBackup")
+  visitasCampo VisitaCampo[]
   esSuperadmin Boolean   @default(false) @map("es_superadmin")
   isActive     Boolean   @default(true) @map("is_active")
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @default(now()) @updatedAt @map("updated_at")
 
   @@map("usuarios")
+}
+
+model ClienteCampo {
+  id Int @id @default(autoincrement())
+  empresaId Int @map("empresa_id")
+  empresa Empresa @relation(fields: [empresaId], references: [id])
+  nombre String @db.VarChar(120)
+  ruc String @default("") @db.VarChar(30)
+  contacto String @default("") @db.VarChar(120)
+  telefono String @default("") @db.VarChar(40)
+  activo Boolean @default(true)
+  locales LocalCampo[]
+  @@index([empresaId, activo, nombre])
+  @@map("campo_clientes")
+}
+
+model LocalCampo {
+  id Int @id @default(autoincrement())
+  clienteId Int @map("cliente_id")
+  cliente ClienteCampo @relation(fields: [clienteId], references: [id])
+  nombre String @db.VarChar(120)
+  direccion String @default("") @db.VarChar(250)
+  contacto String @default("") @db.VarChar(120)
+  telefono String @default("") @db.VarChar(40)
+  latitud Float
+  longitud Float
+  notas String @default("") @db.VarChar(1000)
+  activo Boolean @default(true)
+  horarios HorarioCampo[]
+  asignaciones AsignacionCampo[]
+  tareas TareaLocalCampo[]
+  visitas VisitaCampo[]
+  @@index([clienteId, activo])
+  @@map("campo_locales")
+}
+
+enum FrecuenciaCampo {
+  DIARIA
+  SEMANAL
+  MENSUAL
+}
+
+model HorarioCampo {
+  id Int @id @default(autoincrement())
+  localId Int @map("local_id")
+  local LocalCampo @relation(fields: [localId], references: [id])
+  frecuencia FrecuenciaCampo @default(SEMANAL)
+  intervalo Int @default(1)
+  diasSemana Int[] @default([]) @map("dias_semana")
+  diasMes Int[] @default([]) @map("dias_mes")
+  fechaDesde DateTime @db.Date @map("fecha_desde")
+  fechaHasta DateTime? @db.Date @map("fecha_hasta")
+  entrada String @db.VarChar(5)
+  salida String @db.VarChar(5)
+  activo Boolean @default(true)
+  visitas VisitaCampo[]
+  @@index([localId, activo])
+  @@map("campo_horarios")
+}
+
+model AsignacionCampo {
+  id Int @id @default(autoincrement())
+  localId Int @map("local_id")
+  local LocalCampo @relation(fields: [localId], references: [id])
+  usuarioId Int @map("usuario_id")
+  usuario Usuario @relation("CampoTitular", fields: [usuarioId], references: [id])
+  fechaDesde DateTime @db.Date @map("fecha_desde")
+  fechaHasta DateTime? @db.Date @map("fecha_hasta")
+  activo Boolean @default(true)
+  backups BackupCampo[]
+  visitas VisitaCampo[]
+  @@index([usuarioId, activo, fechaDesde])
+  @@index([localId, activo])
+  @@map("campo_asignaciones")
+}
+
+model BackupCampo {
+  id Int @id @default(autoincrement())
+  asignacionId Int @map("asignacion_id")
+  asignacion AsignacionCampo @relation(fields: [asignacionId], references: [id])
+  usuarioId Int @map("usuario_id")
+  usuario Usuario @relation("CampoBackup", fields: [usuarioId], references: [id])
+  fechaDesde DateTime @db.Date @map("fecha_desde")
+  fechaHasta DateTime @db.Date @map("fecha_hasta")
+  motivo String @db.VarChar(250)
+  activo Boolean @default(true)
+  @@index([asignacionId, activo, fechaDesde])
+  @@index([usuarioId, activo])
+  @@map("campo_backups")
+}
+
+model TareaCampo {
+  id Int @id @default(autoincrement())
+  empresaId Int @map("empresa_id")
+  empresa Empresa @relation(fields: [empresaId], references: [id])
+  nombre String @db.VarChar(120)
+  descripcion String @default("") @db.VarChar(1000)
+  todosLocales Boolean @default(true) @map("todos_locales")
+  fechaDesde DateTime @db.Date @map("fecha_desde")
+  fechaHasta DateTime? @db.Date @map("fecha_hasta")
+  activo Boolean @default(true)
+  locales TareaLocalCampo[]
+  cumplimientos CumplimientoCampo[]
+  @@index([empresaId, activo, fechaDesde])
+  @@map("campo_tareas")
+}
+
+model TareaLocalCampo {
+  tareaId Int @map("tarea_id")
+  tarea TareaCampo @relation(fields: [tareaId], references: [id])
+  localId Int @map("local_id")
+  local LocalCampo @relation(fields: [localId], references: [id])
+  @@id([tareaId, localId])
+  @@index([localId])
+  @@map("campo_tarea_locales")
+}
+
+model VisitaCampo {
+  id Int @id @default(autoincrement())
+  localId Int @map("local_id")
+  local LocalCampo @relation(fields: [localId], references: [id])
+  asignacionId Int @map("asignacion_id")
+  asignacion AsignacionCampo @relation(fields: [asignacionId], references: [id])
+  usuarioId Int @map("usuario_id")
+  usuario Usuario @relation(fields: [usuarioId], references: [id])
+  horarioId Int? @map("horario_id")
+  horario HorarioCampo? @relation(fields: [horarioId], references: [id])
+  fecha DateTime @db.Date
+  entrada DateTime @default(now())
+  salida DateTime?
+  esBackup Boolean @default(false) @map("es_backup")
+  entradaLat Float? @map("entrada_lat")
+  entradaLng Float? @map("entrada_lng")
+  salidaLat Float? @map("salida_lat")
+  salidaLng Float? @map("salida_lng")
+  notaEntrada String @default("") @db.VarChar(250) @map("nota_entrada")
+  notaSalida String @default("") @db.VarChar(250) @map("nota_salida")
+  cumplimientos CumplimientoCampo[]
+  @@unique([asignacionId, horarioId, fecha])
+  @@index([usuarioId, fecha])
+  @@index([localId, fecha])
+  @@map("campo_visitas")
+}
+
+model CumplimientoCampo {
+  visitaId Int @map("visita_id")
+  visita VisitaCampo @relation(fields: [visitaId], references: [id])
+  tareaId Int @map("tarea_id")
+  tarea TareaCampo @relation(fields: [tareaId], references: [id])
+  nombreTarea String @db.VarChar(120) @map("nombre_tarea")
+  completadaAt DateTime @default(now()) @map("completada_at")
+  @@id([visitaId, tareaId])
+  @@map("campo_cumplimientos")
 }
