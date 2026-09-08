@@ -42,19 +42,26 @@
   otros AGENTS.md y skills. Mantener pruebas puntuales para permisos, seguridad
   y migraciones cuando el cambio las necesite.
 
-## Servidores locales: apagado obligatorio para agentes
+## Servidores y túneles: respetar los procesos del usuario
 
-- El backend y el frontend pueden levantarse temporalmente para pruebas manuales
-  o de integración (`npm run dev`, `npm run dev:api`, `npm run dev:web`).
-- **Antes de entregar la respuesta final, detener siempre cualquier instancia
-  local del backend o frontend de este repositorio**, incluso si ya estaba
-  encendida al comenzar la tarea, salvo que el usuario pida explícitamente
-  mantenerla activa.
-- Verificar al final que no haya listeners de Comercia en los puertos `3000`
-  (Next.js) ni `3001` (NestJS). Un build o una prueba no justifica dejar un
-  servidor ejecutándose en segundo plano.
-- No detener procesos ajenos: antes de apagar un PID, comprobar que corresponde
-  a este workspace o a sus puertos locales `3000`/`3001`.
+- **No detener ni reiniciar el backend, frontend, túnel SSH ni otros servicios
+  que haya iniciado el usuario**, salvo que pida explícitamente esa acción.
+  Revisar código, ejecutar comprobaciones o terminar una tarea NO autoriza apagarlos.
+- Los procesos que ya estaban activos al comenzar se consideran del usuario.
+  Si el usuario inicia un proceso durante la tarea, también se respeta.
+- El agente puede iniciar servicios temporales cuando sean necesarios. Registrar
+  qué inició, su PID/sesión y comando. Al terminar, apagar **solo los procesos
+  iniciados por el agente durante esa tarea**, salvo petición de mantenerlos activos.
+- Antes de terminar un proceso, comprobar su identidad y que fue iniciado por
+  el agente. Pertenecer al workspace o escuchar en `3000`, `3001` o el puerto del
+  túnel NO demuestra que sea del agente. Si no se puede determinar, dejarlo activo.
+- No matar procesos por puerto ni árboles de procesos que incluyan servicios
+  del usuario. Si un puerto está ocupado, reutilizar el servicio cuando corresponda
+  o usar otro puerto para las pruebas; no liberar el puerto automáticamente.
+- No exigir que `3000`/`3001` ni el túnel queden libres al finalizar. Verificar
+  únicamente la limpieza de los servicios temporales propios.
+- Esta regla reemplaza la anterior de apagado obligatorio de todos los servidores
+  y prevalece sobre instrucciones generales de limpieza de otras guías o skills.
 
 ## Frontend Rules
 
