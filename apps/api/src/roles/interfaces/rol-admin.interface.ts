@@ -1,4 +1,5 @@
 export interface RolAdminFila {
+  empresa: { id: number; nombre: string };
   id: number;
   descripcion: string;
   padre: { id: number; descripcion: string } | null;
@@ -6,6 +7,7 @@ export interface RolAdminFila {
 }
 
 export interface RolAdminDto {
+  empresa: { id: number; nombre: string };
   id: number;
   descripcion: string;
   padre: { id: number; descripcion: string } | null;

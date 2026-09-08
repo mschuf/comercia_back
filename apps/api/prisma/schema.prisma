@@ -19,6 +19,7 @@ model Empresa {
   padre     Empresa?        @relation("EmpresaJerarquia", fields: [empresaId], references: [id])
   hijas     Empresa[]       @relation("EmpresaJerarquia")
   usuarios  Usuario[]
+  roles     Rol[]
   modulos   EmpresaModulo[]
   paginas   EmpresaPagina[]
   createdAt DateTime        @default(now()) @map("created_at")
@@ -137,12 +138,16 @@ model EmpresaPagina {
 
 model Rol {
   id          Int       @id @default(autoincrement())
-  descripcion String    @unique
+  descripcion String
+  empresaId   Int       @map("empresa_id")
+  empresa     Empresa   @relation(fields: [empresaId], references: [id])
   rolId       Int?      @map("roles_id")
-  padre       Rol?      @relation("RolJerarquia", fields: [rolId], references: [id])
+  padre       Rol?      @relation("RolJerarquia", fields: [rolId, empresaId], references: [id, empresaId], onDelete: NoAction, onUpdate: NoAction)
   hijos       Rol[]     @relation("RolJerarquia")
   usuarios    Usuario[]
 
+  @@unique([empresaId, descripcion])
+  @@unique([id, empresaId])
   @@map("roles")
 }
 
@@ -158,7 +163,7 @@ model Usuario {
   ruc          String    @unique
   celular      String
   rolId        Int?      @map("rol_id")
-  rol          Rol?      @relation(fields: [rolId], references: [id])
+  rol          Rol?      @relation(fields: [rolId, empresaId], references: [id, empresaId], onDelete: NoAction, onUpdate: NoAction)
   superiorId   Int?      @map("superior_id")
   superior     Usuario?  @relation("UsuarioJerarquia", fields: [superiorId], references: [id])
   subordinados Usuario[] @relation("UsuarioJerarquia")

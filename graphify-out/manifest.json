@@ -325,8 +325,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/empresas/admin-empresas.service.ts": {
-    "mtime": 1788368411.639344,
-    "ast_hash": "1b3736180fb0f48e0ce35a0f6babcf0a",
+    "mtime": 1788871867.0741656,
+    "ast_hash": "4832e4352ac73c25e32f758fc86493f6",
     "semantic_hash": ""
   },
   "apps/api/src/empresas/dto/empresa-admin.dto.ts": {
@@ -380,9 +380,9 @@
     "semantic_hash": ""
   },
   "apps/api/src/plataforma/asignaciones.service.ts": {
-    "mtime": 1783352322.343132,
-    "ast_hash": "64d61b159bd684597e7891caad70d6e4",
-    "semantic_hash": "64d61b159bd684597e7891caad70d6e4"
+    "mtime": 1788871867.105698,
+    "ast_hash": "0a49031d8d8642c6265d8f23cfe6590e",
+    "semantic_hash": ""
   },
   "apps/api/src/plataforma/dto/asignacion.dto.ts": {
     "mtime": 1783352294.7631216,
@@ -440,14 +440,14 @@
     "semantic_hash": "0f502b303764617d04456f7f92746265"
   },
   "apps/api/src/plataforma/modulos.service.ts": {
-    "mtime": 1783352395.6133761,
-    "ast_hash": "b3d38c82d57b5b2c5951d27c79508b5c",
-    "semantic_hash": "b3d38c82d57b5b2c5951d27c79508b5c"
+    "mtime": 1788871867.1283665,
+    "ast_hash": "043530dd7380b00782a201c70f99b3fe",
+    "semantic_hash": ""
   },
   "apps/api/src/plataforma/plataforma.controller.ts": {
-    "mtime": 1783352342.9917898,
-    "ast_hash": "0f7b2206523673b672b10625fe70839f",
-    "semantic_hash": "0f7b2206523673b672b10625fe70839f"
+    "mtime": 1788871867.1495469,
+    "ast_hash": "7634e3abefce54390b893af2ddd05dc0",
+    "semantic_hash": ""
   },
   "apps/api/src/plataforma/plataforma.module.ts": {
     "mtime": 1783356243.592755,
@@ -475,19 +475,19 @@
     "semantic_hash": "8188c60eb7c6a260294654cfa218429a"
   },
   "apps/api/src/roles/dto/rol.dto.ts": {
-    "mtime": 1785500295.4655144,
-    "ast_hash": "2860b8ade7e32574b4b971ecf3bc3ab4",
-    "semantic_hash": "2860b8ade7e32574b4b971ecf3bc3ab4"
+    "mtime": 1788871313.3685088,
+    "ast_hash": "d872b4582ab17f57b8e4426003971665",
+    "semantic_hash": ""
   },
   "apps/api/src/roles/interfaces/rol-admin.interface.ts": {
-    "mtime": 1785500214.4776938,
-    "ast_hash": "06d218e06bb2769d653cb36d444a9ce4",
-    "semantic_hash": "06d218e06bb2769d653cb36d444a9ce4"
+    "mtime": 1788871314.2574098,
+    "ast_hash": "95bad4197bad117b5d1439a77554ee9f",
+    "semantic_hash": ""
   },
   "apps/api/src/roles/roles.controller.ts": {
-    "mtime": 1785500215.8388433,
-    "ast_hash": "c094a24164ffed94730bae65d45b7b64",
-    "semantic_hash": "c094a24164ffed94730bae65d45b7b64"
+    "mtime": 1788871867.1708326,
+    "ast_hash": "ede04ad22c742cebb752290fe37f6e1d",
+    "semantic_hash": ""
   },
   "apps/api/src/roles/roles.module.ts": {
     "mtime": 1785500216.4289002,
@@ -495,19 +495,19 @@
     "semantic_hash": "a4fe4ac3309a7dc7972ae4a27adc1225"
   },
   "apps/api/src/roles/roles.service.spec.ts": {
-    "mtime": 1785500704.6397998,
-    "ast_hash": "3a8e37fa336e9daccab15d763c1acf69",
-    "semantic_hash": "3a8e37fa336e9daccab15d763c1acf69"
+    "mtime": 1788871867.1887088,
+    "ast_hash": "5f7e48325df804c43b916ee69debc7a2",
+    "semantic_hash": ""
   },
   "apps/api/src/roles/roles.service.ts": {
-    "mtime": 1785500295.498431,
-    "ast_hash": "6ba4d1d69d89d62f56283308501363c3",
-    "semantic_hash": "6ba4d1d69d89d62f56283308501363c3"
+    "mtime": 1788871867.205892,
+    "ast_hash": "3f1fccb5fdc57ef85aa3aeec2a6d4899",
+    "semantic_hash": ""
   },
   "apps/api/src/usuarios/admin-usuarios.controller.ts": {
-    "mtime": 1785500152.897048,
-    "ast_hash": "acbf768a1caf10d9fdf92f25546b8e3c",
-    "semantic_hash": "acbf768a1caf10d9fdf92f25546b8e3c"
+    "mtime": 1788871867.2129314,
+    "ast_hash": "52af3171f37efaee5cafcfbdf2dfc993",
+    "semantic_hash": ""
   },
   "apps/api/src/usuarios/dto/usuario.dto.ts": {
     "mtime": 1785842050.420296,
@@ -515,14 +515,14 @@
     "semantic_hash": ""
   },
   "apps/api/src/usuarios/interfaces/usuario-admin.interface.ts": {
-    "mtime": 1785842051.0349534,
-    "ast_hash": "9e03f7170f3c506bafe6958fd9a76940",
+    "mtime": 1788871867.2209861,
+    "ast_hash": "7c74060b56bed5de76667e8710c7943b",
     "semantic_hash": ""
   },
   "apps/api/src/usuarios/usuarios.controller.ts": {
-    "mtime": 1785500151.1418128,
-    "ast_hash": "2707d201266cff6e280b8f7ce6f01a86",
-    "semantic_hash": "2707d201266cff6e280b8f7ce6f01a86"
+    "mtime": 1788871867.227043,
+    "ast_hash": "45a7bddef6f563505185861ec9b5841f",
+    "semantic_hash": ""
   },
   "apps/api/src/usuarios/usuarios.module.ts": {
     "mtime": 1785500153.670704,
@@ -530,8 +530,8 @@
     "semantic_hash": "7c2f0a5f859e84cd1f4a1c62c65e314a"
   },
   "apps/api/src/usuarios/usuarios.service.ts": {
-    "mtime": 1788368448.5573163,
-    "ast_hash": "f04a0be285224502224a559aa71b0015",
+    "mtime": 1788871867.2588947,
+    "ast_hash": "57eda9b8835999919114d937d695fa8d",
     "semantic_hash": ""
   },
   "apps/api/test/app.e2e-spec.ts": {
@@ -565,8 +565,8 @@
     "semantic_hash": "d939f27ed06dbda8761bb08e20c60375"
   },
   "apps/web/package.json": {
-    "mtime": 1788368520.122029,
-    "ast_hash": "a62698254a3586c71878dfbbb8b19c91",
+    "mtime": 1788463728.182869,
+    "ast_hash": "2fe04bfb9fff77f218be727d799d603c",
     "semantic_hash": ""
   },
   "apps/web/postcss.config.mjs": {
@@ -625,9 +625,9 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/admin/empresas-panel.tsx": {
-    "mtime": 1784238559.4944465,
-    "ast_hash": "46b4a6afc23539eb56bfa807262f9153",
-    "semantic_hash": "46b4a6afc23539eb56bfa807262f9153"
+    "mtime": 1788871867.3063128,
+    "ast_hash": "012f8207313b4d588226c37d3985fb3e",
+    "semantic_hash": ""
   },
   "apps/web/src/components/admin/modulos-panel.tsx": {
     "mtime": 1784237312.451856,
@@ -635,9 +635,9 @@
     "semantic_hash": "5eda7bfd04ec15f22aecec7f15b91130"
   },
   "apps/web/src/components/admin/roles-panel.tsx": {
-    "mtime": 1785500636.7354746,
-    "ast_hash": "a9da908125d6c19e1c4b5e77956138eb",
-    "semantic_hash": "a9da908125d6c19e1c4b5e77956138eb"
+    "mtime": 1788871867.339405,
+    "ast_hash": "6aaea2e82dfd1cbea58c3e41bfccedb8",
+    "semantic_hash": ""
   },
   "apps/web/src/components/auth-shell.tsx": {
     "mtime": 1788368472.037413,
@@ -700,8 +700,8 @@
     "semantic_hash": "692f7f4acb1607e8575b72c625e03c79"
   },
   "apps/web/src/components/usuarios/usuarios-panel.tsx": {
-    "mtime": 1785842779.3863673,
-    "ast_hash": "4dea1c8f08027d990de0a248c2512ba9",
+    "mtime": 1788871867.3808103,
+    "ast_hash": "b39ec67d694959b61993815c149673f4",
     "semantic_hash": ""
   },
   "apps/web/src/lib/api.ts": {
@@ -735,9 +735,9 @@
     "semantic_hash": "9a676cf45ed6823fa19b3946bef721a5"
   },
   "apps/web/src/types/rol.ts": {
-    "mtime": 1785500440.4483654,
-    "ast_hash": "5e0c3517ca1b83261f58b63562cff45c",
-    "semantic_hash": "5e0c3517ca1b83261f58b63562cff45c"
+    "mtime": 1788871492.50922,
+    "ast_hash": "ff2a882e08ebf2262018170fbe949426",
+    "semantic_hash": ""
   },
   "apps/web/src/types/toast.ts": {
     "mtime": 1785444099.7565708,
@@ -745,8 +745,8 @@
     "semantic_hash": "4042a4750ef35b4aedaf0c766ab123d7"
   },
   "apps/web/src/types/usuario.ts": {
-    "mtime": 1785842140.964861,
-    "ast_hash": "0314c807685e577dacffea819ce08506",
+    "mtime": 1788871867.3933668,
+    "ast_hash": "1cc3d8df8d11d47565e50f0685c43186",
     "semantic_hash": ""
   },
   "apps/web/src/utils/direccion-ruta.ts": {
@@ -810,8 +810,8 @@
     "semantic_hash": "3d49e207de4f2cf6035a2317c1838b05"
   },
   "package.json": {
-    "mtime": 1788453471.2014837,
-    "ast_hash": "5abdc9b922c65168474a07e4a45d36a1",
+    "mtime": 1788456312.5462031,
+    "ast_hash": "576bbb41055cde820ff7517d0c285120",
     "semantic_hash": ""
   },
   "skills-lock.json": {
@@ -825,8 +825,8 @@
     "semantic_hash": ""
   },
   "apps/api/src/usuarios/usuarios.service.spec.ts": {
-    "mtime": 1785842389.5463996,
-    "ast_hash": "d6dae95b0b477365bc579f2c9421e06d",
+    "mtime": 1788871867.2371078,
+    "ast_hash": "13bc158c4e24b2fb1cdc039755a959dc",
     "semantic_hash": ""
   },
   ".agents/skills/vercel-react-best-practices/AGENTS.md": {
@@ -1605,8 +1605,8 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1785789954.2343383,
-    "ast_hash": "9344c06a47a8baf367776b87cb116f5d",
+    "mtime": 1788872084.2753894,
+    "ast_hash": "94ad649cdab2a753444a61c61ac4ee83",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -1620,8 +1620,8 @@
     "semantic_hash": ""
   },
   "ENV.md": {
-    "mtime": 1788453499.3763669,
-    "ast_hash": "b26ae5eda89f88c0eca23c2537344212",
+    "mtime": 1788463728.1848683,
+    "ast_hash": "b8e0451807249ffea930b863f90ddbb7",
     "semantic_hash": ""
   },
   "FLUJO-DIARIO.md": {
@@ -1860,8 +1860,43 @@
     "semantic_hash": ""
   },
   "scripts/start-production-db-local.mjs": {
-    "mtime": 1788453622.6889172,
-    "ast_hash": "db1013cf812b6e55d50b6dcabe6c0aa6",
+    "mtime": 1788463728.205433,
+    "ast_hash": "7a45fe89be5c2f57f9820f6a903ff3e2",
+    "semantic_hash": ""
+  },
+  "apps/api/prisma/migrations/20260908120000_roles_por_empresa/migration.sql": {
+    "mtime": 1788871410.0121753,
+    "ast_hash": "45ef2b9d885a9d47963d7d0d5f301de8",
+    "semantic_hash": ""
+  },
+  "apps/api/src/plataforma/asignaciones.service.spec.ts": {
+    "mtime": 1788871867.406111,
+    "ast_hash": "2813c0de321c0e650ad3f922c75d8c8a",
+    "semantic_hash": ""
+  },
+  "apps/api/src/roles/dto/rol.dto.spec.ts": {
+    "mtime": 1788871867.4148743,
+    "ast_hash": "bc1031e29f66c4295a8e34c4b4770845",
+    "semantic_hash": ""
+  },
+  "apps/api/src/roles/utils/rol-admin.ts": {
+    "mtime": 1788871867.4214225,
+    "ast_hash": "f6971bb92470d9ff99107ce4f95cad8b",
+    "semantic_hash": ""
+  },
+  "apps/api/test/roles-migration.integration.mjs": {
+    "mtime": 1788871867.447851,
+    "ast_hash": "f38884c10b336047703be3d6a80b94ae",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/selector-paginado.tsx": {
+    "mtime": 1788871867.4659364,
+    "ast_hash": "290d6cb8e9e5f7a295b49af319cc611f",
+    "semantic_hash": ""
+  },
+  "apps/web/src/types/opcion-selector.ts": {
+    "mtime": 1788871490.668038,
+    "ast_hash": "365a50d5c6a860eb2793b4c1856076e0",
     "semantic_hash": ""
   }
 }

@@ -28,6 +28,14 @@ import { UsuariosService } from './usuarios.service';
 export class AdminUsuariosController {
   constructor(private readonly usuarios: UsuariosService) {}
 
+  @Get('roles')
+  listarRoles(
+    @Req() req: RequestConUsuario,
+    @Query() query: ListarUsuariosDto,
+  ) {
+    return this.usuarios.listarRoles(req.usuarioId, query);
+  }
+
   @Get('meta')
   meta(@Req() req: RequestConUsuario) {
     return this.usuarios.meta(req.usuarioId);

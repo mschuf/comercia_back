@@ -1,4 +1,4 @@
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import type { AuthService } from '../auth/auth.service';
 import type { PrismaService } from '../prisma/prisma.service';
 import { UsuariosService } from './usuarios.service';
@@ -17,7 +17,7 @@ describe('UsuariosService - permiso de superadmin', () => {
       count: jest.fn(),
       findMany: jest.fn(),
     },
-    rol: { findUnique: jest.fn() },
+    rol: { findUnique: jest.fn(), findMany: jest.fn(), count: jest.fn() },
   };
   const auth = { crearUsuario: jest.fn() };
   const service = new UsuariosService(
@@ -67,7 +67,7 @@ describe('UsuariosService - permiso de superadmin', () => {
         rol: { id: 6, descripcion: 'SUPERVISOR' },
         superior: null,
       });
-    prisma.rol.findUnique.mockResolvedValue({ id: 6 });
+    prisma.rol.findUnique.mockResolvedValue({ id: 6, empresaId: 20 });
     auth.crearUsuario.mockResolvedValue({ id: 2 });
 
     await expect(service.crear(1, dto)).resolves.toMatchObject({
@@ -115,5 +115,57 @@ describe('UsuariosService - permiso de superadmin', () => {
     expect(prisma.usuario.count).toHaveBeenCalledWith({
       where: { empresaId: 20 },
     });
+  });
+  it('rechaza crear usuarios con un rol de otra empresa incluso para superadmin', async () => {
+    prisma.usuario.findUnique.mockResolvedValue({
+      id: 1,
+      empresaId: 20,
+      esSuperadmin: true,
+      isActive: true,
+    });
+    prisma.rol.findUnique.mockResolvedValue({ id: 6, empresaId: 30 });
+    await expect(service.crear(1, dto)).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+    expect(auth.crearUsuario).not.toHaveBeenCalled();
+  });
+
+  it('rechaza editar usuarios con un rol de otra empresa', async () => {
+    prisma.usuario.findUnique
+      .mockResolvedValueOnce({
+        id: 1,
+        empresaId: 20,
+        esSuperadmin: true,
+        isActive: true,
+      })
+      .mockResolvedValueOnce({
+        empresaId: 20,
+        rolId: 5,
+        superiorId: null,
+        esSuperadmin: false,
+      });
+    prisma.rol.findUnique.mockResolvedValue({ id: 6, empresaId: 30 });
+    await expect(service.actualizar(1, 2, { rolId: 6 })).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
+
+  it('pagina roles dentro del alcance del administrador', async () => {
+    prisma.usuario.findUnique.mockResolvedValue({
+      id: 1,
+      empresaId: 20,
+      esSuperadmin: false,
+      isActive: true,
+      rol: { descripcion: 'GERENTE' },
+    });
+    prisma.rol.count.mockResolvedValue(0);
+    prisma.rol.findMany.mockResolvedValue([]);
+    await service.listarRoles(1, { page: 2, limit: 7 });
+    expect(prisma.rol.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { empresaId: 20 }, skip: 7, take: 7 }),
+    );
+    await expect(
+      service.listarRoles(1, { empresaId: 30 }),
+    ).rejects.toBeInstanceOf(ForbiddenException);
   });
 });

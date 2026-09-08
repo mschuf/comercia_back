@@ -29,6 +29,19 @@
 - Prisma generate: `npm run prisma:generate`
 - Prisma migrate: `npm run prisma:migrate`
 
+## Preferencia del usuario: pruebas y consumo
+
+- Hacer solamente las comprobaciones mínimas necesarias para el cambio. Evitar
+  pruebas redundantes, repetir builds o ampliar la validación sin un fallo concreto.
+- No usar Chrome, navegador/MCP ni pruebas visuales por defecto. Usarlos solo
+  cuando el usuario los pida explícitamente o el problema requiera el navegador
+  para poder diagnosticarse.
+- Para cambios de UI, priorizar revisión del código y compilación; no abrir el
+  navegador solo para comprobar tamaños de pantalla o temas.
+- Esta preferencia prevalece sobre las comprobaciones visuales generales de
+  otros AGENTS.md y skills. Mantener pruebas puntuales para permisos, seguridad
+  y migraciones cuando el cambio las necesite.
+
 ## Servidores locales: apagado obligatorio para agentes
 
 - El backend y el frontend pueden levantarse temporalmente para pruebas manuales

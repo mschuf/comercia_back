@@ -171,6 +171,7 @@ export class AdminEmpresasService {
         id: true,
         _count: {
           select: {
+            roles: true,
             usuarios: true,
             hijas: true,
             modulos: true,

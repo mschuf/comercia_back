@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { CountryCode } from "libphonenumber-js";
 import { apiFetch, ApiError } from "@/lib/api";
+import { SelectorPaginado } from "@/components/selector-paginado";
 import { IconoMas } from "@/components/icono-mas";
 import type { RespuestaPaginada } from "@/types/paginacion";
 import type { MetaUsuarios, UsuarioAdmin } from "@/types/usuario";
@@ -181,7 +182,7 @@ export function UsuariosPanel({ soloSuperadmin = false }: UsuariosPanelProps) {
   useEffect(() => cargar(), [cargar]);
 
   function abrirNuevo() {
-    setForm({ ...FORM_INICIAL, rolId: meta?.roles[0]?.id ?? "" });
+    setForm({ ...FORM_INICIAL, rolId: "" });
     setError(null);
     setEditando("nuevo");
   }
@@ -189,7 +190,7 @@ export function UsuariosPanel({ soloSuperadmin = false }: UsuariosPanelProps) {
   function abrirEditar(usuario: UsuarioAdmin) {
     setForm({
       ...FORM_INICIAL,
-      rolId: usuario.rol?.id ?? meta?.roles[0]?.id ?? "",
+      rolId: usuario.rol?.id ?? "",
       superiorId: usuario.superior?.id ?? "",
       isActive: usuario.isActive,
     });
@@ -475,23 +476,20 @@ export function UsuariosPanel({ soloSuperadmin = false }: UsuariosPanelProps) {
             </>
           )}
 
-          <label className={labelBase}>
-            Rol
-            <select
+          {editando && empresaId !== "" ? (
+            <SelectorPaginado
+              key={`${empresaId}-${editando === "nuevo" ? "nuevo" : editando.id}`}
+              url={`${base}/roles?empresaId=${empresaId}`}
+              etiqueta="Rol"
               value={form.rolId}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, rolId: Number(e.target.value) }))
-              }
               required
-              className={inputBase}
-            >
-              {meta?.roles.map((rol) => (
-                <option key={rol.id} value={rol.id}>
-                  {rol.descripcion}
-                </option>
-              ))}
-            </select>
-          </label>
+              vacio="Seleccioná un rol de la empresa"
+              seleccionActual={
+                editando !== "nuevo" ? editando.rol?.descripcion : undefined
+              }
+              onChange={(rolId) => setForm((actual) => ({ ...actual, rolId }))}
+            />
+          ) : null}
           <label className={labelBase}>
             Superior
             <select

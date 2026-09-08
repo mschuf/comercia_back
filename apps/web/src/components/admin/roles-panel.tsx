@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { SelectorPaginado } from "@/components/selector-paginado";
+import { PantallaCarga } from "@/components/pantalla-carga";
 import { IconoMas } from "@/components/icono-mas";
 import { Modal } from "@/components/modal";
 import { Paginacion } from "@/components/paginacion";
@@ -13,14 +15,9 @@ import {
 } from "@/components/ui";
 import { ApiError, apiFetch } from "@/lib/api";
 import type { RespuestaPaginada } from "@/types/paginacion";
-import type { RolAdmin } from "@/types/rol";
+import type { RolAdmin, FormRol } from "@/types/rol";
 
-interface FormRol {
-  descripcion: string;
-  rolId: number | "";
-}
-
-const FORM_INICIAL: FormRol = { descripcion: "", rolId: "" };
+const FORM_INICIAL: FormRol = { empresaId: "", descripcion: "", rolId: "" };
 
 function ListaRolesMovil({
   roles,
@@ -41,6 +38,7 @@ function ListaRolesMovil({
             className="rounded-xl border border-line bg-surface-raised p-4 [content-visibility:auto]"
           >
             <p className="font-semibold text-foreground">{rol.descripcion}</p>
+            <p className="mt-1 text-sm text-muted">{rol.empresa.nombre}</p>
             <p className="mt-1 text-xs text-muted">
               Superior: {rol.padre?.descripcion ?? "Sin superior"}
             </p>
@@ -89,6 +87,8 @@ function ListaRolesMovil({
 
 export function RolesPanel() {
   const [datos, setDatos] = useState<RespuestaPaginada<RolAdmin> | null>(null);
+  const [empresaId, setEmpresaId] = useState<number | "">("");
+  const [cargando, setCargando] = useState(false);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(7);
   const [editando, setEditando] = useState<RolAdmin | "nuevo" | null>(null);
@@ -100,8 +100,9 @@ export function RolesPanel() {
   const [borrando, setBorrando] = useState(false);
 
   const cargar = useCallback(() => {
+    setCargando(true);
     return apiFetch<RespuestaPaginada<RolAdmin>>(
-      `/admin/roles?page=${page}&limit=${limit}`,
+      `/admin/roles?page=${page}&limit=${limit}${empresaId === "" ? "" : `&empresaId=${empresaId}`}`,
     )
       .then((respuesta) => {
         setDatos(respuesta);
@@ -113,8 +114,9 @@ export function RolesPanel() {
             ? problema.message
             : "No se pudieron cargar los roles",
         ),
-      );
-  }, [limit, page]);
+      )
+      .finally(() => setCargando(false));
+  }, [limit, page, empresaId]);
 
   useEffect(() => {
     void cargar();
@@ -125,8 +127,12 @@ export function RolesPanel() {
   function abrir(rol: RolAdmin | "nuevo") {
     setForm(
       rol === "nuevo"
-        ? FORM_INICIAL
-        : { descripcion: rol.descripcion, rolId: rol.padre?.id ?? "" },
+        ? { ...FORM_INICIAL, empresaId }
+        : {
+            empresaId: rol.empresa.id,
+            descripcion: rol.descripcion,
+            rolId: rol.padre?.id ?? "",
+          },
     );
     setError(null);
     setEditando(rol);
@@ -134,7 +140,7 @@ export function RolesPanel() {
 
   async function guardar(evento: React.FormEvent) {
     evento.preventDefault();
-    if (!editando) return;
+    if (!editando || guardando || form.empresaId === "") return;
     setGuardando(true);
     setError(null);
     try {
@@ -143,6 +149,7 @@ export function RolesPanel() {
         {
           method: editando === "nuevo" ? "POST" : "PATCH",
           body: JSON.stringify({
+            ...(editando === "nuevo" ? { empresaId: form.empresaId } : {}),
             descripcion: form.descripcion.trim(),
             rolId: form.rolId === "" ? null : form.rolId,
           }),
@@ -182,14 +189,6 @@ export function RolesPanel() {
   }
 
   const idEditando = typeof editando === "object" ? editando?.id : undefined;
-  const opcionesPadre = roles.filter((rol) => rol.id !== idEditando);
-  const padreActual =
-    editando !== null &&
-    editando !== "nuevo" &&
-    editando.padre &&
-    !opcionesPadre.some((rol) => rol.id === editando.padre?.id)
-      ? editando.padre
-      : null;
 
   return (
     <div className="w-full min-w-0">
@@ -197,7 +196,7 @@ export function RolesPanel() {
         <div>
           <h2 className="text-xl font-bold tracking-tight">Roles</h2>
           <p className="mt-1 text-sm text-muted">
-            Definí los roles disponibles y su jerarquía operativa.
+            Definí los roles y su jerarquía dentro de cada empresa.
           </p>
         </div>
         <button
@@ -209,6 +208,29 @@ export function RolesPanel() {
         >
           <IconoMas className="h-5 w-5" />
         </button>
+      </div>
+
+      <PantallaCarga
+        visible={cargando || guardando || borrando}
+        mensaje={
+          guardando
+            ? "Guardando rol"
+            : borrando
+              ? "Eliminando rol"
+              : "Cargando roles"
+        }
+      />
+      <div className="mt-4 max-w-lg">
+        <SelectorPaginado
+          url="/admin/empresas"
+          etiqueta="Filtrar por empresa"
+          value={empresaId}
+          vacio="Todas las empresas"
+          onChange={(id) => {
+            setEmpresaId(id);
+            setPage(1);
+          }}
+        />
       </div>
 
       {error && !editando ? (
@@ -234,6 +256,7 @@ export function RolesPanel() {
               <thead className="bg-surface-soft">
                 <tr className="border-b border-line text-xs font-semibold uppercase tracking-wide text-foreground">
                   <th className="px-4 py-3 font-medium">Rol</th>
+                  <th className="px-4 py-3 font-medium">Empresa</th>
                   <th className="px-4 py-3 font-medium">Superior</th>
                   <th className="px-4 py-3 text-center font-medium">
                     Usuarios
@@ -254,6 +277,9 @@ export function RolesPanel() {
                     >
                       <td className="px-4 py-3 font-semibold text-foreground">
                         {rol.descripcion}
+                      </td>
+                      <td className="px-4 py-3 text-muted">
+                        {rol.empresa.nombre}
                       </td>
                       <td className="px-4 py-3 text-muted">
                         {rol.padre?.descripcion ?? "Sin superior"}
@@ -312,9 +338,30 @@ export function RolesPanel() {
       <Modal
         titulo={editando === "nuevo" ? "Crear rol" : "Editar rol"}
         abierto={editando !== null}
-        onCerrar={() => setEditando(null)}
+        onCerrar={() => {
+          if (!guardando) setEditando(null);
+        }}
       >
         <form onSubmit={guardar} className="flex flex-col gap-4">
+          {editando === "nuevo" ? (
+            <SelectorPaginado
+              url="/admin/empresas"
+              etiqueta="Empresa"
+              value={form.empresaId}
+              required
+              vacio="Seleccioná una empresa"
+              onChange={(id) =>
+                setForm((actual) => ({ ...actual, empresaId: id, rolId: "" }))
+              }
+            />
+          ) : editando ? (
+            <p className="text-sm text-muted">
+              Empresa:{" "}
+              <strong className="text-foreground">
+                {editando.empresa.nombre}
+              </strong>
+            </p>
+          ) : null}
           <label className={labelBase}>
             Descripción
             <input
@@ -331,34 +378,20 @@ export function RolesPanel() {
               className={inputBase}
             />
           </label>
-          <label className={labelBase}>
-            Rol superior
-            <select
+          {editando && form.empresaId !== "" ? (
+            <SelectorPaginado
+              key={`${form.empresaId}-${idEditando ?? "nuevo"}`}
+              url={`/admin/roles?empresaId=${form.empresaId}`}
+              etiqueta="Rol superior"
               value={form.rolId}
-              onChange={(evento) =>
-                setForm((actual) => ({
-                  ...actual,
-                  rolId:
-                    evento.target.value === ""
-                      ? ""
-                      : Number(evento.target.value),
-                }))
+              vacio="Sin superior"
+              excluirId={idEditando}
+              seleccionActual={
+                editando !== "nuevo" ? editando.padre?.descripcion : undefined
               }
-              className={inputBase}
-            >
-              <option value="">Sin superior</option>
-              {padreActual ? (
-                <option value={padreActual.id}>
-                  {padreActual.descripcion}
-                </option>
-              ) : null}
-              {opcionesPadre.map((rol) => (
-                <option key={rol.id} value={rol.id}>
-                  {rol.descripcion}
-                </option>
-              ))}
-            </select>
-          </label>
+              onChange={(id) => setForm((actual) => ({ ...actual, rolId: id }))}
+            />
+          ) : null}
           {error ? <p className={errorBox}>{error}</p> : null}
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <button

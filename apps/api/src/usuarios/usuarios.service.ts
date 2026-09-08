@@ -156,20 +156,31 @@ export class UsuariosService {
 
   async meta(usuarioId: number): Promise<MetaUsuariosDto> {
     const actual = await this.contexto(usuarioId);
-    const [empresas, roles] = await Promise.all([
-      this.prisma.empresa.findMany({
-        where: actual.esSuperadmin ? {} : { id: actual.empresaId },
-        select: { id: true, nombre: true },
-        orderBy: { nombre: 'asc' },
-        take: 200,
-      }),
+    const empresas = await this.prisma.empresa.findMany({
+      where: actual.esSuperadmin ? {} : { id: actual.empresaId },
+      select: { id: true, nombre: true },
+      orderBy: { nombre: 'asc' },
+      take: 200,
+    });
+    return { empresas, esSuperadmin: actual.esSuperadmin };
+  }
+
+  async listarRoles(usuarioId: number, query: ListarUsuariosDto) {
+    const actual = await this.contexto(usuarioId);
+    const empresaId = this.empresaObjetivo(actual, query.empresaId);
+    const where = { empresaId };
+    const { skip, take, page, limit } = rangoPaginacion(query);
+    const [total, items] = await Promise.all([
+      this.prisma.rol.count({ where }),
       this.prisma.rol.findMany({
+        where,
         select: { id: true, descripcion: true },
-        orderBy: { descripcion: 'asc' },
-        take: 100,
+        orderBy: [{ descripcion: 'asc' }, { id: 'asc' }],
+        skip,
+        take,
       }),
     ]);
-    return { empresas, roles, esSuperadmin: actual.esSuperadmin };
+    return respuestaPaginada(items, total, page, limit);
   }
 
   private async validarAsignaciones(
@@ -181,7 +192,7 @@ export class UsuariosService {
     const [rol, superior] = await Promise.all([
       this.prisma.rol.findUnique({
         where: { id: rolId },
-        select: { id: true, descripcion: true, rolId: true },
+        select: { id: true, empresaId: true },
       }),
       superiorId
         ? this.prisma.usuario.findUnique({
@@ -196,7 +207,11 @@ export class UsuariosService {
           })
         : null,
     ]);
-    if (!rol) throw new NotFoundException('El rol no existe');
+    if (!rol || rol.empresaId !== empresaId) {
+      throw new NotFoundException(
+        'El rol no está disponible para esta empresa',
+      );
+    }
     if (
       superiorId &&
       (!superior ||

@@ -78,7 +78,7 @@ export class AsignacionesService {
     ];
     if (rolIdsTodos.length > 0) {
       const rolesValidos = await this.prisma.rol.count({
-        where: { id: { in: rolIdsTodos } },
+        where: { id: { in: rolIdsTodos }, empresaId: dto.empresaId },
       });
       if (rolesValidos !== rolIdsTodos.length) {
         throw new BadRequestException('Algún rol indicado no existe');

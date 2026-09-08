@@ -1,33 +1,33 @@
-# Graph Report - COMERCIA  (2026-09-03)
+# Graph Report - COMERCIA  (2026-09-08)
 
 ## Corpus Check
-- 362 files · ~111,644 words
+- 369 files · ~115,091 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1772 nodes · 2373 edges · 303 communities (124 shown, 179 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.57)
+- 1803 nodes · 2476 edges · 310 communities (130 shown, 180 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.65)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `e9dcfda4`
+- Built from commit: `f8b082fd`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - roles.service.ts
-- usuarios.service.ts
+- UsuariosService
 - app.module.ts
 - apiFetch
 - ModulosService
 - PrismaService
 - selector-pais.tsx
-- AdminEmpresasController
+- auth.service.ts
 - duracion.ts
-- RolesController
-- admin-empresas.service.ts
+- roles-panel.tsx
+- AppController
 - scripts
-- PaginacionDto
+- admin-empresas.service.ts
 - compilerOptions
 - EjecutablesService
 - ActualizarModuloDto
@@ -38,7 +38,7 @@
 - usuarios-panel.tsx
 - direccion-ruta.ts
 - ActualizarPaginaDto
-- plataforma.controller.ts
+- AsignarModuloDto
 - start-production-db-local.mjs
 - numeros.ts
 - busqueda-usuario.ts
@@ -50,14 +50,22 @@
 - globals
 - toast-provider.tsx
 - dependencies
-- admin-empresas.controller.ts
+- RequestConUsuario
+- datos-usuario.ts
+- AsignacionesService
+- login-form.tsx
+- HealthController
+- env.schema.ts
+- 20260908120000_roles_por_empresa/migration.sql
 - @nestjs/testing
+- @eslint/eslintrc
 - panel/layout.tsx
+- roles-migration.integration.mjs
 - @types/node
 - contexto.tsx
 - 5. Re-render Optimization
 - 5. Re-render Optimization
-- ActualizarEjecutableDto
+- plataforma.controller.ts
 - 7. JavaScript Performance
 - Q: en que tabla puedo ver que se guarda los datos de la ubi etc del usuario? ademas quiero que se envie la ubi cada 1min etc de los usuarios
 - Quick Reference
@@ -282,10 +290,9 @@
 - 20260807120000_agrega_seguimiento_ubicacion/migration.sql
 - Q: En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa
 - @eslint/js
-- auth.service.ts
+- AuthService
 - 20260814193000_refactor_tareas_canonicas/migration.sql
 - Q: ya no me funciona bien el apk cuando inicio la app nunca mas esta reconociendo las sim's para traer los nros de telefono e iniciar automaticamente el login, corregir eso
-- eslint-config-prettier
 - @nestjs/cli
 - Q: Como quitar todas las tareas solamente de un usuario respetando la jerarquia
 - Q: migration.sql se ejecuta automaticamente cuando hago el commit o yo tengo que hacerlo?
@@ -296,22 +303,22 @@
 - Q: Cómo refactorizar las tablas de tareas para soportar empresa, equipos, usuarios, clientes, locales, exclusiones e historial
 
 ## God Nodes (most connected - your core abstractions)
-1. `PrismaService` - 41 edges
-2. `AdminPlataformaController` - 21 edges
+1. `PrismaService` - 42 edges
+2. `RequestConUsuario` - 26 edges
 3. `compilerOptions` - 21 edges
-4. `RequestConUsuario` - 19 edges
-5. `ModulosService` - 19 edges
+4. `scripts` - 21 edges
+5. `AdminPlataformaController` - 20 edges
 6. `scripts` - 18 edges
-7. `PaginacionDto` - 18 edges
-8. `scripts` - 18 edges
-9. `UsuariosService` - 17 edges
+7. `ModulosService` - 18 edges
+8. `UsuariosService` - 18 edges
+9. `apiFetch()` - 17 edges
 10. `AuthService` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `PanelLayout()` --calls--> `apiFetch()`  [EXTRACTED]
   apps/web/src/app/panel/layout.tsx → apps/web/src/lib/api.ts
-- `CrearUsuarioDto` --inherits--> `RegisterDto`  [EXTRACTED]
-  apps/api/src/usuarios/dto/usuario.dto.ts → apps/api/src/auth/dto/register.dto.ts
+- `ListarRolesDto` --inherits--> `PaginacionDto`  [EXTRACTED]
+  apps/api/src/roles/dto/rol.dto.ts → apps/api/src/common/utils/paginacion.ts
 - `ListarUsuariosDto` --inherits--> `PaginacionDto`  [EXTRACTED]
   apps/api/src/usuarios/dto/usuario.dto.ts → apps/api/src/common/utils/paginacion.ts
 - `PaginaModulo()` --calls--> `usePanel()`  [EXTRACTED]
@@ -322,70 +329,70 @@
 ## Import Cycles
 - None detected.
 
-## Communities (303 total, 179 thin omitted)
+## Communities (310 total, 180 thin omitted)
 
 ### Community 0 - "roles.service.ts"
-Cohesion: 0.17
-Nodes (16): ActualizarRolDto, CrearRolDto, IsInt, IsOptional, IsString, Max, MaxLength, Min (+8 more)
+Cohesion: 0.10
+Nodes (29): ActualizarRolDto, CrearRolDto, ListarRolesDto, IsInt, IsOptional, IsString, Max, MaxLength (+21 more)
 
-### Community 1 - "usuarios.service.ts"
-Cohesion: 0.06
-Nodes (45): RequestConUsuario, AdminUsuariosController, ApiTags, Body, Controller, Delete, Get, Param (+37 more)
+### Community 1 - "UsuariosService"
+Cohesion: 0.05
+Nodes (51): RegisterDto, IsInt, IsString, Length, Matches, MaxLength, MinLength, Transform (+43 more)
 
 ### Community 2 - "app.module.ts"
-Cohesion: 0.08
-Nodes (28): ApiOkResponse, AppController, ApiTags, Controller, Get, AppModule, Module, AppService (+20 more)
+Cohesion: 0.16
+Nodes (16): AppModule, Module, AuthModule, Module, EmpresasModule, Module, HealthModule, Module (+8 more)
 
 ### Community 3 - "apiFetch"
 Cohesion: 0.31
 Nodes (8): Tab, EmpresasAbmPanel(), EmpresasPanel(), ModulosPanel(), RolesPanel(), UsuariosPanel(), apiFetch(), extraerMensaje()
 
 ### Community 4 - "ModulosService"
-Cohesion: 0.28
+Cohesion: 0.26
 Nodes (4): ModuloDto, PaginaDto, ModulosService, Injectable
 
 ### Community 5 - "PrismaService"
-Cohesion: 0.10
-Nodes (10): JwtAuthGuard, Injectable, HealthController, ApiOperation, ApiTags, Controller, Get, PrismaService (+2 more)
+Cohesion: 0.15
+Nodes (6): ModuloMenu, PaginaMenu, MiPlataformaService, Injectable, PrismaService, Injectable
 
 ### Community 6 - "selector-pais.tsx"
 Cohesion: 0.33
 Nodes (4): SelectorPais(), PaisItem, PAIS_INICIAL, normalizarBusqueda()
 
-### Community 7 - "AdminEmpresasController"
-Cohesion: 0.16
-Nodes (9): AdminEmpresasController, ApiTags, Body, Controller, Delete, Param, Patch, Post (+1 more)
+### Community 7 - "auth.service.ts"
+Cohesion: 0.11
+Nodes (17): MENSAJES_DUPLICADO, LoginSimDto, ArrayMaxSize, IsArray, IsString, MaxLength, Transform, AsignacionUsuario (+9 more)
 
-### Community 9 - "RolesController"
-Cohesion: 0.16
-Nodes (9): RolesController, ApiTags, Body, Controller, Delete, Param, Patch, Post (+1 more)
+### Community 9 - "roles-panel.tsx"
+Cohesion: 0.20
+Nodes (9): FORM_INICIAL, OPCIONES_POR_PAGINA, Paginacion(), PantallaCarga(), SelectorPaginado(), ApiError, OpcionSelector, FormRol (+1 more)
 
-### Community 10 - "admin-empresas.service.ts"
-Cohesion: 0.25
-Nodes (8): AdminEmpresasService, aEmpresaAdminDto(), SELECT_EMPRESA_ADMIN, Injectable, EmpresaAdminDto, EmpresaAdminFila, EmpresaJerarquiaFila, esEmpresaJerarquiaFila()
+### Community 10 - "AppController"
+Cohesion: 0.23
+Nodes (7): ApiOkResponse, AppController, ApiTags, Controller, Get, AppService, Injectable
 
 ### Community 11 - "scripts"
 Cohesion: 0.05
 Nodes (37): author, description, jest, collectCoverageFrom, coverageDirectory, moduleFileExtensions, rootDir, testEnvironment (+29 more)
 
-### Community 12 - "PaginacionDto"
-Cohesion: 0.11
-Nodes (19): PaginacionDto, rangoPaginacion(), respuestaPaginada, IsInt, IsOptional, Max, Min, Type (+11 more)
+### Community 12 - "admin-empresas.service.ts"
+Cohesion: 0.06
+Nodes (44): PaginacionDto, rangoPaginacion(), respuestaPaginada, IsInt, IsOptional, Max, Min, Type (+36 more)
 
 ### Community 13 - "compilerOptions"
 Cohesion: 0.07
 Nodes (28): compilerOptions, allowJs, esModuleInterop, incremental, isolatedModules, jsx, lib, module (+20 more)
 
 ### Community 14 - "EjecutablesService"
-Cohesion: 0.28
-Nodes (4): EjecutablesService, Injectable, EjecutableDto, PaginaMenu
+Cohesion: 0.38
+Nodes (3): EjecutablesService, Injectable, EjecutableDto
 
 ### Community 15 - "ActualizarModuloDto"
 Cohesion: 0.33
 Nodes (11): ActualizarModuloDto, CrearModuloDto, IsBoolean, IsInt, IsOptional, IsString, Length, Matches (+3 more)
 
 ### Community 16 - "AdminPlataformaController"
-Cohesion: 0.12
+Cohesion: 0.13
 Nodes (12): AdminPlataformaController, MiPlataformaController, ApiTags, Body, Controller, Delete, Get, Param (+4 more)
 
 ### Community 17 - "modulos-panel.tsx"
@@ -393,8 +400,8 @@ Cohesion: 0.12
 Nodes (14): notificarPlataformaActualizada(), AsignacionEmpresa, Conexion, Ejecutable, EmpresaModulo, Modulo, MotorBd, MOTORES (+6 more)
 
 ### Community 19 - "scripts"
-Cohesion: 0.06
-Nodes (33): concurrently, devDependencies, concurrently, name, multer, postcss, overrides, @nestjs/platform-express (+25 more)
+Cohesion: 0.05
+Nodes (36): concurrently, devDependencies, concurrently, name, multer, postcss, overrides, @nestjs/platform-express (+28 more)
 
 ### Community 20 - "poligono.ts"
 Cohesion: 0.60
@@ -412,13 +419,13 @@ Nodes (3): anguloVehiculoEnRuta(), aRadianes(), CoordenadaRutaMapa
 Cohesion: 0.33
 Nodes (11): ActualizarPaginaDto, CrearPaginaDto, IsBoolean, IsInt, IsOptional, IsString, Length, Matches (+3 more)
 
-### Community 26 - "plataforma.controller.ts"
-Cohesion: 0.14
-Nodes (16): AsignacionesService, Injectable, AsignarModuloDto, PaginaAsignadaDto, ArrayMaxSize, IsArray, IsBoolean, IsInt (+8 more)
+### Community 26 - "AsignarModuloDto"
+Cohesion: 0.26
+Nodes (11): AsignarModuloDto, PaginaAsignadaDto, ArrayMaxSize, IsArray, IsBoolean, IsInt, IsOptional, Max (+3 more)
 
 ### Community 27 - "start-production-db-local.mjs"
-Cohesion: 0.31
-Nodes (8): allowedHosts, environmentPath, finish(), localEnvironment, main(), stop(), tunnelPort, waitForTunnel()
+Cohesion: 0.17
+Nodes (18): allowedHosts, apiEnvironment, apiPort, checkTunnel(), environmentPath, finish(), main(), openTunnel() (+10 more)
 
 ### Community 31 - "API Tsconfig Json Tsconfig"
 Cohesion: 0.09
@@ -440,13 +447,37 @@ Nodes (13): manrope, metadata, viewport, ActualizadorDespliegue(), deploymentIdD
 Cohesion: 0.04
 Nodes (45): dependencies, class-transformer, class-validator, compression, cookie-parser, dotenv, helmet, libphonenumber-js (+37 more)
 
-### Community 38 - "admin-empresas.controller.ts"
-Cohesion: 0.21
-Nodes (12): SuperadminGuard, Injectable, ActualizarEmpresaAdminDto, CrearEmpresaAdminDto, IsInt, IsOptional, IsString, Max (+4 more)
+### Community 38 - "RequestConUsuario"
+Cohesion: 0.23
+Nodes (5): RequestConUsuario, JwtAuthGuard, Injectable, SuperadminGuard, Injectable
+
+### Community 39 - "datos-usuario.ts"
+Cohesion: 0.38
+Nodes (7): normalizarCelular(), normalizarNumeroSim(), normalizarRucUsuario(), TIPOS_CELULAR_VALIDOS, calcularDvRucPy(), esRucParaguayoValido(), normalizarRucPy()
+
+### Community 40 - "AsignacionesService"
+Cohesion: 0.25
+Nodes (5): AsignacionesService, Injectable, AsignacionEmpresaDto, EmpresaModuloDto, PaginaAsignada
+
+### Community 41 - "login-form.tsx"
+Cohesion: 0.24
+Nodes (3): AuthShell(), BrandMark(), LoginForm()
+
+### Community 42 - "HealthController"
+Cohesion: 0.22
+Nodes (6): HealthController, ApiOperation, ApiTags, Controller, Get, HealthCheck
+
+### Community 43 - "env.schema.ts"
+Cohesion: 0.33
+Nodes (5): booleanFromString, Env, parseCorsOrigins(), rawEnvSchema, validateEnv()
+
+### Community 44 - "20260908120000_roles_por_empresa/migration.sql"
+Cohesion: 0.50
+Nodes (3): roles, roles_empresa_mapa, roles_originales
 
 ### Community 47 - "panel/layout.tsx"
-Cohesion: 0.11
-Nodes (9): PanelLayout(), AuthShell(), BrandMark(), BotonTema(), LoginForm(), IconoModulo(), ICONOS, Props (+1 more)
+Cohesion: 0.18
+Nodes (5): PanelLayout(), BotonTema(), IconoModulo(), ICONOS, Props
 
 ### Community 50 - "contexto.tsx"
 Cohesion: 0.26
@@ -460,7 +491,7 @@ Nodes (16): 5.10 Subscribe to Derived State, 5.11 Use Functional setState Update
 Cohesion: 0.12
 Nodes (16): 5.10 Subscribe to Derived State, 5.11 Use Functional setState Updates, 5.12 Use Lazy State Initialization, 5.13 Use Transitions for Non-Urgent Updates, 5.14 Use useDeferredValue for Expensive Derived Renders, 5.15 Use useRef for Transient Values, 5.1 Calculate Derived State During Rendering, 5.2 Defer State Reads to Usage Point (+8 more)
 
-### Community 57 - "ActualizarEjecutableDto"
+### Community 57 - "plataforma.controller.ts"
 Cohesion: 0.27
 Nodes (11): ActualizarEjecutableDto, CrearEjecutableDto, IsBoolean, IsInt, IsOptional, IsString, Length, Max (+3 more)
 
@@ -477,8 +508,8 @@ Cohesion: 0.13
 Nodes (14): 1. Eliminating Waterfalls (CRITICAL), 2. Bundle Size Optimization (CRITICAL), 3. Server-Side Performance (HIGH), 4. Client-Side Data Fetching (MEDIUM-HIGH), 5. Re-render Optimization (MEDIUM), 6. Rendering Performance (MEDIUM), 7. JavaScript Performance (LOW-MEDIUM), 8. Advanced Patterns (LOW) (+6 more)
 
 ### Community 70 - "empresas-abm-panel.tsx"
-Cohesion: 0.14
-Nodes (12): FORM_INICIAL, FormEmpresa, FORM_INICIAL, FormRol, IconoMas(), OPCIONES_POR_PAGINA, Paginacion(), ApiError (+4 more)
+Cohesion: 0.25
+Nodes (6): FORM_INICIAL, FormEmpresa, IconoMas(), Empresa, EmpresaAdmin, RespuestaPaginada
 
 ### Community 71 - "Q: El número viejo de celular quedó guardado en la sesión y quiero que no vuelva a pasar"
 Cohesion: 0.40
@@ -505,8 +536,8 @@ Cohesion: 0.48
 Nodes (6): "ejecutables", "empresa_modulos", "empresa_paginas", "modulos", "paginas", "usuarios"
 
 ### Community 79 - "Comercia Agent Guide"
-Cohesion: 0.15
-Nodes (12): Backend Rules, Comercia Agent Guide, Commands, Frontend Rules, ⚠️ Git: regla CRÍTICA para agentes IA (Claude, Codex, y cualquier otro), graphify, Organización del código del backend (OBLIGATORIA), Project Style (+4 more)
+Cohesion: 0.14
+Nodes (13): Backend Rules, Comercia Agent Guide, Commands, Frontend Rules, ⚠️ Git: regla CRÍTICA para agentes IA (Claude, Codex, y cualquier otro), graphify, Organización del código del backend (OBLIGATORIA), Preferencia del usuario: pruebas y consumo (+5 more)
 
 ### Community 80 - "API Nest Cli Nest Cli"
 Cohesion: 0.33
@@ -534,11 +565,11 @@ Nodes (4): Answer, Outcome, Q: Arquitectura existente para roles Team Leader/Imp
 
 ### Community 86 - "devDependencies"
 Cohesion: 0.29
-Nodes (7): devDependencies, eslint, @eslint/eslintrc, @types/cookie-parser, eslint, @eslint/eslintrc, @types/cookie-parser
+Nodes (7): devDependencies, eslint, eslint-config-prettier, @types/cookie-parser, eslint, eslint-config-prettier, @types/cookie-parser
 
 ### Community 95 - "acceso-plataforma.service.ts"
-Cohesion: 0.17
-Nodes (8): AccesoPlataformaService, Injectable, AccesoModulos, ModuloMenu, UsuarioConAcceso, MiPlataformaService, Injectable, rolVe()
+Cohesion: 0.28
+Nodes (5): AccesoPlataformaService, Injectable, AccesoModulos, UsuarioConAcceso, rolVe()
 
 ### Community 98 - "20260811190000_impulsadores_tareas_dirigidas/migration.sql"
 Cohesion: 0.67
@@ -696,9 +727,9 @@ Nodes (4): Answer, Outcome, Q: cuales son las librerias que usa para el calculo 
 Cohesion: 0.40
 Nodes (4): Answer, Outcome, Q: En producción el login da CORS y el front dice No se pudo conectar con el servidor; verificar qué pasa, Source Nodes
 
-### Community 345 - "auth.service.ts"
-Cohesion: 0.05
-Nodes (51): AuthController, ApiOperation, ApiTags, Body, Controller, Get, Post, Req (+43 more)
+### Community 345 - "AuthService"
+Cohesion: 0.13
+Nodes (20): AuthController, ApiOperation, ApiTags, Body, Controller, Get, Post, Req (+12 more)
 
 ### Community 348 - "20260814193000_refactor_tareas_canonicas/migration.sql"
 Cohesion: 0.25
@@ -725,9 +756,9 @@ Cohesion: 0.50
 Nodes (3): Answer, Outcome, Q: Cómo refactorizar las tablas de tareas para soportar empresa, equipos, usuarios, clientes, locales, exclusiones e historial
 
 ## Knowledge Gaps
-- **727 isolated node(s):** `$schema`, `collection`, `sourceRoot`, `deleteOutDir`, `name` (+722 more)
+- **739 isolated node(s):** `$schema`, `collection`, `sourceRoot`, `deleteOutDir`, `name` (+734 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **179 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **180 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Work-memory lessons
 
@@ -743,17 +774,17 @@ Nodes (3): Answer, Outcome, Q: Cómo refactorizar las tablas de tareas para sopo
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `PrismaService` connect `PrismaService` to `roles.service.ts`, `usuarios.service.ts`, `app.module.ts`, `ModulosService`, `admin-empresas.controller.ts`, `admin-empresas.service.ts`, `PaginacionDto`, `EjecutablesService`, `auth.service.ts`, `plataforma.controller.ts`, `acceso-plataforma.service.ts`?**
+- **Why does `PrismaService` connect `PrismaService` to `roles.service.ts`, `app.module.ts`, `ModulosService`, `RequestConUsuario`, `auth.service.ts`, `AsignacionesService`, `HealthController`, `admin-empresas.service.ts`, `EjecutablesService`, `plataforma.controller.ts`, `acceso-plataforma.service.ts`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Why does `RequestConUsuario` connect `usuarios.service.ts` to `AdminPlataformaController`, `auth.service.ts`, `plataforma.controller.ts`?**
-  _High betweenness centrality (0.011) - this node is a cross-community bridge._
-- **Why does `PaginacionDto` connect `PaginacionDto` to `roles.service.ts`, `usuarios.service.ts`, `admin-empresas.service.ts`, `admin-empresas.controller.ts`?**
-  _High betweenness centrality (0.005) - this node is a cross-community bridge._
+- **Why does `RequestConUsuario` connect `RequestConUsuario` to `roles.service.ts`, `UsuariosService`, `AdminPlataformaController`, `AuthService`, `plataforma.controller.ts`?**
+  _High betweenness centrality (0.013) - this node is a cross-community bridge._
+- **Why does `AsignarModuloDto` connect `AsignarModuloDto` to `AsignacionesService`, `plataforma.controller.ts`, `PrismaService`, `AdminPlataformaController`?**
+  _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **What connects `$schema`, `collection`, `sourceRoot` to the rest of the system?**
-  _727 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `usuarios.service.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.061458718992965566 - nodes in this community are weakly interconnected._
-- **Should `app.module.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08048103607770583 - nodes in this community are weakly interconnected._
+  _739 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `roles.service.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.09528214616096208 - nodes in this community are weakly interconnected._
+- **Should `UsuariosService` be split into smaller, more focused modules?**
+  _Cohesion score 0.05126452494873548 - nodes in this community are weakly interconnected._
 - **Should `PrismaService` be split into smaller, more focused modules?**
-  _Cohesion score 0.1 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.14624505928853754 - nodes in this community are weakly interconnected._

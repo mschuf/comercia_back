@@ -8,13 +8,14 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { SuperadminGuard } from '../auth/superadmin.guard';
-import { PaginacionDto } from '../common/utils/paginacion';
-import { ActualizarRolDto, CrearRolDto } from './dto/rol.dto';
+import type { RequestConUsuario } from '../auth/interfaces/request-con-usuario.interface';
+import { ActualizarRolDto, CrearRolDto, ListarRolesDto } from './dto/rol.dto';
 import { RolesService } from './roles.service';
 
 @ApiTags('administración')
@@ -24,25 +25,29 @@ export class RolesController {
   constructor(private readonly roles: RolesService) {}
 
   @Get()
-  listar(@Query() query: PaginacionDto) {
-    return this.roles.listar(query);
+  listar(@Req() req: RequestConUsuario, @Query() query: ListarRolesDto) {
+    return this.roles.listar(req.usuarioId, query);
   }
 
   @Post()
-  crear(@Body() dto: CrearRolDto) {
-    return this.roles.crear(dto);
+  crear(@Req() req: RequestConUsuario, @Body() dto: CrearRolDto) {
+    return this.roles.crear(req.usuarioId, dto);
   }
 
   @Patch(':id')
   actualizar(
+    @Req() req: RequestConUsuario,
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: ActualizarRolDto,
   ) {
-    return this.roles.actualizar(id, dto);
+    return this.roles.actualizar(req.usuarioId, id, dto);
   }
 
   @Delete(':id')
-  eliminar(@Param('id', ParseIntPipe) id: number) {
-    return this.roles.eliminar(id);
+  eliminar(
+    @Req() req: RequestConUsuario,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.roles.eliminar(req.usuarioId, id);
   }
 }

@@ -31,6 +31,5 @@ export interface UsuarioAdmin {
 
 export interface MetaUsuarios {
   empresas: { id: number; nombre: string }[];
-  roles: { id: number; descripcion: string }[];
   esSuperadmin: boolean;
 }

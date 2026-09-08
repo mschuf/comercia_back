@@ -16,6 +16,5 @@ export interface UsuarioAdminDto {
 
 export interface MetaUsuariosDto {
   empresas: { id: number; nombre: string }[];
-  roles: { id: number; descripcion: string }[];
   esSuperadmin: boolean;
 }

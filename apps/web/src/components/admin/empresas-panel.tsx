@@ -10,6 +10,8 @@ import type {
   PaginaAsignada,
   Rol,
 } from "@/types/plataforma";
+import { Paginacion } from "@/components/paginacion";
+import { PantallaCarga } from "@/components/pantalla-carga";
 import { errorBox } from "@/components/ui";
 import type { RespuestaPaginada } from "@/types/paginacion";
 import { notificarPlataformaActualizada } from "@/lib/eventos-plataforma";
@@ -19,7 +21,13 @@ const BASE = "/admin/plataforma";
 export function EmpresasPanel() {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [modulos, setModulos] = useState<Modulo[]>([]);
-  const [roles, setRoles] = useState<Rol[]>([]);
+  const [datosRoles, setDatosRoles] = useState<RespuestaPaginada<Rol> | null>(
+    null,
+  );
+  const [pageRoles, setPageRoles] = useState(1);
+  const [limitRoles, setLimitRoles] = useState(7);
+  const [cargandoRoles, setCargandoRoles] = useState(false);
+  const roles = datosRoles?.items ?? [];
   const [empresaId, setEmpresaId] = useState<number | "">("");
   const [asignacion, setAsignacion] = useState<AsignacionEmpresa | null>(null);
   const [cargando, setCargando] = useState(true);
@@ -31,12 +39,10 @@ export function EmpresasPanel() {
     Promise.all([
       apiFetch<RespuestaPaginada<Empresa>>("/empresas?page=1&limit=50"),
       apiFetch<Modulo[]>(`${BASE}/modulos`),
-      apiFetch<Rol[]>(`${BASE}/roles`),
     ])
-      .then(([e, m, r]) => {
+      .then(([e, m]) => {
         setEmpresas(e.items);
         setModulos(m);
-        setRoles(r);
         if (e.items.length > 0) setEmpresaId(e.items[0].id);
       })
       .catch((err) =>
@@ -69,8 +75,37 @@ export function EmpresasPanel() {
     };
   }, [empresaId]);
 
+  useEffect(() => {
+    if (empresaId === "") return;
+    let vigente = true;
+    apiFetch<RespuestaPaginada<Rol>>(
+      `/admin/roles?empresaId=${empresaId}&page=${pageRoles}&limit=${limitRoles}`,
+    )
+      .then((datos) => {
+        if (vigente) setDatosRoles(datos);
+      })
+      .catch((error) => {
+        if (vigente)
+          setErrorAccion(
+            error instanceof ApiError
+              ? error.message
+              : "No se pudieron cargar los roles",
+          );
+      })
+      .finally(() => {
+        if (vigente) setCargandoRoles(false);
+      });
+    return () => {
+      vigente = false;
+    };
+  }, [empresaId, pageRoles, limitRoles]);
+
   function estadoModulo(moduloId: number): EmpresaModulo | null {
-    return asignacion?.modulos.find((m) => m.moduloId === moduloId) ?? null;
+    return (
+      (asignacion?.empresaId === empresaId ? asignacion : null)?.modulos.find(
+        (m) => m.moduloId === moduloId,
+      ) ?? null
+    );
   }
 
   // Guarda la asignación completa del módulo (roles + páginas). La API exige
@@ -144,7 +179,13 @@ export function EmpresasPanel() {
         Empresa
         <select
           value={empresaId}
-          onChange={(e) => setEmpresaId(Number(e.target.value))}
+          onChange={(e) => {
+            setCargandoRoles(true);
+            setDatosRoles(null);
+            setAsignacion(null);
+            setPageRoles(1);
+            setEmpresaId(Number(e.target.value));
+          }}
           className={inputBase}
         >
           {empresas.map((e) => (
@@ -155,6 +196,36 @@ export function EmpresasPanel() {
         </select>
       </label>
 
+      <PantallaCarga
+        visible={cargandoRoles || guardando !== null}
+        mensaje={
+          guardando !== null
+            ? "Guardando permisos"
+            : "Cargando roles de la empresa"
+        }
+      />
+      {datosRoles && datosRoles.totalPages > 1 ? (
+        <div className="mt-4">
+          <p className="text-sm text-muted">
+            Roles disponibles para los permisos
+          </p>
+          <Paginacion
+            page={datosRoles.page}
+            limit={datosRoles.limit}
+            total={datosRoles.total}
+            totalPages={datosRoles.totalPages}
+            onPageChange={(pagina) => {
+              setCargandoRoles(true);
+              setPageRoles(pagina);
+            }}
+            onLimitChange={(cantidad) => {
+              setCargandoRoles(true);
+              setLimitRoles(cantidad);
+              setPageRoles(1);
+            }}
+          />
+        </div>
+      ) : null}
       {errorAccion && <p className={`${errorBox} mt-4`}>{errorAccion}</p>}
 
       <div className="mt-5 flex flex-col gap-3">
