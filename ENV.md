@@ -90,8 +90,11 @@ npm run prod:web
 ```
 
 No combines `npm run prod` con los tres comandos separados: ambos intentan usar
-los puertos `3000`, `3001` y `5435`. Si un puerto quedó ocupado por una ejecución
-anterior, detené ese proceso con `Ctrl+C` antes de volver a iniciar.
+los puertos `3000`, `3001` y `5435`. El túnel SSH ocupa solo `5435` (PostgreSQL);
+`3001` es NestJS y `3000` es Next.js. `PORT=3001` en `.env.production.local` es
+solo para la API: el script no se lo pasa a Next.js. Si un puerto quedó ocupado
+por una ejecución anterior, detené ese proceso con `Ctrl+C` antes de volver a
+iniciar.
 
 El comando usa `PROD_SSH_HOST`, `PROD_SSH_USER` y `PROD_SSH_PORT` de ese
 archivo (o el alias SSH `comercia` si no se configuran). El túnel se cierra
