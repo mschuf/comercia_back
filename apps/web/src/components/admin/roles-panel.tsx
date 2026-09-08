@@ -88,7 +88,7 @@ function ListaRolesMovil({
 export function RolesPanel() {
   const [datos, setDatos] = useState<RespuestaPaginada<RolAdmin> | null>(null);
   const [empresaId, setEmpresaId] = useState<number | "">("");
-  const [cargando, setCargando] = useState(false);
+  const [consultaTerminada, setConsultaTerminada] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(7);
   const [editando, setEditando] = useState<RolAdmin | "nuevo" | null>(null);
@@ -98,12 +98,11 @@ export function RolesPanel() {
   const [errorEliminar, setErrorEliminar] = useState<string | null>(null);
   const [guardando, setGuardando] = useState(false);
   const [borrando, setBorrando] = useState(false);
+  const consulta = `/admin/roles?page=${page}&limit=${limit}${empresaId === "" ? "" : `&empresaId=${empresaId}`}`;
+  const cargando = consultaTerminada !== consulta;
 
   const cargar = useCallback(() => {
-    setCargando(true);
-    return apiFetch<RespuestaPaginada<RolAdmin>>(
-      `/admin/roles?page=${page}&limit=${limit}${empresaId === "" ? "" : `&empresaId=${empresaId}`}`,
-    )
+    return apiFetch<RespuestaPaginada<RolAdmin>>(consulta)
       .then((respuesta) => {
         setDatos(respuesta);
         setError(null);
@@ -115,8 +114,8 @@ export function RolesPanel() {
             : "No se pudieron cargar los roles",
         ),
       )
-      .finally(() => setCargando(false));
-  }, [limit, page, empresaId]);
+      .finally(() => setConsultaTerminada(consulta));
+  }, [consulta]);
 
   useEffect(() => {
     void cargar();

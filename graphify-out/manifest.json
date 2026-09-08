@@ -635,8 +635,8 @@
     "semantic_hash": "5eda7bfd04ec15f22aecec7f15b91130"
   },
   "apps/web/src/components/admin/roles-panel.tsx": {
-    "mtime": 1788871867.339405,
-    "ast_hash": "6aaea2e82dfd1cbea58c3e41bfccedb8",
+    "mtime": 1788876981.2255137,
+    "ast_hash": "6832f99aed48b5f4727d345b09cf4e7b",
     "semantic_hash": ""
   },
   "apps/web/src/components/auth-shell.tsx": {
@@ -700,8 +700,8 @@
     "semantic_hash": "692f7f4acb1607e8575b72c625e03c79"
   },
   "apps/web/src/components/usuarios/usuarios-panel.tsx": {
-    "mtime": 1788871867.3808103,
-    "ast_hash": "b39ec67d694959b61993815c149673f4",
+    "mtime": 1788876793.2671402,
+    "ast_hash": "b0b897777aee6b8c31ca62210c61831d",
     "semantic_hash": ""
   },
   "apps/web/src/lib/api.ts": {
@@ -1970,8 +1970,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/campo/catalogo-panel.tsx": {
-    "mtime": 1788876499.009365,
-    "ast_hash": "a2ef37a15f2ca9b7735a7efba7093c77",
+    "mtime": 1788876530.208947,
+    "ast_hash": "3a9270468d088483b1d2606eb9e9e33c",
     "semantic_hash": ""
   },
   "apps/web/src/components/campo/form-campo.tsx": {
@@ -2005,8 +2005,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/hooks/use-lista-campo.ts": {
-    "mtime": 1788876498.124457,
-    "ast_hash": "5db6c10290564beb4c9825f2c460c4a0",
+    "mtime": 1788876530.1534853,
+    "ast_hash": "54875c0c7d705d9c59e07b5fdb5f9f24",
     "semantic_hash": ""
   },
   "apps/web/src/types/campo.ts": {

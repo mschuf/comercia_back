@@ -1,5 +1,7 @@
 "use client";
 
+import { calcularDvRucPy } from "@/utils/ruc";
+
 /* Hallmark · administración de usuarios en tarjetas táctiles para móvil. */
 
 import { useCallback, useEffect, useState } from "react";
@@ -213,7 +215,7 @@ export function UsuariosPanel({ soloSuperadmin = false }: UsuariosPanelProps) {
             apellido: form.apellido.trim(),
             correo: form.correo.trim().toLowerCase(),
             nombreLogin: form.nombreLogin.trim().toLowerCase(),
-            ruc: form.ruc.trim(),
+            ruc: `${form.ruc}-${calcularDvRucPy(form.ruc)}`,
             celularPais: form.celularPais,
             celular: form.celular.trim(),
             password: form.password,
@@ -441,11 +443,42 @@ export function UsuariosPanel({ soloSuperadmin = false }: UsuariosPanelProps) {
                   setForm((f) => ({ ...f, nombreLogin }))
                 }
               />
-              <Campo
-                label="RUC"
-                value={form.ruc}
-                onChange={(ruc) => setForm((f) => ({ ...f, ruc }))}
-              />
+              <div>
+                <div className="grid grid-cols-[minmax(0,1fr)_5rem] gap-3">
+                  <label className={labelBase}>
+                    RUC (sin dígito verificador)
+                    <input
+                      value={form.ruc}
+                      onChange={(e) => {
+                        const base = e.target.value.trim().split("-")[0];
+                        if (/^\d{0,8}$/.test(base)) {
+                          setForm((f) => ({ ...f, ruc: base }));
+                        }
+                      }}
+                      inputMode="numeric"
+                      pattern="[0-9]{3,8}"
+                      minLength={3}
+                      required
+                      aria-describedby="ruc-calculado"
+                      className={inputBase}
+                    />
+                  </label>
+                  <label className={labelBase}>
+                    DV
+                    <input
+                      value={form.ruc.length >= 3 ? calcularDvRucPy(form.ruc) : ""}
+                      readOnly
+                      aria-label="Dígito verificador calculado"
+                      className={`${inputBase} text-center`}
+                    />
+                  </label>
+                </div>
+                <p id="ruc-calculado" className="mt-2 text-xs text-muted" aria-live="polite">
+                  {form.ruc.length >= 3
+                    ? `RUC completo: ${form.ruc}-${calcularDvRucPy(form.ruc)}`
+                    : "Ingresá de 3 a 8 números; el dígito verificador se calcula automáticamente."}
+                </p>
+              </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <label className={labelBase}>
                   País del celular
