@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import { apiFetch } from "@/lib/api";
 import { useListaCampo, useOperacionCampo } from "@/hooks/use-lista-campo";
 import { Modal } from "@/components/modal";
@@ -16,6 +17,11 @@ import {
 import { MapaLocal } from "./mapa-local";
 import { PlanLocal } from "./plan-local";
 import type { ClienteCampo, LocalCampo } from "@/types/campo";
+
+const SelectorUbicacion = dynamic(() => import("./selector-ubicacion"), {
+  ssr: false,
+  loading: () => <p role="status">Cargando mapa…</p>,
+});
 
 export function ClientesPanel() {
   const lista = useListaCampo<ClienteCampo>("/campo/clientes");
@@ -225,6 +231,7 @@ export function LocalesPanel() {
           >
             <SelectorPaginado
               url="/campo/clientes"
+              buscable
               etiqueta="Cliente"
               value={form.clienteId || ""}
               required
@@ -265,6 +272,15 @@ export function LocalesPanel() {
                 onChange={(v) => setForm({ ...form, longitud: Number(v) })}
               />
             </div>
+            <SelectorUbicacion
+              latitud={form.latitud}
+              longitud={form.longitud}
+              onChange={(latitud, longitud) =>
+                setForm((actual) =>
+                  actual ? { ...actual, latitud, longitud } : actual,
+                )
+              }
+            />
             <CampoTexto
               titulo="Contacto"
               value={form.contacto}

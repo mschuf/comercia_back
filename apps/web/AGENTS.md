@@ -7,6 +7,23 @@ This version has breaking changes. APIs, conventions, and file structure may dif
 
 # Comercia frontend rules
 
+## Selectores con muchas opciones
+
+- Si un campo puede tener cientos o miles de opciones (clientes, locales,
+  usuarios, productos), usar un selector con búsqueda remota y paginación.
+  No descargar el catálogo completo ni obligar a recorrer opciones a ojo:
+  aumenta el consumo, vuelve lento el formulario y facilita selecciones erróneas.
+- Reutilizar `src/components/selector-paginado.tsx` con `buscable` cuando el
+  endpoint admita `buscar`. El servidor filtra dentro del alcance autorizado
+  y pagina; filtrar solamente la página actual en el navegador no alcanza.
+- Esperar brevemente al escribir, cancelar consultas anteriores y descartar
+  respuestas obsoletas. Volver a la primera página al cambiar la búsqueda.
+- Mantener el ID y nombre seleccionados aunque no estén en los resultados
+  actuales. Mostrar carga, errores con reintento y búsqueda sin resultados.
+  La búsqueda no debe bloquear la escritura ni enviar el formulario con Enter.
+- Reservar selects sin buscador para conjuntos pequeños y acotados, como
+  estados o días de la semana. No activar búsqueda en endpoints que no la soporten.
+
 - Use `.agents/skills/vercel-react-best-practices` when writing or reviewing React/Next.js code.
 - Prefer Server Components and direct imports.
 - Keep client components small and avoid passing private server data into them.

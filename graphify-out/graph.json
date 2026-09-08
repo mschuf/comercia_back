@@ -483,8 +483,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "apps_api_package_dependencies_nestjs_swagger",
-      "community": 37,
-      "community_name": "dependencies",
+      "community": 94,
+      "community_name": "@nestjs/swagger",
       "norm_label": "@nestjs/swagger"
     },
     {
@@ -494,8 +494,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "nestjs_swagger",
-      "community": 37,
-      "community_name": "dependencies",
+      "community": 94,
+      "community_name": "@nestjs/swagger",
       "norm_label": "@nestjs/swagger"
     },
     {
@@ -593,8 +593,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "apps_api_package_dependencies_class_transformer",
-      "community": 46,
-      "community_name": "class-transformer",
+      "community": 37,
+      "community_name": "dependencies",
       "norm_label": "class-transformer"
     },
     {
@@ -604,8 +604,8 @@
       "source_location": "L38",
       "_origin": "ast",
       "id": "class_transformer",
-      "community": 46,
-      "community_name": "class-transformer",
+      "community": 37,
+      "community_name": "dependencies",
       "norm_label": "class-transformer"
     },
     {
@@ -2545,6 +2545,17 @@
       "norm_label": "20260908140000_operaciones_campo/migration.sql"
     },
     {
+      "label": "20260908150000_accesos_campo_guarani/migration.sql",
+      "file_type": "code",
+      "source_file": "apps/api/prisma/migrations/20260908150000_accesos_campo_guarani/migration.sql",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "apps_api_prisma_migrations_20260908150000_accesos_campo_guarani_migration",
+      "community": 95,
+      "community_name": "20260908150000_accesos_campo_guarani/migration.sql",
+      "norm_label": "20260908150000_accesos_campo_guarani/migration.sql"
+    },
+    {
       "label": "guard-migrate.mjs",
       "file_type": "code",
       "source_file": "apps/api/scripts/guard-migrate.mjs",
@@ -2738,7 +2749,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_constants",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "auth.constants.ts"
     },
@@ -2749,7 +2760,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "auth.controller.ts"
     },
@@ -2761,7 +2772,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "authcontroller"
     },
     {
@@ -2772,7 +2783,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_apitags",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "apitags"
     },
     {
@@ -2783,7 +2794,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_controller",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "controller"
     },
     {
@@ -2794,7 +2805,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_post",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "post"
     },
     {
@@ -2805,7 +2816,7 @@
       "_origin": "ast",
       "id": "httpcode",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "httpcode"
     },
     {
@@ -2816,7 +2827,7 @@
       "_origin": "ast",
       "id": "throttle",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "throttle"
     },
     {
@@ -2827,7 +2838,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_apioperation",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "apioperation"
     },
     {
@@ -2838,7 +2849,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_body",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "body"
     },
     {
@@ -2849,7 +2860,7 @@
       "_origin": "ast",
       "id": "res",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "res"
     },
     {
@@ -2859,8 +2870,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_get",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": "get"
     },
     {
@@ -2870,8 +2881,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_useguards",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": "useguards"
     },
     {
@@ -2881,8 +2892,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_ts_req",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": "req"
     },
     {
@@ -2893,7 +2904,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_constructor",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": ".constructor()"
     },
     {
@@ -2904,7 +2915,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_login",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": ".login()"
     },
     {
@@ -2915,7 +2926,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_loginmovil",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": ".loginmovil()"
     },
     {
@@ -2926,7 +2937,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_loginmovilconsim",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": ".loginmovilconsim()"
     },
     {
@@ -2937,7 +2948,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_logout",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": ".logout()"
     },
     {
@@ -2947,8 +2958,8 @@
       "source_location": "L74",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_me",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": ".me()"
     },
     {
@@ -2959,7 +2970,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_controller_authcontroller_setauthcookie",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": ".setauthcookie()"
     },
     {
@@ -3002,8 +3013,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_spec",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 41,
+      "community_name": "auth.service.ts",
       "norm_label": "auth.service.spec.ts"
     },
     {
@@ -3013,7 +3024,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "auth.service.ts"
     },
@@ -3024,7 +3035,7 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_mensajes_duplicado",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "mensajes_duplicado"
     },
@@ -3035,8 +3046,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": "authservice"
     },
     {
@@ -3046,8 +3057,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_ts_injectable",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": "injectable"
     },
     {
@@ -3057,8 +3068,8 @@
       "source_location": "L32",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_constructor",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": ".constructor()"
     },
     {
@@ -3068,8 +3079,8 @@
       "source_location": "L37",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_crearusuario",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": ".crearusuario()"
     },
     {
@@ -3079,8 +3090,8 @@
       "source_location": "L107",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_login",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": ".login()"
     },
     {
@@ -3090,8 +3101,8 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_loginmovilconsim",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": ".loginmovilconsim()"
     },
     {
@@ -3101,8 +3112,8 @@
       "source_location": "L171",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_me",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": ".me()"
     },
     {
@@ -3112,8 +3123,8 @@
       "source_location": "L182",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_firmartoken",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": ".firmartoken()"
     },
     {
@@ -3123,8 +3134,8 @@
       "source_location": "L187",
       "_origin": "ast",
       "id": "apps_api_src_auth_auth_service_authservice_asesion",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": ".asesion()"
     },
     {
@@ -3134,7 +3145,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "login-sim.dto.ts"
     },
@@ -3145,7 +3156,7 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto_loginsimdto",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "loginsimdto"
     },
@@ -3156,7 +3167,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto_ts_isarray",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "isarray"
     },
@@ -3167,7 +3178,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "arrayminsize",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "arrayminsize"
     },
@@ -3178,7 +3189,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto_ts_arraymaxsize",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "arraymaxsize"
     },
@@ -3189,7 +3200,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto_ts_isstring",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "isstring"
     },
@@ -3200,7 +3211,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto_ts_maxlength",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "maxlength"
     },
@@ -3211,7 +3222,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_sim_dto_ts_transform",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "transform"
     },
@@ -3223,7 +3234,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_dto",
       "community": 28,
-      "community_name": "modulo.dto.ts",
+      "community_name": "modulos.service.ts",
       "norm_label": "login.dto.ts"
     },
     {
@@ -3234,7 +3245,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_dto_logindto",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "logindto"
     },
     {
@@ -3245,7 +3256,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_dto_ts_isstring",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "isstring"
     },
     {
@@ -3256,7 +3267,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_dto_ts_transform",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "transform"
     },
     {
@@ -3267,7 +3278,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_dto_ts_length",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "length"
     },
     {
@@ -3278,7 +3289,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_login_dto_ts_maxlength",
       "community": 345,
-      "community_name": "auth.service.ts",
+      "community_name": "AuthController",
       "norm_label": "maxlength"
     },
     {
@@ -3289,7 +3300,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto",
       "community": 28,
-      "community_name": "modulo.dto.ts",
+      "community_name": "modulos.service.ts",
       "norm_label": "register.dto.ts"
     },
     {
@@ -3299,8 +3310,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_registerdto",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 92,
+      "community_name": "RegisterDto",
       "norm_label": "registerdto"
     },
     {
@@ -3310,8 +3321,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_isstring",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 92,
+      "community_name": "RegisterDto",
       "norm_label": "isstring"
     },
     {
@@ -3321,8 +3332,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_transform",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 92,
+      "community_name": "RegisterDto",
       "norm_label": "transform"
     },
     {
@@ -3332,8 +3343,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_length",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 92,
+      "community_name": "RegisterDto",
       "norm_label": "length"
     },
     {
@@ -3343,8 +3354,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "isemail",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 92,
+      "community_name": "RegisterDto",
       "norm_label": "isemail"
     },
     {
@@ -3354,8 +3365,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_maxlength",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 92,
+      "community_name": "RegisterDto",
       "norm_label": "maxlength"
     },
     {
@@ -3365,8 +3376,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_matches",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 92,
+      "community_name": "RegisterDto",
       "norm_label": "matches"
     },
     {
@@ -3376,8 +3387,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_isint",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 92,
+      "community_name": "RegisterDto",
       "norm_label": "isint"
     },
     {
@@ -3387,8 +3398,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "ispositive",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 92,
+      "community_name": "RegisterDto",
       "norm_label": "ispositive"
     },
     {
@@ -3398,8 +3409,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_auth_dto_register_dto_ts_minlength",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 92,
+      "community_name": "RegisterDto",
       "norm_label": "minlength"
     },
     {
@@ -3409,7 +3420,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_asignacion_usuario_interface",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "asignacion-usuario.interface.ts"
     },
@@ -3420,7 +3431,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_asignacion_usuario_interface_asignacionusuario",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "asignacionusuario"
     },
@@ -3432,7 +3443,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_request_con_usuario_interface",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "request-con-usuario.interface.ts"
     },
     {
@@ -3453,8 +3464,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_token_payload_interface",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 38,
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "token-payload.interface.ts"
     },
     {
@@ -3464,8 +3475,8 @@
       "source_location": "L2",
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_token_payload_interface_tokenpayload",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 38,
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "tokenpayload"
     },
     {
@@ -3475,7 +3486,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_usuario_sesion_interface",
-      "community": 345,
+      "community": 41,
       "community_name": "auth.service.ts",
       "norm_label": "usuario-sesion.interface.ts"
     },
@@ -3486,8 +3497,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "apps_api_src_auth_interfaces_usuario_sesion_interface_usuariosesion",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 52,
+      "community_name": "AuthService",
       "norm_label": "usuariosesion"
     },
     {
@@ -3498,7 +3509,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_jwt_auth_guard_spec",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "jwt-auth.guard.spec.ts"
     },
     {
@@ -3509,7 +3520,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_jwt_auth_guard",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "jwt-auth.guard.ts"
     },
     {
@@ -3520,7 +3531,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_jwt_auth_guard_jwtauthguard",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "jwtauthguard"
     },
     {
@@ -3531,7 +3542,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_jwt_auth_guard_ts_injectable",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "injectable"
     },
     {
@@ -3542,7 +3553,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_jwt_auth_guard_jwtauthguard_constructor",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -3553,7 +3564,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_jwt_auth_guard_jwtauthguard_canactivate",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": ".canactivate()"
     },
     {
@@ -3564,7 +3575,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_superadmin_guard",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "superadmin.guard.ts"
     },
     {
@@ -3575,7 +3586,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_superadmin_guard_superadminguard",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "superadminguard"
     },
     {
@@ -3586,7 +3597,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_superadmin_guard_ts_injectable",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "injectable"
     },
     {
@@ -3597,7 +3608,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_superadmin_guard_superadminguard_constructor",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -3608,7 +3619,7 @@
       "_origin": "ast",
       "id": "apps_api_src_auth_superadmin_guard_superadminguard_canactivate",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": ".canactivate()"
     },
     {
@@ -3618,8 +3629,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_datos_usuario_spec",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 54,
+      "community_name": "datos-usuario.ts",
       "norm_label": "datos-usuario.spec.ts"
     },
     {
@@ -3629,8 +3640,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_datos_usuario",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 54,
+      "community_name": "datos-usuario.ts",
       "norm_label": "datos-usuario.ts"
     },
     {
@@ -3640,8 +3651,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_datos_usuario_tipos_celular_validos",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 54,
+      "community_name": "datos-usuario.ts",
       "norm_label": "tipos_celular_validos"
     },
     {
@@ -3651,8 +3662,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_datos_usuario_normalizarcelular",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 54,
+      "community_name": "datos-usuario.ts",
       "norm_label": "normalizarcelular()"
     },
     {
@@ -3662,8 +3673,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_datos_usuario_normalizarnumerosim",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 54,
+      "community_name": "datos-usuario.ts",
       "norm_label": "normalizarnumerosim()"
     },
     {
@@ -3673,8 +3684,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_datos_usuario_normalizarrucusuario",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 54,
+      "community_name": "datos-usuario.ts",
       "norm_label": "normalizarrucusuario()"
     },
     {
@@ -3684,8 +3695,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_password_spec",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 46,
+      "community_name": "usuarios.service.ts",
       "norm_label": "password.spec.ts"
     },
     {
@@ -3695,8 +3706,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_password",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 46,
+      "community_name": "usuarios.service.ts",
       "norm_label": "password.ts"
     },
     {
@@ -3706,8 +3717,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_password_scrypt",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 46,
+      "community_name": "usuarios.service.ts",
       "norm_label": "scrypt"
     },
     {
@@ -3717,8 +3728,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_password_hashpassword",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 46,
+      "community_name": "usuarios.service.ts",
       "norm_label": "hashpassword()"
     },
     {
@@ -3728,8 +3739,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_password_verifypassword",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 46,
+      "community_name": "usuarios.service.ts",
       "norm_label": "verifypassword()"
     },
     {
@@ -3739,8 +3750,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_ruc_spec",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 54,
+      "community_name": "datos-usuario.ts",
       "norm_label": "ruc.spec.ts"
     },
     {
@@ -3750,8 +3761,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_ruc",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 54,
+      "community_name": "datos-usuario.ts",
       "norm_label": "auth/utils/ruc.ts"
     },
     {
@@ -3761,8 +3772,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_ruc_calculardvrucpy",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 54,
+      "community_name": "datos-usuario.ts",
       "norm_label": "calculardvrucpy()"
     },
     {
@@ -3772,8 +3783,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_ruc_normalizarrucpy",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 54,
+      "community_name": "datos-usuario.ts",
       "norm_label": "normalizarrucpy()"
     },
     {
@@ -3783,8 +3794,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "apps_api_src_auth_utils_ruc_esrucparaguayovalido",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 54,
+      "community_name": "datos-usuario.ts",
       "norm_label": "esrucparaguayovalido()"
     },
     {
@@ -3794,7 +3805,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_campo_campo_acceso_service_spec",
-      "community": 5,
+      "community": 3,
       "community_name": "PrismaService",
       "norm_label": "campo-acceso.service.spec.ts"
     },
@@ -3805,7 +3816,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_campo_campo_acceso_service",
-      "community": 5,
+      "community": 3,
       "community_name": "PrismaService",
       "norm_label": "campo-acceso.service.ts"
     },
@@ -3816,7 +3827,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "apps_api_src_campo_campo_acceso_service_campoaccesoservice",
-      "community": 5,
+      "community": 3,
       "community_name": "PrismaService",
       "norm_label": "campoaccesoservice"
     },
@@ -3827,7 +3838,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_campo_campo_acceso_service_ts_injectable",
-      "community": 5,
+      "community": 3,
       "community_name": "PrismaService",
       "norm_label": "injectable"
     },
@@ -3839,7 +3850,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_campo_acceso_service_campoaccesoservice_constructor",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -3850,7 +3861,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_campo_acceso_service_campoaccesoservice_gestionar",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".gestionar()"
     },
     {
@@ -3860,8 +3871,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "apps_api_src_campo_campo_acceso_service_campoaccesoservice_ejecutar",
-      "community": 3,
-      "community_name": "JornadaCampoService",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": ".ejecutar()"
     },
     {
@@ -3872,7 +3883,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_campo_acceso_service_campoaccesoservice_local",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".local()"
     },
     {
@@ -3882,8 +3893,8 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "apps_api_src_campo_campo_acceso_service_campoaccesoservice_subordinado",
-      "community": 3,
-      "community_name": "JornadaCampoService",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": ".subordinado()"
     },
     {
@@ -3894,7 +3905,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_campo_controller",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "campo.controller.ts"
     },
     {
@@ -4025,8 +4036,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "apps_api_src_campo_campo_controller_campocontroller_constructor",
-      "community": 3,
-      "community_name": "JornadaCampoService",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -4410,8 +4421,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service",
-      "community": 10,
-      "community_name": "jornada-campo.service.ts",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": "catalogo-campo.service.ts"
     },
     {
@@ -4422,7 +4433,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service_catalogocamposervice",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": "catalogocamposervice"
     },
     {
@@ -4433,7 +4444,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service_ts_injectable",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": "injectable"
     },
     {
@@ -4443,8 +4454,8 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service_catalogocamposervice_constructor",
-      "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": ".constructor()"
     },
     {
@@ -4455,7 +4466,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service_catalogocamposervice_clientes",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".clientes()"
     },
     {
@@ -4465,8 +4476,8 @@
       "source_location": "L56",
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service_catalogocamposervice_guardarcliente",
-      "community": 39,
-      "community_name": "campo.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": ".guardarcliente()"
     },
     {
@@ -4477,7 +4488,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service_catalogocamposervice_eliminarcliente",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".eliminarcliente()"
     },
     {
@@ -4488,7 +4499,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service_catalogocamposervice_locales",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".locales()"
     },
     {
@@ -4499,7 +4510,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service_catalogocamposervice_guardarlocal",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".guardarlocal()"
     },
     {
@@ -4510,7 +4521,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service_catalogocamposervice_eliminarlocal",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".eliminarlocal()"
     },
     {
@@ -4521,7 +4532,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service_catalogocamposervice_tareas",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".tareas()"
     },
     {
@@ -4531,8 +4542,8 @@
       "source_location": "L164",
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service_catalogocamposervice_guardartarea",
-      "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": ".guardartarea()"
     },
     {
@@ -4543,7 +4554,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_catalogo_campo_service_catalogocamposervice_eliminartarea",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".eliminartarea()"
     },
     {
@@ -4554,7 +4565,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "campo.dto.ts"
     },
     {
@@ -4564,7 +4575,7 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_consultacampodto",
-      "community": 42,
+      "community": 39,
       "community_name": "ConsultaCampoDto",
       "norm_label": "consultacampodto"
     },
@@ -4576,7 +4587,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_isoptional",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "isoptional"
     },
     {
@@ -4587,7 +4598,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_type",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "type"
     },
     {
@@ -4598,7 +4609,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_isint",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "isint"
     },
     {
@@ -4609,7 +4620,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_min",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "min"
     },
     {
@@ -4620,7 +4631,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_max",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "max"
     },
     {
@@ -4631,7 +4642,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_isstring",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "isstring"
     },
     {
@@ -4642,7 +4653,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_maxlength",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "maxlength"
     },
     {
@@ -4653,7 +4664,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_matches",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "matches"
     },
     {
@@ -4664,7 +4675,7 @@
       "_origin": "ast",
       "id": "isdatestring",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "isdatestring"
     },
     {
@@ -4675,7 +4686,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_clientecampodto",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "clientecampodto"
     },
     {
@@ -4686,7 +4697,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_transform",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "transform"
     },
     {
@@ -4697,7 +4708,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_minlength",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "minlength"
     },
     {
@@ -4708,7 +4719,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_isboolean",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "isboolean"
     },
     {
@@ -4719,7 +4730,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_localcampodto",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "localcampodto"
     },
     {
@@ -4730,7 +4741,7 @@
       "_origin": "ast",
       "id": "isnumber",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "isnumber"
     },
     {
@@ -4741,7 +4752,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_vigenciacampodto",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "vigenciacampodto"
     },
     {
@@ -4752,7 +4763,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_horariocampodto",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "horariocampodto"
     },
     {
@@ -4763,7 +4774,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_isenum",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "isenum"
     },
     {
@@ -4774,7 +4785,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_isarray",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "isarray"
     },
     {
@@ -4785,7 +4796,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_arrayunique",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "arrayunique"
     },
     {
@@ -4796,7 +4807,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_ts_arraymaxsize",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "arraymaxsize"
     },
     {
@@ -4807,7 +4818,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_asignacioncampodto",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "asignacioncampodto"
     },
     {
@@ -4818,7 +4829,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_backupcampodto",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "backupcampodto"
     },
     {
@@ -4829,7 +4840,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_tareacampodto",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "tareacampodto"
     },
     {
@@ -4840,7 +4851,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_marcacampodto",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "marcacampodto"
     },
     {
@@ -4851,7 +4862,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_dto_campo_dto_entradacampodto",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": "entradacampodto"
     },
     {
@@ -4916,8 +4927,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "apps_api_src_campo_jornada_campo_service_jornadacamposervice",
-      "community": 3,
-      "community_name": "JornadaCampoService",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": "jornadacamposervice"
     },
     {
@@ -4927,8 +4938,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_campo_jornada_campo_service_ts_injectable",
-      "community": 3,
-      "community_name": "JornadaCampoService",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": "injectable"
     },
     {
@@ -4938,8 +4949,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "apps_api_src_campo_jornada_campo_service_jornadacamposervice_constructor",
-      "community": 3,
-      "community_name": "JornadaCampoService",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -4949,8 +4960,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "apps_api_src_campo_jornada_campo_service_jornadacamposervice_asignacionefectiva",
-      "community": 3,
-      "community_name": "JornadaCampoService",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": ".asignacionefectiva()"
     },
     {
@@ -4960,8 +4971,8 @@
       "source_location": "L69",
       "_origin": "ast",
       "id": "apps_api_src_campo_jornada_campo_service_jornadacamposervice_agenda",
-      "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": ".agenda()"
     },
     {
@@ -4972,7 +4983,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_jornada_campo_service_jornadacamposervice_validarmarca",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": ".validarmarca()"
     },
     {
@@ -4982,8 +4993,8 @@
       "source_location": "L137",
       "_origin": "ast",
       "id": "apps_api_src_campo_jornada_campo_service_jornadacamposervice_entrada",
-      "community": 3,
-      "community_name": "JornadaCampoService",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": ".entrada()"
     },
     {
@@ -4993,8 +5004,8 @@
       "source_location": "L201",
       "_origin": "ast",
       "id": "apps_api_src_campo_jornada_campo_service_jornadacamposervice_abierta",
-      "community": 3,
-      "community_name": "JornadaCampoService",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": ".abierta()"
     },
     {
@@ -5005,7 +5016,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_jornada_campo_service_jornadacamposervice_salida",
       "community": 39,
-      "community_name": "campo.controller.ts",
+      "community_name": "ConsultaCampoDto",
       "norm_label": ".salida()"
     },
     {
@@ -5015,8 +5026,8 @@
       "source_location": "L234",
       "_origin": "ast",
       "id": "apps_api_src_campo_jornada_campo_service_jornadacamposervice_tareas",
-      "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": ".tareas()"
     },
     {
@@ -5026,8 +5037,8 @@
       "source_location": "L292",
       "_origin": "ast",
       "id": "apps_api_src_campo_jornada_campo_service_jornadacamposervice_completar",
-      "community": 3,
-      "community_name": "JornadaCampoService",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": ".completar()"
     },
     {
@@ -5038,7 +5049,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_jornada_campo_service_jornadacamposervice_visitas",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".visitas()"
     },
     {
@@ -5048,8 +5059,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service",
-      "community": 10,
-      "community_name": "jornada-campo.service.ts",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": "planificacion-campo.service.ts"
     },
     {
@@ -5060,7 +5071,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": "planificacioncamposervice"
     },
     {
@@ -5071,7 +5082,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_ts_injectable",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": "injectable"
     },
     {
@@ -5081,8 +5092,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice_constructor",
-      "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": ".constructor()"
     },
     {
@@ -5093,7 +5104,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice_equipo",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".equipo()"
     },
     {
@@ -5104,7 +5115,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice_horarios",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".horarios()"
     },
     {
@@ -5115,7 +5126,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice_guardarhorario",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".guardarhorario()"
     },
     {
@@ -5126,7 +5137,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice_eliminarhorario",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".eliminarhorario()"
     },
     {
@@ -5137,7 +5148,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice_asignaciones",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".asignaciones()"
     },
     {
@@ -5148,7 +5159,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice_asignar",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".asignar()"
     },
     {
@@ -5159,7 +5170,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice_asignaciondelequipo",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".asignaciondelequipo()"
     },
     {
@@ -5170,7 +5181,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice_quitarasignacion",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".quitarasignacion()"
     },
     {
@@ -5181,7 +5192,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice_backups",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".backups()"
     },
     {
@@ -5192,7 +5203,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice_crearbackup",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".crearbackup()"
     },
     {
@@ -5203,7 +5214,7 @@
       "_origin": "ast",
       "id": "apps_api_src_campo_planificacion_campo_service_planificacioncamposervice_quitarbackup",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": ".quitarbackup()"
     },
     {
@@ -5268,8 +5279,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "apps_api_src_campo_utils_calendario_relojcampo",
-      "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community": 10,
+      "community_name": "jornada-campo.service.ts",
       "norm_label": "relojcampo()"
     },
     {
@@ -5323,8 +5334,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_campo_utils_selectores",
-      "community": 10,
-      "community_name": "jornada-campo.service.ts",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": "selectores.ts"
     },
     {
@@ -5334,8 +5345,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_campo_utils_selectores_cliente_campo_select",
-      "community": 10,
-      "community_name": "jornada-campo.service.ts",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": "cliente_campo_select"
     },
     {
@@ -5345,8 +5356,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "apps_api_src_campo_utils_selectores_local_campo_select",
-      "community": 10,
-      "community_name": "jornada-campo.service.ts",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": "local_campo_select"
     },
     {
@@ -5356,8 +5367,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "apps_api_src_campo_utils_selectores_horario_campo_select",
-      "community": 10,
-      "community_name": "jornada-campo.service.ts",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": "horario_campo_select"
     },
     {
@@ -5367,8 +5378,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "apps_api_src_campo_utils_selectores_asignacion_campo_select",
-      "community": 10,
-      "community_name": "jornada-campo.service.ts",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": "asignacion_campo_select"
     },
     {
@@ -5378,8 +5389,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "apps_api_src_campo_utils_selectores_backup_campo_select",
-      "community": 10,
-      "community_name": "jornada-campo.service.ts",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": "backup_campo_select"
     },
     {
@@ -5389,8 +5400,8 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "apps_api_src_campo_utils_selectores_tarea_campo_select",
-      "community": 10,
-      "community_name": "jornada-campo.service.ts",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": "tarea_campo_select"
     },
     {
@@ -5400,8 +5411,8 @@
       "source_location": "L67",
       "_origin": "ast",
       "id": "apps_api_src_campo_utils_selectores_visita_campo_select",
-      "community": 10,
-      "community_name": "jornada-campo.service.ts",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": "visita_campo_select"
     },
     {
@@ -5488,8 +5499,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_numeros",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 28,
+      "community_name": "modulos.service.ts",
       "norm_label": "numeros.ts"
     },
     {
@@ -5499,8 +5510,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_numeros_redondear1decimal",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 28,
+      "community_name": "modulos.service.ts",
       "norm_label": "redondear1decimal()"
     },
     {
@@ -5511,7 +5522,7 @@
       "_origin": "ast",
       "id": "apps_api_src_common_utils_paginacion",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": "utils/paginacion.ts"
     },
     {
@@ -5521,8 +5532,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_paginacion_paginaciondto",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "paginaciondto"
     },
     {
@@ -5532,8 +5543,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_paginacion_ts_isoptional",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "isoptional"
     },
     {
@@ -5543,8 +5554,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_paginacion_ts_type",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "type"
     },
     {
@@ -5554,8 +5565,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_paginacion_ts_isint",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "isint"
     },
     {
@@ -5565,8 +5576,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_paginacion_ts_min",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "min"
     },
     {
@@ -5576,8 +5587,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_paginacion_ts_max",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "max"
     },
     {
@@ -5588,7 +5599,7 @@
       "_origin": "ast",
       "id": "apps_api_src_common_utils_paginacion_respuestapaginada",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": "respuestapaginada"
     },
     {
@@ -5599,7 +5610,7 @@
       "_origin": "ast",
       "id": "apps_api_src_common_utils_paginacion_rangopaginacion",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": "rangopaginacion()"
     },
     {
@@ -5609,8 +5620,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_permisos_usuario_spec",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 46,
+      "community_name": "usuarios.service.ts",
       "norm_label": "permisos-usuario.spec.ts"
     },
     {
@@ -5620,8 +5631,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_permisos_usuario",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 46,
+      "community_name": "usuarios.service.ts",
       "norm_label": "permisos-usuario.ts"
     },
     {
@@ -5631,8 +5642,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_common_utils_permisos_usuario_puedeadministrarusuarios",
-      "community": 345,
-      "community_name": "auth.service.ts",
+      "community": 46,
+      "community_name": "usuarios.service.ts",
       "norm_label": "puedeadministrarusuarios()"
     },
     {
@@ -5676,7 +5687,7 @@
       "_origin": "ast",
       "id": "apps_api_src_common_utils_transforms",
       "community": 28,
-      "community_name": "modulo.dto.ts",
+      "community_name": "modulos.service.ts",
       "norm_label": "transforms.ts"
     },
     {
@@ -5687,7 +5698,7 @@
       "_origin": "ast",
       "id": "apps_api_src_common_utils_transforms_trimstring",
       "community": 28,
-      "community_name": "modulo.dto.ts",
+      "community_name": "modulos.service.ts",
       "norm_label": "trimstring()"
     },
     {
@@ -5698,7 +5709,7 @@
       "_origin": "ast",
       "id": "apps_api_src_common_utils_transforms_lowertrimstring",
       "community": 28,
-      "community_name": "modulo.dto.ts",
+      "community_name": "modulos.service.ts",
       "norm_label": "lowertrimstring()"
     },
     {
@@ -5786,7 +5797,7 @@
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_controller",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "admin-empresas.controller.ts"
     },
     {
@@ -5972,8 +5983,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_service_spec",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 12,
+      "community_name": "admin-empresas.service.ts",
       "norm_label": "admin-empresas.service.spec.ts"
     },
     {
@@ -6049,8 +6060,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "apps_api_src_empresas_admin_empresas_service_adminempresasservice_listar",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 42,
+      "community_name": "rangoPaginacion",
       "norm_label": ".listar()"
     },
     {
@@ -6104,8 +6115,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_empresas_dto_empresa_admin_dto",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 28,
+      "community_name": "modulos.service.ts",
       "norm_label": "empresa-admin.dto.ts"
     },
     {
@@ -6226,7 +6237,7 @@
       "_origin": "ast",
       "id": "apps_api_src_empresas_empresas_controller",
       "community": 42,
-      "community_name": "ConsultaCampoDto",
+      "community_name": "rangoPaginacion",
       "norm_label": "empresas.controller.ts"
     },
     {
@@ -6236,8 +6247,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "apps_api_src_empresas_empresas_controller_empresascontroller",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "empresascontroller"
     },
     {
@@ -6247,8 +6258,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_empresas_controller_ts_apitags",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "apitags"
     },
     {
@@ -6258,8 +6269,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_empresas_controller_ts_controller",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "controller"
     },
     {
@@ -6269,8 +6280,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_empresas_controller_ts_useguards",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "useguards"
     },
     {
@@ -6280,8 +6291,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_empresas_controller_ts_get",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "get"
     },
     {
@@ -6291,8 +6302,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_empresas_controller_ts_apioperation",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "apioperation"
     },
     {
@@ -6302,8 +6313,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_empresas_empresas_controller_ts_query",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": "query"
     },
     {
@@ -6313,8 +6324,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "apps_api_src_empresas_empresas_controller_empresascontroller_constructor",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": ".constructor()"
     },
     {
@@ -6324,8 +6335,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "apps_api_src_empresas_empresas_controller_empresascontroller_listar",
-      "community": 12,
-      "community_name": "admin-empresas.service.ts",
+      "community": 43,
+      "community_name": "PaginacionDto",
       "norm_label": ".listar()"
     },
     {
@@ -6434,8 +6445,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_health_health_controller",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 2,
+      "community_name": "app.module.ts",
       "norm_label": "health.controller.ts"
     },
     {
@@ -6589,7 +6600,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_acceso_plataforma_service_spec",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": "acceso-plataforma.service.spec.ts"
     },
     {
@@ -6600,7 +6611,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_acceso_plataforma_service",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": "acceso-plataforma.service.ts"
     },
     {
@@ -6611,7 +6622,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_acceso_plataforma_service_accesoplataformaservice",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": "accesoplataformaservice"
     },
     {
@@ -6622,7 +6633,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_acceso_plataforma_service_ts_injectable",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": "injectable"
     },
     {
@@ -6633,7 +6644,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_acceso_plataforma_service_accesoplataformaservice_constructor",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -6644,7 +6655,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_acceso_plataforma_service_accesoplataformaservice_exigiraccesopagina",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": ".exigiraccesopagina()"
     },
     {
@@ -6655,7 +6666,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_acceso_plataforma_service_accesoplataformaservice_exigiraccesoalgunapagina",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": ".exigiraccesoalgunapagina()"
     },
     {
@@ -6666,7 +6677,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_acceso_plataforma_service_accesoplataformaservice_exigiraccesoalgunapaginaenmodulos",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": ".exigiraccesoalgunapaginaenmodulos()"
     },
     {
@@ -6677,7 +6688,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_acceso_plataforma_service_accesoplataformaservice_exigiraccesospaginasenmodulos",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": ".exigiraccesospaginasenmodulos()"
     },
     {
@@ -6687,8 +6698,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_spec",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": "asignaciones.service.spec.ts"
     },
     {
@@ -6698,8 +6709,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service",
-      "community": 43,
-      "community_name": "asignaciones.service.ts",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": "asignaciones.service.ts"
     },
     {
@@ -6709,8 +6720,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_asignacionesservice",
-      "community": 43,
-      "community_name": "asignaciones.service.ts",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": "asignacionesservice"
     },
     {
@@ -6720,8 +6731,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_ts_injectable",
-      "community": 43,
-      "community_name": "asignaciones.service.ts",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": "injectable"
     },
     {
@@ -6731,8 +6742,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_asignacionesservice_constructor",
-      "community": 43,
-      "community_name": "asignaciones.service.ts",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": ".constructor()"
     },
     {
@@ -6742,8 +6753,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_asignacionesservice_deempresa",
-      "community": 43,
-      "community_name": "asignaciones.service.ts",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": ".deempresa()"
     },
     {
@@ -6753,8 +6764,8 @@
       "source_location": "L45",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_asignacionesservice_asignarmodulo",
-      "community": 43,
-      "community_name": "asignaciones.service.ts",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": ".asignarmodulo()"
     },
     {
@@ -6764,8 +6775,8 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_asignaciones_service_asignacionesservice_quitarmodulo",
-      "community": 43,
-      "community_name": "asignaciones.service.ts",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": ".quitarmodulo()"
     },
     {
@@ -6908,7 +6919,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "ejecutable.dto.ts"
     },
     {
@@ -6919,7 +6930,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto_trim",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "trim()"
     },
     {
@@ -6930,7 +6941,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto_crearejecutabledto",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "crearejecutabledto"
     },
     {
@@ -6941,7 +6952,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto_ts_isint",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "isint"
     },
     {
@@ -6952,7 +6963,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto_ts_max",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "max"
     },
     {
@@ -6963,7 +6974,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto_ts_isstring",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "isstring"
     },
     {
@@ -6974,7 +6985,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto_ts_transform",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "transform"
     },
     {
@@ -6985,7 +6996,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto_ts_length",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "length"
     },
     {
@@ -6996,7 +7007,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto_ts_isenum",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "isenum"
     },
     {
@@ -7007,7 +7018,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto_ts_isoptional",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "isoptional"
     },
     {
@@ -7018,7 +7029,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto_ts_min",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "min"
     },
     {
@@ -7029,7 +7040,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto_ts_isboolean",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "isboolean"
     },
     {
@@ -7040,7 +7051,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_ejecutable_dto_actualizarejecutabledto",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "actualizarejecutabledto"
     },
     {
@@ -7051,7 +7062,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_modulo_dto",
       "community": 28,
-      "community_name": "modulo.dto.ts",
+      "community_name": "modulos.service.ts",
       "norm_label": "modulo.dto.ts"
     },
     {
@@ -7183,7 +7194,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_dto_pagina_dto",
       "community": 28,
-      "community_name": "modulo.dto.ts",
+      "community_name": "modulos.service.ts",
       "norm_label": "pagina.dto.ts"
     },
     {
@@ -7315,7 +7326,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_ejecutables_service",
       "community": 57,
-      "community_name": "ActualizarEjecutableDto",
+      "community_name": "plataforma.controller.ts",
       "norm_label": "ejecutables.service.ts"
     },
     {
@@ -7436,7 +7447,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_acceso_modulos_interface",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": "acceso-modulos.interface.ts"
     },
     {
@@ -7447,7 +7458,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_acceso_modulos_interface_accesomodulos",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": "accesomodulos"
     },
     {
@@ -7457,8 +7468,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_asignacion_interface",
-      "community": 43,
-      "community_name": "asignaciones.service.ts",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": "asignacion.interface.ts"
     },
     {
@@ -7468,8 +7479,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_asignacion_interface_paginaasignada",
-      "community": 43,
-      "community_name": "asignaciones.service.ts",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": "paginaasignada"
     },
     {
@@ -7479,8 +7490,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_asignacion_interface_empresamodulodto",
-      "community": 43,
-      "community_name": "asignaciones.service.ts",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": "empresamodulodto"
     },
     {
@@ -7490,8 +7501,8 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_asignacion_interface_asignacionempresadto",
-      "community": 43,
-      "community_name": "asignaciones.service.ts",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": "asignacionempresadto"
     },
     {
@@ -7501,8 +7512,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_plataforma_interface",
-      "community": 4,
-      "community_name": "ModulosService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": "plataforma.interface.ts"
     },
     {
@@ -7545,8 +7556,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_plataforma_interface_paginamenu",
-      "community": 4,
-      "community_name": "ModulosService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": "paginamenu"
     },
     {
@@ -7556,8 +7567,8 @@
       "source_location": "L46",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_plataforma_interface_modulomenu",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": "modulomenu"
     },
     {
@@ -7568,7 +7579,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_usuario_con_acceso_interface",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": "usuario-con-acceso.interface.ts"
     },
     {
@@ -7579,7 +7590,7 @@
       "_origin": "ast",
       "id": "apps_api_src_plataforma_interfaces_usuario_con_acceso_interface_usuarioconacceso",
       "community": 5,
-      "community_name": "PrismaService",
+      "community_name": "acceso-plataforma.service.ts",
       "norm_label": "usuarioconacceso"
     },
     {
@@ -7589,8 +7600,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_mi_plataforma_service_spec",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": "mi-plataforma.service.spec.ts"
     },
     {
@@ -7600,8 +7611,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_mi_plataforma_service",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": "mi-plataforma.service.ts"
     },
     {
@@ -7611,8 +7622,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_mi_plataforma_service_miplataformaservice",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": "miplataformaservice"
     },
     {
@@ -7622,8 +7633,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_mi_plataforma_service_ts_injectable",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": "injectable"
     },
     {
@@ -7633,8 +7644,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_mi_plataforma_service_miplataformaservice_constructor",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -7644,8 +7655,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_mi_plataforma_service_miplataformaservice_menu",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": ".menu()"
     },
     {
@@ -7655,8 +7666,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_modulos_service",
-      "community": 4,
-      "community_name": "ModulosService",
+      "community": 28,
+      "community_name": "modulos.service.ts",
       "norm_label": "modulos.service.ts"
     },
     {
@@ -7831,7 +7842,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_plataforma_controller",
-      "community": 38,
+      "community": 57,
       "community_name": "plataforma.controller.ts",
       "norm_label": "plataforma.controller.ts"
     },
@@ -7908,8 +7919,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_plataforma_controller_miplataformacontroller_constructor",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -7996,8 +8007,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_plataforma_controller_adminplataformacontroller_constructor",
-      "community": 43,
-      "community_name": "asignaciones.service.ts",
+      "community": 26,
+      "community_name": "AsignarModuloDto",
       "norm_label": ".constructor()"
     },
     {
@@ -8194,8 +8205,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_utils_visibilidad_spec",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": "visibilidad.spec.ts"
     },
     {
@@ -8205,8 +8216,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_utils_visibilidad",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": "visibilidad.ts"
     },
     {
@@ -8216,8 +8227,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "apps_api_src_plataforma_utils_visibilidad_rolve",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 53,
+      "community_name": "mi-plataforma.service.ts",
       "norm_label": "rolve()"
     },
     {
@@ -8260,8 +8271,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_prisma_prisma_service",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 41,
+      "community_name": "auth.service.ts",
       "norm_label": "prisma.service.ts"
     },
     {
@@ -8271,7 +8282,7 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "apps_api_src_prisma_prisma_service_prismaservice",
-      "community": 5,
+      "community": 3,
       "community_name": "PrismaService",
       "norm_label": "prismaservice"
     },
@@ -8282,7 +8293,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_prisma_prisma_service_ts_injectable",
-      "community": 5,
+      "community": 3,
       "community_name": "PrismaService",
       "norm_label": "injectable"
     },
@@ -8293,7 +8304,7 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "apps_api_src_prisma_prisma_service_prismaservice_constructor",
-      "community": 5,
+      "community": 3,
       "community_name": "PrismaService",
       "norm_label": ".constructor()"
     },
@@ -8304,7 +8315,7 @@
       "source_location": "L25",
       "_origin": "ast",
       "id": "apps_api_src_prisma_prisma_service_prismaservice_onmoduleinit",
-      "community": 5,
+      "community": 3,
       "community_name": "PrismaService",
       "norm_label": ".onmoduleinit()"
     },
@@ -8315,7 +8326,7 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "apps_api_src_prisma_prisma_service_prismaservice_onmoduledestroy",
-      "community": 5,
+      "community": 3,
       "community_name": "PrismaService",
       "norm_label": ".onmoduledestroy()"
     },
@@ -8502,8 +8513,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_roles_roles_controller",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 0,
+      "community_name": "roles.service.ts",
       "norm_label": "roles.controller.ts"
     },
     {
@@ -8888,7 +8899,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_admin_usuarios_controller",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "admin-usuarios.controller.ts"
     },
     {
@@ -9108,7 +9119,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "usuario.dto.ts"
     },
     {
@@ -9119,7 +9130,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_listarusuariosdto",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "listarusuariosdto"
     },
     {
@@ -9130,7 +9141,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_isoptional",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "isoptional"
     },
     {
@@ -9141,7 +9152,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_type",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "type"
     },
     {
@@ -9152,7 +9163,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_isint",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "isint"
     },
     {
@@ -9163,7 +9174,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_min",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "min"
     },
     {
@@ -9174,7 +9185,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_max",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "max"
     },
     {
@@ -9185,7 +9196,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_crearusuariodto",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "crearusuariodto"
     },
     {
@@ -9196,7 +9207,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_isboolean",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "isboolean"
     },
     {
@@ -9207,7 +9218,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_actualizarusuariodto",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "actualizarusuariodto"
     },
     {
@@ -9218,7 +9229,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_isstring",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "isstring"
     },
     {
@@ -9229,7 +9240,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_minlength",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "minlength"
     },
     {
@@ -9240,7 +9251,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_dto_usuario_dto_ts_maxlength",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "maxlength"
     },
     {
@@ -9250,7 +9261,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_interfaces_usuario_admin_interface",
-      "community": 7,
+      "community": 46,
       "community_name": "usuarios.service.ts",
       "norm_label": "usuario-admin.interface.ts"
     },
@@ -9262,7 +9273,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_interfaces_usuario_admin_interface_usuarioadmindto",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": "usuarioadmindto"
     },
     {
@@ -9272,7 +9283,7 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_interfaces_usuario_admin_interface_metausuariosdto",
-      "community": 7,
+      "community": 46,
       "community_name": "usuarios.service.ts",
       "norm_label": "metausuariosdto"
     },
@@ -9284,7 +9295,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller",
       "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community_name": "jwt-auth.guard.ts",
       "norm_label": "usuarios.controller.ts"
     },
     {
@@ -9294,8 +9305,8 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": "usuarioscontroller"
     },
     {
@@ -9305,8 +9316,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_apitags",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": "apitags"
     },
     {
@@ -9316,8 +9327,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_controller",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": "controller"
     },
     {
@@ -9327,8 +9338,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_useguards",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": "useguards"
     },
     {
@@ -9338,8 +9349,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_get",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": "get"
     },
     {
@@ -9349,8 +9360,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_req",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": "req"
     },
     {
@@ -9360,8 +9371,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_query",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": "query"
     },
     {
@@ -9371,8 +9382,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_post",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": "post"
     },
     {
@@ -9382,8 +9393,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_body",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": "body"
     },
     {
@@ -9393,8 +9404,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_patch",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": "patch"
     },
     {
@@ -9404,8 +9415,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_param",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": "param"
     },
     {
@@ -9415,8 +9426,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_ts_delete",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": "delete"
     },
     {
@@ -9426,8 +9437,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_constructor",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": ".constructor()"
     },
     {
@@ -9437,8 +9448,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_listarroles",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": ".listarroles()"
     },
     {
@@ -9448,8 +9459,8 @@
       "source_location": "L39",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_meta",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": ".meta()"
     },
     {
@@ -9459,8 +9470,8 @@
       "source_location": "L44",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_listar",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": ".listar()"
     },
     {
@@ -9470,8 +9481,8 @@
       "source_location": "L49",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_crear",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": ".crear()"
     },
     {
@@ -9481,8 +9492,8 @@
       "source_location": "L54",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_actualizar",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": ".actualizar()"
     },
     {
@@ -9492,8 +9503,8 @@
       "source_location": "L63",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_controller_usuarioscontroller_eliminar",
-      "community": 38,
-      "community_name": "plataforma.controller.ts",
+      "community": 1,
+      "community_name": "RequestConUsuario",
       "norm_label": ".eliminar()"
     },
     {
@@ -9536,8 +9547,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_spec",
-      "community": 5,
-      "community_name": "PrismaService",
+      "community": 41,
+      "community_name": "auth.service.ts",
       "norm_label": "usuarios.service.spec.ts"
     },
     {
@@ -9547,7 +9558,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service",
-      "community": 7,
+      "community": 46,
       "community_name": "usuarios.service.ts",
       "norm_label": "usuarios.service.ts"
     },
@@ -9558,7 +9569,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_select_usuario_admin",
-      "community": 7,
+      "community": 46,
       "community_name": "usuarios.service.ts",
       "norm_label": "select_usuario_admin"
     },
@@ -9569,7 +9580,7 @@
       "source_location": "L43",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariofila",
-      "community": 7,
+      "community": 46,
       "community_name": "usuarios.service.ts",
       "norm_label": "usuariofila"
     },
@@ -9580,7 +9591,7 @@
       "source_location": "L59",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_contextoadmin",
-      "community": 7,
+      "community": 46,
       "community_name": "usuarios.service.ts",
       "norm_label": "contextoadmin"
     },
@@ -9592,7 +9603,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_ausuariodto",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": "ausuariodto()"
     },
     {
@@ -9603,7 +9614,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": "usuariosservice"
     },
     {
@@ -9614,7 +9625,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_ts_injectable",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": "injectable"
     },
     {
@@ -9624,8 +9635,8 @@
       "source_location": "L91",
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_constructor",
-      "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community": 3,
+      "community_name": "PrismaService",
       "norm_label": ".constructor()"
     },
     {
@@ -9636,7 +9647,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_contexto",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": ".contexto()"
     },
     {
@@ -9647,7 +9658,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_empresaobjetivo",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": ".empresaobjetivo()"
     },
     {
@@ -9658,7 +9669,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_listar",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": ".listar()"
     },
     {
@@ -9669,7 +9680,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_meta",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": ".meta()"
     },
     {
@@ -9680,7 +9691,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_listarroles",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": ".listarroles()"
     },
     {
@@ -9691,7 +9702,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_validarasignaciones",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": ".validarasignaciones()"
     },
     {
@@ -9702,7 +9713,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_crear",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": ".crear()"
     },
     {
@@ -9713,7 +9724,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_actualizar",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": ".actualizar()"
     },
     {
@@ -9724,7 +9735,7 @@
       "_origin": "ast",
       "id": "apps_api_src_usuarios_usuarios_service_usuariosservice_eliminar",
       "community": 7,
-      "community_name": "usuarios.service.ts",
+      "community_name": "UsuariosService",
       "norm_label": ".eliminar()"
     },
     {
@@ -10267,10 +10278,32 @@
       "norm_label": "flag-icons"
     },
     {
-      "label": "libphonenumber-js",
+      "label": "leaflet",
       "file_type": "code",
       "source_file": "apps/web/package.json",
       "source_location": "L13",
+      "_origin": "ast",
+      "id": "apps_web_package_dependencies_leaflet",
+      "community": 33,
+      "community_name": "devDependencies",
+      "norm_label": "leaflet"
+    },
+    {
+      "label": "leaflet",
+      "file_type": "concept",
+      "source_file": "apps/web/package.json",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "leaflet",
+      "community": 33,
+      "community_name": "devDependencies",
+      "norm_label": "leaflet"
+    },
+    {
+      "label": "libphonenumber-js",
+      "file_type": "code",
+      "source_file": "apps/web/package.json",
+      "source_location": "L14",
       "_origin": "ast",
       "id": "apps_web_package_dependencies_libphonenumber_js",
       "community": 33,
@@ -10281,7 +10314,7 @@
       "label": "libphonenumber-js",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L13",
+      "source_location": "L14",
       "_origin": "ast",
       "id": "apps_web_package_json_libphonenumber_js",
       "community": 33,
@@ -10292,7 +10325,7 @@
       "label": "motion",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L14",
+      "source_location": "L15",
       "_origin": "ast",
       "id": "apps_web_package_dependencies_motion",
       "community": 33,
@@ -10303,7 +10336,7 @@
       "label": "motion",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L14",
+      "source_location": "L15",
       "_origin": "ast",
       "id": "motion",
       "community": 33,
@@ -10314,7 +10347,7 @@
       "label": "next",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L15",
+      "source_location": "L16",
       "_origin": "ast",
       "id": "apps_web_package_dependencies_next",
       "community": 33,
@@ -10325,7 +10358,7 @@
       "label": "next",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L15",
+      "source_location": "L16",
       "_origin": "ast",
       "id": "next",
       "community": 33,
@@ -10336,7 +10369,7 @@
       "label": "react",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L16",
+      "source_location": "L17",
       "_origin": "ast",
       "id": "apps_web_package_dependencies_react",
       "community": 33,
@@ -10347,7 +10380,7 @@
       "label": "react",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L16",
+      "source_location": "L17",
       "_origin": "ast",
       "id": "react",
       "community": 33,
@@ -10358,7 +10391,7 @@
       "label": "react-dom",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L17",
+      "source_location": "L18",
       "_origin": "ast",
       "id": "apps_web_package_dependencies_react_dom",
       "community": 33,
@@ -10369,7 +10402,7 @@
       "label": "react-dom",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L17",
+      "source_location": "L18",
       "_origin": "ast",
       "id": "react_dom",
       "community": 33,
@@ -10380,7 +10413,7 @@
       "label": "devDependencies",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L19",
+      "source_location": "L20",
       "_origin": "ast",
       "id": "apps_web_package_devdependencies",
       "community": 33,
@@ -10391,7 +10424,7 @@
       "label": "@tailwindcss/postcss",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L20",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "apps_web_package_devdependencies_tailwindcss_postcss",
       "community": 33,
@@ -10402,7 +10435,7 @@
       "label": "@tailwindcss/postcss",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L20",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "tailwindcss_postcss",
       "community": 33,
@@ -10410,10 +10443,32 @@
       "norm_label": "@tailwindcss/postcss"
     },
     {
+      "label": "@types/leaflet",
+      "file_type": "code",
+      "source_file": "apps/web/package.json",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "apps_web_package_devdependencies_types_leaflet",
+      "community": 33,
+      "community_name": "devDependencies",
+      "norm_label": "@types/leaflet"
+    },
+    {
+      "label": "@types/leaflet",
+      "file_type": "concept",
+      "source_file": "apps/web/package.json",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "types_leaflet",
+      "community": 33,
+      "community_name": "devDependencies",
+      "norm_label": "@types/leaflet"
+    },
+    {
       "label": "@types/node",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L21",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "apps_web_package_devdependencies_types_node",
       "community": 33,
@@ -10424,7 +10479,7 @@
       "label": "@types/node",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L21",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "apps_web_package_json_types_node",
       "community": 33,
@@ -10435,7 +10490,7 @@
       "label": "@types/react",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L22",
+      "source_location": "L24",
       "_origin": "ast",
       "id": "apps_web_package_devdependencies_types_react",
       "community": 33,
@@ -10446,7 +10501,7 @@
       "label": "@types/react",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L22",
+      "source_location": "L24",
       "_origin": "ast",
       "id": "types_react",
       "community": 33,
@@ -10457,7 +10512,7 @@
       "label": "@types/react-dom",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L23",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "apps_web_package_devdependencies_types_react_dom",
       "community": 33,
@@ -10468,7 +10523,7 @@
       "label": "@types/react-dom",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L23",
+      "source_location": "L25",
       "_origin": "ast",
       "id": "types_react_dom",
       "community": 33,
@@ -10479,7 +10534,7 @@
       "label": "eslint",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L24",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "apps_web_package_devdependencies_eslint",
       "community": 33,
@@ -10490,7 +10545,7 @@
       "label": "eslint",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L24",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "apps_web_package_json_eslint",
       "community": 33,
@@ -10501,7 +10556,7 @@
       "label": "eslint-config-next",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L25",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "apps_web_package_devdependencies_eslint_config_next",
       "community": 33,
@@ -10512,7 +10567,7 @@
       "label": "eslint-config-next",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L25",
+      "source_location": "L27",
       "_origin": "ast",
       "id": "eslint_config_next",
       "community": 33,
@@ -10523,7 +10578,7 @@
       "label": "tailwindcss",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L26",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "apps_web_package_devdependencies_tailwindcss",
       "community": 33,
@@ -10534,7 +10589,7 @@
       "label": "tailwindcss",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L26",
+      "source_location": "L28",
       "_origin": "ast",
       "id": "tailwindcss",
       "community": 33,
@@ -10545,7 +10600,7 @@
       "label": "typescript",
       "file_type": "code",
       "source_file": "apps/web/package.json",
-      "source_location": "L27",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "apps_web_package_devdependencies_typescript",
       "community": 33,
@@ -10556,7 +10611,7 @@
       "label": "typescript",
       "file_type": "concept",
       "source_file": "apps/web/package.json",
-      "source_location": "L27",
+      "source_location": "L29",
       "_origin": "ast",
       "id": "apps_web_package_json_typescript",
       "community": 33,
@@ -10647,8 +10702,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_app_login_page",
-      "community": 41,
-      "community_name": "login-form.tsx",
+      "community": 47,
+      "community_name": "panel/layout.tsx",
       "norm_label": "login/page.tsx"
     },
     {
@@ -10658,8 +10713,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "apps_web_src_app_login_page_loginpage",
-      "community": 41,
-      "community_name": "login-form.tsx",
+      "community": 47,
+      "community_name": "panel/layout.tsx",
       "norm_label": "loginpage()"
     },
     {
@@ -10691,8 +10746,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_app_panel_modulo_pagina_page",
-      "community": 47,
-      "community_name": "panel/layout.tsx",
+      "community": 65,
+      "community_name": "[pagina]/page.tsx",
       "norm_label": "[pagina]/page.tsx"
     },
     {
@@ -10702,8 +10757,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "apps_web_src_app_panel_modulo_pagina_page_clientespanel",
-      "community": 47,
-      "community_name": "panel/layout.tsx",
+      "community": 65,
+      "community_name": "[pagina]/page.tsx",
       "norm_label": "clientespanel"
     },
     {
@@ -10713,8 +10768,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "apps_web_src_app_panel_modulo_pagina_page_localespanel",
-      "community": 47,
-      "community_name": "panel/layout.tsx",
+      "community": 65,
+      "community_name": "[pagina]/page.tsx",
       "norm_label": "localespanel"
     },
     {
@@ -10724,8 +10779,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "apps_web_src_app_panel_modulo_pagina_page_tareaspanel",
-      "community": 47,
-      "community_name": "panel/layout.tsx",
+      "community": 65,
+      "community_name": "[pagina]/page.tsx",
       "norm_label": "tareaspanel"
     },
     {
@@ -10735,8 +10790,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "apps_web_src_app_panel_modulo_pagina_page_jornadapanel",
-      "community": 47,
-      "community_name": "panel/layout.tsx",
+      "community": 65,
+      "community_name": "[pagina]/page.tsx",
       "norm_label": "jornadapanel"
     },
     {
@@ -10746,8 +10801,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "apps_web_src_app_panel_modulo_pagina_page_visitaspanel",
-      "community": 47,
-      "community_name": "panel/layout.tsx",
+      "community": 65,
+      "community_name": "[pagina]/page.tsx",
       "norm_label": "visitaspanel"
     },
     {
@@ -10757,8 +10812,8 @@
       "source_location": "L23",
       "_origin": "ast",
       "id": "apps_web_src_app_panel_modulo_pagina_page_paginamodulo",
-      "community": 47,
-      "community_name": "panel/layout.tsx",
+      "community": 65,
+      "community_name": "[pagina]/page.tsx",
       "norm_label": "paginamodulo()"
     },
     {
@@ -10790,8 +10845,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "apps_web_src_app_panel_admin_page_adminpage",
-      "community": 47,
-      "community_name": "panel/layout.tsx",
+      "community": 65,
+      "community_name": "[pagina]/page.tsx",
       "norm_label": "adminpage()"
     },
     {
@@ -10856,8 +10911,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_app_panel_page",
-      "community": 47,
-      "community_name": "panel/layout.tsx",
+      "community": 65,
+      "community_name": "[pagina]/page.tsx",
       "norm_label": "panel/page.tsx"
     },
     {
@@ -10867,8 +10922,8 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "apps_web_src_app_panel_page_paneliniciopage",
-      "community": 47,
-      "community_name": "panel/layout.tsx",
+      "community": 65,
+      "community_name": "[pagina]/page.tsx",
       "norm_label": "paneliniciopage()"
     },
     {
@@ -11186,8 +11241,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_components_auth_shell",
-      "community": 41,
-      "community_name": "login-form.tsx",
+      "community": 47,
+      "community_name": "panel/layout.tsx",
       "norm_label": "auth-shell.tsx"
     },
     {
@@ -11197,8 +11252,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "apps_web_src_components_auth_shell_authshell",
-      "community": 41,
-      "community_name": "login-form.tsx",
+      "community": 47,
+      "community_name": "panel/layout.tsx",
       "norm_label": "authshell()"
     },
     {
@@ -11208,8 +11263,8 @@
       "source_location": "L35",
       "_origin": "ast",
       "id": "apps_web_src_components_auth_shell_brandmark",
-      "community": 41,
-      "community_name": "login-form.tsx",
+      "community": 47,
+      "community_name": "panel/layout.tsx",
       "norm_label": "brandmark()"
     },
     {
@@ -11246,10 +11301,21 @@
       "norm_label": "catalogo-panel.tsx"
     },
     {
+      "label": "SelectorUbicacion",
+      "file_type": "code",
+      "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "apps_web_src_components_campo_catalogo_panel_selectorubicacion",
+      "community": 9,
+      "community_name": "jornada-panel.tsx",
+      "norm_label": "selectorubicacion"
+    },
+    {
       "label": "ClientesPanel()",
       "file_type": "code",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L20",
+      "source_location": "L26",
       "_origin": "ast",
       "id": "apps_web_src_components_campo_catalogo_panel_clientespanel",
       "community": 30,
@@ -11260,7 +11326,7 @@
       "label": "LocalesPanel()",
       "file_type": "code",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L124",
+      "source_location": "L130",
       "_origin": "ast",
       "id": "apps_web_src_components_campo_catalogo_panel_localespanel",
       "community": 30,
@@ -11477,6 +11543,28 @@
       "norm_label": "backupsasignacion()"
     },
     {
+      "label": "selector-ubicacion.tsx",
+      "file_type": "code",
+      "source_file": "apps/web/src/components/campo/selector-ubicacion.tsx",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "apps_web_src_components_campo_selector_ubicacion",
+      "community": 9,
+      "community_name": "jornada-panel.tsx",
+      "norm_label": "selector-ubicacion.tsx"
+    },
+    {
+      "label": "SelectorUbicacion()",
+      "file_type": "code",
+      "source_file": "apps/web/src/components/campo/selector-ubicacion.tsx",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "apps_web_src_components_campo_selector_ubicacion_selectorubicacion",
+      "community": 9,
+      "community_name": "jornada-panel.tsx",
+      "norm_label": "selectorubicacion()"
+    },
+    {
       "label": "tabla-campo.tsx",
       "file_type": "code",
       "source_file": "apps/web/src/components/campo/tabla-campo.tsx",
@@ -11549,8 +11637,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_components_login_form",
-      "community": 41,
-      "community_name": "login-form.tsx",
+      "community": 47,
+      "community_name": "panel/layout.tsx",
       "norm_label": "login-form.tsx"
     },
     {
@@ -11560,8 +11648,8 @@
       "source_location": "L10",
       "_origin": "ast",
       "id": "apps_web_src_components_login_form_loginform",
-      "community": 41,
-      "community_name": "login-form.tsx",
+      "community": 47,
+      "community_name": "panel/layout.tsx",
       "norm_label": "loginform()"
     },
     {
@@ -11571,8 +11659,8 @@
       "source_location": "L131",
       "_origin": "ast",
       "id": "apps_web_src_components_login_form_iconomostrar",
-      "community": 41,
-      "community_name": "login-form.tsx",
+      "community": 47,
+      "community_name": "panel/layout.tsx",
       "norm_label": "iconomostrar()"
     },
     {
@@ -11582,8 +11670,8 @@
       "source_location": "L139",
       "_origin": "ast",
       "id": "apps_web_src_components_login_form_iconoocultar",
-      "community": 41,
-      "community_name": "login-form.tsx",
+      "community": 47,
+      "community_name": "panel/layout.tsx",
       "norm_label": "iconoocultar()"
     },
     {
@@ -11692,8 +11780,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "apps_web_src_components_panel_contexto_usepanel",
-      "community": 47,
-      "community_name": "panel/layout.tsx",
+      "community": 65,
+      "community_name": "[pagina]/page.tsx",
       "norm_label": "usepanel()"
     },
     {
@@ -12033,8 +12121,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_lib_api",
-      "community": 21,
-      "community_name": "roles-panel.tsx",
+      "community": 30,
+      "community_name": "apiFetch",
       "norm_label": "api.ts"
     },
     {
@@ -12066,8 +12154,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "apps_web_src_lib_api_extraermensaje",
-      "community": 21,
-      "community_name": "roles-panel.tsx",
+      "community": 30,
+      "community_name": "apiFetch",
       "norm_label": "extraermensaje()"
     },
     {
@@ -12759,8 +12847,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "apps_web_src_utils_fechas",
-      "community": 9,
-      "community_name": "jornada-panel.tsx",
+      "community": 30,
+      "community_name": "apiFetch",
       "norm_label": "fechas.ts"
     },
     {
@@ -12770,8 +12858,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "apps_web_src_utils_fechas_fechainputaiso",
-      "community": 9,
-      "community_name": "jornada-panel.tsx",
+      "community": 30,
+      "community_name": "apiFetch",
       "norm_label": "fechainputaiso()"
     },
     {
@@ -12781,8 +12869,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "apps_web_src_utils_fechas_isoafechainput",
-      "community": 9,
-      "community_name": "jornada-panel.tsx",
+      "community": 30,
+      "community_name": "apiFetch",
       "norm_label": "isoafechainput()"
     },
     {
@@ -19912,21 +20000,21 @@
       "norm_label": "preferencia del usuario: pruebas y consumo"
     },
     {
-      "label": "Servidores locales: apagado obligatorio para agentes",
+      "label": "Servidores y t\u00faneles: respetar los procesos del usuario",
       "file_type": "document",
       "source_file": "AGENTS.md",
       "source_location": "L45",
       "_origin": "ast",
-      "id": "agents_servidores_locales_apagado_obligatorio_para_agentes",
+      "id": "agents_servidores_y_t\u00faneles_respetar_los_procesos_del_usuario",
       "community": 79,
       "community_name": "Comercia Agent Guide",
-      "norm_label": "servidores locales: apagado obligatorio para agentes"
+      "norm_label": "servidores y tuneles: respetar los procesos del usuario"
     },
     {
       "label": "Frontend Rules",
       "file_type": "document",
       "source_file": "AGENTS.md",
-      "source_location": "L59",
+      "source_location": "L66",
       "_origin": "ast",
       "id": "agents_frontend_rules",
       "community": 79,
@@ -19937,7 +20025,7 @@
       "label": "Reglas de exposici\u00f3n de datos en endpoints (OBLIGATORIAS para todo endpoint nuevo)",
       "file_type": "document",
       "source_file": "AGENTS.md",
-      "source_location": "L68",
+      "source_location": "L75",
       "_origin": "ast",
       "id": "agents_reglas_de_exposici\u00f3n_de_datos_en_endpoints_obligatorias_para_todo_endpoint_nuevo",
       "community": 79,
@@ -19948,7 +20036,7 @@
       "label": "Reglas de paginaci\u00f3n (OBLIGATORIAS para todo endpoint de listado)",
       "file_type": "document",
       "source_file": "AGENTS.md",
-      "source_location": "L90",
+      "source_location": "L97",
       "_origin": "ast",
       "id": "agents_reglas_de_paginaci\u00f3n_obligatorias_para_todo_endpoint_de_listado",
       "community": 79,
@@ -19959,7 +20047,7 @@
       "label": "Organizaci\u00f3n del c\u00f3digo del backend (OBLIGATORIA)",
       "file_type": "document",
       "source_file": "AGENTS.md",
-      "source_location": "L103",
+      "source_location": "L110",
       "_origin": "ast",
       "id": "agents_organizaci\u00f3n_del_c\u00f3digo_del_backend_obligatoria",
       "community": 79,
@@ -19970,7 +20058,7 @@
       "label": "Backend Rules",
       "file_type": "document",
       "source_file": "AGENTS.md",
-      "source_location": "L118",
+      "source_location": "L125",
       "_origin": "ast",
       "id": "agents_backend_rules",
       "community": 79,
@@ -19981,7 +20069,7 @@
       "label": "Project Style",
       "file_type": "document",
       "source_file": "AGENTS.md",
-      "source_location": "L128",
+      "source_location": "L135",
       "_origin": "ast",
       "id": "agents_project_style",
       "community": 79,
@@ -19992,7 +20080,7 @@
       "label": "graphify",
       "file_type": "document",
       "source_file": "AGENTS.md",
-      "source_location": "L134",
+      "source_location": "L141",
       "_origin": "ast",
       "id": "agents_graphify",
       "community": 79,
@@ -20836,10 +20924,21 @@
       "norm_label": "comercia frontend rules"
     },
     {
+      "label": "Selectores con muchas opciones",
+      "file_type": "document",
+      "source_file": "apps/web/AGENTS.md",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "apps_web_agents_selectores_con_muchas_opciones",
+      "community": 100,
+      "community_name": "Reglas de UI/UX de Comercia (OBLIGATORIAS \u2014 aplicarlas en TODO lo que se construya)",
+      "norm_label": "selectores con muchas opciones"
+    },
+    {
       "label": "Organizaci\u00f3n del c\u00f3digo del front (OBLIGATORIA)",
       "file_type": "document",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L15",
+      "source_location": "L32",
       "_origin": "ast",
       "id": "apps_web_agents_organizaci\u00f3n_del_c\u00f3digo_del_front_obligatoria",
       "community": 100,
@@ -20850,7 +20949,7 @@
       "label": "Tablas y paginaci\u00f3n (OBLIGATORIO en toda tabla/listado)",
       "file_type": "document",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L29",
+      "source_location": "L46",
       "_origin": "ast",
       "id": "apps_web_agents_tablas_y_paginaci\u00f3n_obligatorio_en_toda_tabla_listado",
       "community": 100,
@@ -20861,7 +20960,7 @@
       "label": "Reglas de UI/UX de Comercia (OBLIGATORIAS \u2014 aplicarlas en TODO lo que se construya)",
       "file_type": "document",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L45",
+      "source_location": "L62",
       "_origin": "ast",
       "id": "apps_web_agents_reglas_de_ui_ux_de_comercia_obligatorias_aplicarlas_en_todo_lo_que_se_construya",
       "community": 100,
@@ -20872,7 +20971,7 @@
       "label": "Vista m\u00f3vil de tablas (OBLIGATORIA)",
       "file_type": "document",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L47",
+      "source_location": "L64",
       "_origin": "ast",
       "id": "apps_web_agents_vista_m\u00f3vil_de_tablas_obligatoria",
       "community": 100,
@@ -20883,7 +20982,7 @@
       "label": "Elementos clickeables",
       "file_type": "document",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L68",
+      "source_location": "L85",
       "_origin": "ast",
       "id": "apps_web_agents_elementos_clickeables",
       "community": 100,
@@ -20894,7 +20993,7 @@
       "label": "Feedback global de procedimientos",
       "file_type": "document",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L78",
+      "source_location": "L95",
       "_origin": "ast",
       "id": "apps_web_agents_feedback_global_de_procedimientos",
       "community": 100,
@@ -20905,7 +21004,7 @@
       "label": "Botones de alta en ABM",
       "file_type": "document",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L89",
+      "source_location": "L106",
       "_origin": "ast",
       "id": "apps_web_agents_botones_de_alta_en_abm",
       "community": 100,
@@ -20916,7 +21015,7 @@
       "label": "Modales",
       "file_type": "document",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L101",
+      "source_location": "L118",
       "_origin": "ast",
       "id": "apps_web_agents_modales",
       "community": 100,
@@ -20927,7 +21026,7 @@
       "label": "Responsive (cr\u00edtico: los comerciales usan la app desde el CELULAR)",
       "file_type": "document",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L111",
+      "source_location": "L128",
       "_origin": "ast",
       "id": "apps_web_agents_responsive_cr\u00edtico_los_comerciales_usan_la_app_desde_el_celular",
       "community": 100,
@@ -20938,7 +21037,7 @@
       "label": "Modo claro/oscuro (OBLIGATORIO en todo c\u00f3digo nuevo)",
       "file_type": "document",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L123",
+      "source_location": "L140",
       "_origin": "ast",
       "id": "apps_web_agents_modo_claro_oscuro_obligatorio_en_todo_c\u00f3digo_nuevo",
       "community": 100,
@@ -46336,7 +46435,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package",
@@ -46450,7 +46549,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package_dependencies",
-      "target": "apps_web_package_dependencies_libphonenumber_js",
+      "target": "apps_web_package_dependencies_leaflet",
       "confidence_score": 1.0
     },
     {
@@ -46461,7 +46560,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package_dependencies",
-      "target": "apps_web_package_dependencies_motion",
+      "target": "apps_web_package_dependencies_libphonenumber_js",
       "confidence_score": 1.0
     },
     {
@@ -46472,7 +46571,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package_dependencies",
-      "target": "apps_web_package_dependencies_next",
+      "target": "apps_web_package_dependencies_motion",
       "confidence_score": 1.0
     },
     {
@@ -46483,7 +46582,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package_dependencies",
-      "target": "apps_web_package_dependencies_react",
+      "target": "apps_web_package_dependencies_next",
       "confidence_score": 1.0
     },
     {
@@ -46491,6 +46590,17 @@
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
       "source_location": "L17",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "apps_web_package_dependencies",
+      "target": "apps_web_package_dependencies_react",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/package.json",
+      "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package_dependencies",
@@ -46517,6 +46627,18 @@
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
+      "source": "apps_web_package_dependencies_leaflet",
+      "target": "leaflet",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/package.json",
+      "source_location": "L14",
+      "weight": 1.0,
+      "context": "import",
+      "_origin": "ast",
       "source": "apps_web_package_dependencies_libphonenumber_js",
       "target": "apps_web_package_json_libphonenumber_js",
       "confidence_score": 1.0
@@ -46525,7 +46647,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -46537,7 +46659,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -46549,7 +46671,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -46561,7 +46683,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -46573,7 +46695,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L24",
+      "source_location": "L26",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package_devdependencies",
@@ -46584,7 +46706,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L25",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package_devdependencies",
@@ -46595,7 +46717,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L26",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package_devdependencies",
@@ -46606,7 +46728,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package_devdependencies",
@@ -46617,22 +46739,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L21",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "apps_web_package_devdependencies",
-      "target": "apps_web_package_devdependencies_types_node",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "apps/web/package.json",
       "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package_devdependencies",
-      "target": "apps_web_package_devdependencies_types_react",
+      "target": "apps_web_package_devdependencies_types_leaflet",
       "confidence_score": 1.0
     },
     {
@@ -46643,6 +46754,28 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package_devdependencies",
+      "target": "apps_web_package_devdependencies_types_node",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/package.json",
+      "source_location": "L24",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "apps_web_package_devdependencies",
+      "target": "apps_web_package_devdependencies_types_react",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/package.json",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "apps_web_package_devdependencies",
       "target": "apps_web_package_devdependencies_types_react_dom",
       "confidence_score": 1.0
     },
@@ -46650,7 +46783,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L27",
+      "source_location": "L29",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_package_devdependencies",
@@ -46661,7 +46794,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -46673,7 +46806,19 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L21",
+      "source_location": "L22",
+      "weight": 1.0,
+      "context": "import",
+      "_origin": "ast",
+      "source": "apps_web_package_devdependencies_types_leaflet",
+      "target": "types_leaflet",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/package.json",
+      "source_location": "L23",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -46685,7 +46830,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L22",
+      "source_location": "L24",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -46697,7 +46842,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L23",
+      "source_location": "L25",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -46709,7 +46854,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L24",
+      "source_location": "L26",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -46721,7 +46866,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L25",
+      "source_location": "L27",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -46733,7 +46878,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L26",
+      "source_location": "L28",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -46745,7 +46890,7 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/package.json",
-      "source_location": "L27",
+      "source_location": "L29",
       "weight": 1.0,
       "context": "import",
       "_origin": "ast",
@@ -48788,7 +48933,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L20",
+      "source_location": "L26",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48799,7 +48944,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L124",
+      "source_location": "L130",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48807,11 +48952,22 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "apps_web_src_components_campo_catalogo_panel",
+      "target": "apps_web_src_components_campo_catalogo_panel_selectorubicacion",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48823,7 +48979,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48835,7 +48991,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48847,7 +49003,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48859,7 +49015,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48871,7 +49027,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48883,7 +49039,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48895,7 +49051,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48907,7 +49063,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48919,7 +49075,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48931,7 +49087,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48943,7 +49099,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48955,7 +49111,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48967,7 +49123,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L6",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48979,7 +49135,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L6",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -48991,7 +49147,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -49003,7 +49159,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -49015,7 +49171,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -49027,7 +49183,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -49039,7 +49195,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -49051,7 +49207,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -49063,7 +49219,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -49075,7 +49231,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L3",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -49087,7 +49243,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -49099,7 +49255,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -49111,7 +49267,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel",
@@ -49124,7 +49280,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L21",
+      "source_location": "L27",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel_clientespanel",
@@ -49136,7 +49292,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L22",
+      "source_location": "L28",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel_clientespanel",
@@ -49148,7 +49304,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L73",
+      "source_location": "L79",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel_clientespanel",
@@ -49160,7 +49316,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L125",
+      "source_location": "L131",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel_localespanel",
@@ -49172,7 +49328,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L126",
+      "source_location": "L132",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel_localespanel",
@@ -49184,7 +49340,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/components/campo/catalogo-panel.tsx",
-      "source_location": "L215",
+      "source_location": "L221",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_campo_catalogo_panel_localespanel",
@@ -50426,6 +50582,29 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "apps/web/src/components/campo/selector-ubicacion.tsx",
+      "source_location": "L8",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "apps_web_src_components_campo_selector_ubicacion",
+      "target": "apps_web_src_components_campo_selector_ubicacion_selectorubicacion",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/src/components/campo/selector-ubicacion.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "apps_web_src_components_campo_selector_ubicacion",
+      "target": "apps_web_src_components_ui",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "apps/web/src/components/campo/tabla-campo.tsx",
       "source_location": "L8",
       "weight": 1.0,
@@ -51393,7 +51572,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/web/src/components/selector-paginado.tsx",
-      "source_location": "L43",
+      "source_location": "L49",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_src_components_selector_paginado_selectorpaginado",
@@ -58136,7 +58315,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "AGENTS.md",
-      "source_location": "L118",
+      "source_location": "L125",
       "weight": 1.0,
       "_origin": "ast",
       "source": "agents_comercia_agent_guide",
@@ -58158,7 +58337,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "AGENTS.md",
-      "source_location": "L59",
+      "source_location": "L66",
       "weight": 1.0,
       "_origin": "ast",
       "source": "agents_comercia_agent_guide",
@@ -58180,7 +58359,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "AGENTS.md",
-      "source_location": "L134",
+      "source_location": "L141",
       "weight": 1.0,
       "_origin": "ast",
       "source": "agents_comercia_agent_guide",
@@ -58191,7 +58370,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "AGENTS.md",
-      "source_location": "L103",
+      "source_location": "L110",
       "weight": 1.0,
       "_origin": "ast",
       "source": "agents_comercia_agent_guide",
@@ -58213,7 +58392,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "AGENTS.md",
-      "source_location": "L128",
+      "source_location": "L135",
       "weight": 1.0,
       "_origin": "ast",
       "source": "agents_comercia_agent_guide",
@@ -58224,7 +58403,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "AGENTS.md",
-      "source_location": "L68",
+      "source_location": "L75",
       "weight": 1.0,
       "_origin": "ast",
       "source": "agents_comercia_agent_guide",
@@ -58235,7 +58414,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "AGENTS.md",
-      "source_location": "L90",
+      "source_location": "L97",
       "weight": 1.0,
       "_origin": "ast",
       "source": "agents_comercia_agent_guide",
@@ -58250,7 +58429,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "agents_comercia_agent_guide",
-      "target": "agents_servidores_locales_apagado_obligatorio_para_agentes",
+      "target": "agents_servidores_y_t\u00faneles_respetar_los_procesos_del_usuario",
       "confidence_score": 1.0
     },
     {
@@ -59148,7 +59327,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L15",
+      "source_location": "L32",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_agents",
@@ -59159,7 +59338,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L45",
+      "source_location": "L62",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_agents",
@@ -59170,7 +59349,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L29",
+      "source_location": "L46",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_agents",
@@ -59192,7 +59371,18 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L89",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "apps_web_agents_comercia_frontend_rules",
+      "target": "apps_web_agents_selectores_con_muchas_opciones",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/web/AGENTS.md",
+      "source_location": "L106",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_agents_reglas_de_ui_ux_de_comercia_obligatorias_aplicarlas_en_todo_lo_que_se_construya",
@@ -59203,7 +59393,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L68",
+      "source_location": "L85",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_agents_reglas_de_ui_ux_de_comercia_obligatorias_aplicarlas_en_todo_lo_que_se_construya",
@@ -59214,7 +59404,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L78",
+      "source_location": "L95",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_agents_reglas_de_ui_ux_de_comercia_obligatorias_aplicarlas_en_todo_lo_que_se_construya",
@@ -59225,7 +59415,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L101",
+      "source_location": "L118",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_agents_reglas_de_ui_ux_de_comercia_obligatorias_aplicarlas_en_todo_lo_que_se_construya",
@@ -59236,7 +59426,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L123",
+      "source_location": "L140",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_agents_reglas_de_ui_ux_de_comercia_obligatorias_aplicarlas_en_todo_lo_que_se_construya",
@@ -59247,7 +59437,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L111",
+      "source_location": "L128",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_agents_reglas_de_ui_ux_de_comercia_obligatorias_aplicarlas_en_todo_lo_que_se_construya",
@@ -59258,7 +59448,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/web/AGENTS.md",
-      "source_location": "L47",
+      "source_location": "L64",
       "weight": 1.0,
       "_origin": "ast",
       "source": "apps_web_agents_reglas_de_ui_ux_de_comercia_obligatorias_aplicarlas_en_todo_lo_que_se_construya",
@@ -60158,5 +60348,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "60181d884a93e754154fb89ea9d34963d95e7258"
+  "built_at_commit": "28c113b5285dacbb6179dc3c63ebcb7e72032eef"
 }

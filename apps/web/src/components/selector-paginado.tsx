@@ -18,6 +18,7 @@ export function SelectorPaginado({
   vacio = "Seleccioná una opción",
   required = false,
   excluirId,
+  buscable = false,
 }: {
   url: string;
   etiqueta: string;
@@ -27,6 +28,7 @@ export function SelectorPaginado({
   vacio?: string;
   required?: boolean;
   excluirId?: number;
+  buscable?: boolean;
 }) {
   const [datos, setDatos] = useState<RespuestaPaginada<OpcionSelector> | null>(
     null,
@@ -37,33 +39,43 @@ export function SelectorPaginado({
   const [error, setError] = useState<string | null>(null);
   const [intento, setIntento] = useState(0);
   const [elegida, setElegida] = useState<OpcionSelector | null>(null);
+  const [buscar, setBuscar] = useState("");
 
   useEffect(() => {
     let vigente = true;
-    apiFetch<RespuestaPaginada<OpcionSelector>>(
-      `${url}${url.includes("?") ? "&" : "?"}page=${page}&limit=${limit}`,
-    )
-      .then((respuesta) => {
-        if (vigente) {
-          setDatos(respuesta);
-          setError(null);
-        }
-      })
-      .catch((problema) => {
-        if (vigente)
-          setError(
-            problema instanceof ApiError
-              ? problema.message
-              : "No se pudieron cargar las opciones",
-          );
-      })
-      .finally(() => {
-        if (vigente) setCargando(false);
-      });
+    const controller = new AbortController();
+    const timer = setTimeout(
+      () => {
+        apiFetch<RespuestaPaginada<OpcionSelector>>(
+          `${url}${url.includes("?") ? "&" : "?"}page=${page}&limit=${limit}${buscable ? `&buscar=${encodeURIComponent(buscar.trim())}` : ""}`,
+          { signal: controller.signal },
+        )
+          .then((respuesta) => {
+            if (vigente) {
+              setDatos(respuesta);
+              setError(null);
+            }
+          })
+          .catch((problema) => {
+            if (vigente)
+              setError(
+                problema instanceof ApiError
+                  ? problema.message
+                  : "No se pudieron cargar las opciones",
+              );
+          })
+          .finally(() => {
+            if (vigente) setCargando(false);
+          });
+      },
+      buscable ? 300 : 0,
+    );
     return () => {
       vigente = false;
+      clearTimeout(timer);
+      controller.abort();
     };
-  }, [url, page, limit, intento]);
+  }, [url, page, limit, intento, buscar, buscable]);
 
   const opciones = (datos?.items ?? []).filter((item) => item.id !== excluirId);
   const fueraDePagina =
@@ -71,9 +83,39 @@ export function SelectorPaginado({
   return (
     <div className="w-full min-w-0">
       <PantallaCarga
-        visible={cargando}
+        visible={cargando && !buscable}
         mensaje={`Cargando ${etiqueta.toLowerCase()}`}
       />
+      {buscable ? (
+        <label className={labelBase}>
+          Buscar {etiqueta.toLowerCase()}
+          <input
+            type="search"
+            className={inputBase}
+            value={buscar}
+            maxLength={120}
+            placeholder="Escribí un nombre para filtrar"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.preventDefault();
+            }}
+            onChange={(e) => {
+              setBuscar(e.target.value);
+              setPage(1);
+              setCargando(true);
+              setError(null);
+            }}
+          />
+        </label>
+      ) : null}
+      {buscable ? (
+        <p role="status" className="my-2 text-sm text-muted">
+          {cargando
+            ? "Buscando opciones…"
+            : !error && opciones.length === 0
+              ? "No se encontraron resultados."
+              : "Seleccioná una opción de los resultados."}
+        </p>
+      ) : null}
       <label className={labelBase}>
         {etiqueta}
         <select
@@ -118,7 +160,7 @@ export function SelectorPaginado({
           </button>
         </div>
       ) : null}
-      {datos && datos.totalPages > 1 ? (
+      {datos && !cargando && !error && datos.totalPages > 1 ? (
         <Paginacion
           page={datos.page}
           limit={datos.limit}

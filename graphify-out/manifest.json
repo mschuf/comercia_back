@@ -565,8 +565,8 @@
     "semantic_hash": "d939f27ed06dbda8761bb08e20c60375"
   },
   "apps/web/package.json": {
-    "mtime": 1788463728.182869,
-    "ast_hash": "2fe04bfb9fff77f218be727d799d603c",
+    "mtime": 1788890320.0125074,
+    "ast_hash": "88b7e32652fa5cf51e1b94ebc4cc9bd1",
     "semantic_hash": ""
   },
   "apps/web/postcss.config.mjs": {
@@ -1605,8 +1605,8 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1788872084.2753894,
-    "ast_hash": "94ad649cdab2a753444a61c61ac4ee83",
+    "mtime": 1788878000.3934507,
+    "ast_hash": "76b235e53e2f30ad026f07dcd7a1d79a",
     "semantic_hash": ""
   },
   "CLAUDE.md": {
@@ -1650,8 +1650,8 @@
     "semantic_hash": ""
   },
   "apps/web/AGENTS.md": {
-    "mtime": 1785498867.9908295,
-    "ast_hash": "41833e9fe57f782db5294a813bec2c9b",
+    "mtime": 1788890296.7864747,
+    "ast_hash": "fa5be37e51d3691886ff019425e073ad",
     "semantic_hash": ""
   },
   "apps/web/CLAUDE.md": {
@@ -1890,8 +1890,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/selector-paginado.tsx": {
-    "mtime": 1788871867.4659364,
-    "ast_hash": "290d6cb8e9e5f7a295b49af319cc611f",
+    "mtime": 1788890330.9596224,
+    "ast_hash": "cbd0b16e37c35072e3b87f6a99475da4",
     "semantic_hash": ""
   },
   "apps/web/src/types/opcion-selector.ts": {
@@ -1970,8 +1970,8 @@
     "semantic_hash": ""
   },
   "apps/web/src/components/campo/catalogo-panel.tsx": {
-    "mtime": 1788876530.208947,
-    "ast_hash": "3a9270468d088483b1d2606eb9e9e33c",
+    "mtime": 1788890331.0794003,
+    "ast_hash": "c182afb02f2fa29042a6f49a28b8b866",
     "semantic_hash": ""
   },
   "apps/web/src/components/campo/form-campo.tsx": {
@@ -2017,6 +2017,16 @@
   "docs/operaciones-campo.md": {
     "mtime": 1788876432.7529411,
     "ast_hash": "ddde3b995f2e54d3f709c8f2844183d1",
+    "semantic_hash": ""
+  },
+  "apps/api/prisma/migrations/20260908150000_accesos_campo_guarani/migration.sql": {
+    "mtime": 1788889359.3077154,
+    "ast_hash": "4a63c01f2b8ed8690635871e7d2e45e3",
+    "semantic_hash": ""
+  },
+  "apps/web/src/components/campo/selector-ubicacion.tsx": {
+    "mtime": 1788890331.0132568,
+    "ast_hash": "896c467d0c295f7683ab27f7dae7e5fa",
     "semantic_hash": ""
   }
 }
