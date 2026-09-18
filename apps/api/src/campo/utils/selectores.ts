@@ -4,7 +4,9 @@ export const CLIENTE_CAMPO_SELECT = {
   ruc: true,
   contacto: true,
   telefono: true,
+  logoUrl: true,
   activo: true,
+  _count: { select: { locales: true } },
 } as const;
 export const LOCAL_CAMPO_SELECT = {
   id: true,
@@ -19,7 +21,7 @@ export const LOCAL_CAMPO_SELECT = {
   zonaHoraria: true,
   notas: true,
   activo: true,
-  cliente: { select: { id: true, nombre: true } },
+  cliente: { select: { id: true, nombre: true, logoUrl: true } },
 } as const;
 export const HORARIO_CAMPO_SELECT = {
   id: true,
@@ -61,6 +63,11 @@ export const TAREA_CAMPO_SELECT = {
   activo: true,
   fechaDesde: true,
   fechaHasta: true,
+  requiereFotos: true,
+  fotosObligatorias: true,
+  categoria: true,
+  esObligatoria: true,
+  estado: true,
   locales: {
     take: 50,
     select: { local: { select: { id: true, nombre: true } } },
@@ -95,5 +102,5 @@ export const VISITA_CAMPO_SELECT = {
   asignacion: {
     select: { usuario: { select: { id: true, nombre: true, apellido: true } } },
   },
-  _count: { select: { cumplimientos: true } },
+  _count: { select: { cumplimientos: { where: { NOT: { completadaAt: null } } } } },
 } as const;

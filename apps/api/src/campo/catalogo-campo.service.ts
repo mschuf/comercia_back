@@ -19,6 +19,7 @@ import {
   TAREA_CAMPO_SELECT,
 } from './utils/selectores';
 import { vigenciaCampo } from './utils/calendario';
+import { ConsultaTareasCampoDto } from './dto/consulta-tareas.dto';
 
 @Injectable()
 export class CatalogoCampoService {
@@ -37,7 +38,13 @@ export class CatalogoCampoService {
     const where = {
       empresaId: usuario.empresaId,
       ...(query.buscar
-        ? { nombre: { contains: query.buscar, mode: 'insensitive' as const } }
+        ? {
+            OR: [
+              { nombre: { contains: query.buscar, mode: 'insensitive' as const } },
+              { ruc: { contains: query.buscar, mode: 'insensitive' as const } },
+              { contacto: { contains: query.buscar, mode: 'insensitive' as const } },
+            ],
+          }
         : {}),
     };
     const { skip, take, page, limit } = rangoPaginacion(query);
@@ -93,9 +100,15 @@ export class CatalogoCampoService {
       });
     const where = {
       cliente: { empresaId: u.empresaId },
-      clienteId: query.clienteId,
+      ...(query.clienteId ? { clienteId: query.clienteId } : {}),
       ...(query.buscar
-        ? { nombre: { contains: query.buscar, mode: 'insensitive' as const } }
+        ? {
+            OR: [
+              { nombre: { contains: query.buscar, mode: 'insensitive' as const } },
+              { direccion: { contains: query.buscar, mode: 'insensitive' as const } },
+              { contacto: { contains: query.buscar, mode: 'insensitive' as const } },
+            ],
+          }
         : {}),
     };
     const { skip, take, page, limit } = rangoPaginacion(query);
@@ -140,16 +153,22 @@ export class CatalogoCampoService {
     });
     return { ok: true };
   }
-  async tareas(usuarioId: number, query: ConsultaCampoDto) {
+  async tareas(usuarioId: number, query: ConsultaTareasCampoDto) {
     const u = await this.acceso.gestionar(usuarioId, 'tareas');
     const where = {
       empresaId: u.empresaId,
+      ...(query.categoria ? { categoria: query.categoria } : {}),
+      ...(query.tipo === 'obligatorias' ? { esObligatoria: true } : {}),
+      ...(query.tipo === 'con_fotos' ? { requiereFotos: true } : {}),
       ...(query.buscar
-        ? { nombre: { contains: query.buscar, mode: 'insensitive' as const } }
+        ? { OR: [
+            { nombre: { contains: query.buscar, mode: 'insensitive' as const } },
+            { descripcion: { contains: query.buscar, mode: 'insensitive' as const } },
+          ] }
         : {}),
     };
     const { skip, take, page, limit } = rangoPaginacion(query);
-    const [total, items] = await Promise.all([
+    const [total, items, totalCatalogo, obligatorias, conFotos] = await Promise.all([
       this.prisma.tareaCampo.count({ where }),
       this.prisma.tareaCampo.findMany({
         where,
@@ -158,8 +177,11 @@ export class CatalogoCampoService {
         skip,
         take,
       }),
+      this.prisma.tareaCampo.count({ where: { empresaId: u.empresaId } }),
+      this.prisma.tareaCampo.count({ where: { empresaId: u.empresaId, esObligatoria: true } }),
+      this.prisma.tareaCampo.count({ where: { empresaId: u.empresaId, requiereFotos: true } }),
     ]);
-    return respuestaPaginada(items, total, page, limit);
+    return { ...respuestaPaginada(items, total, page, limit), resumen: { total: totalCatalogo, obligatorias, conFotos } };
   }
   async guardarTarea(usuarioId: number, dto: TareaCampoDto, id?: number) {
     const u = await this.acceso.gestionar(usuarioId, 'tareas');
@@ -188,6 +210,11 @@ export class CatalogoCampoService {
       descripcion: dto.descripcion,
       activo: dto.activo,
       todosLocales: dto.todosLocales,
+      requiereFotos: dto.requiereFotos,
+      fotosObligatorias: dto.fotosObligatorias,
+      categoria: dto.categoria ?? 'Góndola',
+      esObligatoria: dto.esObligatoria ?? false,
+      ...(dto.estado ? { estado: dto.estado } : {}),
       ...fechas,
     };
     // Las tareas globales se resuelven al consultar: incluyen también locales futuros.
